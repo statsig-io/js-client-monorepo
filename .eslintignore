@@ -1,0 +1,6 @@
+dist
+build
+webpack.config.js
+.eslintrc.js
+.prettierrc.js
+.esbuild.js
