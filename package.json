@@ -1,5 +1,5 @@
 {
-  "name": "monorepo-typescript",
+  "name": "statsig-js-monorepo",
   "version": "1.0.0",
   "description": "A monorepo in TypeScript",
   "private": true,
@@ -34,8 +34,8 @@
     "webpack": "^5.88.2"
   },
   "dependencies": {
-    "@monorepo/ui": "^1.0.0",
-    "@monorepo/core": "^1.0.0",
+    "@statsig/react": "^1.0.0",
+    "@statsig/core": "^1.0.0",
     "typescript": "^4.9.3"
   }
 }

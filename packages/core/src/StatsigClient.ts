@@ -18,20 +18,16 @@ export default class StatsigClient {
   private _user: StatsigUser;
   private _options: StatsigOptions;
 
-  constructor(
-    sdkKey: string,
-    user: StatsigUser,
-    options: StatsigOptions | null = null,
-  ) {
-    this._user = user;
+  constructor(sdkKey: string, options: StatsigOptions | null = null) {
     this._options = options ?? { api: 'https://api.statsig.com/v1' };
     this._network = new StatsigNetwork(sdkKey, this._options);
     this._logger = new StatsigLogger(this._network);
     this._store = new SpecStore(sdkKey);
+    this._user = {};
   }
 
-  async initialize() {
-    await this.updateUser(this._user);
+  async initialize(user: StatsigUser) {
+    await this.updateUser(user);
   }
 
   async updateUser(user: StatsigUser) {

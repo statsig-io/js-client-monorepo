@@ -4,6 +4,8 @@ const fs = require('fs');
 
 const MAX_KB = 30;
 
+const TO_MINIFY = ['_store', '_network', '_options', '_logger', '_user'];
+
 const terser = new TerserPlugin({
   minify: (a, b, options, d) => {
     const TerserPlugin = require('terser-webpack-plugin');
@@ -19,8 +21,7 @@ const terser = new TerserPlugin({
     nameCache: JSON.parse(fs.readFileSync('name-cache.json', 'utf8')),
     mangle: {
       properties: {
-        regex: /^_/,
-        reserved: ['__STATSIG__'],
+        regex: new RegExp(TO_MINIFY.join('|')),
       },
     },
   },
@@ -28,13 +29,17 @@ const terser = new TerserPlugin({
 
 module.exports = {
   mode: 'production',
-  entry: path.resolve(__dirname, './dist/index.js'),
+  entry: path.resolve(__dirname, './build/statsig-react.js'),
+  externals: {
+    react: 'React',
+    'react-dom': 'ReactDOM',
+  },
   resolve: {
     extensions: ['.js'],
   },
   output: {
-    filename: 'statsig-js.webpack.min.js',
-    path: path.resolve(__dirname, 'build'),
+    filename: 'statsig-react.min.js',
+    path: path.resolve(__dirname, 'dist'),
   },
   optimization: {
     minimize: true,

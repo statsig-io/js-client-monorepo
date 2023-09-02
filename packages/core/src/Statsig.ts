@@ -11,8 +11,8 @@ export default class Statsig {
     user: StatsigUser,
     options: StatsigOptions | null = null,
   ): Promise<void> {
-    this._instance = new StatsigClient(sdkKey, user, options);
-    await this._instance.initialize();
+    this._instance = new StatsigClient(sdkKey, options);
+    await this._instance.initialize(user);
   }
 
   static async updateUser(user: StatsigUser) {

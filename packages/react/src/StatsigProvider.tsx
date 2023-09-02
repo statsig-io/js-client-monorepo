@@ -1,18 +1,30 @@
-import { StatsigClient } from '@monorepo/core';
+import { StatsigClient } from '@statsig/core';
+import React, { useEffect, useState } from 'react';
+import StatsigContext from './StatsigContext';
 
 type Props = {
   client: StatsigClient;
+  children: React.ReactNode | React.ReactNode[];
 };
 
-function Foo() {
-  return <div></div>;
-}
+export default function StatsigProvider({
+  client,
+  children,
+}: Props): JSX.Element {
+  const [version, setVersion] = useState(0);
 
-export function StatsigProvider(props: Props): JSX.Element {
+  useEffect(() => {
+    client
+      .initialize({})
+      .then(() => {
+        setVersion(version + 1);
+      })
+      .catch();
+  }, [client]);
+
   return (
-    <>
-      <Foo />
-      {JSON.stringify(props.client)}
-    </>
+    <StatsigContext.Provider value={{ client, version }}>
+      {children}
+    </StatsigContext.Provider>
   );
 }

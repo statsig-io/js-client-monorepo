@@ -1,0 +1,14 @@
+{
+  "vars": {
+    "props": {}
+  },
+  "props": {
+    "props": {
+      "$_store": "t",
+      "$_network": "i",
+      "$_options": "u",
+      "$_logger": "o",
+      "$_user": "l"
+    }
+  }
+}

@@ -12,7 +12,7 @@
     "rootDir": "./src",
     "outDir": "./build"
   },
-  "files": ["./src/index.ts"],
+  "files": ["src/statsig-react.ts", "src/statsig-js.ts"],
   "references": [
     {
       "path": "./packages/core"
