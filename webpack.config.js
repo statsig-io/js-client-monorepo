@@ -17,8 +17,13 @@ const terser = new TerserPlugin({
     );
     return res;
   },
+
+  extractComments: false,
   terserOptions: {
     nameCache: JSON.parse(fs.readFileSync('name-cache.json', 'utf8')),
+    output: {
+      comments: false,
+    },
     mangle: {
       properties: {
         regex: new RegExp(TO_MINIFY.join('|')),
@@ -27,26 +32,36 @@ const terser = new TerserPlugin({
   },
 });
 
-module.exports = {
-  mode: 'production',
-  entry: path.resolve(__dirname, './build/statsig-react.js'),
-  externals: {
-    react: 'React',
-    'react-dom': 'ReactDOM',
-  },
-  resolve: {
-    extensions: ['.js'],
-  },
-  output: {
-    filename: 'statsig-react.min.js',
-    path: path.resolve(__dirname, 'dist'),
-  },
-  optimization: {
-    minimize: true,
-    minimizer: [terser],
-  },
-  performance: {
-    hints: 'error',
-    maxEntrypointSize: 1024 * MAX_KB,
-  },
-};
+function makeConfig(name, extras) {
+  return {
+    name,
+    mode: 'production',
+    resolve: {
+      extensions: ['.js'],
+    },
+    entry: path.resolve(__dirname, `./build/${name}.js`),
+    output: {
+      filename: `${name}.min.js`,
+      path: path.resolve(__dirname, 'dist'),
+    },
+    optimization: {
+      minimize: true,
+      minimizer: [terser],
+    },
+    performance: {
+      hints: 'error',
+      maxEntrypointSize: 1024 * MAX_KB,
+    },
+    ...extras,
+  };
+}
+
+module.exports = [
+  makeConfig('statsig-js'),
+  makeConfig('statsig-react', {
+    externals: {
+      react: 'react',
+      'react-dom': 'reactDOM',
+    },
+  }),
+];
