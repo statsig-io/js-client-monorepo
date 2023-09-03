@@ -1,5 +1,4 @@
-import { StatsigClient } from '@statsig/core';
-import { StatsigProvider, useGate } from '@statsig/react';
+import { StatsigClient, StatsigProvider, useGate } from '@statsig/react';
 import './App.css';
 
 const client = new StatsigClient(

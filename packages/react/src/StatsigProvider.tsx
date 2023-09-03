@@ -19,7 +19,7 @@ export default function StatsigProvider({
       .then(() => {
         setVersion(version + 1);
       })
-      .catch();
+      .catch(() => {});
   }, [client]);
 
   return (
