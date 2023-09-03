@@ -12,6 +12,8 @@ import { StatsigOptions } from './StatsigOptions';
 import { StatsigUser, normalizeUser } from './StatsigUser';
 import { Monitored } from './Monitoring';
 
+const DEFAULT_RULE = 'default';
+
 @Monitored
 export default class StatsigClient {
   private _options: StatsigOptions;
@@ -28,7 +30,6 @@ export default class StatsigClient {
     this._user = {};
   }
 
-  // @Monitored
   async initialize(user: StatsigUser) {
     await this.updateUser(user);
   }
@@ -70,7 +71,7 @@ export default class StatsigClient {
     const res = this._store.values?.dynamic_configs[hash];
     const config = {
       name,
-      ruleID: 'default',
+      ruleID: DEFAULT_RULE,
       value: {},
     };
 
@@ -100,7 +101,7 @@ export default class StatsigClient {
 
     const layer = {
       name,
-      ruleID: 'default',
+      ruleID: DEFAULT_RULE,
       getValue: (): unknown => undefined,
     };
 

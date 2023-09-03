@@ -1,4 +1,3 @@
-// import { Monitored } from './Monitoring';
 import { StoreValues } from './SpecStore';
 import { StatsigEvent } from './StatsigEvent';
 import { SDK_TYPE, SDK_VERSION } from './StatsigMetadata';
@@ -27,16 +26,18 @@ export default class StatsigNetwork {
   async fetchEvaluations(
     user: StatsigUser,
   ): Promise<StoreValues | StoreValues204> {
-    const foo = await this._sendPostRequest(`${this._options.api}/initialize`, {
-      user,
-      hash: 'djb2',
-    });
-
-    return foo as StoreValues;
+    return this._sendPostRequest(
+      `${this._options.api}/initialize`,
+      {
+        user,
+        hash: 'djb2',
+      },
+      2000,
+    );
   }
 
   async sendEvents(events: StatsigEvent[]) {
-    return await this._sendPostRequest('https://api.statsig.com/v1/rgstr', {
+    return this._sendPostRequest('https://api.statsig.com/v1/rgstr', {
       events,
     });
   }
@@ -44,12 +45,19 @@ export default class StatsigNetwork {
   private async _sendPostRequest<T>(
     url: string,
     body: Record<string, unknown>,
+    timeout = 10_000,
   ): Promise<T> {
+    const controller = new AbortController();
+    const handle = setTimeout(() => controller.abort(), timeout);
+
     const response = await fetch(url, {
       method: 'POST',
       body: JSON.stringify(body),
       headers: this._headers,
+      signal: controller.signal,
     });
+    clearTimeout(handle);
+
     const text = await response.text();
     return JSON.parse(text) as T;
   }
