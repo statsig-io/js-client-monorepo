@@ -2,13 +2,10 @@ import { StatsigEvent } from './StatsigEvent';
 import StatsigNetwork from './StatsigNetwork';
 
 export default class StatsigLogger {
-  private _network: StatsigNetwork;
   private _queue: StatsigEvent[] = [];
   private _flushTimer: ReturnType<typeof setInterval> | null;
 
-  constructor(network: StatsigNetwork) {
-    this._network = network;
-
+  constructor(private _network: StatsigNetwork) {
     this._flushTimer = setInterval(() => this._flush(), 10_000);
   }
 

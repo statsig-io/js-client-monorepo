@@ -4,11 +4,22 @@
   },
   "props": {
     "props": {
-      "$_store": "t",
-      "$_network": "i",
-      "$_options": "u",
-      "$_logger": "o",
-      "$_user": "l"
+      "$_instance": "I",
+      "$_options": "f",
+      "$_network": "r",
+      "$_logger": "a",
+      "$_store": "n",
+      "$_user": "k",
+      "$setObjectInLocalStorage": "h",
+      "$getObjectFromLocalStorage": "v",
+      "$setValues": "d",
+      "$switchToUser": "e",
+      "$_enforceStorageLimit": "z",
+      "$fetchEvaluations": "m",
+      "$createGateExposure": "O",
+      "$createConfigExposure": "p",
+      "$createLayerParameterExposure": "j",
+      "$_sendPostRequest": "M"
     }
   }
 }

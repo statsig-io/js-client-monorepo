@@ -1,4 +1,8 @@
 import { DJB2 } from './Hashing';
+import {
+  getObjectFromLocalStorage,
+  setObjectInLocalStorage,
+} from './LocalStorageUtil';
 import { SecondaryExposure } from './StatsigEvent';
 import { StatsigUser } from './StatsigUser';
 
@@ -38,8 +42,12 @@ export type StoreValues = {
   has_updates: boolean;
 };
 
+const MANIFEST_KEY = 'statsig.manifest';
+const CACHE_LIMIT = 10;
+
 export default class SpecStore {
   values: StoreValues | null = null;
+  manifest: Record<string, number> | null = null;
 
   constructor(private _sdkKey: string) {}
 
@@ -47,7 +55,9 @@ export default class SpecStore {
     this.values = values;
 
     const cacheKey = createCacheKey(user, this._sdkKey);
-    localStorage.setItem(cacheKey, JSON.stringify(values));
+    setObjectInLocalStorage(cacheKey, values);
+
+    this._enforceStorageLimit(cacheKey);
   }
 
   switchToUser(user: StatsigUser) {
@@ -58,6 +68,27 @@ export default class SpecStore {
     if (json) {
       this.values = JSON.parse(json) as StoreValues;
     }
+  }
+
+  private _enforceStorageLimit(cacheKey: string) {
+    this.manifest =
+      this.manifest ??
+      getObjectFromLocalStorage<Record<string, number>>(MANIFEST_KEY);
+    this.manifest[cacheKey] = Date.now();
+
+    const entries = Object.entries(this.manifest);
+    if (entries.length < CACHE_LIMIT) {
+      setObjectInLocalStorage(MANIFEST_KEY, this.manifest);
+      return;
+    }
+
+    const oldest = entries.reduce((acc, current) => {
+      return current[1] < acc[1] ? current : acc;
+    });
+
+    localStorage.removeItem(oldest[0]);
+    delete this.manifest[oldest[0]];
+    setObjectInLocalStorage(MANIFEST_KEY, this.manifest);
   }
 }
 

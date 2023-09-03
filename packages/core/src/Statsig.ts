@@ -3,7 +3,7 @@ import StatsigClient from './StatsigClient';
 import { StatsigOptions } from './StatsigOptions';
 import { StatsigUser } from './StatsigUser';
 
-export default class Statsig {
+export default abstract class Statsig {
   private static _instance: StatsigClient | null = null;
 
   static async initialize(

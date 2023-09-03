@@ -12,11 +12,11 @@ import { StatsigOptions } from './StatsigOptions';
 import { StatsigUser, normalizeUser } from './StatsigUser';
 
 export default class StatsigClient {
-  private _store: SpecStore;
-  private _logger: StatsigLogger;
-  private _network: StatsigNetwork;
-  private _user: StatsigUser;
   private _options: StatsigOptions;
+  private _network: StatsigNetwork;
+  private _logger: StatsigLogger;
+  private _store: SpecStore;
+  private _user: StatsigUser;
 
   constructor(sdkKey: string, options: StatsigOptions | null = null) {
     this._options = options ?? { api: 'https://api.statsig.com/v1' };

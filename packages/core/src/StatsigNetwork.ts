@@ -10,10 +10,11 @@ type StoreValues204 = {
 
 export default class StatsigNetwork {
   private _headers: Record<string, string>;
-  private _options: StatsigOptions;
 
-  constructor(sdkKey: string, options: StatsigOptions) {
-    this._options = options;
+  constructor(
+    sdkKey: string,
+    private _options: StatsigOptions,
+  ) {
     this._headers = {
       'Content-Type': 'application/json',
       'STATSIG-API-KEY': sdkKey,

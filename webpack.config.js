@@ -1,10 +1,25 @@
 const path = require('path');
 const TerserPlugin = require('terser-webpack-plugin');
 const fs = require('fs');
-
-const MAX_KB = 30;
-
-const TO_MINIFY = ['_store', '_network', '_options', '_logger', '_user'];
+const MAX_KB = 20;
+const TO_MINIFY = [
+  '_store',
+  '_network',
+  '_options',
+  '_logger',
+  '_user',
+  'getObjectFromLocalStorage',
+  'setObjectInLocalStorage',
+  '_enforceStorageLimit',
+  'setValues',
+  'switchToUser',
+  'fetchEvaluations',
+  'createGateExposure',
+  'createConfigExposure',
+  'createLayerParameterExposure',
+  '_sendPostRequest',
+  '_instance',
+];
 
 const terser = new TerserPlugin({
   minify: (a, b, options, d) => {
