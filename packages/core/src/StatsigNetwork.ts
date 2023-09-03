@@ -1,3 +1,4 @@
+// import { Monitored } from './Monitoring';
 import { StoreValues } from './SpecStore';
 import { StatsigEvent } from './StatsigEvent';
 import { SDK_TYPE, SDK_VERSION } from './StatsigMetadata';
@@ -26,10 +27,12 @@ export default class StatsigNetwork {
   async fetchEvaluations(
     user: StatsigUser,
   ): Promise<StoreValues | StoreValues204> {
-    return await this._sendPostRequest(`${this._options.api}/initialize`, {
+    const foo = await this._sendPostRequest(`${this._options.api}/initialize`, {
       user,
       hash: 'djb2',
     });
+
+    return foo as StoreValues;
   }
 
   async sendEvents(events: StatsigEvent[]) {

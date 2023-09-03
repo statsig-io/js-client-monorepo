@@ -10,7 +10,9 @@ import StatsigLogger from './StatsigLogger';
 import StatsigNetwork from './StatsigNetwork';
 import { StatsigOptions } from './StatsigOptions';
 import { StatsigUser, normalizeUser } from './StatsigUser';
+import { Monitored } from './Monitoring';
 
+@Monitored
 export default class StatsigClient {
   private _options: StatsigOptions;
   private _network: StatsigNetwork;
@@ -26,6 +28,7 @@ export default class StatsigClient {
     this._user = {};
   }
 
+  // @Monitored
   async initialize(user: StatsigUser) {
     await this.updateUser(user);
   }

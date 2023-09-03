@@ -19,7 +19,8 @@
       "$createGateExposure": "O",
       "$createConfigExposure": "p",
       "$createLayerParameterExposure": "j",
-      "$_sendPostRequest": "M"
+      "$_sendPostRequest": "M",
+      "$sendEvents": "t"
     }
   }
 }

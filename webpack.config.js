@@ -18,6 +18,7 @@ const TO_MINIFY = [
   'createConfigExposure',
   'createLayerParameterExposure',
   '_sendPostRequest',
+  'sendEvents',
   '_instance',
 ];
 
