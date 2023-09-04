@@ -1,17 +1,9 @@
 {
+  "extends": "../../tsconfig",
   "compilerOptions": {
-    "target": "es2022",
-    "module": "commonjs",
-    "moduleResolution": "node",
-    "declaration": true,
-    "strict": true,
-    "incremental": true,
-    "esModuleInterop": true,
-    "jsx": "react-jsx",
-    "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true,
-    "rootDir": "./src",
+    "composite": true,
     "outDir": "./build",
-    "composite": true
-  }
+    "rootDir": "./src"
+  },
+  "include": ["src"]
 }

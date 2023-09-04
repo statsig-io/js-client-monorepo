@@ -45,11 +45,11 @@ export default class StatsigRemoteEvalClient
   }
 
   async updateUser(user: StatsigUser) {
-    this._setLoadingStatus('loading');
+    this.loadingStatus = 'loading';
     this._user = normalizeUser(user, this._options.environment);
     const cacheHit = this._store.switchToUser(this._user);
     if (cacheHit) {
-      this._setLoadingStatus('ready-cache');
+      this.loadingStatus = 'ready-cache';
     }
 
     const capturedUser = this._user;
@@ -59,7 +59,7 @@ export default class StatsigRemoteEvalClient
       this._store.setValues(capturedUser, response);
     }
 
-    this._setLoadingStatus('ready-network');
+    this.loadingStatus = 'ready-network';
   }
 
   checkGate(name: string): boolean {
@@ -140,9 +140,5 @@ export default class StatsigRemoteEvalClient
         return res.value[param];
       },
     };
-  }
-
-  private _setLoadingStatus(status: StatsigLoadingStatus) {
-    this.loadingStatus = status;
   }
 }

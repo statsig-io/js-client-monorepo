@@ -1,11 +1,13 @@
 export * from './Hashing';
+export * from './LocalStorageUtil';
 export * from './Monitoring';
-export * from './StatsigLogger';
+export * from './StatsigClientInterfaces';
 export * from './StatsigEvent';
+export * from './StatsigLogger';
+export * from './StatsigMetadata';
 export * from './StatsigTypes';
 export * from './StatsigUser';
-export * from './LocalStorageUtil';
-export * from './StatsigClientInterfaces';
+export * from './StatsigNetworkCore';
 
 declare global {
   interface Window {

@@ -20,13 +20,15 @@ export type StatsigUser = {
   customIDs?: Record<string, string>;
 };
 
+export type NormalizedStatsigUser = StatsigUser & {
+  statsigEnvironment?: StatsigEnvironment;
+};
+
 export function normalizeUser(
   original: StatsigUser,
   environment?: StatsigEnvironment,
 ): StatsigUser {
-  let copy: StatsigUser & {
-    statsigEnvironment?: StatsigEnvironment;
-  } = {};
+  let copy: NormalizedStatsigUser = {};
 
   try {
     copy = JSON.parse(JSON.stringify(original)) as StatsigUser;

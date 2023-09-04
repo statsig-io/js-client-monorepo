@@ -19,41 +19,48 @@
 
   <script type="text/babel">
     const { useState, useEffect, useMemo } = React;
-    const { StatsigProvider, StatsigRemoteEvalClient, useGate, useClientLoadingStatus } = __STATSIG__;
+    const { StatsigProvider, StatsigRemoteEvalClient, StatsigLocalEvalClient, useGate, useClientLoadingStatus } = __STATSIG__;
 
     const remoteEvalClient = new StatsigRemoteEvalClient(
       'client-wlH3WMkysINMhMU8VrNBkbjrEr2JQrqgxKwDPOUosJK',
     );
 
+    const localEvalClient = new StatsigLocalEvalClient(
+      'client-wlH3WMkysINMhMU8VrNBkbjrEr2JQrqgxKwDPOUosJK',
+    )
+
     function Content() {
       const { value } = useGate("test_public");
-      return <span>test_public: {value ? "Pass" : "Fail"}</span>;
+      const { value: localEvalValue } = useGate("test_public", { localEvalUser: { userID: 'loca-eval-user' } });
+      return <div>
+        <div>test_public (Remote): {value ? "Pass" : "Fail"}</div>
+        <div>test_public (Local): {localEvalValue ? "Pass" : "Fail"}</div>
+      </div>;
     }
 
     function App() {
       const [count, setCount] = useState(0);
 
-      const [status, setStatus] = useState(remoteEvalClient.loadingStatus)
+      const [version, setVersion] = useState(0)
 
       useEffect(() => {
         remoteEvalClient.initialize({ userID: 'remote-eval-user' }).then(() => {
-          setStatus(remoteEvalClient.loadingStatus);
+          setVersion(version + 1)
+        });
+        localEvalClient.initialize().then(() => {
+          setVersion(version + 1)
         });
       }, [remoteEvalClient])
 
 
       return (
         <div>
-          <div>{status}</div>
-
-          {
-            !status.startsWith('ready-')
-              ? <div>Loading...</div>
-              :
-              <StatsigProvider remoteEvalClient={remoteEvalClient}>
-                <Content />
-              </StatsigProvider>
-          }
+          <div>Remote: {remoteEvalClient.loadingStatus}</div>
+          <div>Local: {localEvalClient.loadingStatus}</div>
+          <br />
+          <StatsigProvider remoteEvalClient={remoteEvalClient} localEvalClient={localEvalClient}>
+            <Content />
+          </StatsigProvider>
 
         </div>
       );

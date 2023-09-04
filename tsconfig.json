@@ -9,14 +9,10 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "rootDir": "./src",
-    "outDir": "./build"
+    "outDir": "./build",
+    "rootDir": "./src"
   },
-  "files": [
-    "src/statsig-react.ts",
-    "src/statsig-js-remote-eval.ts",
-    "src/statsig-js-local-eval.ts"
-  ],
+  "include": ["src"],
   "references": [
     {
       "path": "./packages/core"
