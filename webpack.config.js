@@ -73,11 +73,12 @@ function makeConfig(name, extras) {
 }
 
 module.exports = [
-  makeConfig('statsig-js'),
+  makeConfig('statsig-js-remote-eval'),
   makeConfig('statsig-react', {
     externals: {
       react: 'react',
       'react-dom': 'reactDOM',
     },
   }),
+  makeConfig('statsig-js-local-eval'),
 ];

@@ -1,9 +1,16 @@
-import { StatsigClient } from '@statsig/core';
 import StatsigContext from './StatsigContext';
 import StatsigProvider from './StatsigProvider';
 import useGate from './useGate';
 
-export { StatsigClient, StatsigContext, StatsigProvider, useGate };
+export { StatsigContext, StatsigProvider, useGate };
+
+declare global {
+  interface Window {
+    __STATSIG__: {
+      [key: string]: unknown;
+    };
+  }
+}
 
 window.__STATSIG__ = {
   ...window.__STATSIG__,

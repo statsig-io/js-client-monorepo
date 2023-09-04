@@ -1,11 +1,11 @@
-import Statsig from './Statsig';
-import StatsigClient from './StatsigClient';
-
-export type { StatsigUser } from './StatsigUser';
-export type { DynamicConfig, Experiment, Layer } from './StatsigTypes';
-
-export { Statsig, StatsigClient };
-export default Statsig;
+export * from './Hashing';
+export * from './Monitoring';
+export * from './StatsigLogger';
+export * from './StatsigEvent';
+export * from './StatsigTypes';
+export * from './StatsigUser';
+export * from './LocalStorageUtil';
+export * from './StatsigClientInterfaces';
 
 declare global {
   interface Window {
@@ -14,9 +14,3 @@ declare global {
     };
   }
 }
-
-window.__STATSIG__ = {
-  ...window.__STATSIG__,
-  Statsig,
-  StatsigClient,
-};

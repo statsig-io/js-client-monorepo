@@ -1,4 +1,4 @@
-import { StatsigOptions } from './StatsigOptions';
+import { StatsigEnvironment } from './StatsigTypes';
 
 type StatsigUserPrimitives =
   | string
@@ -21,11 +21,11 @@ export type StatsigUser = {
 };
 
 export function normalizeUser(
-  options: StatsigOptions,
   original: StatsigUser,
+  environment?: StatsigEnvironment,
 ): StatsigUser {
   let copy: StatsigUser & {
-    statsigEnvironment?: StatsigOptions['environment'];
+    statsigEnvironment?: StatsigEnvironment;
   } = {};
 
   try {
@@ -34,8 +34,8 @@ export function normalizeUser(
     throw new Error('User object must be convertable to JSON string.');
   }
 
-  if (options.environment != null) {
-    copy.statsigEnvironment = options.environment;
+  if (environment != null) {
+    copy.statsigEnvironment = environment;
   }
 
   return copy;

@@ -1,19 +1,17 @@
 import { StoreValues } from './SpecStore';
-import { StatsigEvent } from './StatsigEvent';
 import { SDK_TYPE, SDK_VERSION } from './StatsigMetadata';
-import { StatsigOptions } from './StatsigOptions';
-import { StatsigUser } from './StatsigUser';
+import { StatsigUser, StatsigEvent, LoggerNetworking } from '@statsig/core';
 
 type StoreValues204 = {
   has_updates: false;
 };
 
-export default class StatsigNetwork {
+export default class StatsigNetwork implements LoggerNetworking {
   private _headers: Record<string, string>;
 
   constructor(
     sdkKey: string,
-    private _options: StatsigOptions,
+    private _api: string,
   ) {
     this._headers = {
       'Content-Type': 'application/json',
@@ -27,7 +25,7 @@ export default class StatsigNetwork {
     user: StatsigUser,
   ): Promise<StoreValues | StoreValues204> {
     return this._sendPostRequest(
-      `${this._options.api}/initialize`,
+      `${this._api}/initialize`,
       {
         user,
         hash: 'djb2',

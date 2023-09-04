@@ -12,13 +12,23 @@
     "rootDir": "./src",
     "outDir": "./build"
   },
-  "files": ["src/statsig-react.ts", "src/statsig-js.ts"],
+  "files": [
+    "src/statsig-react.ts",
+    "src/statsig-js-remote-eval.ts",
+    "src/statsig-js-local-eval.ts"
+  ],
   "references": [
     {
       "path": "./packages/core"
     },
     {
       "path": "./packages/react"
+    },
+    {
+      "path": "./packages/remote-eval"
+    },
+    {
+      "path": "./packages/local-eval"
     }
   ]
 }

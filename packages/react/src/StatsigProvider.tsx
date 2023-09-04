@@ -1,29 +1,29 @@
-import { StatsigClient } from '@statsig/core';
-import React, { useEffect, useState } from 'react';
+import {
+  StatsigLocalEvalClient,
+  StatsigRemoteEvalClient,
+  StatsigUser,
+} from '@statsig/core';
+import React, { useState } from 'react';
 import StatsigContext from './StatsigContext';
 
 type Props = {
-  client: StatsigClient;
+  localEvalClient: StatsigLocalEvalClient;
+  remoteEvalClient: StatsigRemoteEvalClient;
+  user?: StatsigUser;
   children: React.ReactNode | React.ReactNode[];
 };
 
 export default function StatsigProvider({
-  client,
+  localEvalClient,
+  remoteEvalClient,
   children,
 }: Props): JSX.Element {
-  const [version, setVersion] = useState(0);
-
-  useEffect(() => {
-    client
-      .initialize({})
-      .then(() => {
-        setVersion(version + 1);
-      })
-      .catch(() => {});
-  }, [client]);
+  const [version] = useState(0);
 
   return (
-    <StatsigContext.Provider value={{ client, version }}>
+    <StatsigContext.Provider
+      value={{ localEvalClient, remoteEvalClient, version }}
+    >
       {children}
     </StatsigContext.Provider>
   );

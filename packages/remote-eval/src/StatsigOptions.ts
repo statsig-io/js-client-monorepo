@@ -1,7 +1,4 @@
-export type StatsigEnvironment = {
-  tier?: string;
-  [key: string]: string | undefined;
-};
+import { StatsigEnvironment } from '@statsig/core';
 
 export type StatsigOptions = {
   api: string;

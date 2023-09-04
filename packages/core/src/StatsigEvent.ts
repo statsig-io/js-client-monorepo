@@ -1,4 +1,3 @@
-import { LayerSpec } from './SpecStore';
 import { StatsigUser } from './StatsigUser';
 
 export type SecondaryExposure = {
@@ -60,12 +59,13 @@ export function createLayerParameterExposure(
   user: StatsigUser,
   layerName: string,
   parameterName: string,
-  spec: LayerSpec,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  spec: any,
 ): StatsigEvent {
   const isExplicit = spec.explicit_parameters.includes(parameterName);
   let allocatedExperiment = '';
   let secondaryExposures = spec.undelegated_secondary_exposures ?? [];
-  
+
   if (isExplicit) {
     allocatedExperiment = spec.allocated_experiment_name;
     secondaryExposures = spec.secondary_exposures;

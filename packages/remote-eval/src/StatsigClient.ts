@@ -1,21 +1,26 @@
-import { DynamicConfig, Experiment, Layer } from './StatsigTypes';
-import { DJB2 } from './Hashing';
-import SpecStore from './SpecStore';
 import {
+  DynamicConfig,
+  Experiment,
+  Layer,
+  DJB2,
   createConfigExposure,
   createGateExposure,
   createLayerParameterExposure,
-} from './StatsigEvent';
-import StatsigLogger from './StatsigLogger';
+  StatsigUser,
+  normalizeUser,
+  StatsigLogger,
+  Monitored,
+  StatsigReactable,
+} from '@statsig/core';
+import SpecStore from './SpecStore';
+
 import StatsigNetwork from './StatsigNetwork';
 import { StatsigOptions } from './StatsigOptions';
-import { StatsigUser, normalizeUser } from './StatsigUser';
-import { Monitored } from './Monitoring';
 
 const DEFAULT_RULE = 'default';
 
 @Monitored
-export default class StatsigClient {
+export default class StatsigClient implements StatsigReactable {
   private _options: StatsigOptions;
   private _network: StatsigNetwork;
   private _logger: StatsigLogger;
@@ -24,7 +29,7 @@ export default class StatsigClient {
 
   constructor(sdkKey: string, options: StatsigOptions | null = null) {
     this._options = options ?? { api: 'https://api.statsig.com/v1' };
-    this._network = new StatsigNetwork(sdkKey, this._options);
+    this._network = new StatsigNetwork(sdkKey, this._options.api);
     this._logger = new StatsigLogger(this._network);
     this._store = new SpecStore(sdkKey);
     this._user = {};
@@ -35,7 +40,7 @@ export default class StatsigClient {
   }
 
   async updateUser(user: StatsigUser) {
-    this._user = normalizeUser(this._options, user);
+    this._user = normalizeUser(user, this._options.environment);
     this._store.switchToUser(this._user);
 
     const capturedUser = this._user;
@@ -46,11 +51,11 @@ export default class StatsigClient {
     }
   }
 
-  checkGate(name: string, fallback = false): boolean {
+  checkGate(name: string): boolean {
     const hash = DJB2(name);
     const res = this._store.values?.feature_gates[hash];
     if (res == null) {
-      return fallback;
+      return false;
     }
 
     this._logger.enqueue(

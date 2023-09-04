@@ -1,10 +1,10 @@
-import { DJB2 } from './Hashing';
 import {
+  DJB2,
   getObjectFromLocalStorage,
   setObjectInLocalStorage,
-} from './LocalStorageUtil';
-import { SecondaryExposure } from './StatsigEvent';
-import { StatsigUser } from './StatsigUser';
+  SecondaryExposure,
+  StatsigUser,
+} from '@statsig/core';
 
 type Spec<T> = {
   name: string;

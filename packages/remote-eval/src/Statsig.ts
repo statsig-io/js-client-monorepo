@@ -1,7 +1,6 @@
-import { DynamicConfig, Experiment, Layer } from './StatsigTypes';
+import { DynamicConfig, Experiment, Layer, StatsigUser } from '@statsig/core';
 import StatsigClient from './StatsigClient';
 import { StatsigOptions } from './StatsigOptions';
-import { StatsigUser } from './StatsigUser';
 
 export default abstract class Statsig {
   private static _instance: StatsigClient | null = null;

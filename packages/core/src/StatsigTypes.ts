@@ -1,3 +1,8 @@
+export type StatsigEnvironment = {
+  tier?: string;
+  [key: string]: string | undefined;
+};
+
 export type DynamicConfig = {
   readonly name: string;
   readonly ruleID: string;

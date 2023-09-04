@@ -39,6 +39,8 @@
   "dependencies": {
     "@statsig/react": "^1.0.0",
     "@statsig/core": "^1.0.0",
+    "@statsig/local-eval": "^1.0.0",
+    "@statsig/remote-eval": "^1.0.0",
     "typescript": "^4.9.3"
   }
 }
