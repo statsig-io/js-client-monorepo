@@ -1,3 +1,8 @@
-import StatsigClient from './StatsigClient';
+import StatsigLocalEvalClient from './StatsigLocalEvalClient';
 
-export { StatsigClient };
+export { StatsigLocalEvalClient };
+
+window.__STATSIG__ = {
+  ...window.__STATSIG__,
+  StatsigLocalEvalClient,
+};

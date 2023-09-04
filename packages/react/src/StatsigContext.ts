@@ -1,14 +1,17 @@
-import { StatsigLocalEvalClient, StatsigRemoteEvalClient } from '@statsig/core';
+import {
+  IStatsigLocalEvalClient,
+  IStatsigRemoteEvalClient,
+} from '@statsig/core';
 import React from 'react';
 
 export interface StatsigContext {
-  readonly localEvalClient: StatsigLocalEvalClient;
-  readonly remoteEvalClient: StatsigRemoteEvalClient;
+  readonly localEvalClient: IStatsigLocalEvalClient | null;
+  readonly remoteEvalClient: IStatsigRemoteEvalClient | null;
   readonly version: number;
 }
 
 export default React.createContext<StatsigContext>({
-  localEvalClient: null!,
-  remoteEvalClient: null!,
+  localEvalClient: null,
+  remoteEvalClient: null,
   version: 0,
 });

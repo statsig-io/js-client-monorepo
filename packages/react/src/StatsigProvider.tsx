@@ -1,14 +1,14 @@
 import {
-  StatsigLocalEvalClient,
-  StatsigRemoteEvalClient,
+  IStatsigLocalEvalClient,
+  IStatsigRemoteEvalClient,
   StatsigUser,
 } from '@statsig/core';
 import React, { useState } from 'react';
 import StatsigContext from './StatsigContext';
 
 type Props = {
-  localEvalClient: StatsigLocalEvalClient;
-  remoteEvalClient: StatsigRemoteEvalClient;
+  localEvalClient: IStatsigLocalEvalClient;
+  remoteEvalClient: IStatsigRemoteEvalClient;
   user?: StatsigUser;
   children: React.ReactNode | React.ReactNode[];
 };

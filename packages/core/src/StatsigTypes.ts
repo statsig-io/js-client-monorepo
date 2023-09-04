@@ -1,3 +1,12 @@
+import { StatsigLoadingStatus } from './StatsigClientInterfaces';
+
+export type StatsigOptionsCommon = {
+  api: string;
+  localMode?: boolean;
+  environment?: StatsigEnvironment;
+  onLoadingStatusChanged?: (status: StatsigLoadingStatus) => void;
+};
+
 export type StatsigEnvironment = {
   tier?: string;
   [key: string]: string | undefined;

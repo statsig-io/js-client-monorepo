@@ -60,14 +60,17 @@ export default class SpecStore {
     this._enforceStorageLimit(cacheKey);
   }
 
-  switchToUser(user: StatsigUser) {
+  switchToUser(user: StatsigUser): boolean {
     this.values = null;
     const cacheKey = createCacheKey(user, this._sdkKey);
     const json = localStorage.getItem(cacheKey);
 
     if (json) {
       this.values = JSON.parse(json) as StoreValues;
+      return true;
     }
+
+    return false;
   }
 
   private _enforceStorageLimit(cacheKey: string) {

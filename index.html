@@ -12,14 +12,16 @@
   <script src="https://cdn.jsdelivr.net/npm/react@18.2.0/umd/react.production.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/react-dom@18.2.0/umd/react-dom.production.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/babel-standalone@6.26.0/babel.min.js"></script>
-  <!-- <script src="https://cdn.jsdelivr.net/npm/statsig-react@1.30.3/dist/index.min.js"></script> -->
   <script>window.react = React;</script>
   <script src="dist/statsig-react.min.js"></script>
+  <script src="dist/statsig-js-local-eval.min.js"></script>
+  <script src="dist/statsig-js-remote-eval.min.js"></script>
 
   <script type="text/babel">
-    const { useState } = React;
-    const { StatsigProvider, StatsigClient, useGate } = __STATSIG__;
-    const client = new StatsigClient(
+    const { useState, useEffect, useMemo } = React;
+    const { StatsigProvider, StatsigRemoteEvalClient, useGate, useClientLoadingStatus } = __STATSIG__;
+
+    const remoteEvalClient = new StatsigRemoteEvalClient(
       'client-wlH3WMkysINMhMU8VrNBkbjrEr2JQrqgxKwDPOUosJK',
     );
 
@@ -31,10 +33,29 @@
     function App() {
       const [count, setCount] = useState(0);
 
+      const [status, setStatus] = useState(remoteEvalClient.loadingStatus)
+
+      useEffect(() => {
+        remoteEvalClient.initialize({ userID: 'remote-eval-user' }).then(() => {
+          setStatus(remoteEvalClient.loadingStatus);
+        });
+      }, [remoteEvalClient])
+
+
       return (
-        <StatsigProvider client={client}>
-          <Content />
-        </StatsigProvider>
+        <div>
+          <div>{status}</div>
+
+          {
+            !status.startsWith('ready-')
+              ? <div>Loading...</div>
+              :
+              <StatsigProvider remoteEvalClient={remoteEvalClient}>
+                <Content />
+              </StatsigProvider>
+          }
+
+        </div>
       );
     }
 

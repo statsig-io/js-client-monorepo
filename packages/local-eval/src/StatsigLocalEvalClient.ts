@@ -1,13 +1,14 @@
 import {
   DynamicConfig,
+  IStatsigLocalEvalClient,
   Layer,
-  StatsigClientWithLocalEvaluations,
+  StatsigLoadingStatus,
   StatsigUser,
 } from '@statsig/core';
 
-export default class StatsigClient
-  implements StatsigClientWithLocalEvaluations
-{
+export default class StatsigLocalEvalClient implements IStatsigLocalEvalClient {
+  loadingStatus: StatsigLoadingStatus = 'uninitialized';
+
   initialize(): Promise<void> {
     throw new Error('Method not implemented.');
   }

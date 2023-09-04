@@ -10,7 +10,8 @@ import {
   normalizeUser,
   StatsigLogger,
   Monitored,
-  StatsigReactable,
+  IStatsigRemoteEvalClient,
+  StatsigLoadingStatus,
 } from '@statsig/core';
 import SpecStore from './SpecStore';
 
@@ -20,7 +21,11 @@ import { StatsigOptions } from './StatsigOptions';
 const DEFAULT_RULE = 'default';
 
 @Monitored
-export default class StatsigClient implements StatsigReactable {
+export default class StatsigRemoteEvalClient
+  implements IStatsigRemoteEvalClient
+{
+  loadingStatus: StatsigLoadingStatus = 'uninitialized';
+
   private _options: StatsigOptions;
   private _network: StatsigNetwork;
   private _logger: StatsigLogger;
@@ -40,8 +45,12 @@ export default class StatsigClient implements StatsigReactable {
   }
 
   async updateUser(user: StatsigUser) {
+    this._setLoadingStatus('loading');
     this._user = normalizeUser(user, this._options.environment);
-    this._store.switchToUser(this._user);
+    const cacheHit = this._store.switchToUser(this._user);
+    if (cacheHit) {
+      this._setLoadingStatus('ready-cache');
+    }
 
     const capturedUser = this._user;
     const response = await this._network.fetchEvaluations(capturedUser);
@@ -49,6 +58,8 @@ export default class StatsigClient implements StatsigReactable {
     if (response.has_updates) {
       this._store.setValues(capturedUser, response);
     }
+
+    this._setLoadingStatus('ready-network');
   }
 
   checkGate(name: string): boolean {
@@ -129,5 +140,9 @@ export default class StatsigClient implements StatsigReactable {
         return res.value[param];
       },
     };
+  }
+
+  private _setLoadingStatus(status: StatsigLoadingStatus) {
+    this.loadingStatus = status;
   }
 }
