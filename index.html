@@ -29,15 +29,16 @@
       'client-wlH3WMkysINMhMU8VrNBkbjrEr2JQrqgxKwDPOUosJK',
     )
 
-    const user = { userID: 'a-user' }
+    const user = { userID: 'a-user', email: "jkw@statsig.com", custom: { level: 9 } }
 
-    function Content() {
-      console.log(localEvalClient)
-      const { value } = useGate("test_public");
-      const { value: localEvalValue } = useGate("test_public", { localEvalUser: user });
-      return <div>
-        <div>test_public (Remote): {value ? "Pass" : "Fail"}</div>
-        <div>test_public (Local): {localEvalValue ? "Pass" : "Fail"}</div>
+    function Content(props) {
+      const { value: remoteEvalValue } = useGate(props.name);
+      const { value: localEvalValue } = useGate(props.name, { localEvalUser: user });
+      return <div >
+        {props.name}
+        <div style={{ color: remoteEvalValue ? "green" : "red" }}>- (Remote): {remoteEvalValue ? "Pass" : "Fail"}</div>
+        <div style={{ color: localEvalValue ? "green" : "red" }}>- (Local): {localEvalValue ? "Pass" : "Fail"}</div>
+        <br />
       </div>;
     }
 
@@ -55,14 +56,21 @@
         });
       }, [remoteEvalClient])
 
-
       return (
         <div>
           <div>Remote: {remoteEvalClient.loadingStatus}</div>
           <div>Local: {localEvalClient.loadingStatus}</div>
           <br />
           <StatsigProvider remoteEvalClient={remoteEvalClient} localEvalClient={localEvalClient}>
-            <Content />
+            {
+              localEvalClient.n.values && localEvalClient.n.values.feature_gates.map((gate) => {
+                if (gate.entity !== 'feature_gate') {
+                  return null;
+                }
+
+                return <Content name={gate.name} />
+              })
+            }
           </StatsigProvider>
 
         </div>

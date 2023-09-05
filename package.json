@@ -7,7 +7,8 @@
     "packages/*"
   ],
   "scripts": {
-    "build": "tsc --build --verbose && webpack",
+    "build": "tsc --build --verbose && webpack && npm run print-size",
+    "print-size": "find dist -type f -exec stat -f \"%z %N\" {} +;",
     "clean": "npm run clean-build-folders && npm run clean-tsbuild-info",
     "clean-build-folders": "find . -type d \\( -name 'build' -o -name 'dist' \\) -not -path './node_modules/*' -exec rm -rf {} +",
     "clean-tsbuild-info": "find . -type f -name 'tsconfig.tsbuildinfo' -not -path './node_modules/*' -exec rm -f {} +",
