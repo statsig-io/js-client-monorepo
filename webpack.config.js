@@ -1,7 +1,7 @@
 const path = require('path');
 const TerserPlugin = require('terser-webpack-plugin');
 const fs = require('fs');
-const MAX_KB = 20;
+const MAX_KB = 30;
 const TO_MINIFY = [
   '_store',
   '_network',

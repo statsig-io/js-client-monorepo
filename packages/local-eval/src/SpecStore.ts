@@ -36,9 +36,9 @@ export type Spec = {
 };
 
 export type DownloadConfigSpecsResponse = {
-  feature_gates: Record<string, Spec>;
-  dynamic_configs: Record<string, Spec>;
-  layer_configs: Record<string, Spec>;
+  feature_gates: Spec[];
+  dynamic_configs: Spec[];
+  layer_configs: Spec[];
   time: number;
   has_updates: boolean;
 };

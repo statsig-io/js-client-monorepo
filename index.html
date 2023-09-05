@@ -45,10 +45,10 @@
 
       useEffect(() => {
         remoteEvalClient.initialize({ userID: 'remote-eval-user' }).then(() => {
-          setVersion(version + 1)
+          setVersion((v) => v + 1)
         });
         localEvalClient.initialize().then(() => {
-          setVersion(version + 1)
+          setVersion((v) => v + 1)
         });
       }, [remoteEvalClient])
 

@@ -58,17 +58,23 @@ export default class Evaluator {
   constructor(private _store: SpecStore) {}
 
   public checkGate(user: StatsigUser, gateName: string): ConfigEvaluation {
-    const gateDef = this._store.values?.feature_gates[gateName];
+    const gateDef = this._store.values?.feature_gates.find(
+      (gate) => gate.name === gateName,
+    );
     return this._evalConfigSpec(user, gateDef);
   }
 
   public getConfig(user: StatsigUser, configName: string): ConfigEvaluation {
-    const configDef = this._store.values?.dynamic_configs[configName];
+    const configDef = this._store.values?.dynamic_configs.find(
+      (config) => config.name === configName,
+    );
     return this._evalConfigSpec(user, configDef);
   }
 
   public getLayer(user: StatsigUser, layerName: string): ConfigEvaluation {
-    const layerDef = this._store.values?.layer_configs[layerName];
+    const layerDef = this._store.values?.dynamic_configs.find(
+      (layer) => layer.name === layerName,
+    );
     return this._evalConfigSpec(user, layerDef);
   }
 
@@ -80,9 +86,6 @@ export default class Evaluator {
           reason: 'Unrecognized',
         },
       });
-      // return new ConfigEvaluation(false, '').withEvaluationReason(
-      //   EvaluationReason.Unrecognized,
-      // );
     }
 
     const evaulation = this._eval(user, config);
@@ -175,7 +178,9 @@ export default class Evaluator {
       return null;
     }
 
-    const config = this._store.values?.dynamic_configs[rule.configDelegate];
+    const config = this._store.values?.dynamic_configs.find(
+      (config) => config.name === rule.configDelegate,
+    );
     if (!config) {
       return null;
     }
@@ -267,7 +272,9 @@ export default class Evaluator {
       case 'pass_gate': {
         const gateResult = this._evalConfigSpec(
           user,
-          this._store.values?.feature_gates[String(target)],
+          this._store.values?.feature_gates.find(
+            (gate) => gate.name === String(target),
+          ),
         );
         value = gateResult?.value;
 
