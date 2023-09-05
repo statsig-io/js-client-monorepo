@@ -1,6 +1,8 @@
 const path = require('path');
 const TerserPlugin = require('terser-webpack-plugin');
 const fs = require('fs');
+const CustomMinifyPlugin = require('./build/CustomMinifyPlugin').default;
+
 const MAX_KB = 30;
 const TO_MINIFY = [
   '_store',
@@ -68,6 +70,7 @@ function makeConfig(name, extras) {
       hints: 'error',
       maxEntrypointSize: 1024 * MAX_KB,
     },
+    plugins: [new CustomMinifyPlugin({ options: true })],
     ...extras,
   };
 }

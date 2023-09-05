@@ -191,14 +191,6 @@ export default class Evaluator {
       conifg_delegate: rule.configDelegate,
       undelegated_secondary_exposures: exposures,
     };
-    // delegatedResult.config_delegate = rule.configDelegate;
-    // delegatedResult.undelegated_secondary_exposures = exposures;
-    // delegatedResult.explicit_parameters = config.explicitParameters;
-    // delegatedResult.secondary_exposures = exposures.concat(
-    //   delegatedResult.secondary_exposures,
-    // );
-
-    // return delegatedResult;
   }
 
   private _evalPassPercent(user: StatsigUser, rule: SpecRule, config: Spec) {
@@ -293,14 +285,10 @@ export default class Evaluator {
       }
       case 'ip_based':
         // this would apply to things like 'country', 'region', etc.
-        throw new StatsigUnsupportedEvaluationError(
-          'Unsupported condition: ' + condition.type,
-        );
+        throw new StatsigUnsupportedEvaluationError(condition.type);
       case 'ua_based':
         // this would apply to things like 'os', 'browser', etc.
-        throw new StatsigUnsupportedEvaluationError(
-          'Unsupported condition: ' + condition.type,
-        );
+        throw new StatsigUnsupportedEvaluationError(condition.type);
       case 'user_field':
         value = getFromUser(user, field);
         break;
@@ -322,9 +310,7 @@ export default class Evaluator {
         value = this._getUnitID(user, idType);
         break;
       default:
-        throw new StatsigUnsupportedEvaluationError(
-          'Unsupported condition: ' + condition.type,
-        );
+        throw new StatsigUnsupportedEvaluationError(condition.type);
     }
 
     const op = condition.operator?.toLowerCase();
@@ -496,19 +482,15 @@ export default class Evaluator {
         break;
       case 'in_segment_list':
       case 'not_in_segment_list':
-        throw new StatsigUnsupportedEvaluationError(
-          'Unsupported condition operator: ' + op,
-        );
+        throw new StatsigUnsupportedEvaluationError(op);
       default:
-        throw new StatsigUnsupportedEvaluationError(
-          'Unsupported condition operator: ' + op,
-        );
+        throw new StatsigUnsupportedEvaluationError(op);
     }
     return { passes: evalResult };
   }
 }
 
-function computeUserHash(userHash: string) {
+function computeUserHash(userHash: string): bigint {
   const sha256 = SHA256(userHash);
   return sha256.dataView().getBigUint64(0, false);
 }

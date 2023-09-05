@@ -15,6 +15,24 @@ export type StatsigEvent = {
   secondaryExposures?: SecondaryExposure[];
 };
 
+const CONFIG_EXPOSURE_NAME = 'statsig::config_exposure';
+
+function createExposure(
+  eventName: string,
+  user: StatsigUser,
+  metadata: Record<string, string>,
+  secondaryExposures: SecondaryExposure[],
+) {
+  return {
+    eventName,
+    user,
+    value: null,
+    metadata,
+    secondaryExposures,
+    time: Date.now(),
+  };
+}
+
 export function createGateExposure(
   user: StatsigUser,
   gateName: string,
@@ -22,18 +40,16 @@ export function createGateExposure(
   ruleID: string,
   secondaryExposures: SecondaryExposure[],
 ): StatsigEvent {
-  return {
-    eventName: 'statsig::gate_exposure',
+  return createExposure(
+    'statsig::gate_exposure',
     user,
-    value: null,
-    metadata: {
+    {
       gate: gateName,
       gateValue: String(gateValue),
       ruleID,
     },
     secondaryExposures,
-    time: Date.now(),
-  };
+  );
 }
 
 export function createConfigExposure(
@@ -42,25 +58,28 @@ export function createConfigExposure(
   ruleID: string,
   secondaryExposures: SecondaryExposure[],
 ): StatsigEvent {
-  return {
-    eventName: 'statsig::config_exposure',
+  return createExposure(
+    CONFIG_EXPOSURE_NAME,
     user,
-    value: null,
-    metadata: {
+    {
       config: configName,
       ruleID,
     },
     secondaryExposures,
-    time: Date.now(),
-  };
+  );
 }
 
 export function createLayerParameterExposure(
   user: StatsigUser,
   layerName: string,
   parameterName: string,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  spec: any,
+  spec: {
+    rule_id: string;
+    explicit_parameters: string[];
+    undelegated_secondary_exposures?: SecondaryExposure[];
+    secondary_exposures: SecondaryExposure[];
+    allocated_experiment_name: string;
+  },
 ): StatsigEvent {
   const isExplicit = spec.explicit_parameters.includes(parameterName);
   let allocatedExperiment = '';
@@ -71,17 +90,15 @@ export function createLayerParameterExposure(
     secondaryExposures = spec.secondary_exposures;
   }
 
-  return {
-    eventName: 'statsig::config_exposure',
+  return createExposure(
+    CONFIG_EXPOSURE_NAME,
     user,
-    value: null,
-    metadata: {
+    {
       config: layerName,
       parameterName,
       ruleID: spec.rule_id,
       allocatedExperiment,
     },
     secondaryExposures,
-    time: Date.now(),
-  };
+  );
 }

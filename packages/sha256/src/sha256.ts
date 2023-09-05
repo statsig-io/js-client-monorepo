@@ -290,22 +290,14 @@ class Sha256 {
   }
 
   arrayBuffer(): ArrayBuffer {
-    this.finalize();
-
-    const buffer = new ArrayBuffer(32);
-    const dataView = new DataView(buffer);
-    dataView.setUint32(0, this.h0);
-    dataView.setUint32(4, this.h1);
-    dataView.setUint32(8, this.h2);
-    dataView.setUint32(12, this.h3);
-    dataView.setUint32(16, this.h4);
-    dataView.setUint32(20, this.h5);
-    dataView.setUint32(24, this.h6);
-    dataView.setUint32(28, this.h7);
-    return buffer;
+    return this._getOutputs().buffer;
   }
 
   dataView(): DataView {
+    return this._getOutputs().dataView;
+  }
+
+  private _getOutputs() {
     this.finalize();
 
     const buffer = new ArrayBuffer(32);
@@ -318,6 +310,7 @@ class Sha256 {
     dataView.setUint32(20, this.h5);
     dataView.setUint32(24, this.h6);
     dataView.setUint32(28, this.h7);
-    return dataView;
+
+    return { dataView, buffer };
   }
 }
