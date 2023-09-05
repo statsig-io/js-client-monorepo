@@ -54,24 +54,24 @@
     };
   }
 
-  var createOutputMethod = function (outputType, is224) {
+  var createOutputMethod = function (outputType) {
     return function (message) {
-      return new Sha256(is224, true).update(message)[outputType]();
+      return new Sha256(true).update(message)[outputType]();
     };
   };
 
-  var createMethod = function (is224) {
-    var method = createOutputMethod('hex', is224);
+  var createMethod = function () {
+    var method = createOutputMethod('hex');
 
     method.create = function () {
-      return new Sha256(is224);
+      return new Sha256();
     };
-    method.update = function (message) {
-      return method.create().update(message);
-    };
+    // method.update = function (message) {
+    //   return method.create().update(message);
+    // };
     for (var i = 0; i < OUTPUT_TYPES.length; ++i) {
       var type = OUTPUT_TYPES[i];
-      method[type] = createOutputMethod(type, is224);
+      method[type] = createOutputMethod(type);
     }
     return method;
   };
@@ -285,17 +285,10 @@
     bc = b & c;
     for (j = 0; j < 64; j += 4) {
       if (this.first) {
-        if (this.is224) {
-          ab = 300032;
-          t1 = blocks[0] - 1413257819;
-          h = (t1 - 150054599) << 0;
-          d = (t1 + 24177077) << 0;
-        } else {
-          ab = 704751109;
-          t1 = blocks[0] - 210244248;
-          h = (t1 - 1521486534) << 0;
-          d = (t1 + 143694565) << 0;
-        }
+        ab = 704751109;
+        t1 = blocks[0] - 210244248;
+        h = (t1 - 1521486534) << 0;
+        d = (t1 + 143694565) << 0;
         this.first = false;
       } else {
         s0 =
@@ -441,17 +434,15 @@
       HEX_CHARS[(h6 >> 8) & 0x0f] +
       HEX_CHARS[(h6 >> 4) & 0x0f] +
       HEX_CHARS[h6 & 0x0f];
-    if (!this.is224) {
-      hex +=
-        HEX_CHARS[(h7 >> 28) & 0x0f] +
-        HEX_CHARS[(h7 >> 24) & 0x0f] +
-        HEX_CHARS[(h7 >> 20) & 0x0f] +
-        HEX_CHARS[(h7 >> 16) & 0x0f] +
-        HEX_CHARS[(h7 >> 12) & 0x0f] +
-        HEX_CHARS[(h7 >> 8) & 0x0f] +
-        HEX_CHARS[(h7 >> 4) & 0x0f] +
-        HEX_CHARS[h7 & 0x0f];
-    }
+    hex +=
+      HEX_CHARS[(h7 >> 28) & 0x0f] +
+      HEX_CHARS[(h7 >> 24) & 0x0f] +
+      HEX_CHARS[(h7 >> 20) & 0x0f] +
+      HEX_CHARS[(h7 >> 16) & 0x0f] +
+      HEX_CHARS[(h7 >> 12) & 0x0f] +
+      HEX_CHARS[(h7 >> 8) & 0x0f] +
+      HEX_CHARS[(h7 >> 4) & 0x0f] +
+      HEX_CHARS[h7 & 0x0f];
     return hex;
   };
 
@@ -522,7 +513,7 @@
   };
 
   var exports = createMethod();
-  exports.sha256 = exports;
+  // exports.sha256 = exports;
   exports.sha256create = exports.create;
 
   if (COMMON_JS) {
