@@ -13,6 +13,7 @@
     "rootDir": "./src"
   },
   "include": ["src"],
+  "exclude": ["__tests__"],
   "references": [
     {
       "path": "./packages/core"
@@ -25,6 +26,9 @@
     },
     {
       "path": "./packages/local-eval"
+    },
+    {
+      "path": "./packages/sha256"
     }
   ]
 }
