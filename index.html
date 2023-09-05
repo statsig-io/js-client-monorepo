@@ -29,9 +29,12 @@
       'client-wlH3WMkysINMhMU8VrNBkbjrEr2JQrqgxKwDPOUosJK',
     )
 
+    const user = { userID: 'a-user' }
+
     function Content() {
+      console.log(localEvalClient)
       const { value } = useGate("test_public");
-      const { value: localEvalValue } = useGate("test_public", { localEvalUser: { userID: 'loca-eval-user' } });
+      const { value: localEvalValue } = useGate("test_public", { localEvalUser: user });
       return <div>
         <div>test_public (Remote): {value ? "Pass" : "Fail"}</div>
         <div>test_public (Local): {localEvalValue ? "Pass" : "Fail"}</div>
@@ -44,7 +47,7 @@
       const [version, setVersion] = useState(0)
 
       useEffect(() => {
-        remoteEvalClient.initialize({ userID: 'remote-eval-user' }).then(() => {
+        remoteEvalClient.initialize(user).then(() => {
           setVersion((v) => v + 1)
         });
         localEvalClient.initialize().then(() => {

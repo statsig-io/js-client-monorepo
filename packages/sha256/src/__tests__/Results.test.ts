@@ -1,7 +1,6 @@
 import { sha256create } from '../js-sha256';
 import { Base64 } from './Base64';
-// import { SHA256 } from '../sha256';
-import { sha256create as statsig_sha256create } from '../statsig-sha256';
+import { SHA256 } from '../sha256';
 
 function getExpectedHash(value: string) {
   const buffer = sha256create().update(value).arrayBuffer();
@@ -9,10 +8,8 @@ function getExpectedHash(value: string) {
 }
 
 function getActualHash(value: string) {
-  // const buffer = SHA256(value);
-  const buffer = statsig_sha256create().update(value).arrayBuffer();
-
-  return Base64.encodeArrayBuffer(buffer);
+  const buffer = SHA256(value);
+  return Base64.encodeArrayBuffer(buffer.arrayBuffer());
 }
 
 function generateRandomWordFromArray(inputArray: string[]) {
@@ -74,8 +71,10 @@ function generateTestCases(count: number) {
 
 describe('Foo', () => {
   test.each(generateTestCases(100))('%s', (word) => {
-    const expected = getExpectedHash(word);
-    const actual = getActualHash(word);
-    expect(actual).toEqual(expected);
+    for (let i = 0; i < 1000; i++) {
+      const expected = getExpectedHash(word);
+      const actual = getActualHash(word);
+      expect(actual).toEqual(expected);
+    }
   });
 });

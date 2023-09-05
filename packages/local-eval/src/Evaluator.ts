@@ -1,7 +1,7 @@
 import { NormalizedStatsigUser, StatsigUser } from '@statsig/core';
 import SpecStore, { Spec, SpecCondition, SpecRule } from './SpecStore';
 import { StatsigUnsupportedEvaluationError } from './Errors';
-import { sha256create } from './js-sha256';
+import { SHA256 } from '@statsig/sha256';
 
 const CONDITION_SEGMENT_COUNT = 10 * 1000;
 const USER_BUCKET_COUNT = 1000;
@@ -509,16 +509,8 @@ export default class Evaluator {
 }
 
 function computeUserHash(userHash: string) {
-  const buffer = sha256create().update(userHash).array();
-  const ab = new ArrayBuffer(buffer.length);
-  const view = new Uint8Array(ab);
-  for (let ii = 0; ii < buffer.length; ii++) {
-    view[ii] = buffer[ii];
-  }
-
-  const dv = new DataView(ab);
-  const hash = dv.getBigUint64(0, false);
-  return hash;
+  const sha256 = SHA256(userHash);
+  return sha256.dataView().getBigUint64(0, false);
 }
 
 function getFromEnvironment(
