@@ -276,7 +276,7 @@ class Sha256 {
       t2 = s0 + maj;
       e = (a + t1) << 0;
       a = (t1 + t2) << 0;
-      (function (_a) {})(a);
+      (function (_a) {})(a); // capture a to prevent hashing bug
     }
 
     this.h0 = (this.h0 + a) << 0;

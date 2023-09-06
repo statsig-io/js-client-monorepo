@@ -1,4 +1,4 @@
-import { sha256create } from '../js-sha256';
+import { sha256create } from './js-sha256';
 import { Base64 } from './Base64';
 import { SHA256 } from '../sha256';
 
@@ -57,6 +57,8 @@ function generateTestCases(count: number) {
     'horse',
     '大',
     'بزرگ',
+    '123',
+    '980$@',
   ];
 
   const randomWords: string[] = [];

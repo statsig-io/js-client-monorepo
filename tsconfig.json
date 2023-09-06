@@ -19,6 +19,9 @@
       "path": "./packages/core"
     },
     {
+      "path": "./packages/sha256"
+    },
+    {
       "path": "./packages/react"
     },
     {
@@ -26,9 +29,6 @@
     },
     {
       "path": "./packages/local-eval"
-    },
-    {
-      "path": "./packages/sha256"
     }
   ]
 }
