@@ -2,6 +2,7 @@
   "extends": "../../tsconfig",
   "compilerOptions": {
     "composite": true,
+    "experimentalDecorators": true,
     "outDir": "./build",
     "rootDir": "./src"
   },

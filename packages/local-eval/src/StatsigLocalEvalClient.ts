@@ -2,6 +2,7 @@ import {
   DynamicConfig,
   IStatsigLocalEvalClient,
   Layer,
+  StatsigEvent,
   StatsigLoadingStatus,
   StatsigLogger,
   StatsigUser,
@@ -41,6 +42,8 @@ export default class StatsigLocalEvalClient implements IStatsigLocalEvalClient {
     }
   }
 
+  async shutdown(): Promise<void> {}
+
   checkGate(user: StatsigUser, name: string): boolean {
     return this._evaluator.checkGate(user, name).value;
   }
@@ -51,6 +54,9 @@ export default class StatsigLocalEvalClient implements IStatsigLocalEvalClient {
     throw new Error('Method not implemented.');
   }
   getLayer(_user: StatsigUser, _name: string): Layer {
+    throw new Error('Method not implemented.');
+  }
+  logEvent(_user: StatsigUser, _event: StatsigEvent): void {
     throw new Error('Method not implemented.');
   }
 }

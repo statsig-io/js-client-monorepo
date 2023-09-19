@@ -8,9 +8,12 @@ export type SecondaryExposure = {
 
 export type StatsigEvent = {
   eventName: string;
-  user: StatsigUser | null;
   value: string | number | null;
   metadata: object | null;
+};
+
+export type StatsigEventInternal = StatsigEvent & {
+  user: StatsigUser | null;
   time: number;
   secondaryExposures?: SecondaryExposure[];
 };
@@ -39,7 +42,7 @@ export function createGateExposure(
   gateValue: boolean,
   ruleID: string,
   secondaryExposures: SecondaryExposure[],
-): StatsigEvent {
+): StatsigEventInternal {
   return createExposure(
     'statsig::gate_exposure',
     user,
@@ -57,7 +60,7 @@ export function createConfigExposure(
   configName: string,
   ruleID: string,
   secondaryExposures: SecondaryExposure[],
-): StatsigEvent {
+): StatsigEventInternal {
   return createExposure(
     CONFIG_EXPOSURE_NAME,
     user,
@@ -80,7 +83,7 @@ export function createLayerParameterExposure(
     secondary_exposures: SecondaryExposure[];
     allocated_experiment_name: string;
   },
-): StatsigEvent {
+): StatsigEventInternal {
   const isExplicit = spec.explicit_parameters.includes(parameterName);
   let allocatedExperiment = '';
   let secondaryExposures = spec.undelegated_secondary_exposures ?? [];

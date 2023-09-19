@@ -12,6 +12,7 @@ import {
   Monitored,
   IStatsigRemoteEvalClient,
   StatsigLoadingStatus,
+  StatsigEvent,
 } from '@statsig/core';
 import SpecStore from './SpecStore';
 
@@ -60,6 +61,10 @@ export default class StatsigRemoteEvalClient
     }
 
     this.loadingStatus = 'ready-network';
+  }
+
+  async shutdown(): Promise<void> {
+    await this._logger.shutdown();
   }
 
   checkGate(name: string): boolean {
@@ -140,5 +145,9 @@ export default class StatsigRemoteEvalClient
         return res.value[param];
       },
     };
+  }
+
+  logEvent(event: StatsigEvent) {
+    this._logger.enqueue({ ...event, user: this._user, time: Date.now() });
   }
 }
