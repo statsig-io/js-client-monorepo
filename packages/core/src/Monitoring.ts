@@ -1,3 +1,6 @@
+import { captureDiagnostics } from './Diagnostics';
+import { errorBoundary } from './ErrorBoundary';
+
 export function Monitored(
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   target: any,
@@ -31,20 +34,10 @@ function _generateDescriptor(
   const originalMethod = descriptor.value;
 
   descriptor.value = function (...args: unknown[]) {
-    try {
-      const res = originalMethod.apply(this, args);
-      if (res && res instanceof Promise) {
-        return res.catch((err) => _onError(propertyKey, err));
-      }
-      return res;
-    } catch (error) {
-      _onError(propertyKey, error);
-    }
+    errorBoundary(propertyKey, () =>
+      captureDiagnostics(() => originalMethod.apply(this, args)),
+    );
   };
 
   return descriptor;
-}
-
-function _onError(methodName: string, error: unknown) {
-  console.warn(`[Statsig]: Caught Error in ${methodName}`, error);
 }

@@ -6,10 +6,11 @@
   "type": "commonjs",
   "scripts": {
     "build": "tsc --build",
-    "test": "jest"
+    "prepare": "npm run build"
   },
   "devDependencies": {
     "@types/jest": "^29.5.4",
+    "js-sha256": "^0.10.1",
     "ts-jest": "^29.1.1"
   }
 }

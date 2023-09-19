@@ -1,9 +1,9 @@
-import { sha256create } from './js-sha256';
+import { sha256 } from 'js-sha256';
 import { Base64 } from './Base64';
 import { SHA256 } from '../sha256';
 
 function getExpectedHash(value: string) {
-  const buffer = sha256create().update(value).arrayBuffer();
+  const buffer = sha256.create().update(value).arrayBuffer();
   return Base64.encodeArrayBuffer(buffer);
 }
 
