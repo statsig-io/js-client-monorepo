@@ -7,8 +7,8 @@ type StoreValues204 = {
 };
 
 export default class StatsigNetwork extends StatsigNetworkCore {
-  constructor(sdkKey: string, api: string) {
-    super(sdkKey, SDK_TYPE, api);
+  constructor(sdkKey: string, stableID: string, api: string) {
+    super(sdkKey, SDK_TYPE, stableID, api);
   }
 
   fetchEvaluations(user: StatsigUser): Promise<StoreValues | StoreValues204> {

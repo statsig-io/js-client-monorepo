@@ -1,1 +1,1 @@
-export const SDK_TYPE = 'js-local-eval';
+export const SDK_TYPE = 'js-super-lite';

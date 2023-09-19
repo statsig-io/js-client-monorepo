@@ -5,6 +5,7 @@ export type StatsigOptionsCommon = {
   localMode?: boolean;
   environment?: StatsigEnvironment;
   onLoadingStatusChanged?: (status: StatsigLoadingStatus) => void;
+  overrideStableID?: string;
 };
 
 export type StatsigEnvironment = {

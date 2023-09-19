@@ -1,19 +1,29 @@
+import { getUUID } from './IDUtils';
 import { StatsigEvent } from './StatsigEvent';
 import { SDK_VERSION } from './StatsigMetadata';
 
 export class StatsigNetworkCore {
-  private _headers: Record<string, string>;
+  private readonly _headers: Record<string, string>;
+  private readonly _statsigMetadata: Record<string, string>;
 
   constructor(
     sdkKey: string,
     sdkType: string,
-    protected _api: string,
+    stableID: string,
+    protected readonly _api: string,
   ) {
     this._headers = {
       'Content-Type': 'application/json',
       'STATSIG-API-KEY': sdkKey,
       'STATSIG-SDK-TYPE': sdkType,
       'STATSIG-SDK-VERSION': SDK_VERSION,
+    };
+
+    this._statsigMetadata = {
+      stableID,
+      sdkType,
+      sdkVersion: SDK_VERSION,
+      sessionID: getUUID(),
     };
   }
 
@@ -25,15 +35,19 @@ export class StatsigNetworkCore {
 
   protected async _sendPostRequest<T>(
     url: string,
-    body: Record<string, unknown>,
+    data: Record<string, unknown>,
     timeout = 10_000,
   ): Promise<T> {
     const controller = new AbortController();
     const handle = setTimeout(() => controller.abort(), timeout);
+    const body = JSON.stringify({
+      ...data,
+      statsigMetadata: this._statsigMetadata,
+    });
 
     const response = await fetch(url, {
       method: 'POST',
-      body: JSON.stringify(body),
+      body,
       headers: this._headers,
       signal: controller.signal,
     });

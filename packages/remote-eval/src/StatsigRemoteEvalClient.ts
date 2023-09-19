@@ -13,6 +13,7 @@ import {
   IStatsigRemoteEvalClient,
   StatsigLoadingStatus,
   StatsigEvent,
+  getStableID,
 } from '@statsig/core';
 import SpecStore from './SpecStore';
 
@@ -35,9 +36,14 @@ export default class StatsigRemoteEvalClient
 
   constructor(sdkKey: string, options: StatsigOptions | null = null) {
     this._options = options ?? { api: 'https://api.statsig.com/v1' };
-    this._network = new StatsigNetwork(sdkKey, this._options.api);
-    this._logger = new StatsigLogger(this._network);
+
     this._store = new SpecStore(sdkKey);
+    this._network = new StatsigNetwork(
+      sdkKey,
+      getStableID(this._options),
+      this._options.api,
+    );
+    this._logger = new StatsigLogger(this._network);
     this._user = {};
   }
 
