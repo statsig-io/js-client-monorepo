@@ -1,4 +1,4 @@
-import { StatsigLoadingStatus } from './StatsigClientInterfaces';
+import { StatsigLoadingStatus } from './ClientInterfaces';
 
 export type StatsigOptionsCommon = {
   api: string;

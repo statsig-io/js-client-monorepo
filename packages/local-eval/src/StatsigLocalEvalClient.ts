@@ -4,27 +4,27 @@ import {
   Layer,
   StatsigEvent,
   StatsigLoadingStatus,
-  StatsigLogger,
+  Logger,
   StatsigUser,
 } from '@statsig/core';
 import SpecStore from './SpecStore';
-import StatsigNetwork from './StatsigNetwork';
+import Network from './Network';
 import { StatsigOptions } from './StatsigOptions';
 import Evaluator from './Evaluator';
 
 export default class StatsigLocalEvalClient implements IStatsigLocalEvalClient {
   loadingStatus: StatsigLoadingStatus = 'uninitialized';
 
-  private _network: StatsigNetwork;
+  private _network: Network;
   private _options: StatsigOptions;
-  private _logger: StatsigLogger;
+  private _logger: Logger;
   private _store: SpecStore;
   private _evaluator: Evaluator;
 
   constructor(sdkKey: string, options: StatsigOptions | null = null) {
     this._options = options ?? { api: 'https://api.statsig.com/v1' };
-    this._network = new StatsigNetwork(sdkKey, this._options.api);
-    this._logger = new StatsigLogger(this._network);
+    this._network = new Network(sdkKey, this._options.api);
+    this._logger = new Logger(this._network);
     this._store = new SpecStore();
     this._evaluator = new Evaluator(this._store);
   }

@@ -1,8 +1,8 @@
-import { getUUID } from './IDUtils';
+import { getUUID } from './IDUtil';
 import { StatsigEvent } from './StatsigEvent';
 import { SDK_VERSION } from './StatsigMetadata';
 
-export class StatsigNetworkCore {
+export class NetworkCore {
   private readonly _headers: Record<string, string>;
   private readonly _statsigMetadata: Record<string, string>;
 

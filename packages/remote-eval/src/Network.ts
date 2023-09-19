@@ -1,4 +1,4 @@
-import { StatsigNetworkCore, StatsigUser } from '@statsig/core';
+import { NetworkCore, StatsigUser } from '@statsig/core';
 import { StoreValues } from './SpecStore';
 import { SDK_TYPE } from './StatsigMetadata';
 
@@ -6,7 +6,7 @@ type StoreValues204 = {
   has_updates: false;
 };
 
-export default class StatsigNetwork extends StatsigNetworkCore {
+export default class StatsigNetwork extends NetworkCore {
   constructor(sdkKey: string, stableID: string, api: string) {
     super(sdkKey, SDK_TYPE, stableID, api);
   }

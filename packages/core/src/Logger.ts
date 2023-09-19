@@ -1,11 +1,11 @@
 import { StatsigEventInternal } from './StatsigEvent';
-import { StatsigNetworkCore } from './StatsigNetworkCore';
+import { NetworkCore } from './NetworkCore';
 
-export class StatsigLogger {
+export class Logger {
   private _queue: StatsigEventInternal[] = [];
   private _flushTimer: ReturnType<typeof setInterval> | null;
 
-  constructor(private _network: StatsigNetworkCore) {
+  constructor(private _network: NetworkCore) {
     this._flushTimer = setInterval(() => this._flush(), 10_000);
   }
 

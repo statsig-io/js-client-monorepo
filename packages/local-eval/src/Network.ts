@@ -1,10 +1,10 @@
-import { StatsigNetworkCore } from '@statsig/core';
+import { NetworkCore } from '@statsig/core';
 import { DownloadConfigSpecsResponse } from './SpecStore';
 import { SDK_TYPE } from './StatsigMetadata';
 
-export default class StatsigNetwork extends StatsigNetworkCore {
+export default class StatsigNetwork extends NetworkCore {
   constructor(sdkKey: string, api: string) {
-    super(sdkKey, SDK_TYPE, api);
+    super(sdkKey, SDK_TYPE, '', api);
   }
 
   fetchConfigSpecs(): Promise<DownloadConfigSpecsResponse> {

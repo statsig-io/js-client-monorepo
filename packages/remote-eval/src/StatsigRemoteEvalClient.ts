@@ -8,7 +8,7 @@ import {
   createLayerParameterExposure,
   StatsigUser,
   normalizeUser,
-  StatsigLogger,
+  Logger,
   Monitored,
   IStatsigRemoteEvalClient,
   StatsigLoadingStatus,
@@ -17,7 +17,7 @@ import {
 } from '@statsig/core';
 import SpecStore from './SpecStore';
 
-import StatsigNetwork from './StatsigNetwork';
+import Network from './Network';
 import { StatsigOptions } from './StatsigOptions';
 
 const DEFAULT_RULE = 'default';
@@ -29,8 +29,8 @@ export default class StatsigRemoteEvalClient
   loadingStatus: StatsigLoadingStatus = 'uninitialized';
 
   private _options: StatsigOptions;
-  private _network: StatsigNetwork;
-  private _logger: StatsigLogger;
+  private _network: Network;
+  private _logger: Logger;
   private _store: SpecStore;
   private _user: StatsigUser;
 
@@ -38,12 +38,12 @@ export default class StatsigRemoteEvalClient
     this._options = options ?? { api: 'https://api.statsig.com/v1' };
 
     this._store = new SpecStore(sdkKey);
-    this._network = new StatsigNetwork(
+    this._network = new Network(
       sdkKey,
       getStableID(this._options),
       this._options.api,
     );
-    this._logger = new StatsigLogger(this._network);
+    this._logger = new Logger(this._network);
     this._user = {};
   }
 
