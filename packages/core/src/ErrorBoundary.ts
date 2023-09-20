@@ -56,7 +56,6 @@ function _onError(tag: string, error: unknown) {
           'STATSIG-SDK-TYPE': String(_config.metadata?.['sdkType']),
           'STATSIG-SDK-VERSION': String(_config.metadata?.['sdkVersion']),
           'Content-Type': 'application/json',
-          'Content-Length': `${body.length}`,
         },
         body,
       });

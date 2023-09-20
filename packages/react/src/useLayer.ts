@@ -1,38 +1,38 @@
+import { Layer, StatsigUser, emptyLayer } from '@statsig/core';
 import { useContext, useMemo } from 'react';
 import StatsigContext from './StatsigContext';
-import { StatsigUser } from '@statsig/core';
 
-export type GateResult = {
-  value: boolean;
+export type LayerResult = {
+  layer: Layer;
 };
 
-type CheckGateOptions = {
+type GetLayerOptions = {
   logExposure: boolean;
   user: StatsigUser | null;
 };
 
 export default function (
-  gateName: string,
-  options: CheckGateOptions = { logExposure: true, user: null },
-): GateResult {
+  layerName: string,
+  options: GetLayerOptions = { logExposure: true, user: null },
+): LayerResult {
   const { client } = useContext(StatsigContext);
 
-  const value = useMemo(() => {
+  const layer = useMemo(() => {
     if ('updateUser' in client) {
-      return client.checkGate(gateName);
+      return client.getLayer(layerName);
     }
 
     if (options.user == null) {
       console.log(
         'StatsigUser not provided for Local Evaluation. Returning default value.',
       );
-      return false;
+      return emptyLayer(layerName);
     }
 
-    return client.checkGate(options.user, gateName);
+    return client.getLayer(options.user, layerName);
   }, [client.loadingStatus, options]);
 
   return {
-    value,
+    layer,
   };
 }

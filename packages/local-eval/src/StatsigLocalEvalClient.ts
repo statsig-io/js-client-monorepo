@@ -47,7 +47,7 @@ export default class StatsigLocalEvalClient implements IStatsigLocalEvalClient {
   checkGate(user: StatsigUser, name: string): boolean {
     return this._evaluator.checkGate(user, name).value;
   }
-  getConfig(_user: StatsigUser, _name: string): DynamicConfig {
+  getDynamicConfig(_user: StatsigUser, _name: string): DynamicConfig {
     throw new Error('Method not implemented.');
   }
   getExperiment(_user: StatsigUser, _name: string): DynamicConfig {

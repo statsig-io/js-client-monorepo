@@ -7,23 +7,19 @@ import React, { useState } from 'react';
 import StatsigContext from './StatsigContext';
 
 type Props = {
-  localEvalClient: IStatsigLocalEvalClient;
-  remoteEvalClient: IStatsigRemoteEvalClient;
+  client: IStatsigLocalEvalClient | IStatsigRemoteEvalClient;
   user?: StatsigUser;
   children: React.ReactNode | React.ReactNode[];
 };
 
 export default function StatsigProvider({
-  localEvalClient,
-  remoteEvalClient,
+  client,
   children,
 }: Props): JSX.Element {
   const [version] = useState(0);
 
   return (
-    <StatsigContext.Provider
-      value={{ localEvalClient, remoteEvalClient, version }}
-    >
+    <StatsigContext.Provider value={{ client, version }}>
       {children}
     </StatsigContext.Provider>
   );

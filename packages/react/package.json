@@ -5,7 +5,8 @@
   "main": "./build/index.js",
   "type": "commonjs",
   "scripts": {
-    "build": "tsc --build"
+    "build": "tsc --build",
+    "prepare": "npm run build"
   },
   "dependencies": {
     "@statsig/core": "^1.0.0"

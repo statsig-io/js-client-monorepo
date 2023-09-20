@@ -5,13 +5,11 @@ import {
 import React from 'react';
 
 export interface StatsigContext {
-  readonly localEvalClient: IStatsigLocalEvalClient | null;
-  readonly remoteEvalClient: IStatsigRemoteEvalClient | null;
+  readonly client: IStatsigLocalEvalClient | IStatsigRemoteEvalClient;
   readonly version: number;
 }
 
 export default React.createContext<StatsigContext>({
-  localEvalClient: null,
-  remoteEvalClient: null,
+  client: null!,
   version: 0,
 });
