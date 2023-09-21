@@ -22,6 +22,10 @@ const TO_MINIFY = [
   '_sendPostRequest',
   'sendEvents',
   '_instance',
+  'logMissingStatsigUserWarning',
+  'isRemoteEvaluationClient',
+  'emptyDynamicConfig',
+  'emptyLayer',
 ];
 
 const terser = new TerserPlugin({

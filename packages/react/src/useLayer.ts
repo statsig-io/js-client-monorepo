@@ -1,6 +1,10 @@
 import { Layer, StatsigUser, emptyLayer } from '@statsig/core';
 import { useContext, useMemo } from 'react';
 import StatsigContext from './StatsigContext';
+import {
+  isRemoteEvaluationClient,
+  logMissingStatsigUserWarning,
+} from './RemoteVsLocalUtil';
 
 export type LayerResult = {
   layer: Layer;
@@ -18,14 +22,12 @@ export default function (
   const { client } = useContext(StatsigContext);
 
   const layer = useMemo(() => {
-    if ('updateUser' in client) {
+    if (isRemoteEvaluationClient(client)) {
       return client.getLayer(layerName);
     }
 
     if (options.user == null) {
-      console.log(
-        'StatsigUser not provided for Local Evaluation. Returning default value.',
-      );
+      logMissingStatsigUserWarning();
       return emptyLayer(layerName);
     }
 

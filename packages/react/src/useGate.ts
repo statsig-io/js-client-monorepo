@@ -1,6 +1,10 @@
 import { useContext, useMemo } from 'react';
 import StatsigContext from './StatsigContext';
 import { StatsigUser } from '@statsig/core';
+import {
+  isRemoteEvaluationClient,
+  logMissingStatsigUserWarning,
+} from './RemoteVsLocalUtil';
 
 export type GateResult = {
   value: boolean;
@@ -18,14 +22,12 @@ export default function (
   const { client } = useContext(StatsigContext);
 
   const value = useMemo(() => {
-    if ('updateUser' in client) {
+    if (isRemoteEvaluationClient(client)) {
       return client.checkGate(gateName);
     }
 
     if (options.user == null) {
-      console.log(
-        'StatsigUser not provided for Local Evaluation. Returning default value.',
-      );
+      logMissingStatsigUserWarning();
       return false;
     }
 

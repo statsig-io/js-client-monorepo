@@ -20,7 +20,9 @@
       "$createConfigExposure": "p",
       "$createLayerParameterExposure": "j",
       "$_sendPostRequest": "M",
-      "$sendEvents": "t"
+      "$sendEvents": "t",
+      "$emptyLayer": "i",
+      "$emptyDynamicConfig": "o"
     }
   }
 }

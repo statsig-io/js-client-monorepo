@@ -1,6 +1,10 @@
 import { useContext, useMemo } from 'react';
 import StatsigContext from './StatsigContext';
 import { DynamicConfig, StatsigUser, emptyDynamicConfig } from '@statsig/core';
+import {
+  isRemoteEvaluationClient,
+  logMissingStatsigUserWarning,
+} from './RemoteVsLocalUtil';
 
 export type DynamicConfigResult = {
   config: DynamicConfig;
@@ -18,14 +22,12 @@ export default function (
   const { client } = useContext(StatsigContext);
 
   const config = useMemo(() => {
-    if ('updateUser' in client) {
+    if (isRemoteEvaluationClient(client)) {
       return client.getDynamicConfig(configName);
     }
 
     if (options.user == null) {
-      console.log(
-        'StatsigUser not provided for Local Evaluation. Returning default value.',
-      );
+      logMissingStatsigUserWarning();
       return emptyDynamicConfig(configName);
     }
 
