@@ -13,6 +13,7 @@
   },
   "exclude": [
     "**/__tests__",
-    "**/build"
+    "**/build",
+    "samples"
   ]
 }
