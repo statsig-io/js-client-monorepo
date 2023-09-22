@@ -9,7 +9,7 @@
   "scripts": {
     "build": "tsc --build --verbose && webpack && npm run size-check",
     "size-check": "./config/size-check.js",
-    "test": "jest",
+    "test": "jest --config=./config/jest.config.js",
     "clean-build": "npm run clean && npm run build",
     "clean": "npm run clean-build-folders && npm run clean-tsbuild-info",
     "clean-build-folders": "find . -type d \\( -name 'build' -o -name 'dist' \\) -not -path './node_modules/*' -exec rm -rf {} +",
@@ -48,5 +48,12 @@
     "@statsig/react": "file:./packages/react",
     "@statsig/remote-eval": "file:./packages/remote-eval",
     "@statsig/extensions": "file:./packages/extensions"
+  },
+  "prettier": {
+    "semi": true,
+    "trailingComma": "all",
+    "singleQuote": true,
+    "printWidth": 80,
+    "tabWidth": 2
   }
 }
