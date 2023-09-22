@@ -34,7 +34,7 @@ const terser = new TerserPlugin({
     const fs = require('fs');
     const res = TerserPlugin.uglifyJsMinify(a, b, options, d);
     fs.writeFileSync(
-      'name-cache.json',
+      './config/name-cache.json',
       JSON.stringify(options.nameCache, null, 2),
     );
     return res;
@@ -42,7 +42,7 @@ const terser = new TerserPlugin({
 
   extractComments: false,
   terserOptions: {
-    nameCache: JSON.parse(fs.readFileSync('name-cache.json', 'utf8')),
+    nameCache: JSON.parse(fs.readFileSync('./config/name-cache.json', 'utf8')),
     output: {
       comments: false,
     },

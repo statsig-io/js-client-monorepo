@@ -8,7 +8,7 @@
   ],
   "scripts": {
     "build": "tsc --build --verbose && webpack && npm run size-check",
-    "size-check": "./size-check.js",
+    "size-check": "./config/size-check.js",
     "test": "jest",
     "clean-build": "npm run clean && npm run build",
     "clean": "npm run clean-build-folders && npm run clean-tsbuild-info",
