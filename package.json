@@ -49,6 +49,10 @@
     "@statsig/remote-eval": "file:./packages/remote-eval",
     "@statsig/extensions": "file:./packages/extensions"
   },
+  "eslintConfig": {
+    "extends": "./config/.eslintrc.js",
+    "root": true
+  },
   "prettier": {
     "semi": true,
     "trailingComma": "all",

@@ -23,13 +23,12 @@ module.exports = {
   parserOptions: {
     tsconfigRootDir: __dirname,
     project: [
-      './tsconfig.json',
-      './packages/*/tsconfig.json',
-      './config/test-tsconfig.json',
+      '../tsconfig.json',
+      '../packages/*/tsconfig.json',
+      './test-tsconfig.json',
     ],
   },
   plugins: ['react', '@typescript-eslint'],
-  root: true,
   rules: {
     '@typescript-eslint/no-floating-promises': ['error', { ignoreVoid: false }],
     '@typescript-eslint/no-misused-promises': 'error',
@@ -59,4 +58,15 @@ module.exports = {
     ],
     eqeqeq: ['warn', 'smart'],
   },
+  ignorePatterns: [
+    'dist',
+    'build',
+    'webpack.config.js',
+    '.eslintrc.js',
+    '.prettierrc.js',
+    '.esbuild.js',
+    'jest.config.js',
+    'size-check.js',
+    'samples',
+  ],
 };
