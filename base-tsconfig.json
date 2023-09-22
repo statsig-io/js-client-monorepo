@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "composite": true,
     "target": "ES2022",
     "module": "commonjs",
     "strict": true,
@@ -8,19 +9,9 @@
     "moduleResolution": "node",
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true,
-    "outDir": "./build",
-    "rootDir": "./src"
+    "forceConsistentCasingInFileNames": true
   },
-  "include": [
-    "src"
-  ],
   "exclude": [
-    "**/__tests__/"
-  ],
-  "references": [
-    {
-      "path": "./packages/core"
-    }
+    "**/__tests__"
   ]
 }

@@ -1,20 +1,9 @@
 {
+  "extends": "../../base-tsconfig",
   "compilerOptions": {
-    "composite": true,
-    "target": "ES2022",
-    "module": "commonjs",
-    "strict": true,
-    "declaration": true,
-    "incremental": true,
-    "moduleResolution": "node",
-    "esModuleInterop": true,
-    "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true,
     "outDir": "./build",
     "rootDir": "./src"
   },
-  "include": ["src"],
-  "exclude": ["**/__tests__/"],
   "references": [
     {
       "path": "../core"
