@@ -1,3 +1,12 @@
+# Custom
+
+.pnpm-debug.log
+*.tsbuildinfo
+
+# End Custom
+
+
+
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
 # dependencies
@@ -56,3 +65,4 @@ coverage/
 
 # JSDoc output
 out/
+
