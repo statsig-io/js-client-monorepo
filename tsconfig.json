@@ -2,10 +2,9 @@
   "extends": "./base-tsconfig.json",
   "compilerOptions": {
     "composite": false,
-    "outDir": "./build",
-    "rootDir": "./src",
-    "jsx": "react-jsx"
+    "outDir": "./build"
   },
+  "include": ["src"],
   "references": [
     {
       "path": "./packages/core"
