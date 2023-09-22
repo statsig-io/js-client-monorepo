@@ -22,8 +22,6 @@ jobs:
           path: ~/.npm
           key: ${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
 
-      - run: cd packages/core && npm ci
-      - run: cd packages/sha256 && npm ci
       - run: npm clean-install
 
       - run: npm run clean-build
