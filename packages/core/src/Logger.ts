@@ -6,14 +6,14 @@ export class Logger {
   private _flushTimer: ReturnType<typeof setInterval> | null;
 
   constructor(private _network: NetworkCore) {
-    this._flushTimer = setInterval(() => this._flush(), 10_000);
+    this._flushTimer = setInterval(() => this._flushAndForget(), 10_000);
   }
 
   enqueue(event: StatsigEventInternal) {
     this._queue.push(event);
 
     if (this._queue.length > 10) {
-      this._flush();
+      this._flushAndForget();
     }
   }
 
@@ -26,6 +26,12 @@ export class Logger {
     await this._flush();
   }
 
+  private _flushAndForget() {
+    this._flush().catch(() => {
+      // noop
+    });
+  }
+
   private async _flush(): Promise<void> {
     if (this._queue.length === 0) {
       return;
@@ -34,8 +40,10 @@ export class Logger {
     const events = this._queue;
     this._queue = [];
 
-    this._network.sendEvents(events).catch(() => {
-      // todo
-    });
+    try {
+      await this._network.sendEvents(events);
+    } catch {
+      // @todo
+    }
   }
 }

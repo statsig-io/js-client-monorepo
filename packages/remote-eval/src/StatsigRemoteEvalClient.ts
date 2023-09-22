@@ -22,8 +22,6 @@ import SpecStore from './SpecStore';
 import Network from './Network';
 import { StatsigOptions } from './StatsigOptions';
 
-const DEFAULT_RULE = 'default';
-
 @Monitored
 export default class StatsigRemoteEvalClient
   implements IStatsigRemoteEvalClient

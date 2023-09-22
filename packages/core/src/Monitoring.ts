@@ -1,11 +1,12 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-unsafe-return */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import { captureDiagnostics } from './Diagnostics';
 import { errorBoundary } from './ErrorBoundary';
 
-export function Monitored(
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  target: any,
-  ..._args: unknown[]
-) {
+export function Monitored(target: any, ..._args: unknown[]) {
   for (const propertyName of Object.getOwnPropertyNames(target.prototype)) {
     const desc = Object.getOwnPropertyDescriptor(
       target.prototype,

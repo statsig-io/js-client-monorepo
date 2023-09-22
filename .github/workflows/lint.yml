@@ -2,10 +2,10 @@ name: Lint
 
 on:
   workflow_dispatch:
-  # pull_request:
-  #   branches: [main]
-  # push:
-  #   branches: [main]
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
 
 jobs:
   lint:
@@ -13,14 +13,6 @@ jobs:
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v3
-
-      - name: cache .npm
-        uses: actions/cache@v2
-        env:
-          cache-name: npm
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
 
       - run: npm clean-install
 

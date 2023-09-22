@@ -1,18 +1,20 @@
 import { LocalOverrides, makeEmptyOverrides } from './LocalOverrides';
 
+type Method = (...args: unknown[]) => unknown;
+
 type ClientPrototype = ClientWithOverrides & {
-  checkGate: Function;
-  getDynamicConfig: Function;
-  getExperiment: Function;
-  getLayer: Function;
+  checkGate: Method;
+  getDynamicConfig: Method;
+  getExperiment: Method;
+  getLayer: Method;
   _overrides?: LocalOverrides;
 };
 
 type ExtendedClientPrototype = ClientPrototype & {
-  _checkGateActual: Function;
-  _getDynamicConfigActual: Function;
-  _getExperimentActual: Function;
-  _getLayerActual: Function;
+  _checkGateActual: Method;
+  _getDynamicConfigActual: Method;
+  _getExperimentActual: Method;
+  _getLayerActual: Method;
 };
 
 export interface ClientWithOverrides {
@@ -34,7 +36,7 @@ export function bind(proto?: ClientPrototype) {
     return;
   }
 
-  let extended = proto as ExtendedClientPrototype;
+  const extended = proto as ExtendedClientPrototype;
 
   extended.overrideGate = function (name, value) {
     if (!this._overrides) {
@@ -108,6 +110,4 @@ export function bind(proto?: ClientPrototype) {
     }
     return this._getLayerActual(...args);
   };
-
-  console.log('Extended Local Overrides', extended);
 }

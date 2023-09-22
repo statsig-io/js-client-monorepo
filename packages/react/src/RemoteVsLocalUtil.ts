@@ -10,6 +10,7 @@ export function isRemoteEvaluationClient(
 }
 
 export function logMissingStatsigUserWarning() {
+  // eslint-disable-next-line no-console
   console.warn(
     'StatsigUser not provided for Local Evaluation. Returning default value.',
   );

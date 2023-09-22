@@ -7,13 +7,29 @@ module.exports = {
     'eslint:recommended',
     'plugin:@typescript-eslint/recommended',
     'plugin:@typescript-eslint/recommended-requiring-type-checking',
+    'plugin:prettier/recommended',
+  ],
+  overrides: [
+    {
+      // Test Specific Rules
+      files: ['**/*.test.ts'],
+      rules: {
+        '@typescript-eslint/no-explicit-any': 'off',
+        '@typescript-eslint/no-unsafe-member-access': 'off',
+      },
+    },
   ],
   parser: '@typescript-eslint/parser',
   parserOptions: {
     tsconfigRootDir: __dirname,
-    project: ['./tsconfig.json', './packages/*/tsconfig.json'],
+    project: [
+      './tsconfig.json',
+      './packages/*/tsconfig.json',
+      './configuration/test-tsconfig.json',
+    ],
   },
   plugins: ['react', '@typescript-eslint'],
+  root: true,
   rules: {
     '@typescript-eslint/no-floating-promises': ['error', { ignoreVoid: false }],
     '@typescript-eslint/no-misused-promises': 'error',

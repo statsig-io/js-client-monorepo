@@ -1,0 +1,14 @@
+{
+  "extends": "../base-tsconfig.json",
+  "compilerOptions": {
+    "composite": false,
+    "noEmit": true
+  },
+  "include": [
+    "../**/*.test.ts"
+  ],
+  "exclude": [
+    "**/build",
+    "samples"
+  ]
+}

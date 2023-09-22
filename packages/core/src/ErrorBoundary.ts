@@ -6,7 +6,7 @@ type Config = {
   isSilent?: boolean;
 };
 
-let _seen = new Set<string>();
+const _seen = new Set<string>();
 let _config: Config | null = null;
 
 export function configureErrorBoundary(config: Config) {
@@ -28,11 +28,13 @@ export function errorBoundary(tag: string, task: () => unknown) {
 function _onError(tag: string, error: unknown) {
   try {
     if (_config?.isSilent !== true) {
+      // eslint-disable-next-line no-console
       console.warn(`[Statsig]: Caught Error in ${tag}`, error);
     }
 
     const impl = async () => {
-      const unwrapped = (error ?? Error('[Statsig] Error was empty')) as any;
+      const unwrapped = (error ??
+        Error('[Statsig] Error was empty')) as unknown;
       const isError = unwrapped instanceof Error;
       const name = isError ? unwrapped.name : 'No Name';
 

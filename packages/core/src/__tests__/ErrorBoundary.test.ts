@@ -7,8 +7,9 @@ function throwing() {
 }
 
 describe('Error Boundary', () => {
-  let requests: { url: string; params: unknown }[] = [];
-  (global as any).fetch = jest.fn((url, params) => {
+  const requests: { url: string; params: unknown }[] = [];
+
+  (global as any).fetch = jest.fn((url: string, params: unknown) => {
     requests.push({ url, params });
   });
 

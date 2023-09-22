@@ -22,7 +22,7 @@ export type DynamicConfig = {
 };
 export type Experiment = DynamicConfig;
 
-export function emptyDynamicConfig(name: string): DynamicConfig | Experiment {
+export function emptyDynamicConfig(name: string): DynamicConfig {
   return {
     name,
     ruleID: DEFAULT_RULE,

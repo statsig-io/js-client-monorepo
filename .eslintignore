@@ -4,4 +4,6 @@ webpack.config.js
 .eslintrc.js
 .prettierrc.js
 .esbuild.js
+jest.config.js
 size-check.js
+samples
