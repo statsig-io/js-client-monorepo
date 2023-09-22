@@ -1,7 +1,7 @@
 const path = require('path');
 const TerserPlugin = require('terser-webpack-plugin');
 const fs = require('fs');
-const CustomMinifyPlugin = require('./build/CustomMinifyPlugin').default;
+const CustomMinifyPlugin = require('../build/CustomMinifyPlugin').default;
 
 const MAX_KB = 30;
 const TO_MINIFY = [
@@ -61,7 +61,7 @@ function makeConfig(name, extras) {
     resolve: {
       extensions: ['.js'],
     },
-    entry: path.resolve(__dirname, `./build/${name}.js`),
+    entry: path.resolve(__dirname, `../build/${name}.js`),
     output: {
       filename: `${name}.min.js`,
       path: path.resolve(__dirname, 'dist'),
