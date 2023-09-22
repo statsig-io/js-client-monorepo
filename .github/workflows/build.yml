@@ -14,14 +14,6 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: cache .npm
-        uses: actions/cache@v2
-        env:
-          cache-name: npm
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
-
       - run: npm clean-install
 
       - run: npm run clean-build
