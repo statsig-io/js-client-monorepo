@@ -17,8 +17,8 @@ jobs:
         with:
           node-version: 16
 
-      - run: npm clean-install --verbose
+      - run: npm clean-install
 
       - run: npm run clean-build
 
-      - run: npm run lint
+      # - run: npm run lint

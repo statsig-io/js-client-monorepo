@@ -1,9 +1,12 @@
 {
   "extends": "../../base-tsconfig",
   "compilerOptions": {
+    "jsx": "react-jsx",
     "outDir": "./build",
-    "rootDir": "./src",
-    "jsx": "react-jsx"
+    "paths": {
+      "core": ["../core"]
+    },
+    "rootDir": "./src"
   },
   "references": [
     {

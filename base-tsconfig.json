@@ -1,15 +1,15 @@
 {
   "compilerOptions": {
     "composite": true,
-    "target": "ES2022",
-    "module": "commonjs",
-    "strict": true,
     "declaration": true,
-    "incremental": true,
-    "moduleResolution": "node",
     "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "incremental": true,
+    "module": "commonjs",
+    "moduleResolution": "node",
     "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true
+    "strict": true,
+    "target": "ES2022"
   },
   "exclude": [
     "**/__tests__",
