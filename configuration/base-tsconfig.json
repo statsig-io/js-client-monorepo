@@ -12,8 +12,8 @@
     "target": "ES2022"
   },
   "exclude": [
-    "**/__tests__",
-    "**/build",
+    "../**/__tests__",
+    "../**/build",
     "samples"
   ]
 }

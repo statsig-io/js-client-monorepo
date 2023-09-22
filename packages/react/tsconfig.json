@@ -1,5 +1,5 @@
 {
-  "extends": "../../base-tsconfig",
+  "extends": "../../configuration/base-tsconfig.json",
   "compilerOptions": {
     "jsx": "react-jsx",
     "outDir": "./build",
