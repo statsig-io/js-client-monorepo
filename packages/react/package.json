@@ -9,7 +9,7 @@
     "prepare": "npm run build"
   },
   "dependencies": {
-    "@statsig/core": "^1.0.0"
+    "@statsig/core": "file:../core"
   },
   "devDependencies": {
     "@types/react": "^18.2.21"

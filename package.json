@@ -43,7 +43,7 @@
     "webpack-cli": "^5.1.4"
   },
   "dependencies": {
-    "@statsig/core": "^1.0.0",
+    "@statsig/core": "file:./packages/core",
     "@statsig/local-eval": "^1.0.0",
     "@statsig/react": "^1.0.0",
     "@statsig/remote-eval": "^1.0.0",

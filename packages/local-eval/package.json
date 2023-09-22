@@ -8,7 +8,7 @@
     "build": "tsc --build --verbose"
   },
   "dependencies": {
-    "@statsig/core": "^1.0.0",
+    "@statsig/core": "file:../core",
     "@statsig/sha256": "^1.0.0"
   }
 }
