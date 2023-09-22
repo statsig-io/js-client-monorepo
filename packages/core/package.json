@@ -5,7 +5,7 @@
   "main": "./build/index.js",
   "type": "commonjs",
   "scripts": {
-    "build": "tsc --build",
+    "build": "tsc --build --verbose",
     "prepare": "npm run build"
   }
 }
