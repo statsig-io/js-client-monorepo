@@ -16,8 +16,8 @@
     "typescript": "^4.9.5",
     "web-vitals": "^2.1.4",
     "@statsig/core": "file:../core",
-    "@statsig/react": "^1.0.0",
-    "@statsig/extensions": "^1.0.0"
+    "@statsig/react": "file:../react",
+    "@statsig/extensions": "file:../extensions"
   },
   "scripts": {
     "start": "react-scripts start",
