@@ -3,9 +3,6 @@
   "compilerOptions": {
     "jsx": "react-jsx",
     "outDir": "./build",
-    "paths": {
-      "core": ["../core"]
-    },
     "rootDir": "./src"
   },
   "references": [
