@@ -2,6 +2,7 @@
 
 .pnpm-debug.log
 *.tsbuildinfo
+pnpm-lock.yaml
 
 # End Custom
 
