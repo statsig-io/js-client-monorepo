@@ -15,9 +15,9 @@
     "react-scripts": "5.0.1",
     "typescript": "^4.9.5",
     "web-vitals": "^2.1.4",
-    "@statsig/core": "file:../../packages/core",
-    "@statsig/react": "file:../../packages/react",
-    "@statsig/extensions": "file:../../packages/extensions"
+    "@statsig/core": "^1.0.0",
+    "@statsig/react": "^1.0.0",
+    "@statsig/extensions": "^1.0.0"
   },
   "scripts": {
     "start": "react-scripts start",

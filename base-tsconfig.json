@@ -1,6 +1,5 @@
 {
   "compilerOptions": {
-    "composite": true,
     "target": "ES2022",
     "module": "commonjs",
     "strict": true,
@@ -13,6 +12,15 @@
     "outDir": "./build",
     "rootDir": "./src"
   },
-  "include": ["src"],
-  "exclude": ["**/__tests__/"]
+  "include": [
+    "src"
+  ],
+  "exclude": [
+    "**/__tests__/"
+  ],
+  "references": [
+    {
+      "path": "./packages/core"
+    }
+  ]
 }
