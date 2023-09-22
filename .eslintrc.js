@@ -16,6 +16,7 @@ module.exports = {
   plugins: ['react', '@typescript-eslint'],
   rules: {
     '@typescript-eslint/no-floating-promises': ['error', { ignoreVoid: false }],
+    '@typescript-eslint/no-misused-promises': 'error',
     '@typescript-eslint/naming-convention': [
       'error',
       {
