@@ -3,6 +3,7 @@
     "composite": true,
     "declaration": true,
     "esModuleInterop": true,
+    "experimentalDecorators": true,
     "forceConsistentCasingInFileNames": true,
     "incremental": true,
     "module": "commonjs",
