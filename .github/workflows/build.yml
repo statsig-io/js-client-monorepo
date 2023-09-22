@@ -22,9 +22,17 @@ jobs:
           path: ~/.npm
           key: ${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
 
-      - name: Clean Install # run install twice for reasons
+      - name: Clean Install
+        continue-on-error: true
         run: |
-          npm clean-install > /dev/null 2>&1 || true
+          npm clean-install
+
+      - name: Clean Install Again
+        # run install twice for reasons
+        continue-on-error: true
+        run: |
           npm clean-install
 
       - run: npm run clean-build
+
+      - run: npm run lint
