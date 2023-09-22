@@ -1,3 +1,1 @@
-import { StatsigRemoteEvalClient } from '@statsig/remote-eval';
-
-export { StatsigRemoteEvalClient };
+export * from '@statsig/remote-eval';

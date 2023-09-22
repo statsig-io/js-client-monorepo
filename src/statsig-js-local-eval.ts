@@ -1,3 +1,1 @@
-import { StatsigLocalEvalClient } from '@statsig/local-eval';
-
-export { StatsigLocalEvalClient };
+export * from '@statsig/local-eval';

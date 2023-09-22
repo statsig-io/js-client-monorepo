@@ -89,4 +89,5 @@ module.exports = [
   }),
   makeConfig('statsig-js-local-eval'),
   makeConfig('statsig-sha256'),
+  makeConfig('statsig-js-extensions'),
 ];

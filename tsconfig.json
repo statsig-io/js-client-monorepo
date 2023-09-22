@@ -29,6 +29,9 @@
     },
     {
       "path": "./packages/local-eval"
+    },
+    {
+      "path": "./packages/extensions"
     }
   ]
 }

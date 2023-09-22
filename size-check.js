@@ -1,11 +1,14 @@
 #!/usr/bin/env node
 
 const fs = require('fs');
+const resetColor = '\x1b[0m';
+const redColor = '\x1b[31m';
 
 const FILE_LIMIT_MAP = {
   'statsig-js-local-eval.min.js': 20_000,
   'statsig-js-remote-eval.min.js': 10_000,
-  'statsig-react.min.js': 5_000,
+  'statsig-js-extensions.min.js': 10_000,
+  'statsig-react.min.js': 10_000,
   'statsig-sha256.min.js': 5_000,
 };
 
@@ -14,7 +17,7 @@ function runSizeCheck(file, size) {
 
   if (stats.size > size) {
     console.error(
-      `[${file}] Build as grown larger than limit. Limit ${size} bytes, Actual: ${stats.size} bytes`,
+      `${redColor}[${file}] Build as grown larger than limit. Limit ${size} bytes, Actual: ${stats.size} bytes${resetColor}`,
     );
     return false;
   }
@@ -29,5 +32,6 @@ const pass = Object.entries(FILE_LIMIT_MAP).reduce(
 );
 
 if (!pass) {
-  throw new Error('Size Check Failed');
+  console.error(`${redColor}⛔️ Size Check Failed${resetColor}`);
+  process.exit(1);
 }

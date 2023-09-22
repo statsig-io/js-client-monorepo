@@ -1,5 +1,5 @@
 {
-  "name": "@statsig/remote-eval",
+  "name": "@statsig/extensions",
   "version": "1.0.0",
   "description": "The UI package",
   "main": "./build/index.js",
