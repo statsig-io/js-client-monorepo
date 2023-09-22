@@ -64,7 +64,7 @@ function makeConfig(name, extras) {
     entry: path.resolve(__dirname, `../build/${name}.js`),
     output: {
       filename: `${name}.min.js`,
-      path: path.resolve(__dirname, 'dist'),
+      path: path.resolve(__dirname, '../dist'),
     },
     optimization: {
       minimize: true,
