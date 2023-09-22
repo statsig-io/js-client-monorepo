@@ -16,9 +16,9 @@ export type LocalOverrides = {
 };
 
 export function loadOverridesFromLocalStorage(): LocalOverrides {
-  const raw = getObjectFromLocalStorage<LocalOverrides | {}>(STORAGE_KEY);
+  const raw = getObjectFromLocalStorage<LocalOverrides>(STORAGE_KEY);
 
-  if ('gates' in raw) {
+  if (raw && 'gates' in raw) {
     try {
       return raw;
     } catch (error) {

@@ -1,5 +1,5 @@
 export function getObjectFromLocalStorage<T>(key: string) {
-  return JSON.parse(localStorage.getItem(key) ?? '{}') as T;
+  return JSON.parse(localStorage.getItem(key) ?? 'null') as T | null;
 }
 
 export function setObjectInLocalStorage(key: string, obj: unknown) {

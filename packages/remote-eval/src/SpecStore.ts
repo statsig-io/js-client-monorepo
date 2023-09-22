@@ -76,7 +76,8 @@ export default class SpecStore {
   private _enforceStorageLimit(cacheKey: string) {
     this.manifest =
       this.manifest ??
-      getObjectFromLocalStorage<Record<string, number>>(MANIFEST_KEY);
+      getObjectFromLocalStorage<Record<string, number>>(MANIFEST_KEY) ??
+      {};
     this.manifest[cacheKey] = Date.now();
 
     const entries = Object.entries(this.manifest);
