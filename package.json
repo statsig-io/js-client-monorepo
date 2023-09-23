@@ -8,6 +8,7 @@
   ],
   "scripts": {
     "build": "tsc --build --verbose && webpack --config ./config/webpack.config.js && npm run size-check",
+    "prepare": "tsc --build && webpack --config ./config/webpack.config.js",
     "size-check": "./config/size-check.js",
     "test": "jest --config=./config/jest.config.js",
     "clean-build": "npm run clean && npm run build",
