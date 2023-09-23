@@ -1,12 +1,9 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable @typescript-eslint/no-unsafe-return */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import { captureDiagnostics } from './Diagnostics';
 import { errorBoundary } from './ErrorBoundary';
 
-export function Monitored(target: any, ..._args: unknown[]) {
+type Target = { prototype: unknown };
+
+export function Monitored<T extends Target>(target: T, ..._args: unknown[]): T {
   for (const propertyName of Object.getOwnPropertyNames(target.prototype)) {
     const desc = Object.getOwnPropertyDescriptor(
       target.prototype,
@@ -32,11 +29,11 @@ function _generateDescriptor(
   propertyKey: string,
   descriptor: PropertyDescriptor,
 ): PropertyDescriptor {
-  const originalMethod = descriptor.value;
+  const original = descriptor.value as (...args: unknown[]) => unknown;
 
   descriptor.value = function (...args: unknown[]) {
-    errorBoundary(propertyKey, () =>
-      captureDiagnostics(() => originalMethod.apply(this, args)),
+    return errorBoundary(propertyKey, () =>
+      captureDiagnostics(() => original.apply(this, args)),
     );
   };
 

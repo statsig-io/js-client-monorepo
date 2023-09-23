@@ -7,7 +7,6 @@ const client = new StatsigRemoteEvalClient(
   'client-wlH3WMkysINMhMU8VrNBkbjrEr2JQrqgxKwDPOUosJK',
   { userID: 'a-user' },
 );
-
 client.overrideGate('test_override', true);
 
 const Content = () => {

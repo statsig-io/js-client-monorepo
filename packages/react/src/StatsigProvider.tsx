@@ -23,13 +23,13 @@ export default function StatsigProvider({
       .then(() => {
         setVersion((v) => v + 1);
       })
-      .catch(() => {
-        console.error('Err');
+      .catch((error) => {
+        // eslint-disable-next-line no-console
+        console.error(
+          '[Statsig] An error occurred during initialization',
+          error,
+        );
       });
-    // client.initialize().catch((err) => {
-    //   // eslint-disable-next-line no-console
-    //   console.error(err);
-    // });
   }, []);
 
   return (
