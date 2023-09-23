@@ -2,29 +2,22 @@ import '@statsig-client/extensions';
 import { StatsigProvider, useGate } from '@statsig-client/react';
 import { StatsigRemoteEvalClient } from '@statsig-client/remote-eval';
 import './App.css';
-import useExperiment from '@statsig-client/react/build/useExperiment';
-import useLayer from '@statsig-client/react/build/useLayer';
 
 const client = new StatsigRemoteEvalClient(
   'client-wlH3WMkysINMhMU8VrNBkbjrEr2JQrqgxKwDPOUosJK',
+  { userID: 'a-user' },
 );
 
-client.overrideGate('test_public', true);
-client.overrideExperiment('an_experiment', {
-  experiment_val: 'foo',
-});
-client.overrideLayer('a_layer', { layer_val: 'bar' });
+client.overrideGate('test_override', true);
 
 const Content = () => {
-  const { value } = useGate('test_public');
-  const { experiment } = useExperiment('an_experiment');
-  const { layer } = useLayer('a_layer');
+  const { value: publicValue } = useGate('test_public');
+  const { value: overrideValue } = useGate('test_override');
 
   return (
-    <div>
-      <div>test_public: {value ? 'Pass' : 'Fail'}</div>
-      <div>an_experiment: {JSON.stringify(experiment)}</div>
-      <div>a_layer: {JSON.stringify(layer)}</div>
+    <div className="Content">
+      <div>test_public: {publicValue ? 'Pass' : 'Fail'}</div>
+      <div>test_override: {overrideValue ? 'Pass' : 'Fail'}</div>
     </div>
   );
 };

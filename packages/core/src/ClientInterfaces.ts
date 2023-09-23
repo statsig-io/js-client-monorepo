@@ -10,11 +10,11 @@ export type StatsigLoadingStatus =
 
 interface IStatsigClientCommon {
   readonly loadingStatus: StatsigLoadingStatus;
+  initialize(): Promise<void>;
   shutdown(): Promise<void>;
 }
 
 export interface IStatsigLocalEvalClient extends IStatsigClientCommon {
-  initialize(): Promise<void>;
   checkGate(user: StatsigUser, name: string): boolean;
   getDynamicConfig(user: StatsigUser, name: string): DynamicConfig;
   getExperiment(user: StatsigUser, name: string): Experiment;
@@ -23,7 +23,6 @@ export interface IStatsigLocalEvalClient extends IStatsigClientCommon {
 }
 
 export interface IStatsigRemoteEvalClient extends IStatsigClientCommon {
-  initialize(user: StatsigUser): Promise<void>;
   updateUser(user: StatsigUser): Promise<void>;
   checkGate(name: string): boolean;
   getDynamicConfig(name: string): DynamicConfig;

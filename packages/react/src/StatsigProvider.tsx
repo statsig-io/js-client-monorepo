@@ -3,7 +3,7 @@ import {
   IStatsigRemoteEvalClient,
   StatsigUser,
 } from '@statsig-client/core';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import StatsigContext from './StatsigContext';
 
 type Props = {
@@ -16,7 +16,21 @@ export default function StatsigProvider({
   client,
   children,
 }: Props): JSX.Element {
-  const [version] = useState(0);
+  const [version, setVersion] = useState(0);
+  useEffect(() => {
+    client
+      .initialize()
+      .then(() => {
+        setVersion((v) => v + 1);
+      })
+      .catch(() => {
+        console.error('Err');
+      });
+    // client.initialize().catch((err) => {
+    //   // eslint-disable-next-line no-console
+    //   console.error(err);
+    // });
+  }, []);
 
   return (
     <StatsigContext.Provider value={{ client, version }}>

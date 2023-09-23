@@ -6,11 +6,14 @@
     "experimentalDecorators": true,
     "forceConsistentCasingInFileNames": true,
     "incremental": true,
+    "lib": [
+      "esnext"
+    ],
     "module": "commonjs",
     "moduleResolution": "node",
     "skipLibCheck": true,
     "strict": true,
-    "target": "ES2022"
+    "target": "es5"
   },
   "exclude": [
     "../**/__tests__",

@@ -34,7 +34,11 @@ export default class StatsigRemoteEvalClient
   private _store: SpecStore;
   private _user: StatsigUser;
 
-  constructor(sdkKey: string, options: StatsigOptions | null = null) {
+  constructor(
+    sdkKey: string,
+    user: StatsigUser,
+    options: StatsigOptions | null = null,
+  ) {
     this._options = options ?? { api: 'https://api.statsig.com/v1' };
 
     this._store = new SpecStore(sdkKey);
@@ -44,14 +48,14 @@ export default class StatsigRemoteEvalClient
       this._options.api,
     );
     this._logger = new Logger(this._network);
-    this._user = {};
+    this._user = user;
   }
 
-  async initialize(user: StatsigUser) {
-    await this.updateUser(user);
+  async initialize(): Promise<void> {
+    return this.updateUser(this._user);
   }
 
-  async updateUser(user: StatsigUser) {
+  async updateUser(user: StatsigUser): Promise<void> {
     this.loadingStatus = 'loading';
     this._user = normalizeUser(user, this._options.environment);
     const cacheHit = this._store.switchToUser(this._user);
@@ -145,7 +149,7 @@ export default class StatsigRemoteEvalClient
     };
   }
 
-  logEvent(event: StatsigEvent) {
+  logEvent(event: StatsigEvent): void {
     this._logger.enqueue({ ...event, user: this._user, time: Date.now() });
   }
 }
