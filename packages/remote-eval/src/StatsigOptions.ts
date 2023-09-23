@@ -1,4 +1,4 @@
-import { StatsigOptionsCommon } from '@statsig/core';
+import { StatsigOptionsCommon } from '@statsig-client/core';
 
 export type StatsigOptions = StatsigOptionsCommon & {
   remoteEvalOption?: boolean;

@@ -1,4 +1,4 @@
-import { Experiment, StatsigUser } from '@statsig/core';
+import { Experiment, StatsigUser } from '@statsig-client/core';
 import useDynamicConfig from './useDynamicConfig';
 
 export type ExperimentResult = {

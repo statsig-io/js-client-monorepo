@@ -1,6 +1,10 @@
 import { useContext, useMemo } from 'react';
 import StatsigContext from './StatsigContext';
-import { DynamicConfig, StatsigUser, emptyDynamicConfig } from '@statsig/core';
+import {
+  DynamicConfig,
+  StatsigUser,
+  emptyDynamicConfig,
+} from '@statsig-client/core';
 import {
   isRemoteEvaluationClient,
   logMissingStatsigUserWarning,

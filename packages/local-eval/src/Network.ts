@@ -1,4 +1,4 @@
-import { NetworkCore } from '@statsig/core';
+import { NetworkCore } from '@statsig-client/core';
 import { DownloadConfigSpecsResponse } from './SpecStore';
 import { SDK_TYPE } from './StatsigMetadata';
 

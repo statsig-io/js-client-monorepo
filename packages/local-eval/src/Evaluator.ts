@@ -1,7 +1,7 @@
-import { NormalizedStatsigUser, StatsigUser } from '@statsig/core';
+import { NormalizedStatsigUser, StatsigUser } from '@statsig-client/core';
 import SpecStore, { Spec, SpecCondition, SpecRule } from './SpecStore';
 import { StatsigUnsupportedEvaluationError } from './Errors';
-import { SHA256 } from '@statsig/sha256';
+import { SHA256 } from '@statsig-client/sha256';
 
 const CONDITION_SEGMENT_COUNT = 10 * 1000;
 const USER_BUCKET_COUNT = 1000;

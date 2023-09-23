@@ -1,4 +1,4 @@
-import { NetworkCore, StatsigUser } from '@statsig/core';
+import { NetworkCore, StatsigUser } from '@statsig-client/core';
 import { StoreValues } from './SpecStore';
 import { SDK_TYPE } from './StatsigMetadata';
 

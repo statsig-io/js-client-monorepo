@@ -1,5 +1,5 @@
 {
-  "name": "@statsig/remote-eval",
+  "name": "@statsig-client/remote-eval",
   "version": "1.0.0",
   "description": "The UI package",
   "main": "./build/index.js",
@@ -9,6 +9,6 @@
     "prepare": "npm run build"
   },
   "dependencies": {
-    "@statsig/core": "file:../core"
+    "@statsig-client/core": "file:../core"
   }
 }

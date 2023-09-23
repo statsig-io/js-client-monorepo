@@ -1,1 +1,1 @@
-export * from '@statsig/local-eval';
+export * from '@statsig-client/local-eval';

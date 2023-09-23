@@ -1,5 +1,5 @@
 {
-  "name": "@statsig/core",
+  "name": "@statsig-client/core",
   "version": "1.0.0",
   "description": "The package containing some utility functions",
   "main": "./build/index.js",

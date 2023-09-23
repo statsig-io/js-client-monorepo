@@ -1,7 +1,7 @@
 import {
   getObjectFromLocalStorage,
   setObjectInLocalStorage,
-} from '@statsig/core';
+} from '@statsig-client/core';
 
 export const STORAGE_KEY = 'STATSIG_JS_LOCAL_OVERRIDES';
 

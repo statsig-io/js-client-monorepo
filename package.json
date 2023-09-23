@@ -1,5 +1,5 @@
 {
-  "name": "statsig-js-monorepo",
+  "name": "statsig-client-monorepo",
   "version": "1.0.0",
   "description": "A monorepo in TypeScript",
   "private": true,
@@ -44,11 +44,11 @@
     "webpack-cli": "^5.1.4"
   },
   "dependencies": {
-    "@statsig/core": "file:./packages/core",
-    "@statsig/local-eval": "file:./packages/local-eval",
-    "@statsig/react": "file:./packages/react",
-    "@statsig/remote-eval": "file:./packages/remote-eval",
-    "@statsig/extensions": "file:./packages/extensions"
+    "@statsig-client/core": "file:./packages/core",
+    "@statsig-client/local-eval": "file:./packages/local-eval",
+    "@statsig-client/react": "file:./packages/react",
+    "@statsig-client/remote-eval": "file:./packages/remote-eval",
+    "@statsig-client/extensions": "file:./packages/extensions"
   },
   "eslintConfig": {
     "extends": "./config/.eslintrc.js",

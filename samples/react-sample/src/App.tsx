@@ -1,9 +1,9 @@
-import '@statsig/extensions';
-import { StatsigProvider, useGate } from '@statsig/react';
-import { StatsigRemoteEvalClient } from '@statsig/remote-eval';
+import '@statsig-client/extensions';
+import { StatsigProvider, useGate } from '@statsig-client/react';
+import { StatsigRemoteEvalClient } from '@statsig-client/remote-eval';
 import './App.css';
-import useExperiment from '@statsig/react/build/useExperiment';
-import useLayer from '@statsig/react/build/useLayer';
+import useExperiment from '@statsig-client/react/build/useExperiment';
+import useLayer from '@statsig-client/react/build/useLayer';
 
 const client = new StatsigRemoteEvalClient(
   'client-wlH3WMkysINMhMU8VrNBkbjrEr2JQrqgxKwDPOUosJK',

@@ -1,7 +1,7 @@
 import {
   IStatsigLocalEvalClient,
   IStatsigRemoteEvalClient,
-} from '@statsig/core';
+} from '@statsig-client/core';
 import React from 'react';
 
 export interface StatsigContext {

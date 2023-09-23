@@ -1,2 +1,2 @@
-declare module '@statsig/local-eval';
-declare module '@statsig/remote-eval';
+declare module '@statsig-client/local-eval';
+declare module '@statsig-client/remote-eval';

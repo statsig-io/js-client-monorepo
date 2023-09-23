@@ -1,5 +1,5 @@
 {
-  "name": "@statsig/local-eval",
+  "name": "@statsig-client/local-eval",
   "version": "1.0.0",
   "description": "The UI package",
   "main": "./build/index.js",
@@ -9,7 +9,7 @@
     "prepare": "npm run build"
   },
   "dependencies": {
-    "@statsig/core": "file:../core",
-    "@statsig/sha256": "file:../sha256"
+    "@statsig-client/core": "file:../core",
+    "@statsig-client/sha256": "file:../sha256"
   }
 }

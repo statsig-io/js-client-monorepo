@@ -5,4 +5,4 @@ export {
   useGate,
   useLayer,
   StatsigContext,
-} from '@statsig/react';
+} from '@statsig-client/react';

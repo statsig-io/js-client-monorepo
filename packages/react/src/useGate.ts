@@ -1,6 +1,6 @@
 import { useContext, useMemo } from 'react';
 import StatsigContext from './StatsigContext';
-import { StatsigUser } from '@statsig/core';
+import { StatsigUser } from '@statsig-client/core';
 import {
   isRemoteEvaluationClient,
   logMissingStatsigUserWarning,

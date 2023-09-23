@@ -1,15 +1,15 @@
 import { ClientWithOverrides, bind } from './LocalOverridesBinding';
 
 // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
-let module: typeof import('@statsig/local-eval') | undefined;
+let module: typeof import('@statsig-client/local-eval') | undefined;
 
-declare module '@statsig/local-eval' {
+declare module '@statsig-client/local-eval' {
   interface StatsigLocalEvalClient extends ClientWithOverrides {}
 }
 
 try {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  module = require('@statsig/local-eval');
+  module = require('@statsig-client/local-eval');
 } catch {
   module = undefined;
 }

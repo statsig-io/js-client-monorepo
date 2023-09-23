@@ -1,15 +1,15 @@
 import { ClientWithOverrides, bind } from './LocalOverridesBinding';
 
 // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
-let module: typeof import('@statsig/remote-eval') | undefined;
+let module: typeof import('@statsig-client/remote-eval') | undefined;
 
-declare module '@statsig/remote-eval' {
+declare module '@statsig-client/remote-eval' {
   interface StatsigRemoteEvalClient extends ClientWithOverrides {}
 }
 
 try {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  module = require('@statsig/remote-eval');
+  module = require('@statsig-client/remote-eval');
 } catch {
   module = undefined;
 }

@@ -2,7 +2,7 @@ import {
   IStatsigLocalEvalClient,
   IStatsigRemoteEvalClient,
   StatsigUser,
-} from '@statsig/core';
+} from '@statsig-client/core';
 import React, { useState } from 'react';
 import StatsigContext from './StatsigContext';
 

@@ -1,1 +1,1 @@
-export * from '@statsig/remote-eval';
+export * from '@statsig-client/remote-eval';

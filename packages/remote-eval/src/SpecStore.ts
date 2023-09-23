@@ -4,7 +4,7 @@ import {
   setObjectInLocalStorage,
   SecondaryExposure,
   StatsigUser,
-} from '@statsig/core';
+} from '@statsig-client/core';
 
 type Spec<T> = {
   name: string;

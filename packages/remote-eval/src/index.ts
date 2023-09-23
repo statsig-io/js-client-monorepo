@@ -1,4 +1,8 @@
-export { StatsigUser, StatsigEvent, StatsigEnvironment } from '@statsig/core';
+export {
+  StatsigUser,
+  StatsigEvent,
+  StatsigEnvironment,
+} from '@statsig-client/core';
 
 import StatsigRemoteEvalClient from './StatsigRemoteEvalClient';
 import { StatsigOptions } from './StatsigOptions';
