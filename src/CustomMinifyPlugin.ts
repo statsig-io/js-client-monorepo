@@ -8,7 +8,7 @@ const FLAGS = {
 };
 
 export default class CustomMinifyPlugin {
-  apply(compiler: Compiler) {
+  apply(compiler: Compiler): void {
     const pluginName = CustomMinifyPlugin.name;
 
     compiler.hooks.emit.tapAsync(pluginName, (compilation, callback) => {

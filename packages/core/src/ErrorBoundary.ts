@@ -9,11 +9,11 @@ type Config = {
 const _seen = new Set<string>();
 let _config: Config | null = null;
 
-export function configureErrorBoundary(config: Config) {
+export function configureErrorBoundary(config: Config): void {
   _config = config;
 }
 
-export function errorBoundary(tag: string, task: () => unknown) {
+export function errorBoundary(tag: string, task: () => unknown): unknown {
   try {
     const res = task();
     if (res && res instanceof Promise) {

@@ -51,7 +51,7 @@ export default class SpecStore {
 
   constructor(private _sdkKey: string) {}
 
-  setValues(user: StatsigUser, values: StoreValues) {
+  setValues(user: StatsigUser, values: StoreValues): void {
     this.values = values;
 
     const cacheKey = createCacheKey(user, this._sdkKey);

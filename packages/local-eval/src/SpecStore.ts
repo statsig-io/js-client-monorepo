@@ -46,7 +46,7 @@ export type DownloadConfigSpecsResponse = {
 export default class SpecStore {
   values: DownloadConfigSpecsResponse | null = null;
 
-  setValues(values: DownloadConfigSpecsResponse) {
+  setValues(values: DownloadConfigSpecsResponse): void {
     this.values = values;
   }
 }

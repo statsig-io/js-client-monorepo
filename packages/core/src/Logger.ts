@@ -9,7 +9,7 @@ export class Logger {
     this._flushTimer = setInterval(() => this._flushAndForget(), 10_000);
   }
 
-  enqueue(event: StatsigEventInternal) {
+  enqueue(event: StatsigEventInternal): void {
     this._queue.push(event);
 
     if (this._queue.length > 10) {

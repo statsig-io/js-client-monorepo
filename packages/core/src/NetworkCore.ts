@@ -2,6 +2,10 @@ import { getUUID } from './IDUtil';
 import { StatsigEvent } from './StatsigEvent';
 import { SDK_VERSION } from './StatsigMetadata';
 
+type StatsigNetworkResponse = {
+  success: boolean;
+};
+
 export class NetworkCore {
   private readonly _headers: Record<string, string>;
   private readonly _statsigMetadata: Record<string, string>;
@@ -27,7 +31,7 @@ export class NetworkCore {
     };
   }
 
-  async sendEvents(events: StatsigEvent[]) {
+  async sendEvents(events: StatsigEvent[]): Promise<StatsigNetworkResponse> {
     return this._sendPostRequest(`${this._api}/rgstr`, {
       events,
     });

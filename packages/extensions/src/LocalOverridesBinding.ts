@@ -31,7 +31,7 @@ export interface ClientWithOverrides {
   _overrides?: LocalOverrides;
 }
 
-export function bind(proto?: ClientPrototype) {
+export function bind(proto?: ClientPrototype): void {
   if (!proto) {
     return;
   }
