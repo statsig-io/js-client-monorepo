@@ -3,7 +3,7 @@ const TerserPlugin = require('terser-webpack-plugin');
 const fs = require('fs');
 const CustomMinifyPlugin = require('../build/CustomMinifyPlugin').default;
 
-const MAX_KB = 30;
+const MAX_KB = 40;
 const TO_MINIFY = [
   '_store',
   '_network',

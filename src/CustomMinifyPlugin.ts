@@ -7,6 +7,14 @@ const FLAGS = {
   extract__esModule: true,
 };
 
+function replaceAll(
+  inputString: string,
+  searchString: string,
+  replacement: string,
+): string {
+  return inputString.split(searchString).join(replacement);
+}
+
 export default class CustomMinifyPlugin {
   apply(compiler: Compiler): void {
     const pluginName = CustomMinifyPlugin.name;
@@ -25,18 +33,22 @@ export default class CustomMinifyPlugin {
           let modifiedSource = originalSource;
 
           if (FLAGS.extractDefineProperties) {
-            modifiedSource = modifiedSource
-              .replaceAll('Object.defineProperty', '_S')
-              .replace(
-                /"use strict";/g,
-                '"use strict";var _S=Object.defineProperty;',
-              );
+            modifiedSource = replaceAll(
+              modifiedSource,
+              'Object.defineProperty',
+              '_S',
+            ).replace(
+              /"use strict";/g,
+              '"use strict";var _S=Object.defineProperty;',
+            );
           }
 
           if (FLAGS.extract__esModule) {
-            modifiedSource = modifiedSource
-              .replaceAll(/"__esModule"/g, '_T')
-              .replace(/"use strict";/g, '"use strict";var _T="__esModule";');
+            modifiedSource = replaceAll(
+              modifiedSource,
+              '"__esModule"',
+              '_T',
+            ).replace(/"use strict";/g, '"use strict";var _T="__esModule";');
           }
 
           compilation.assets[filename] = {

@@ -8,8 +8,7 @@
     "incremental": true,
     "lib": [
       "DOM",
-      "ES5",
-      "ESNEXT"
+      "ES5"
     ],
     "module": "commonjs",
     "moduleResolution": "node",
@@ -20,6 +19,7 @@
   "exclude": [
     "../**/__tests__",
     "../**/build",
-    "samples"
+    "samples",
+    "node_modules"
   ]
 }
