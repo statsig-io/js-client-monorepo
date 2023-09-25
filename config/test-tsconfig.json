@@ -5,7 +5,8 @@
     "noEmit": true
   },
   "include": [
-    "../**/*.test.ts"
+    "../**/*.test.ts",
+    "../**/*.test.tsx"
   ],
   "exclude": [
     "**/build",

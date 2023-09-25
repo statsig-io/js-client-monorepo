@@ -40,10 +40,10 @@ export class NetworkCore {
   protected async _sendPostRequest<T>(
     url: string,
     data: Record<string, unknown>,
-    timeout = 10_000,
+    timeoutMs = 10_000,
   ): Promise<T> {
     const controller = new AbortController();
-    const handle = setTimeout(() => controller.abort(), timeout);
+    const handle = setTimeout(() => controller.abort(), timeoutMs);
     const body = JSON.stringify({
       ...data,
       statsigMetadata: this._statsigMetadata,

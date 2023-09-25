@@ -1,8 +1,9 @@
 module.exports = {
   roots: ['../'],
-  testMatch: ['**/__tests__/**/*.test.(j|t)s', '**/?(*.)+test.(j|t)s'],
+  testMatch: [
+    '**/__tests__/**/*.test.{js,ts,jsx,tsx}',
+    '**/?(*.)+test.{js,ts,jsx,tsx}',
+  ],
   testPathIgnorePatterns: ['<rootDir>/node_modules/', '<rootDir>/dist/'],
-  transform: {
-    '^.+\\.ts$': 'ts-jest',
-  },
+  preset: 'ts-jest',
 };

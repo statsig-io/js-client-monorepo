@@ -6,6 +6,12 @@
     "experimentalDecorators": true,
     "forceConsistentCasingInFileNames": true,
     "incremental": true,
+    "jsx": "react-jsx",
+    "lib": [
+      "es6",
+      "esnext",
+      "dom"
+    ],
     "module": "commonjs",
     "moduleResolution": "node",
     "skipLibCheck": true,
