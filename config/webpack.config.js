@@ -54,10 +54,24 @@ const terser = new TerserPlugin({
   },
 });
 
-function makeConfig(name, extras) {
+function makeWebpackConfig(name, extras) {
   return {
     name,
     mode: 'production',
+    module: {
+      rules: [
+        {
+          test: /\.(?:js|mjs|cjs)$/,
+          exclude: /node_modules/,
+          use: {
+            loader: 'babel-loader',
+            options: {
+              presets: [['@babel/preset-env', { targets: 'defaults' }]],
+            },
+          },
+        },
+      ],
+    },
     resolve: {
       extensions: ['.js'],
     },
@@ -80,14 +94,14 @@ function makeConfig(name, extras) {
 }
 
 module.exports = [
-  makeConfig('statsig-js-remote-eval'),
-  makeConfig('statsig-react', {
+  makeWebpackConfig('statsig-js-remote-eval'),
+  makeWebpackConfig('statsig-react', {
     externals: {
       react: 'react',
       'react-dom': 'reactDOM',
     },
   }),
-  makeConfig('statsig-js-local-eval'),
-  makeConfig('statsig-sha256'),
-  makeConfig('statsig-js-extensions'),
+  makeWebpackConfig('statsig-js-local-eval'),
+  makeWebpackConfig('statsig-sha256'),
+  makeWebpackConfig('statsig-js-extensions'),
 ];
