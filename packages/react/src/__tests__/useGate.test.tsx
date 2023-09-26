@@ -7,11 +7,12 @@ import * as React from 'react';
 import StatsigProvider from '../StatsigProvider';
 import { createDeferredPromise, newMockRemoteClient } from './MockClients';
 
-describe('StatsigProvider', () => {
+describe('useGate', () => {
   beforeAll(() => {
     const { promise } = createDeferredPromise<void>();
+
     const client = newMockRemoteClient();
-    client.initialize.mockReturnValueOnce(promise);
+    client.initialize.mockResolvedValueOnce(promise);
 
     render(
       <StatsigProvider client={client}>
