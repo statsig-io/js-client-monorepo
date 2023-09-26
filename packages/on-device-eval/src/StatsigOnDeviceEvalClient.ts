@@ -1,6 +1,6 @@
 import {
   DynamicConfig,
-  IStatsigLocalEvalClient,
+  IStatsigOnDeviceEvalClient,
   Layer,
   StatsigEvent,
   StatsigLoadingStatus,
@@ -12,7 +12,9 @@ import Network from './Network';
 import { StatsigOptions } from './StatsigOptions';
 import Evaluator from './Evaluator';
 
-export default class StatsigLocalEvalClient implements IStatsigLocalEvalClient {
+export default class StatsigOnDeviceEvalClient
+  implements IStatsigOnDeviceEvalClient
+{
   loadingStatus: StatsigLoadingStatus = 'Uninitialized';
 
   private _network: Network;

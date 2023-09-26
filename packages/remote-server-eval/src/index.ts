@@ -4,14 +4,14 @@ export {
   StatsigEnvironment,
 } from '@statsig-client/core';
 
-import StatsigRemoteEvalClient from './StatsigRemoteEvalClient';
+import StatsigRemoteServerEvalClient from './StatsigRemoteServerEvalClient';
 import { StatsigOptions } from './StatsigOptions';
 
-export { StatsigRemoteEvalClient, StatsigOptions };
+export { StatsigRemoteServerEvalClient, StatsigOptions };
 
 if (typeof window !== 'undefined') {
   window.__STATSIG__ = {
     ...window.__STATSIG__,
-    StatsigRemoteEvalClient,
+    StatsigRemoteServerEvalClient,
   };
 }

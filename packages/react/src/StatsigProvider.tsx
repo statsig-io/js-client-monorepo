@@ -1,12 +1,12 @@
 import {
-  IStatsigLocalEvalClient,
-  IStatsigRemoteEvalClient,
+  IStatsigOnDeviceEvalClient,
+  IStatsigRemoteServerEvalClient,
 } from '@statsig-client/core';
 import React, { useEffect, useState } from 'react';
 import StatsigContext from './StatsigContext';
 
 type Props = {
-  client: IStatsigLocalEvalClient | IStatsigRemoteEvalClient;
+  client: IStatsigOnDeviceEvalClient | IStatsigRemoteServerEvalClient;
   children: React.ReactNode | React.ReactNode[];
 };
 

@@ -55,9 +55,9 @@
   "dependencies": {
     "@statsig-client/core": "file:./packages/core",
     "@statsig-client/extensions": "file:./packages/extensions",
-    "@statsig-client/local-eval": "file:./packages/local-eval",
+    "@statsig-client/on-device-eval": "file:./packages/on-device-eval",
     "@statsig-client/react": "file:./packages/react",
-    "@statsig-client/remote-eval": "file:./packages/remote-eval"
+    "@statsig-client/remote-server-eval": "file:./packages/remote-server-eval"
   },
   "eslintConfig": {
     "extends": "./config/.eslintrc.js",

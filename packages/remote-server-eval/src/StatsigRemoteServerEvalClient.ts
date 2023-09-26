@@ -2,7 +2,7 @@ import {
   DJB2,
   DynamicConfig,
   Experiment,
-  IStatsigRemoteEvalClient,
+  IStatsigRemoteServerEvalClient,
   Layer,
   Logger,
   Monitored,
@@ -23,8 +23,8 @@ import Network from './Network';
 import { StatsigOptions } from './StatsigOptions';
 
 @Monitored
-export default class StatsigRemoteEvalClient
-  implements IStatsigRemoteEvalClient
+export default class StatsigRemoteServerEvalClient
+  implements IStatsigRemoteServerEvalClient
 {
   loadingStatus: StatsigLoadingStatus = 'Uninitialized';
 

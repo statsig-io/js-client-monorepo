@@ -5,8 +5,8 @@ const resetColor = '\x1b[0m';
 const redColor = '\x1b[31m';
 
 const FILE_LIMIT_MAP = {
-  'statsig-js-local-eval.min.js': 30_000,
-  'statsig-js-remote-eval.min.js': 20_000,
+  'statsig-js-on-device-eval.min.js': 30_000,
+  'statsig-js-remote-server-eval.min.js': 20_000,
   'statsig-js-extensions.min.js': 10_000,
   'statsig-react.min.js': 20_000,
   'statsig-sha256.min.js': 6_000,

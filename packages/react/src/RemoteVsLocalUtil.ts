@@ -1,11 +1,11 @@
 import {
-  IStatsigLocalEvalClient,
-  IStatsigRemoteEvalClient,
+  IStatsigOnDeviceEvalClient,
+  IStatsigRemoteServerEvalClient,
 } from '@statsig-client/core';
 
 export function isRemoteEvaluationClient(
-  client: IStatsigLocalEvalClient | IStatsigRemoteEvalClient,
-): client is IStatsigRemoteEvalClient {
+  client: IStatsigOnDeviceEvalClient | IStatsigRemoteServerEvalClient,
+): client is IStatsigRemoteServerEvalClient {
   return 'updateUser' in client;
 }
 

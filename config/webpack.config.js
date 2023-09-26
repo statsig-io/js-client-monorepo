@@ -94,14 +94,14 @@ function makeWebpackConfig(name, extras) {
 }
 
 module.exports = [
-  makeWebpackConfig('statsig-js-remote-eval'),
+  makeWebpackConfig('statsig-js-remote-server-eval'),
   makeWebpackConfig('statsig-react', {
     externals: {
       react: 'react',
       'react-dom': 'reactDOM',
     },
   }),
-  makeWebpackConfig('statsig-js-local-eval'),
+  makeWebpackConfig('statsig-js-on-device-eval'),
   makeWebpackConfig('statsig-sha256'),
   makeWebpackConfig('statsig-js-extensions'),
 ];

@@ -16,10 +16,10 @@
       "path": "./packages/react"
     },
     {
-      "path": "./packages/remote-eval"
+      "path": "./packages/remote-server-eval"
     },
     {
-      "path": "./packages/local-eval"
+      "path": "./packages/on-device-eval"
     },
     {
       "path": "./packages/extensions"
