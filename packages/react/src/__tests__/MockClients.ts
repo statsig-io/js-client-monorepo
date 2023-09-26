@@ -14,11 +14,13 @@ export function newMockRemoteClient(): jest.Mocked<IStatsigRemoteEvalClient> {
   };
 }
 
-export function createDeferredPromise<T>(): {
+export type DeferredPromise<T> = {
   promise: Promise<T>;
   resolve: (value: T | PromiseLike<T>) => void;
   reject: (reason?: unknown) => void;
-} {
+};
+
+export function createDeferredPromise<T>(): DeferredPromise<T> {
   let resolve!: (value: T | PromiseLike<T>) => void;
   let reject!: (reason?: unknown) => void;
 

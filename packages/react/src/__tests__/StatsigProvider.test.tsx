@@ -8,19 +8,18 @@ import StatsigProvider from '../StatsigProvider';
 import { createDeferredPromise, newMockRemoteClient } from './MockClients';
 
 describe('StatsigProvider', () => {
-  beforeAll(() => {
-    const { promise } = createDeferredPromise<void>();
+  it('renders children', async () => {
+    const deferred = createDeferredPromise<void>();
     const client = newMockRemoteClient();
-    client.initialize.mockReturnValueOnce(promise);
+    client.initialize.mockReturnValueOnce(deferred.promise);
 
     render(
       <StatsigProvider client={client}>
         <div data-testid="first-child" />
       </StatsigProvider>,
     );
-  });
 
-  it('foo', async () => {
+    deferred.resolve();
     await waitFor(() => screen.getByTestId('first-child'));
   });
 });

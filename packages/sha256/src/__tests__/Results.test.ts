@@ -71,9 +71,13 @@ function generateTestCases(count: number) {
   return randomWords;
 }
 
+const ITERATIONS = 5000;
+
 describe('Sha256 Results', () => {
-  test.each(generateTestCases(100))('%s', (word) => {
-    for (let i = 0; i < 1000; i++) {
+  test.each(generateTestCases(30))('%s', (word) => {
+    expect.assertions(ITERATIONS);
+
+    for (let i = 0; i < ITERATIONS; i++) {
       const expected = getExpectedHash(word);
       const actual = getActualHash(word);
       expect(actual).toEqual(expected);

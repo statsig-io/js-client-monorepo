@@ -1,14 +1,12 @@
 import {
   IStatsigLocalEvalClient,
   IStatsigRemoteEvalClient,
-  StatsigUser,
 } from '@statsig-client/core';
 import React, { useEffect, useState } from 'react';
 import StatsigContext from './StatsigContext';
 
 type Props = {
   client: IStatsigLocalEvalClient | IStatsigRemoteEvalClient;
-  user?: StatsigUser;
   children: React.ReactNode | React.ReactNode[];
 };
 
@@ -16,12 +14,13 @@ export default function StatsigProvider({
   client,
   children,
 }: Props): JSX.Element {
-  const [version, setVersion] = useState(0);
+  const [isReady, setIsReady] = useState(false);
+
   useEffect(() => {
     client
       .initialize()
       .then(() => {
-        setVersion((v) => v + 1);
+        setIsReady(true);
       })
       .catch((error) => {
         // eslint-disable-next-line no-console
@@ -30,11 +29,11 @@ export default function StatsigProvider({
           error,
         );
       });
-  }, []);
+  }, [client]);
 
   return (
-    <StatsigContext.Provider value={{ client, version }}>
-      {children}
+    <StatsigContext.Provider value={{ client }}>
+      {isReady ? children : null}
     </StatsigContext.Provider>
   );
 }
