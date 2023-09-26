@@ -71,7 +71,7 @@ function generateTestCases(count: number) {
   return randomWords;
 }
 
-describe('Foo', () => {
+describe('Sha256 Results', () => {
   test.each(generateTestCases(100))('%s', (word) => {
     for (let i = 0; i < 1000; i++) {
       const expected = getExpectedHash(word);
