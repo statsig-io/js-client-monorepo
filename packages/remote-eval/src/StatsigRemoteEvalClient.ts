@@ -1,21 +1,21 @@
 import {
+  DJB2,
   DynamicConfig,
   Experiment,
+  IStatsigRemoteEvalClient,
   Layer,
-  DJB2,
+  Logger,
+  Monitored,
+  StatsigEvent,
+  StatsigLoadingStatus,
+  StatsigUser,
   createConfigExposure,
   createGateExposure,
   createLayerParameterExposure,
-  StatsigUser,
-  normalizeUser,
-  Logger,
-  Monitored,
   emptyDynamicConfig,
-  IStatsigRemoteEvalClient,
-  StatsigLoadingStatus,
-  StatsigEvent,
-  getStableID,
   emptyLayer,
+  getStableID,
+  normalizeUser,
 } from '@statsig-client/core';
 import SpecStore from './SpecStore';
 
@@ -26,7 +26,7 @@ import { StatsigOptions } from './StatsigOptions';
 export default class StatsigRemoteEvalClient
   implements IStatsigRemoteEvalClient
 {
-  loadingStatus: StatsigLoadingStatus = 'uninitialized';
+  loadingStatus: StatsigLoadingStatus = 'Uninitialized';
 
   private _options: StatsigOptions;
   private _network: Network;
@@ -40,7 +40,6 @@ export default class StatsigRemoteEvalClient
     options: StatsigOptions | null = null,
   ) {
     this._options = options ?? { api: 'https://api.statsig.com/v1' };
-
     this._store = new SpecStore(sdkKey);
     this._network = new Network(
       sdkKey,
@@ -56,21 +55,27 @@ export default class StatsigRemoteEvalClient
   }
 
   async updateUser(user: StatsigUser): Promise<void> {
-    this.loadingStatus = 'loading';
+    this.loadingStatus = 'Loading';
     this._user = normalizeUser(user, this._options.environment);
+
     const cacheHit = this._store.switchToUser(this._user);
     if (cacheHit) {
-      this.loadingStatus = 'ready-cache';
+      this.loadingStatus = 'Cache';
     }
 
     const capturedUser = this._user;
-    const response = await this._network.fetchEvaluations(capturedUser);
 
-    if (response.has_updates) {
-      this._store.setValues(capturedUser, response);
+    let pendingStatus: StatsigLoadingStatus = 'Bootstrap';
+    let response =
+      await this._options.evaluationDataProvider?.fetchEvaluations(user);
+
+    if (response == null) {
+      pendingStatus = 'Network';
+      response = await this._network.fetchEvaluations(capturedUser);
     }
 
-    this.loadingStatus = 'ready-network';
+    this._store.setValues(capturedUser, response);
+    this.loadingStatus = pendingStatus;
   }
 
   async shutdown(): Promise<void> {

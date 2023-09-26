@@ -1,17 +1,13 @@
 import { NetworkCore, StatsigUser } from '@statsig-client/core';
-import { StoreValues } from './SpecStore';
 import { SDK_TYPE } from './StatsigMetadata';
-
-type StoreValues204 = {
-  has_updates: false;
-};
+import { EvaluationResponse } from './EvaluationData';
 
 export default class StatsigNetwork extends NetworkCore {
   constructor(sdkKey: string, stableID: string, api: string) {
     super(sdkKey, SDK_TYPE, stableID, api);
   }
 
-  fetchEvaluations(user: StatsigUser): Promise<StoreValues | StoreValues204> {
+  fetchEvaluations(user: StatsigUser): Promise<EvaluationResponse> {
     return this._sendPostRequest(
       `${this._api}/initialize`,
       {

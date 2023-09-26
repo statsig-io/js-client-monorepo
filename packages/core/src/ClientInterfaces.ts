@@ -3,10 +3,12 @@ import { DynamicConfig, Experiment, Layer } from './StatsigTypes';
 import { StatsigUser } from './StatsigUser';
 
 export type StatsigLoadingStatus =
-  | 'uninitialized'
-  | 'loading'
-  | 'ready-cache'
-  | 'ready-network';
+  | 'Uninitialized'
+  | 'Loading'
+  | 'Cache'
+  | 'Bootstrap'
+  | 'Network'
+  | 'Error';
 
 interface IStatsigClientCommon {
   readonly loadingStatus: StatsigLoadingStatus;

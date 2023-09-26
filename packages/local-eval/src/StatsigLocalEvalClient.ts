@@ -13,7 +13,7 @@ import { StatsigOptions } from './StatsigOptions';
 import Evaluator from './Evaluator';
 
 export default class StatsigLocalEvalClient implements IStatsigLocalEvalClient {
-  loadingStatus: StatsigLoadingStatus = 'uninitialized';
+  loadingStatus: StatsigLoadingStatus = 'Uninitialized';
 
   private _network: Network;
   private _options: StatsigOptions;
@@ -30,15 +30,15 @@ export default class StatsigLocalEvalClient implements IStatsigLocalEvalClient {
   }
 
   async initialize(): Promise<void> {
-    this.loadingStatus = 'loading';
+    this.loadingStatus = 'Loading';
 
     const response = await this._network.fetchConfigSpecs();
 
     if (response.has_updates) {
       this._store.setValues(response);
-      this.loadingStatus = 'ready-network';
+      this.loadingStatus = 'Network';
     } else {
-      this.loadingStatus = 'error' as unknown as StatsigLoadingStatus;
+      this.loadingStatus = 'Error';
     }
   }
 

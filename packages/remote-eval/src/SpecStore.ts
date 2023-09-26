@@ -2,48 +2,14 @@ import {
   DJB2,
   getObjectFromLocalStorage,
   setObjectInLocalStorage,
-  SecondaryExposure,
   StatsigUser,
 } from '@statsig-client/core';
-
-type Spec<T> = {
-  name: string;
-  value: T;
-  rule_id: string;
-  group_name: string;
-  id_type: string;
-  secondary_exposures: SecondaryExposure[];
-};
-
-export type GateSpec = Spec<boolean>;
-
-export type ConfigSpec = Spec<Record<string, unknown>> & {
-  name: string;
-  rule_id: string;
-  group: string;
-  group_name: string;
-  is_device_based: boolean;
-  id_type: string;
-  is_experiment_active: boolean;
-  is_user_in_experiment: boolean;
-};
-
-export type LayerSpec = Omit<ConfigSpec, 'id_type'> & {
-  allocated_experiment_name: string;
-  explicit_parameters: string[];
-  undelegated_secondary_exposures?: SecondaryExposure[];
-};
-
-export type StoreValues = {
-  feature_gates: Record<string, GateSpec>;
-  dynamic_configs: Record<string, ConfigSpec>;
-  layer_configs: Record<string, LayerSpec>;
-  time: number;
-  has_updates: boolean;
-};
+import { EvaluationResponse } from './EvaluationData';
 
 const MANIFEST_KEY = 'statsig.manifest';
 const CACHE_LIMIT = 10;
+
+type StoreValues = EvaluationResponse & { has_updates: true };
 
 export default class SpecStore {
   values: StoreValues | null = null;
@@ -51,7 +17,11 @@ export default class SpecStore {
 
   constructor(private _sdkKey: string) {}
 
-  setValues(user: StatsigUser, values: StoreValues): void {
+  setValues(user: StatsigUser, values: EvaluationResponse): void {
+    if (!values.has_updates) {
+      return;
+    }
+
     this.values = values;
 
     const cacheKey = createCacheKey(user, this._sdkKey);
