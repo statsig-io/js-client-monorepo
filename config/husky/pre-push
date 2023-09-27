@@ -1,9 +1,23 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
 
+# -- Keep the versions in sync
 npm run version-sync
 
 if [ -n "$(git status --porcelain)" ]; then
   echo "There are uncommitted changes in the repository. Please commit or stash them before proceeding."
   exit 1
+fi
+
+# --
+
+
+# -- Run linting using npm run lint
+npm run lint
+
+lint_exit_code=$?
+
+if [ $lint_exit_code -ne 0 ]; then
+  echo "Linting failed with exit code $lint_exit_code. Please fix linting issues before proceeding."
+  exit $lint_exit_code
 fi

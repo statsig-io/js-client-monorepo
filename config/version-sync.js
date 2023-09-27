@@ -10,6 +10,5 @@ glob.sync('./packages/**/package.json').forEach((location) => {
     .toString()
     .replace(/"version": ".*"/, `"version": "${mainVersion}"`);
 
-  console.log('Version', location, updated);
   fs.writeFileSync(location, updated);
 });
