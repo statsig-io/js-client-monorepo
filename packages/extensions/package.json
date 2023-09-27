@@ -1,8 +1,9 @@
 {
   "name": "dloomb-client-extensions",
   "version": "1.0.0-beta.3",
-  "description": "The UI package",
-  "main": "./build/index.js",
+  "description": "Adds additional funcitonality to a Statsig client SDK",
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
   "type": "commonjs",
   "scripts": {
     "build": "tsc --build --verbose",

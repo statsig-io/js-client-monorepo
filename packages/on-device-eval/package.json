@@ -1,8 +1,9 @@
 {
   "name": "dloomb-client-on-device-eval",
   "version": "1.0.0-beta.3",
-  "description": "The UI package",
-  "main": "./build/index.js",
+  "description": "Used for checking Statsig gates and experiments. Evaluations are made in realtime when SDK methods are called.",
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
   "type": "commonjs",
   "scripts": {
     "build": "tsc --build --verbose",
