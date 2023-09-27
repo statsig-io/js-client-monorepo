@@ -2,16 +2,13 @@ const { defaults: tsjPreset } = require('ts-jest/presets');
 
 /** @type {import('ts-jest').JestConfigWithTsJest} */
 module.exports = {
-  ...tsjPreset,
   rootDir: '../',
   preset: 'react-native',
   transform: {
-    '^.+\\.tsx?$': [
-      'ts-jest',
-      {
-        tsconfig: 'config/test-tsconfig.json',
-        babelConfig: './config/test-babel.config.js',
-      },
+    ...tsjPreset.transform,
+    '^.+\\.(js|ts|tsx)$': [
+      'babel-jest',
+      { configFile: './config/test-babel.config.js' },
     ],
   },
   testMatch: [
