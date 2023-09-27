@@ -1,0 +1,18 @@
+{
+  "name": "@statsig-client/react-native",
+  "version": "1.0.0",
+  "description": "The UI package",
+  "main": "./build/index.js",
+  "type": "commonjs",
+  "scripts": {
+    "build": "tsc --build --verbose",
+    "prepare": "npm run build"
+  },
+  "dependencies": {
+    "@statsig-client/core": "file:../core",
+    "@statsig-client/react": "file:../react"
+  },
+  "peerDependencies": {
+    "react": "^16.6.3 || ^17.0.0 || ^18.0.0"
+  }
+}

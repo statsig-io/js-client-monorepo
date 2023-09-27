@@ -1,4 +1,4 @@
-import { getUUID } from './IDUtil';
+import { getUUID } from './UUID';
 import { StatsigEvent } from './StatsigEvent';
 import { SDK_VERSION } from './StatsigMetadata';
 

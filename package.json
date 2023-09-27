@@ -56,6 +56,7 @@
     "@statsig-client/core": "file:./packages/core",
     "@statsig-client/extensions": "file:./packages/extensions",
     "@statsig-client/on-device-eval": "file:./packages/on-device-eval",
+    "@statsig-client/react-native": "file:./packages/react-native",
     "@statsig-client/react": "file:./packages/react",
     "@statsig-client/remote-server-eval": "file:./packages/remote-server-eval"
   },

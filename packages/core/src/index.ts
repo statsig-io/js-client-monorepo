@@ -1,6 +1,6 @@
 export * from './ClientInterfaces';
 export * from './Hashing';
-export * from './IDUtil';
+export * from './UUID';
 export * from './LocalStorageUtil';
 export * from './Logger';
 export * from './Monitoring';

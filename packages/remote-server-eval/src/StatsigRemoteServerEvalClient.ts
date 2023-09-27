@@ -14,7 +14,7 @@ import {
   createLayerParameterExposure,
   emptyDynamicConfig,
   emptyLayer,
-  getStableID,
+  getUUID,
   normalizeUser,
 } from '@statsig-client/core';
 import SpecStore from './SpecStore';
@@ -43,7 +43,7 @@ export default class StatsigRemoteServerEvalClient
     this._store = new SpecStore(sdkKey);
     this._network = new Network(
       sdkKey,
-      getStableID(this._options),
+      this._options.overrideStableID ?? getUUID(),
       this._options.api,
     );
     this._logger = new Logger(this._network);

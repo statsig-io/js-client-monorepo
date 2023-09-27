@@ -16,6 +16,9 @@
       "path": "./packages/react"
     },
     {
+      "path": "./packages/react-native"
+    },
+    {
       "path": "./packages/remote-server-eval"
     },
     {

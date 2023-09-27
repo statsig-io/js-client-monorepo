@@ -22,7 +22,9 @@
       "$_sendPostRequest": "M",
       "$sendEvents": "t",
       "$emptyLayer": "i",
-      "$emptyDynamicConfig": "o"
+      "$emptyDynamicConfig": "o",
+      "$logMissingStatsigUserWarning": "u",
+      "$isRemoteEvaluationClient": "l"
     }
   }
 }

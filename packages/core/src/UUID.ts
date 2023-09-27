@@ -1,9 +1,3 @@
-import { StatsigOptionsCommon } from './StatsigTypes';
-
-export function getStableID(options: StatsigOptionsCommon): string {
-  return options.overrideStableID ?? getUUID();
-}
-
 export function getUUID(): string {
   let d = new Date().getTime();
   let d2 =

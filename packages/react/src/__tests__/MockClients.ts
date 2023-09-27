@@ -1,8 +1,8 @@
-import { IStatsigRemoteEvalClient } from '@statsig-client/core';
+import { IStatsigRemoteServerEvalClient } from '@statsig-client/core';
 
-export function newMockRemoteClient(): jest.Mocked<IStatsigRemoteEvalClient> {
+export function newMockRemoteClient(): jest.Mocked<IStatsigRemoteServerEvalClient> {
   return {
-    loadingStatus: 'uninitialized',
+    loadingStatus: 'Uninitialized',
     initialize: jest.fn(),
     updateUser: jest.fn(),
     shutdown: jest.fn(),
