@@ -6,11 +6,11 @@ module.exports = {
   rootDir: '../',
   preset: 'react-native',
   transform: {
-    '^.+\\.jsx$': 'babel-jest',
     '^.+\\.tsx?$': [
       'ts-jest',
       {
         tsconfig: 'config/test-tsconfig.json',
+        babelConfig: './config/test-babel.config.js',
       },
     ],
   },

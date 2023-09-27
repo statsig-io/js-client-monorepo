@@ -63,11 +63,10 @@ module.exports = {
   ignorePatterns: [
     'dist',
     'build',
-    'webpack.config.js',
+    '*.config.js',
     '.eslintrc.js',
     '.prettierrc.js',
     '.esbuild.js',
-    'jest.config.js',
     'size-check.js',
     'samples',
     'minified_import_test',
