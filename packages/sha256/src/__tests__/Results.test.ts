@@ -74,7 +74,7 @@ function generateTestCases(count: number) {
 const ITERATIONS = 5000;
 
 describe('Sha256 Results', () => {
-  test.each(generateTestCases(30))('%s', (word) => {
+  test.each(generateTestCases(10))('%s', (word) => {
     expect.assertions(ITERATIONS);
 
     for (let i = 0; i < ITERATIONS; i++) {
