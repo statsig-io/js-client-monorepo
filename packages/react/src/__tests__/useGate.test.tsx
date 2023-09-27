@@ -8,10 +8,9 @@ import * as React from 'react';
 import StatsigProvider from '../StatsigProvider';
 import useGate from '../useGate';
 import {
-  DeferredPromise,
-  createDeferredPromise,
-  newMockRemoteClient,
-} from './MockClients';
+  TestPromise,
+  MockRemoteServerEvalClient,
+} from '@statsig-client/test-helpers';
 
 const GateComponent = () => {
   const { value } = useGate('a_gate');
@@ -19,13 +18,13 @@ const GateComponent = () => {
 };
 
 describe('useGate', () => {
-  let deferred: DeferredPromise<void>;
+  let promise: TestPromise<void>;
 
   beforeEach(() => {
-    deferred = createDeferredPromise<void>();
+    promise = TestPromise.create<void>();
 
-    const client = newMockRemoteClient();
-    client.initialize.mockResolvedValue(deferred.promise);
+    const client = MockRemoteServerEvalClient.create();
+    client.initialize.mockResolvedValue(promise);
     client.checkGate.mockReturnValue(true);
 
     render(
@@ -40,7 +39,7 @@ describe('useGate', () => {
   });
 
   it('renders the gate value', async () => {
-    deferred.resolve();
+    promise.resolve();
 
     await waitFor(() => {
       const loadingText = screen.queryByTestId('gate-value');

@@ -5,13 +5,16 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import * as React from 'react';
 import StatsigProvider from '../StatsigProvider';
-import { createDeferredPromise, newMockRemoteClient } from './MockClients';
+import {
+  TestPromise,
+  MockRemoteServerEvalClient,
+} from '@statsig-client/test-helpers';
 
 describe('StatsigProvider', () => {
   it('renders children', async () => {
-    const deferred = createDeferredPromise<void>();
-    const client = newMockRemoteClient();
-    client.initialize.mockReturnValueOnce(deferred.promise);
+    const promise = TestPromise.create<void>();
+    const client = MockRemoteServerEvalClient.create();
+    client.initialize.mockReturnValueOnce(promise);
 
     render(
       <StatsigProvider client={client}>
@@ -19,7 +22,7 @@ describe('StatsigProvider', () => {
       </StatsigProvider>,
     );
 
-    deferred.resolve();
+    promise.resolve();
     await waitFor(() => screen.getByTestId('first-child'));
   });
 });

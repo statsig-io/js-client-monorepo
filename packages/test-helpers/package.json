@@ -1,0 +1,12 @@
+{
+  "name": "@statsig-client/test-helpers",
+  "version": "1.0.0",
+  "description": "The UI package",
+  "main": "./build/index.js",
+  "type": "commonjs",
+  "scripts": {
+    "build": "tsc --build --verbose",
+    "prepare": "npm run build"
+  },
+  "devDependencies": {}
+}

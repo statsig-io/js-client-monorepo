@@ -11,6 +11,9 @@
   "dependencies": {
     "@statsig-client/core": "file:../core"
   },
+  "devDependencies": {
+    "@statsig-client/test-helpers": "file:../test-helpers"
+  },
   "peerDependencies": {
     "react": "^16.6.3 || ^17.0.0 || ^18.0.0"
   }
