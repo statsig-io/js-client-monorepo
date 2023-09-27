@@ -7,7 +7,7 @@
   ],
   "scripts": {
     "build": "tsc --build --verbose && webpack --config ./config/webpack.config.js && npm run size-check",
-    "prepare": "tsc --build && webpack --config ./config/webpack.config.js",
+    "prepare": "husky install config/husky && npm run build",
     "size-check": "./config/size-check.js",
     "test": "jest --config=./config/jest.config.js",
     "test:playwright": "playwright test --config=./config/playwright.config.ts",
@@ -60,7 +60,8 @@
     "uglify-js": "^3.17.4",
     "webpack-bundle-analyzer": "^4.9.1",
     "webpack-cli": "^5.1.4",
-    "webpack": "^5.88.2"
+    "webpack": "^5.88.2",
+    "husky": "^8.0.0"
   },
   "dependencies": {
     "dloomb-client-core": "file:./packages/core",
