@@ -66,4 +66,6 @@ coverage/
 
 # JSDoc output
 out/
-
+/test-results/
+/playwright-report/
+/playwright/.cache/
