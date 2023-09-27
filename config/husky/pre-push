@@ -1,0 +1,9 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+npm run version-sync
+
+if [ -n "$(git status --porcelain)" ]; then
+  echo "There are uncommitted changes in the repository. Please commit or stash them before proceeding."
+  exit 1
+fi
