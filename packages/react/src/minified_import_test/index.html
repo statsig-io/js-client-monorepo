@@ -1,0 +1,70 @@
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+
+
+  <div id="root"></div>
+
+  <script src="react@18.2.0.js"></script>
+  <script src="react-dom@18.2.0.js"></script>
+  <script src="babel@6.26.0.min.js"></script>
+
+  <script>window.react = React;</script>
+
+  <script src="../../../../dist/statsig-react.min.js"></script>
+  <script src="../../../../dist/statsig-js-remote-server-eval.min.js"></script>
+  <script src="../../../../dist/statsig-js-extensions.min.js"></script>
+
+  <script>window.Statsig = __STATSIG__;</script>
+
+  <script type="text/babel">
+    const client = new Statsig.StatsigRemoteServerEvalClient(
+      'client-key',
+      { userID: 'a-user' },
+    );
+    client.overrideGate("a_gate", true);
+
+    function Content() {
+      const { value } = Statsig.useGate("a_gate")
+      return <div>a_gate: {value ? "Pass" : "Fail"}</div>;
+    }
+
+    function App() {
+      const [count, setCount] = React.useState(0);
+
+      return (
+        <Statsig.StatsigProvider client={client}>
+          <Content />
+        </Statsig.StatsigProvider>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+  </script>
+
+  <!-- <script>
+    const client = new Statsig.StatsigRemoteServerEvalClient(
+      'client-wlH3WMkysINMhMU8VrNBkbjrEr2JQrqgxKwDPOUosJK',
+      { userID: 'a-user' },
+    );
+    // client.overrideGate('test_override', true);
+
+    const MyComponent = () => {
+      return React.createElement(Statsig.StatsigProvider, { client }, React.createElement('div', null, client.loadingStatus));
+    };
+
+    const container = document.getElementById('root');
+    const root = ReactDOM.createRoot(container);
+    root.render(React.createElement(MyComponent));
+  </script> -->
+
+
+</body>
+
+</html>

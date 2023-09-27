@@ -70,5 +70,6 @@ module.exports = {
     'jest.config.js',
     'size-check.js',
     'samples',
+    'minified_import_test',
   ],
 };

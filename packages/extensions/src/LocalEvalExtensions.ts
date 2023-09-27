@@ -4,7 +4,7 @@ import { ClientWithOverrides, bind } from './LocalOverridesBinding';
 let module: typeof import('@statsig-client/on-device-eval') | undefined;
 
 declare module '@statsig-client/on-device-eval' {
-  interface StatsigLocalEvalClient extends ClientWithOverrides {}
+  interface StatsigOnDeviceEvalClient extends ClientWithOverrides {}
 }
 
 try {
@@ -16,7 +16,7 @@ try {
 
 if (module != null) {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
-  bind(module.StatsigLocalEvalClient.prototype);
+  bind(module.StatsigOnDeviceEvalClient.prototype);
 }
 
 export { module as ExtendedLocalEvalModule };

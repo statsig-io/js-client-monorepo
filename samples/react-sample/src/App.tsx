@@ -1,9 +1,9 @@
 import '@statsig-client/extensions';
 import { StatsigProvider, useGate } from '@statsig-client/react';
-import { StatsigRemoteEvalClient } from '@statsig-client/remote-eval';
+import { StatsigRemoteServerEvalClient } from '@statsig-client/remote-server-eval';
 import './App.css';
 
-const client = new StatsigRemoteEvalClient(
+const client = new StatsigRemoteServerEvalClient(
   'client-wlH3WMkysINMhMU8VrNBkbjrEr2JQrqgxKwDPOUosJK',
   { userID: 'a-user' },
 );

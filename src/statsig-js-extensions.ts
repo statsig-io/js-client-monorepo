@@ -1,1 +1,1 @@
-export * from '@statsig-client/sha256';
+export * from '@statsig-client/extensions';

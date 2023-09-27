@@ -4,7 +4,7 @@ import { ClientWithOverrides, bind } from './LocalOverridesBinding';
 let module: typeof import('@statsig-client/remote-server-eval') | undefined;
 
 declare module '@statsig-client/remote-server-eval' {
-  interface StatsigRemoteEvalClient extends ClientWithOverrides {}
+  interface StatsigRemoteServerEvalClient extends ClientWithOverrides {}
 }
 
 try {
@@ -16,7 +16,7 @@ try {
 
 if (module != null) {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
-  bind(module.StatsigRemoteEvalClient.prototype);
+  bind(module.StatsigRemoteServerEvalClient.prototype);
 }
 
 export { module as ExtendedRemoteEvalModule };

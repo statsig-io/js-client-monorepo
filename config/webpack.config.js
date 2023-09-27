@@ -96,10 +96,10 @@ function makeWebpackConfig(name, extras) {
 module.exports = [
   makeWebpackConfig('statsig-js-remote-server-eval'),
   makeWebpackConfig('statsig-react', {
-    // externals: {
-    //   react: 'react',
-    //   'react-dom': 'reactDOM',
-    // },
+    externals: {
+      react: 'react',
+      'react-dom': 'reactDOM',
+    },
   }),
   makeWebpackConfig('statsig-react-native', {
     // externals: {
