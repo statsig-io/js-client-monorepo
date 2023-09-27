@@ -11,5 +11,10 @@
   "exclude": [
     "**/build",
     "samples"
+  ],
+  "references": [
+    {
+      "path": "../test-helpers"
+    }
   ]
 }
