@@ -1,7 +1,7 @@
 import {
   IStatsigOnDeviceEvalClient,
   IStatsigRemoteServerEvalClient,
-} from '@dloomb-client/core';
+} from 'dloomb-client-core';
 import React, { useEffect, useState } from 'react';
 import StatsigContext from './StatsigContext';
 

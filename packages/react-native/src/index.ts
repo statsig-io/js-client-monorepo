@@ -5,7 +5,7 @@ export {
   useDynamicConfig,
   useExperiment,
   useLayer,
-} from '@dloomb-client/react';
+} from 'dloomb-client-react';
 
 // const EXPORTS = {};
 

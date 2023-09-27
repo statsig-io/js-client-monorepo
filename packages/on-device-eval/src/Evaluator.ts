@@ -1,7 +1,7 @@
-import { NormalizedStatsigUser, StatsigUser } from '@dloomb-client/core';
+import { NormalizedStatsigUser, StatsigUser } from 'dloomb-client-core';
 import SpecStore, { Spec, SpecCondition, SpecRule } from './SpecStore';
 import { StatsigUnsupportedEvaluationError } from './Errors';
-import { SHA256 } from '@dloomb-client/sha256';
+import { SHA256 } from 'dloomb-client-sha256';
 
 const CONDITION_SEGMENT_COUNT = 10 * 1000;
 const USER_BUCKET_COUNT = 1000;

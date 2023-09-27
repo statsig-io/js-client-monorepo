@@ -1,14 +1,15 @@
 {
-  "name": "@dloomb-client/remote-server-eval",
-  "version": "1.0.0",
+  "name": "dloomb-client-remote-server-eval",
+  "version": "1.0.0-beta.2",
   "description": "The UI package",
-  "main": "./build/index.js",
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
   "type": "commonjs",
   "scripts": {
     "build": "tsc --build --verbose",
     "prepare": "npm run build"
   },
   "dependencies": {
-    "@dloomb-client/core": "file:../core"
+    "dloomb-client-core": "file:../core"
   }
 }

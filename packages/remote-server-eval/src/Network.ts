@@ -1,4 +1,4 @@
-import { NetworkCore, StatsigUser } from '@dloomb-client/core';
+import { NetworkCore, StatsigUser } from 'dloomb-client-core';
 import { SDK_TYPE } from './StatsigMetadata';
 import { EvaluationResponse } from './EvaluationData';
 

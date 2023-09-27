@@ -2,7 +2,7 @@ export {
   StatsigUser,
   StatsigEvent,
   StatsigEnvironment,
-} from '@dloomb-client/core';
+} from 'dloomb-client-core';
 
 import StatsigRemoteServerEvalClient from './StatsigRemoteServerEvalClient';
 import { StatsigOptions } from './StatsigOptions';

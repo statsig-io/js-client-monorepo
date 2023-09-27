@@ -1,7 +1,7 @@
 import {
   IStatsigOnDeviceEvalClient,
   IStatsigRemoteServerEvalClient,
-} from '@dloomb-client/core';
+} from 'dloomb-client-core';
 
 export abstract class MockRemoteServerEvalClient {
   static create(): jest.Mocked<IStatsigRemoteServerEvalClient> {

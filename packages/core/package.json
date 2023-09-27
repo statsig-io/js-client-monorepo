@@ -1,8 +1,9 @@
 {
-  "name": "@dloomb-client/core",
-  "version": "1.0.0",
+  "name": "dloomb-client-core",
+  "version": "1.0.0-beta.2",
   "description": "The package containing some utility functions",
-  "main": "./build/index.js",
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
   "type": "commonjs",
   "scripts": {
     "build": "tsc --build --verbose",

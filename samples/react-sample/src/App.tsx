@@ -1,6 +1,6 @@
-import '@dloomb-client/extensions';
-import { StatsigProvider, useGate } from '@dloomb-client/react';
-import { StatsigRemoteServerEvalClient } from '@dloomb-client/remote-server-eval';
+import 'dloomb-client-extensions';
+import { StatsigProvider, useGate } from 'dloomb-client-react';
+import { StatsigRemoteServerEvalClient } from 'dloomb-client-remote-server-eval';
 import './App.css';
 
 const client = new StatsigRemoteServerEvalClient(

@@ -1,6 +1,6 @@
 {
-  "name": "@dloomb-client/react-native",
-  "version": "1.0.0",
+  "name": "dloomb-client-react-native",
+  "version": "1.0.0-beta.1",
   "description": "The UI package",
   "main": "./build/index.js",
   "type": "commonjs",
@@ -9,11 +9,11 @@
     "prepare": "npm run build"
   },
   "dependencies": {
-    "@dloomb-client/core": "file:../core",
-    "@dloomb-client/react": "file:../react"
+    "dloomb-client-core": "file:../core",
+    "dloomb-client-react": "file:../react"
   },
   "devDependencies": {
-    "@dloomb-client/test-helpers": "file:../test-helpers"
+    "dloomb-client-test-helpers": "file:../test-helpers"
   },
   "peerDependencies": {
     "@react-native-async-storage/async-storage": "^1.15.10",

@@ -1,6 +1,6 @@
 {
-  "name": "@dloomb-client/on-device-eval",
-  "version": "1.0.0",
+  "name": "dloomb-client-on-device-eval",
+  "version": "1.0.0-beta.1",
   "description": "The UI package",
   "main": "./build/index.js",
   "type": "commonjs",
@@ -9,7 +9,7 @@
     "prepare": "npm run build"
   },
   "dependencies": {
-    "@dloomb-client/core": "file:../core",
-    "@dloomb-client/sha256": "file:../sha256"
+    "dloomb-client-core": "file:../core",
+    "dloomb-client-sha256": "file:../sha256"
   }
 }

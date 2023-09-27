@@ -1,15 +1,15 @@
 import { ClientWithOverrides, bind } from './LocalOverridesBinding';
 
 // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
-let module: typeof import('@dloomb-client/on-device-eval') | undefined;
+let module: typeof import('dloomb-client-on-device-eval') | undefined;
 
-declare module '@dloomb-client/on-device-eval' {
+declare module 'dloomb-client-on-device-eval' {
   interface StatsigOnDeviceEvalClient extends ClientWithOverrides {}
 }
 
 try {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  module = require('@dloomb-client/on-device-eval');
+  module = require('dloomb-client-on-device-eval');
 } catch {
   module = undefined;
 }

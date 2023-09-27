@@ -1,1 +1,1 @@
-export * from '@dloomb-client/extensions';
+export * from 'dloomb-client-extensions';

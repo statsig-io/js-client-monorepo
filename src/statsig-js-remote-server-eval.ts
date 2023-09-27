@@ -1,1 +1,1 @@
-export * from '@dloomb-client/remote-server-eval';
+export * from 'dloomb-client-remote-server-eval';

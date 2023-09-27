@@ -8,7 +8,7 @@ import StatsigProvider from '../StatsigProvider';
 import {
   TestPromise,
   MockRemoteServerEvalClient,
-} from '@dloomb-client/test-helpers';
+} from 'dloomb-client-test-helpers';
 
 describe('StatsigProvider', () => {
   it('renders children', async () => {

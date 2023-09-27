@@ -5,4 +5,4 @@ export {
   useGate,
   useLayer,
   StatsigContext,
-} from '@dloomb-client/react';
+} from 'dloomb-client-react';

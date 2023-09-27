@@ -1,6 +1,6 @@
 import { useContext, useMemo } from 'react';
 import StatsigContext from './StatsigContext';
-import { StatsigUser } from '@dloomb-client/core';
+import { StatsigUser } from 'dloomb-client-core';
 import {
   isRemoteEvaluationClient,
   logMissingStatsigUserWarning,

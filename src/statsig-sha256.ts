@@ -1,1 +1,1 @@
-export * from '@dloomb-client/sha256';
+export * from 'dloomb-client-sha256';
