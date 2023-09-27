@@ -10,7 +10,7 @@ import useGate from '../useGate';
 import {
   TestPromise,
   MockRemoteServerEvalClient,
-} from '@statsig-client/test-helpers';
+} from '@dloomb-client/test-helpers';
 
 const GateComponent = () => {
   const { value } = useGate('a_gate');

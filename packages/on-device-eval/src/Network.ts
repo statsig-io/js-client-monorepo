@@ -1,4 +1,4 @@
-import { NetworkCore } from '@statsig-client/core';
+import { NetworkCore } from '@dloomb-client/core';
 import { DownloadConfigSpecsResponse } from './SpecStore';
 import { SDK_TYPE } from './StatsigMetadata';
 

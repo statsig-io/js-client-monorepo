@@ -5,7 +5,7 @@ export {
   useDynamicConfig,
   useExperiment,
   useLayer,
-} from '@statsig-client/react';
+} from '@dloomb-client/react';
 
 // const EXPORTS = {};
 

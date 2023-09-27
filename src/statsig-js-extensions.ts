@@ -1,1 +1,1 @@
-export * from '@statsig-client/extensions';
+export * from '@dloomb-client/extensions';

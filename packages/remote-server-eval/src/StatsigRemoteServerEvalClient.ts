@@ -16,7 +16,7 @@ import {
   emptyLayer,
   getUUID,
   normalizeUser,
-} from '@statsig-client/core';
+} from '@dloomb-client/core';
 import SpecStore from './SpecStore';
 
 import Network from './Network';

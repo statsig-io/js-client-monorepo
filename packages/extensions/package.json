@@ -1,5 +1,5 @@
 {
-  "name": "@statsig-client/extensions",
+  "name": "@dloomb-client/extensions",
   "version": "1.0.0",
   "description": "The UI package",
   "main": "./build/index.js",
@@ -9,6 +9,6 @@
     "prepare": "npm run build"
   },
   "dependencies": {
-    "@statsig-client/core": "file:../core"
+    "@dloomb-client/core": "file:../core"
   }
 }

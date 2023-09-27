@@ -6,7 +6,7 @@ import {
   StatsigLoadingStatus,
   Logger,
   StatsigUser,
-} from '@statsig-client/core';
+} from '@dloomb-client/core';
 import SpecStore from './SpecStore';
 import Network from './Network';
 import { StatsigOptions } from './StatsigOptions';

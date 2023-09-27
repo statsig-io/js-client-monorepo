@@ -1,1 +1,1 @@
-export * from '@statsig-client/on-device-eval';
+export * from '@dloomb-client/on-device-eval';

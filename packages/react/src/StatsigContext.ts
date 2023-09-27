@@ -1,7 +1,7 @@
 import {
   IStatsigOnDeviceEvalClient,
   IStatsigRemoteServerEvalClient,
-} from '@statsig-client/core';
+} from '@dloomb-client/core';
 import React from 'react';
 
 export interface StatsigContext {

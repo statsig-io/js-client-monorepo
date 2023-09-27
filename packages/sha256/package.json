@@ -1,5 +1,5 @@
 {
-  "name": "@statsig-client/sha256",
+  "name": "@dloomb-client/sha256",
   "version": "1.0.0",
   "description": "The UI package",
   "main": "./build/index.js",

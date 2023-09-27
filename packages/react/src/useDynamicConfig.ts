@@ -4,7 +4,7 @@ import {
   DynamicConfig,
   StatsigUser,
   emptyDynamicConfig,
-} from '@statsig-client/core';
+} from '@dloomb-client/core';
 import {
   isRemoteEvaluationClient,
   logMissingStatsigUserWarning,

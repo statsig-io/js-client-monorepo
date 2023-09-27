@@ -1,15 +1,15 @@
 import { ClientWithOverrides, bind } from './LocalOverridesBinding';
 
 // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
-let module: typeof import('@statsig-client/remote-server-eval') | undefined;
+let module: typeof import('@dloomb-client/remote-server-eval') | undefined;
 
-declare module '@statsig-client/remote-server-eval' {
+declare module '@dloomb-client/remote-server-eval' {
   interface StatsigRemoteServerEvalClient extends ClientWithOverrides {}
 }
 
 try {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  module = require('@statsig-client/remote-server-eval');
+  module = require('@dloomb-client/remote-server-eval');
 } catch {
   module = undefined;
 }

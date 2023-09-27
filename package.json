@@ -1,5 +1,5 @@
 {
-  "name": "statsig-client-monorepo",
+  "name": "dloomb-client-monorepo",
   "version": "1.0.0",
   "description": "A monorepo in TypeScript",
   "private": true,
@@ -22,7 +22,7 @@
     "@babel/core": "^7.23.0",
     "@babel/preset-env": "^7.22.20",
     "@playwright/test": "^1.38.1",
-    "@statsig-client/test-helpers": "file:./packages/test-helpers",
+    "@dloomb-client/test-helpers": "file:./packages/test-helpers",
     "@testing-library/jest-dom": "^5.14.1",
     "@testing-library/react-native": "^12.3.0",
     "@testing-library/react": "^14.0.0",
@@ -63,12 +63,12 @@
     "webpack": "^5.88.2"
   },
   "dependencies": {
-    "@statsig-client/core": "file:./packages/core",
-    "@statsig-client/extensions": "file:./packages/extensions",
-    "@statsig-client/on-device-eval": "file:./packages/on-device-eval",
-    "@statsig-client/react": "file:./packages/react",
-    "@statsig-client/react-native": "file:./packages/react-native",
-    "@statsig-client/remote-server-eval": "file:./packages/remote-server-eval"
+    "@dloomb-client/core": "file:./packages/core",
+    "@dloomb-client/extensions": "file:./packages/extensions",
+    "@dloomb-client/on-device-eval": "file:./packages/on-device-eval",
+    "@dloomb-client/react": "file:./packages/react",
+    "@dloomb-client/react-native": "file:./packages/react-native",
+    "@dloomb-client/remote-server-eval": "file:./packages/remote-server-eval"
   },
   "eslintConfig": {
     "extends": "./config/.eslintrc.js",

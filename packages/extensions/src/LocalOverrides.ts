@@ -1,7 +1,7 @@
 import {
   getObjectFromLocalStorage,
   setObjectInLocalStorage,
-} from '@statsig-client/core';
+} from '@dloomb-client/core';
 
 export const STORAGE_KEY = 'STATSIG_JS_LOCAL_OVERRIDES';
 

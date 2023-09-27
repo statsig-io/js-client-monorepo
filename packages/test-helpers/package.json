@@ -1,5 +1,5 @@
 {
-  "name": "@statsig-client/test-helpers",
+  "name": "@dloomb-client/test-helpers",
   "version": "1.0.0",
   "description": "The UI package",
   "main": "./build/index.js",

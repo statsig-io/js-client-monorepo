@@ -1,5 +1,5 @@
 {
-  "name": "@statsig-client/react",
+  "name": "@dloomb-client/react",
   "version": "1.0.0",
   "description": "The UI package",
   "main": "./build/index.js",
@@ -9,10 +9,10 @@
     "prepare": "npm run build"
   },
   "dependencies": {
-    "@statsig-client/core": "file:../core"
+    "@dloomb-client/core": "file:../core"
   },
   "devDependencies": {
-    "@statsig-client/test-helpers": "file:../test-helpers"
+    "@dloomb-client/test-helpers": "file:../test-helpers"
   },
   "peerDependencies": {
     "react": "^16.6.3 || ^17.0.0 || ^18.0.0"

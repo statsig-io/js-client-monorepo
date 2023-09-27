@@ -1,4 +1,4 @@
-import { StatsigOptionsCommon } from '@statsig-client/core';
+import { StatsigOptionsCommon } from '@dloomb-client/core';
 
 export type StatsigOptions = StatsigOptionsCommon & {
   localEvalOption?: boolean;

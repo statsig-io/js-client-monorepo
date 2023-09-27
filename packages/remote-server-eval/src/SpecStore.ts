@@ -3,7 +3,7 @@ import {
   getObjectFromLocalStorage,
   setObjectInLocalStorage,
   StatsigUser,
-} from '@statsig-client/core';
+} from '@dloomb-client/core';
 import { EvaluationResponse } from './EvaluationData';
 
 const MANIFEST_KEY = 'statsig.manifest';

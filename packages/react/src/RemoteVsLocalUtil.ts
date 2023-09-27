@@ -1,7 +1,7 @@
 import {
   IStatsigOnDeviceEvalClient,
   IStatsigRemoteServerEvalClient,
-} from '@statsig-client/core';
+} from '@dloomb-client/core';
 
 export function isRemoteEvaluationClient(
   client: IStatsigOnDeviceEvalClient | IStatsigRemoteServerEvalClient,
