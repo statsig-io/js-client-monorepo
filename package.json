@@ -1,6 +1,6 @@
 {
   "name": "dloomb-client-monorepo",
-  "version": "1.0.0-beta.1",
+  "version": "1.0.0-beta.3",
   "description": "A monorepo in TypeScript",
   "workspaces": [
     "packages/*"
@@ -15,7 +15,8 @@
     "clean": "npm run clean-build-folders && npm run clean-tsbuild-info",
     "clean-build-folders": "find . -type d \\( -name 'build' -o -name 'dist' \\) -not -path './node_modules/*' -exec rm -rf {} +",
     "clean-tsbuild-info": "find . -type f -name 'tsconfig.tsbuildinfo' -not -path './node_modules/*' -exec rm -f {} +",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "version-sync": "./config/version-sync.js"
   },
   "devDependencies": {
     "@babel/core": "^7.23.0",

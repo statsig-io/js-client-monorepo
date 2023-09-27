@@ -70,5 +70,6 @@ module.exports = {
     'size-check.js',
     'samples',
     'minified_import_test',
+    'version-sync.js',
   ],
 };

@@ -1,6 +1,6 @@
 {
   "name": "dloomb-client-on-device-eval",
-  "version": "1.0.0-beta.1",
+  "version": "1.0.0-beta.3",
   "description": "The UI package",
   "main": "./build/index.js",
   "type": "commonjs",
