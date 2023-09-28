@@ -1,8 +1,9 @@
 import {
   DJB2,
-  getObjectFromLocalStorage,
-  setObjectInLocalStorage,
   StatsigUser,
+  Storage,
+  getObjectFromStorage,
+  setObjectInStorage,
 } from 'dloomb-client-core';
 import { EvaluationResponse } from './EvaluationData';
 
@@ -13,46 +14,52 @@ type StoreValues = EvaluationResponse & { has_updates: true };
 
 export default class SpecStore {
   values: StoreValues | null = null;
-  manifest: Record<string, number> | null = null;
+  manifest: Record<string, number> = {};
+  _isReady: Promise<void>;
 
-  constructor(private _sdkKey: string) {}
+  constructor(private _sdkKey: string) {
+    this._isReady = getObjectFromStorage<Record<string, number>>(
+      MANIFEST_KEY,
+    ).then((value) => {
+      this.manifest = value ?? {};
+    });
+  }
 
-  setValues(user: StatsigUser, values: EvaluationResponse): void {
+  async setValues(
+    user: StatsigUser,
+    values: EvaluationResponse,
+  ): Promise<void> {
     if (!values.has_updates) {
       return;
     }
 
+    await this._isReady;
+
     this.values = values;
-
     const cacheKey = createCacheKey(user, this._sdkKey);
-    setObjectInLocalStorage(cacheKey, values);
-
-    this._enforceStorageLimit(cacheKey);
+    await setObjectInStorage(cacheKey, values);
+    await this._enforceStorageLimit(cacheKey);
   }
 
-  switchToUser(user: StatsigUser): boolean {
+  async switchToUser(user: StatsigUser): Promise<boolean> {
     this.values = null;
     const cacheKey = createCacheKey(user, this._sdkKey);
-    const json = localStorage.getItem(cacheKey);
+    const json = await getObjectFromStorage<StoreValues>(cacheKey);
 
     if (json) {
-      this.values = JSON.parse(json) as StoreValues;
+      this.values = json;
       return true;
     }
 
     return false;
   }
 
-  private _enforceStorageLimit(cacheKey: string) {
-    this.manifest =
-      this.manifest ??
-      getObjectFromLocalStorage<Record<string, number>>(MANIFEST_KEY) ??
-      {};
+  private async _enforceStorageLimit(cacheKey: string): Promise<void> {
     this.manifest[cacheKey] = Date.now();
 
     const entries = Object.entries(this.manifest);
     if (entries.length < CACHE_LIMIT) {
-      setObjectInLocalStorage(MANIFEST_KEY, this.manifest);
+      await setObjectInStorage(MANIFEST_KEY, this.manifest);
       return;
     }
 
@@ -60,9 +67,9 @@ export default class SpecStore {
       return current[1] < acc[1] ? current : acc;
     });
 
-    localStorage.removeItem(oldest[0]);
+    await Storage.removeItem(oldest[0]);
     delete this.manifest[oldest[0]];
-    setObjectInLocalStorage(MANIFEST_KEY, this.manifest);
+    await setObjectInStorage(MANIFEST_KEY, this.manifest);
   }
 }
 

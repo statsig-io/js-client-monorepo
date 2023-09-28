@@ -71,5 +71,6 @@ module.exports = {
     'samples',
     'minified_import_test',
     'version-sync.js',
+    'jest.setup.js',
   ],
 };

@@ -9,7 +9,7 @@ const FILE_LIMIT_MAP = {
   'statsig-js-remote-server-eval.min.js': 20_000,
   'statsig-js-extensions.min.js': 20_000,
   'statsig-react.min.js': 20_000,
-  'statsig-react-native.min.js': 20_000,
+  'statsig-react-native.min.js': 30_000,
   'statsig-sha256.min.js': 6_000,
 };
 

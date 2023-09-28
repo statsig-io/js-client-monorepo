@@ -1,7 +1,4 @@
-import {
-  getObjectFromLocalStorage,
-  setObjectInLocalStorage,
-} from 'dloomb-client-core';
+import { getObjectFromStorage, setObjectInStorage } from 'dloomb-client-core';
 
 export const STORAGE_KEY = 'STATSIG_JS_LOCAL_OVERRIDES';
 
@@ -15,8 +12,8 @@ export function makeEmptyOverrides(): LocalOverrides {
   return { gates: {}, configs: {}, layers: {} };
 }
 
-export function loadOverridesFromLocalStorage(): LocalOverrides {
-  const raw = getObjectFromLocalStorage<LocalOverrides>(STORAGE_KEY);
+export async function loadOverridesFromLocalStorage(): Promise<LocalOverrides> {
+  const raw = await getObjectFromStorage<LocalOverrides>(STORAGE_KEY);
 
   if (raw && 'gates' in raw) {
     try {
@@ -29,6 +26,8 @@ export function loadOverridesFromLocalStorage(): LocalOverrides {
   return makeEmptyOverrides();
 }
 
-export function saveOverridesToLocalStorage(overrides: LocalOverrides): void {
-  setObjectInLocalStorage(STORAGE_KEY, overrides);
+export async function saveOverridesToLocalStorage(
+  overrides: LocalOverrides,
+): Promise<void> {
+  await setObjectInStorage(STORAGE_KEY, overrides);
 }

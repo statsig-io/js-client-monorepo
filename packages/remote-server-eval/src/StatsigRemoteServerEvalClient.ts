@@ -58,7 +58,7 @@ export default class StatsigRemoteServerEvalClient
     this.loadingStatus = 'Loading';
     this._user = normalizeUser(user, this._options.environment);
 
-    const cacheHit = this._store.switchToUser(this._user);
+    const cacheHit = await this._store.switchToUser(this._user);
     if (cacheHit) {
       this.loadingStatus = 'Cache';
     }
@@ -74,7 +74,7 @@ export default class StatsigRemoteServerEvalClient
       response = await this._network.fetchEvaluations(capturedUser);
     }
 
-    this._store.setValues(capturedUser, response);
+    await this._store.setValues(capturedUser, response);
     this.loadingStatus = pendingStatus;
   }
 
