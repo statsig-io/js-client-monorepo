@@ -1,71 +1,39 @@
-# Custom
+# See http://help.github.com/ignore-files/ for more about ignoring files.
 
-.pnpm-debug.log
-*.tsbuildinfo
-pnpm-lock.yaml
-
-# End Custom
-
-
-
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+# compiled output
+dist
+tmp
+/out-tsc
 
 # dependencies
-/node_modules
-/.pnp
-.pnp.js
+node_modules
 
-# testing
-/coverage
+# IDEs and editors
+/.idea
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
 
-# production
-build
+# IDE - VSCode
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
 
 # misc
+/.sass-cache
+/connect.lock
+/coverage
+/libpeerconnection.log
+npm-debug.log
+yarn-error.log
+testem.log
+/typings
+
+# System Files
 .DS_Store
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
-
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-
-
-
-.eslintcache
-
-### VSCode
-
-.vscode
-.vscode/*
-.vscode/settings.json
-.vscode/tasks.json
-.vscode/launch.json
-.vscode/extensions.json
-*.code-workspace
-
-# Local History for Visual Studio Code
-.history/
-
-# Dependency directories
-node_modules/
-
-# Builds
-dist/
-build/
-
-# Test coverage
-coverage/
-
-# Optional npm cache directory
-.npm
-
-.DS_Store
-
-# JSDoc output
-out/
-/test-results/
-/playwright-report/
-/playwright/.cache/
+Thumbs.db

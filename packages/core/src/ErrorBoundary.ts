@@ -22,6 +22,7 @@ export function errorBoundary(tag: string, task: () => unknown): unknown {
     return res;
   } catch (error) {
     _onError(tag, error);
+    return null;
   }
 }
 
