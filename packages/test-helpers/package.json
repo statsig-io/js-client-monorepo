@@ -1,9 +1,8 @@
 {
-  "name": "@sigstat/react-sdk",
+  "name": "statsig-test-helpers",
   "version": "0.0.1",
   "dependencies": {
-    "tslib": "^2.3.0",
-    "statsig-test-helpers": "*"
+    "tslib": "^2.3.0"
   },
   "type": "commonjs",
   "main": "./src/index.js",

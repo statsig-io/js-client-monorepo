@@ -5,10 +5,7 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import * as React from 'react';
 import StatsigProvider from '../StatsigProvider';
-import {
-  TestPromise,
-  MockRemoteServerEvalClient,
-} from 'dloomb-client-test-helpers';
+import { TestPromise, MockRemoteServerEvalClient } from 'statsig-test-helpers';
 
 describe('StatsigProvider', () => {
   it('renders children', async () => {

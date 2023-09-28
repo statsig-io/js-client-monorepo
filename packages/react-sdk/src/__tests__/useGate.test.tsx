@@ -7,10 +7,7 @@ import { render, screen, waitFor } from '@testing-library/react';
 import * as React from 'react';
 import StatsigProvider from '../StatsigProvider';
 import useGate from '../useGate';
-import {
-  TestPromise,
-  MockRemoteServerEvalClient,
-} from 'dloomb-client-test-helpers';
+import { TestPromise, MockRemoteServerEvalClient } from 'statsig-test-helpers';
 
 const GateComponent = () => {
   const { value } = useGate('a_gate');
