@@ -10,7 +10,7 @@
     "prepare": "npm run build"
   },
   "dependencies": {
-    "dloomb-client-core": "file:../core",
-    "dloomb-client-sha256": "file:../sha256"
+    "dloomb-client-core": "^1.0.0-beta.3",
+    "dloomb-client-sha256": "^1.0.0-beta.3"
   }
 }
