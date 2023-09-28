@@ -18,15 +18,6 @@ export = {
   ...EXPORTS,
 };
 
-// export {
-//   StatsigContext,
-//   StatsigProvider,
-//   useGate,
-//   useDynamicConfig,
-//   useExperiment,
-//   useLayer,
-// };
-
 declare global {
   interface Window {
     __STATSIG__: {

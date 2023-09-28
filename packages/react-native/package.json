@@ -15,6 +15,8 @@
   },
   "devDependencies": {
     "dloomb-client-test-helpers": "^1.0.0-beta.3",
+    "dloomb-client-remote-server-eval": "^1.0.0-beta.3",
+    "dloomb-client-on-device-eval": "^1.0.0-beta.3",
     "@react-native-async-storage/async-storage": "^1.15.10"
   },
   "peerDependencies": {

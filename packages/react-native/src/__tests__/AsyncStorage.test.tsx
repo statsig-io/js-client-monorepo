@@ -1,28 +1,19 @@
-import { render, screen, waitFor } from '@testing-library/react-native';
-import * as React from 'react';
-import { Text } from 'react-native';
-import { StatsigProvider } from '../index';
+import AsyncStorageMock from '@react-native-async-storage/async-storage/jest/async-storage-mock';
+import { StatsigRemoteServerEvalClient } from 'dloomb-client-remote-server-eval';
+import fetchMock from 'jest-fetch-mock';
 
-import {
-  MockRemoteServerEvalClient,
-  TestPromise,
-} from 'dloomb-client-test-helpers';
+AsyncStorageMock.getItem = jest.fn(() => Promise.resolve(null));
 
-describe('StatsigProvider', () => {
-  it('renders children', async () => {
-    const client = MockRemoteServerEvalClient.create();
+describe('AsyncStorage', () => {
+  beforeAll(async () => {
+    fetchMock.enableMocks();
+    fetchMock.mockResponse('{}');
+    const client = new StatsigRemoteServerEvalClient('client-key', {});
+    await client.initialize();
+    await client.shutdown();
+  });
 
-    const promise = TestPromise.create<void>();
-    client.initialize.mockReturnValue(promise);
-
-    promise.resolve();
-
-    render(
-      <StatsigProvider client={client}>
-        <Text>Fooo</Text>
-      </StatsigProvider>,
-    );
-
-    await waitFor(() => screen.getByText('Fooo'));
+  it('calls AsyncStorage', () => {
+    expect(AsyncStorageMock.getItem).toHaveBeenCalled();
   });
 });

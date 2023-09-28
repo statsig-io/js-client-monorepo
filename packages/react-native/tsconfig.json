@@ -7,6 +7,12 @@
   "references": [
     {
       "path": "../core"
+    },
+    {
+      "path": "../react"
+    },
+    {
+      "path": "../remote-server-eval"
     }
   ]
 }

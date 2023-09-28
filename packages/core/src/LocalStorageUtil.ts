@@ -5,8 +5,9 @@ type StorageProvider = {
 };
 
 let provider: StorageProvider;
+
 try {
-  if (typeof window !== 'undefined') {
+  if (typeof window !== 'undefined' && 'localStorage' in window) {
     provider = {
       getItem(key: string): Promise<string | null> {
         return Promise.resolve(localStorage.getItem(key));
@@ -21,8 +22,8 @@ try {
       },
     };
   } else {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-var-requires
-    provider = require('@react-native-async-storage/async-storage').default;
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    provider = require('@react-native-async-storage/async-storage');
   }
 } catch (error) {
   console.warn(
