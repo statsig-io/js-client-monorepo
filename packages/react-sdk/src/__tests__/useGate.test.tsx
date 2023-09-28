@@ -21,7 +21,7 @@ describe('useGate', () => {
     promise = TestPromise.create<void>();
 
     const client = MockRemoteServerEvalClient.create();
-    client.initialize.mockResolvedValue(promise);
+    client.initialize.mockReturnValue(promise);
     client.checkGate.mockReturnValue(true);
 
     render(

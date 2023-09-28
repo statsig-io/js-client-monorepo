@@ -1,4 +1,4 @@
-import { Experiment, StatsigUser } from 'dloomb-client-core';
+import { Experiment, StatsigUser } from '@sigstat/core';
 import useDynamicConfig from './useDynamicConfig';
 
 export type ExperimentResult = {

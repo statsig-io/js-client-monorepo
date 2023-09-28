@@ -1,10 +1,12 @@
 import {
-  IStatsigOnDeviceEvalClient,
-  IStatsigRemoteServerEvalClient,
-} from 'dloomb-client-core';
+  OnDeviceEvalutationsInterface,
+  PrecomputedEvalutationsInterface,
+} from '@sigstat/core';
+
+import { jest } from '@jest/globals';
 
 export abstract class MockRemoteServerEvalClient {
-  static create(): jest.Mocked<IStatsigRemoteServerEvalClient> {
+  static create(): jest.Mocked<PrecomputedEvalutationsInterface> {
     return {
       loadingStatus: 'Uninitialized',
       initialize: jest.fn(),
@@ -20,7 +22,7 @@ export abstract class MockRemoteServerEvalClient {
 }
 
 export abstract class MockOnDeviceEvalClient {
-  static create(): jest.Mocked<IStatsigOnDeviceEvalClient> {
+  static create(): jest.Mocked<OnDeviceEvalutationsInterface> {
     return {
       loadingStatus: 'Uninitialized',
       initialize: jest.fn(),

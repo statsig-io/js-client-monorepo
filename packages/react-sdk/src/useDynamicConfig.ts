@@ -1,10 +1,6 @@
 import { useContext, useMemo } from 'react';
 import StatsigContext from './StatsigContext';
-import {
-  DynamicConfig,
-  StatsigUser,
-  emptyDynamicConfig,
-} from 'dloomb-client-core';
+import { DynamicConfig, StatsigUser, emptyDynamicConfig } from '@sigstat/core';
 import {
   isRemoteEvaluationClient,
   logMissingStatsigUserWarning,

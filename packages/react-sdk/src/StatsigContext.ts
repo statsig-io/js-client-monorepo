@@ -1,13 +1,15 @@
 import {
-  IStatsigOnDeviceEvalClient,
-  IStatsigRemoteServerEvalClient,
-} from 'dloomb-client-core';
-import React from 'react';
+  OnDeviceEvalutationsInterface,
+  PrecomputedEvalutationsInterface,
+} from '@sigstat/core';
+import { createContext } from 'react';
 
 export interface StatsigContext {
-  readonly client: IStatsigOnDeviceEvalClient | IStatsigRemoteServerEvalClient;
+  readonly client:
+    | OnDeviceEvalutationsInterface
+    | PrecomputedEvalutationsInterface;
 }
 
-export default React.createContext<StatsigContext>({
+export default createContext<StatsigContext>({
   client: null!,
 });

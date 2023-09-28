@@ -1,11 +1,11 @@
 import {
-  IStatsigOnDeviceEvalClient,
-  IStatsigRemoteServerEvalClient,
-} from 'dloomb-client-core';
+  OnDeviceEvalutationsInterface,
+  PrecomputedEvalutationsInterface,
+} from '@sigstat/core';
 
 export function isRemoteEvaluationClient(
-  client: IStatsigOnDeviceEvalClient | IStatsigRemoteServerEvalClient,
-): client is IStatsigRemoteServerEvalClient {
+  client: OnDeviceEvalutationsInterface | PrecomputedEvalutationsInterface,
+): client is PrecomputedEvalutationsInterface {
   return 'updateUser' in client;
 }
 
