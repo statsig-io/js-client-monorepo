@@ -1,4 +1,4 @@
-import { SecondaryExposure, StatsigUser } from 'dloomb-client-core';
+import { SecondaryExposure, StatsigUser } from '@sigstat/core';
 
 type Spec<T> = {
   name: string;
