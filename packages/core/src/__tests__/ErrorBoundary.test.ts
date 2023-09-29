@@ -22,7 +22,7 @@ describe('Error Boundary', () => {
     expect(() => throwing()).not.toThrow();
   });
 
-  it('logs the error', () => {
+  it('logs errors to sdk_exception', () => {
     throwing();
 
     expect(requests[0]?.url).toBe('https://statsigapi.net/v1/sdk_exception');
