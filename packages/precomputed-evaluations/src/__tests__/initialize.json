@@ -581,9 +581,7 @@
         "an_object": {
           "value": "layer_default"
         },
-        "an_array": [
-          "layer_default"
-        ],
+        "an_array": ["layer_default"],
         "another_bool": false,
         "another_number": 0
       },
@@ -616,9 +614,7 @@
       "is_experiment_active": false,
       "is_user_in_experiment": false,
       "is_in_layer": true,
-      "explicit_parameters": [
-        "exp_val"
-      ],
+      "explicit_parameters": ["exp_val"],
       "secondary_exposures": [
         {
           "gate": "7fGXfGb3ECxsEwozxFyY3X",
@@ -651,9 +647,7 @@
       "is_experiment_active": false,
       "is_user_in_experiment": false,
       "is_in_layer": true,
-      "explicit_parameters": [
-        "exp_val"
-      ],
+      "explicit_parameters": ["exp_val"],
       "secondary_exposures": [
         {
           "gate": "7fGXfGb3ECxsEwozxFyY3X",
@@ -716,9 +710,7 @@
       "is_experiment_active": true,
       "is_user_in_experiment": false,
       "is_in_layer": true,
-      "explicit_parameters": [
-        "exp_val"
-      ],
+      "explicit_parameters": ["exp_val"],
       "secondary_exposures": [
         {
           "gate": "7fGXfGb3ECxsEwozxFyY3X",
@@ -740,9 +732,7 @@
       "is_experiment_active": true,
       "is_user_in_experiment": false,
       "is_in_layer": true,
-      "explicit_parameters": [
-        "exp_val"
-      ],
+      "explicit_parameters": ["exp_val"],
       "secondary_exposures": [
         {
           "gate": "7fGXfGb3ECxsEwozxFyY3X",
@@ -770,9 +760,7 @@
       "is_experiment_active": true,
       "is_user_in_experiment": true,
       "is_in_layer": true,
-      "explicit_parameters": [
-        "layer_param"
-      ],
+      "explicit_parameters": ["layer_param"],
       "secondary_exposures": [
         {
           "gate": "4ziZKZklPx19sEdH00qgHw",
@@ -793,9 +781,7 @@
       "is_experiment_active": false,
       "is_user_in_experiment": false,
       "is_in_layer": true,
-      "explicit_parameters": [
-        "a_string_param"
-      ],
+      "explicit_parameters": ["a_string_param"],
       "secondary_exposures": [
         {
           "gate": "7fGXfGb3ECxsEwozxFyY3X",
@@ -847,10 +833,7 @@
       "is_experiment_active": true,
       "is_user_in_experiment": false,
       "is_in_layer": true,
-      "explicit_parameters": [
-        "another_param",
-        "layer_param"
-      ],
+      "explicit_parameters": ["another_param", "layer_param"],
       "secondary_exposures": []
     },
     "1200958661": {
@@ -883,9 +866,7 @@
       "is_experiment_active": false,
       "is_user_in_experiment": false,
       "is_in_layer": true,
-      "explicit_parameters": [
-        "exp_val"
-      ],
+      "explicit_parameters": ["exp_val"],
       "secondary_exposures": [
         {
           "gate": "7fGXfGb3ECxsEwozxFyY3X",
@@ -956,9 +937,7 @@
       "is_experiment_active": true,
       "is_user_in_experiment": true,
       "is_in_layer": true,
-      "explicit_parameters": [
-        "shared_string_param"
-      ],
+      "explicit_parameters": ["shared_string_param"],
       "secondary_exposures": [
         {
           "gate": "4ziZKZklPx19sEdH00qgHw",
@@ -985,9 +964,7 @@
       "is_experiment_active": true,
       "is_user_in_experiment": false,
       "is_in_layer": true,
-      "explicit_parameters": [
-        "another_param"
-      ],
+      "explicit_parameters": ["another_param"],
       "secondary_exposures": []
     },
     "1734601782": {
@@ -1028,9 +1005,7 @@
       "is_experiment_active": true,
       "is_user_in_experiment": false,
       "is_in_layer": true,
-      "explicit_parameters": [
-        "exp_val"
-      ],
+      "explicit_parameters": ["exp_val"],
       "secondary_exposures": [
         {
           "gate": "7fGXfGb3ECxsEwozxFyY3X",
@@ -1144,10 +1119,10 @@
     "2207300456": {
       "name": "2207300456",
       "value": {
-        "foo": 1e+21,
-        "bar": 1e+60,
+        "foo": 1e21,
+        "bar": 1e60,
         "boo": 99,
-        "bbb": 1e+55,
+        "bbb": 1e55,
         "rar": 9999999999
       },
       "rule_id": "default",
@@ -1162,10 +1137,7 @@
         "num": 13,
         "bool": true,
         "str": "hello",
-        "arr": [
-          "hi",
-          "there"
-        ]
+        "arr": ["hi", "there"]
       },
       "rule_id": "default",
       "group": "default",
@@ -1217,9 +1189,7 @@
       "is_experiment_active": false,
       "is_user_in_experiment": false,
       "is_in_layer": true,
-      "explicit_parameters": [
-        "exp_val"
-      ],
+      "explicit_parameters": ["exp_val"],
       "secondary_exposures": [
         {
           "gate": "7fGXfGb3ECxsEwozxFyY3X",
@@ -1246,9 +1216,7 @@
       "is_experiment_active": false,
       "is_user_in_experiment": false,
       "is_in_layer": true,
-      "explicit_parameters": [
-        "exp_val"
-      ],
+      "explicit_parameters": ["exp_val"],
       "secondary_exposures": [
         {
           "gate": "7fGXfGb3ECxsEwozxFyY3X",
@@ -1648,9 +1616,7 @@
       "allocated_experiment_name": "928433684",
       "is_device_based": false,
       "is_experiment_active": true,
-      "explicit_parameters": [
-        "layer_param"
-      ],
+      "explicit_parameters": ["layer_param"],
       "is_user_in_experiment": true,
       "secondary_exposures": [
         {
@@ -1671,9 +1637,7 @@
         "an_object": {
           "value": "layer_default"
         },
-        "an_array": [
-          "layer_default"
-        ],
+        "an_array": ["layer_default"],
         "another_bool": false,
         "another_number": 0
       },
@@ -1715,9 +1679,7 @@
       "allocated_experiment_name": "1484937030",
       "is_device_based": false,
       "is_experiment_active": true,
-      "explicit_parameters": [
-        "shared_string_param"
-      ],
+      "explicit_parameters": ["shared_string_param"],
       "is_user_in_experiment": true,
       "secondary_exposures": [
         {
@@ -1774,9 +1736,7 @@
       "allocated_experiment_name": "468059122",
       "is_device_based": false,
       "is_experiment_active": false,
-      "explicit_parameters": [
-        "exp_val"
-      ],
+      "explicit_parameters": ["exp_val"],
       "is_user_in_experiment": false,
       "secondary_exposures": [
         {
