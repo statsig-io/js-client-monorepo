@@ -1,15 +1,16 @@
 import { render } from '@testing-library/react';
+import fetchMock from 'jest-fetch-mock';
 
 import App from './App';
 
 describe('App', () => {
-  it('should render successfully', () => {
-    const { baseElement } = render(<App />);
-    expect(baseElement).toBeTruthy();
+  beforeAll(() => {
+    fetchMock.enableMocks();
+    fetchMock.mockResponse('{}');
   });
 
-  it('should have a greeting as the title', () => {
-    const { getByText } = render(<App />);
-    expect(getByText(/Welcome react-sample/)).toBeTruthy();
+  it('should have a greeting as the title', async () => {
+    const { findByText } = render(<App />);
+    expect(findByText(/Welcome react-sample/)).resolves.toBeTruthy();
   });
 });

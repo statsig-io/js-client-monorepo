@@ -17,9 +17,9 @@ import {
   getUUID,
   normalizeUser,
 } from '@sigstat/core';
-import SpecStore from './SpecStore';
-
+import 'reflect-metadata';
 import Network from './Network';
+import SpecStore from './SpecStore';
 import type { StatsigOptions } from './StatsigOptions';
 
 @Monitored

@@ -6,7 +6,9 @@
   "targets": {
     "build": {
       "executor": "@nx/webpack:webpack",
-      "outputs": ["{options.outputPath}"],
+      "outputs": [
+        "{options.outputPath}"
+      ],
       "defaultConfiguration": "production",
       "options": {
         "compiler": "babel",
@@ -49,7 +51,9 @@
     },
     "test": {
       "executor": "@nx/jest:jest",
-      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "outputs": [
+        "{workspaceRoot}/coverage/{projectRoot}"
+      ],
       "options": {
         "jestConfig": "samples/react/jest.config.ts",
         "passWithNoTests": true
@@ -62,9 +66,5 @@
       }
     }
   },
-  "tags": [],
-  "dependencies": {
-    "@sigstat/core": "*",
-    "@sigstat/react": "*"
-  }
+  "tags": []
 }
