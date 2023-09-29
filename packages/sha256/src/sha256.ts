@@ -64,9 +64,9 @@ class Sha256 {
       throw new Error('Must be of type "string"');
     }
 
-    let code,
-      index = 0,
-      i;
+    let code: number;
+    let index = 0;
+    let i: number;
 
     const length = message.length,
       blocks = this.blocks;
@@ -184,17 +184,17 @@ class Sha256 {
       f = this.h5,
       g = this.h6,
       h = this.h7,
-      j,
-      s0,
-      s1,
-      maj,
-      t1,
-      t2,
-      ch,
-      ab,
-      da,
-      cd,
-      bc;
+      j: number,
+      s0: number,
+      s1: number,
+      maj: number,
+      t1: number,
+      t2: number,
+      ch: number,
+      ab: number,
+      da: number,
+      cd: number,
+      bc: number;
 
     for (j = 16; j < 64; ++j) {
       // rightrotate
@@ -276,7 +276,9 @@ class Sha256 {
       t2 = s0 + maj;
       e = (a + t1) << 0;
       a = (t1 + t2) << 0;
-      (function (_a) {})(a); // capture a to prevent hashing bug
+      (function (_a) {
+        // capture a to prevent hashing bug
+      })(a);
     }
 
     this.h0 = (this.h0 + a) << 0;
