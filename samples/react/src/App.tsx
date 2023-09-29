@@ -1,8 +1,8 @@
 import StatsigProvider from 'packages/react-sdk/src/StatsigProvider';
 
-import { PrecomputedEvalutationsClient } from '@sigstat/precomputed-evaluations';
+import { PrecomputedEvaluationsClient } from '@sigstat/precomputed-evaluations';
 
-const client = new PrecomputedEvalutationsClient('client-key', {
+const client = new PrecomputedEvaluationsClient('client-key', {
   userID: 'a-user',
 });
 

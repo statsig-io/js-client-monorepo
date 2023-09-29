@@ -1,12 +1,12 @@
 import { jest } from '@jest/globals';
 
 import {
-  OnDeviceEvalutationsInterface,
-  PrecomputedEvalutationsInterface,
+  OnDeviceEvaluationsInterface,
+  PrecomputedEvaluationsInterface,
 } from '@sigstat/core';
 
 export abstract class MockRemoteServerEvalClient {
-  static create(): jest.Mocked<PrecomputedEvalutationsInterface> {
+  static create(): jest.Mocked<PrecomputedEvaluationsInterface> {
     return {
       loadingStatus: 'Uninitialized',
       initialize: jest.fn(),
@@ -22,7 +22,7 @@ export abstract class MockRemoteServerEvalClient {
 }
 
 export abstract class MockOnDeviceEvalClient {
-  static create(): jest.Mocked<OnDeviceEvalutationsInterface> {
+  static create(): jest.Mocked<OnDeviceEvaluationsInterface> {
     return {
       loadingStatus: 'Uninitialized',
       initialize: jest.fn(),

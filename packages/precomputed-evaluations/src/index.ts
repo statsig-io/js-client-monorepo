@@ -1,4 +1,4 @@
-import PrecomputedEvalutationsClient from './PrecomputedEvalutationsClient';
+import PrecomputedEvaluationsClient from './PrecomputedEvaluationsClient';
 import type { StatsigOptions } from './StatsigOptions';
 
 export type {
@@ -7,11 +7,11 @@ export type {
   StatsigEnvironment,
 } from '@sigstat/core';
 
-export { PrecomputedEvalutationsClient, StatsigOptions };
+export { PrecomputedEvaluationsClient, StatsigOptions };
 
 if (typeof window !== 'undefined') {
   window.__STATSIG__ = {
     ...window.__STATSIG__,
-    PrecomputedEvalutationsClient,
+    PrecomputedEvaluationsClient,
   };
 }

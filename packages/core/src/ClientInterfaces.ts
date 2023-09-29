@@ -16,7 +16,7 @@ interface IStatsigClientCommon {
   shutdown(): Promise<void>;
 }
 
-export interface OnDeviceEvalutationsInterface extends IStatsigClientCommon {
+export interface OnDeviceEvaluationsInterface extends IStatsigClientCommon {
   checkGate(user: StatsigUser, name: string): boolean;
   getDynamicConfig(user: StatsigUser, name: string): DynamicConfig;
   getExperiment(user: StatsigUser, name: string): Experiment;
@@ -24,7 +24,7 @@ export interface OnDeviceEvalutationsInterface extends IStatsigClientCommon {
   logEvent(user: StatsigUser, event: StatsigEvent): void;
 }
 
-export interface PrecomputedEvalutationsInterface extends IStatsigClientCommon {
+export interface PrecomputedEvaluationsInterface extends IStatsigClientCommon {
   updateUser(user: StatsigUser): Promise<void>;
   checkGate(name: string): boolean;
   getDynamicConfig(name: string): DynamicConfig;

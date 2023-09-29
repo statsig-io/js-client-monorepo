@@ -1,8 +1,8 @@
-import StatsigOnDeviceEvalClient from './StatsigOnDeviceEvalClient';
+import OnDeviceEvaluationsClient from './OnDeviceEvaluationsClient';
 
-export { StatsigOnDeviceEvalClient };
+export { OnDeviceEvaluationsClient };
 
 window.__STATSIG__ = {
   ...window.__STATSIG__,
-  StatsigOnDeviceEvalClient,
+  OnDeviceEvaluationsClient,
 };

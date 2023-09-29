@@ -1,14 +1,14 @@
 import { createContext } from 'react';
 
 import {
-  OnDeviceEvalutationsInterface,
-  PrecomputedEvalutationsInterface,
+  OnDeviceEvaluationsInterface,
+  PrecomputedEvaluationsInterface,
 } from '@sigstat/core';
 
 export interface StatsigContext {
   readonly client:
-    | OnDeviceEvalutationsInterface
-    | PrecomputedEvalutationsInterface;
+    | OnDeviceEvaluationsInterface
+    | PrecomputedEvaluationsInterface;
 }
 
 export default createContext<StatsigContext>({

@@ -2,7 +2,7 @@ import {
   DynamicConfig,
   Layer,
   Logger,
-  OnDeviceEvalutationsInterface,
+  OnDeviceEvaluationsInterface,
   StatsigEvent,
   StatsigLoadingStatus,
   StatsigUser,
@@ -13,8 +13,8 @@ import Network from './Network';
 import SpecStore from './SpecStore';
 import { StatsigOptions } from './StatsigOptions';
 
-export default class StatsigOnDeviceEvalClient
-  implements OnDeviceEvalutationsInterface
+export default class OnDeviceEvaluationsClient
+  implements OnDeviceEvaluationsInterface
 {
   loadingStatus: StatsigLoadingStatus = 'Uninitialized';
 

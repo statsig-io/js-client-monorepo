@@ -6,7 +6,7 @@ import {
   Layer,
   Logger,
   Monitored,
-  PrecomputedEvalutationsInterface,
+  PrecomputedEvaluationsInterface,
   StatsigEvent,
   StatsigLoadingStatus,
   createConfigExposure,
@@ -23,8 +23,8 @@ import SpecStore from './SpecStore';
 import type { StatsigOptions } from './StatsigOptions';
 
 @Monitored
-export default class PrecomputedEvalutationsClient
-  implements PrecomputedEvalutationsInterface
+export default class PrecomputedEvaluationsClient
+  implements PrecomputedEvaluationsInterface
 {
   loadingStatus: StatsigLoadingStatus = 'Uninitialized';
 

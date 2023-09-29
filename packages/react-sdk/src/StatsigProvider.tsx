@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from 'react';
 
 import {
-  OnDeviceEvalutationsInterface,
-  PrecomputedEvalutationsInterface,
+  OnDeviceEvaluationsInterface,
+  PrecomputedEvaluationsInterface,
 } from '@sigstat/core';
 
 import StatsigContext from './StatsigContext';
 
 type Props = {
-  client: OnDeviceEvalutationsInterface | PrecomputedEvalutationsInterface;
+  client: OnDeviceEvaluationsInterface | PrecomputedEvaluationsInterface;
   children: React.ReactNode | React.ReactNode[];
 };
 

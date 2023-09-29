@@ -3,17 +3,17 @@
  */
 import fetchMock from 'jest-fetch-mock';
 
-import PrecomputedEvalutationsClient from '../PrecomputedEvalutationsClient';
+import PrecomputedEvaluationsClient from '../PrecomputedEvaluationsClient';
 import InitializeResponse from './initialize.json';
 
 describe('Client Error Boundary', () => {
-  let client: PrecomputedEvalutationsClient;
+  let client: PrecomputedEvaluationsClient;
 
   beforeAll(async () => {
     fetchMock.enableMocks();
     fetchMock.mockResponse(JSON.stringify(InitializeResponse));
 
-    client = new PrecomputedEvalutationsClient('client-key', {});
+    client = new PrecomputedEvaluationsClient('client-key', {});
     await client.initialize();
   });
 

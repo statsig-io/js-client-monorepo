@@ -1,11 +1,11 @@
 import {
-  OnDeviceEvalutationsInterface,
-  PrecomputedEvalutationsInterface,
+  OnDeviceEvaluationsInterface,
+  PrecomputedEvaluationsInterface,
 } from '@sigstat/core';
 
 export function isRemoteEvaluationClient(
-  client: OnDeviceEvalutationsInterface | PrecomputedEvalutationsInterface,
-): client is PrecomputedEvalutationsInterface {
+  client: OnDeviceEvaluationsInterface | PrecomputedEvaluationsInterface,
+): client is PrecomputedEvaluationsInterface {
   return 'updateUser' in client;
 }
 
