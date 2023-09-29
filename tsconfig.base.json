@@ -16,6 +16,9 @@
     "baseUrl": ".",
     "paths": {
       "@sigstat/core": ["packages/core/src/index.ts"],
+      "@sigstat/on-device-evaluations": [
+        "packages/on-device-evaluations/src/index.ts"
+      ],
       "@sigstat/precomputed-evaluations": [
         "packages/precomputed-evaluations/src/index.ts"
       ],
