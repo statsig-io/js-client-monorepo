@@ -1,12 +1,13 @@
 {
   "name": "sigstat",
-  "version": "0.0.0",
+  "version": "0.0.0-beta.1",
   "license": "MIT",
   "scripts": {
     "lint": "nx run-many --parallel=3 --target=lint",
     "test": "nx run-many --parallel=3 --target=test",
     "build": "nx run-many --parallel=3 --target=build",
-    "format": "nx format:write"
+    "format": "nx format:write",
+    "sync-version": "sync-json -v --property version --source package.json packages/**/package.json"
   },
   "private": true,
   "devDependencies": {
@@ -40,6 +41,7 @@
     "prettier": "^3.0.3",
     "react-refresh": "^0.10.0",
     "reflect-metadata": "^0.1.13",
+    "sync-json": "^1.0.2",
     "ts-jest": "^29.1.0",
     "ts-node": "10.9.1",
     "typescript": "^5.2.2",
