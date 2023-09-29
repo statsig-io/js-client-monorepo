@@ -1,5 +1,5 @@
 {
-  "name": "@sigstat/react-sdk",
+  "name": "@sigstat/react-bindings",
   "version": "0.0.1",
   "dependencies": {
     "@sigstat/core": "*"

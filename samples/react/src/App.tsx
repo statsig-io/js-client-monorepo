@@ -1,4 +1,4 @@
-import StatsigProvider from 'packages/react-sdk/src/StatsigProvider';
+import StatsigProvider from 'packages/react-bindings/src/StatsigProvider';
 
 import { PrecomputedEvaluationsClient } from '@sigstat/precomputed-evaluations';
 

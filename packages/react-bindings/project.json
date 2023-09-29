@@ -1,21 +1,21 @@
 {
-  "name": "react-sdk",
+  "name": "react-bindings",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "packages/react-sdk/src",
+  "sourceRoot": "packages/react-bindings/src",
   "projectType": "library",
   "targets": {
     "build": {
       "executor": "@nx/js:tsc",
       "outputs": ["{options.outputPath}"],
       "options": {
-        "outputPath": "dist/packages/react-sdk",
-        "main": "packages/react-sdk/src/index.ts",
-        "tsConfig": "packages/react-sdk/tsconfig.lib.json",
-        "assets": ["packages/react-sdk/*.md"]
+        "outputPath": "dist/packages/react-bindings",
+        "main": "packages/react-bindings/src/index.ts",
+        "tsConfig": "packages/react-bindings/tsconfig.lib.json",
+        "assets": ["packages/react-bindings/*.md"]
       }
     },
     "publish": {
-      "command": "node tools/scripts/publish.mjs react-sdk {args.ver} {args.tag}",
+      "command": "node tools/scripts/publish.mjs react-bindings {args.ver} {args.tag}",
       "dependsOn": ["build"]
     },
     "lint": {
@@ -23,8 +23,8 @@
       "outputs": ["{options.outputFile}"],
       "options": {
         "lintFilePatterns": [
-          "packages/react-sdk/**/*.ts",
-          "packages/react-sdk/package.json"
+          "packages/react-bindings/**/*.ts",
+          "packages/react-bindings/package.json"
         ]
       }
     },
@@ -32,7 +32,7 @@
       "executor": "@nx/jest:jest",
       "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
       "options": {
-        "jestConfig": "packages/react-sdk/jest.config.ts",
+        "jestConfig": "packages/react-bindings/jest.config.ts",
         "passWithNoTests": true
       },
       "configurations": {

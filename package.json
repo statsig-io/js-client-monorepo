@@ -5,7 +5,8 @@
   "scripts": {
     "lint": "nx run-many --parallel=3 --target=lint",
     "test": "nx run-many --parallel=3 --target=test",
-    "build": "nx run-many --parallel=3 --target=build"
+    "build": "nx run-many --parallel=3 --target=build",
+    "format": "nx format:write"
   },
   "private": true,
   "devDependencies": {
