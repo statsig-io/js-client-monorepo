@@ -1,10 +1,12 @@
 import { useContext, useMemo } from 'react';
-import StatsigContext from './StatsigContext';
+
 import { DynamicConfig, StatsigUser, emptyDynamicConfig } from '@sigstat/core';
+
 import {
   isRemoteEvaluationClient,
   logMissingStatsigUserWarning,
 } from './RemoteVsLocalUtil';
+import StatsigContext from './StatsigContext';
 
 export type DynamicConfigResult = {
   config: DynamicConfig;

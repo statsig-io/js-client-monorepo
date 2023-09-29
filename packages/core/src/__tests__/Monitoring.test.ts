@@ -1,6 +1,6 @@
-import { Monitored } from '../Monitoring';
-import * as ErrorBoundary from '../ErrorBoundary';
 import * as Diagnostics from '../Diagnostics';
+import * as ErrorBoundary from '../ErrorBoundary';
+import { Monitored } from '../Monitoring';
 
 @Monitored
 class TestClass {

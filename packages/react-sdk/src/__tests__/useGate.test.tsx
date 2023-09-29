@@ -1,13 +1,13 @@
 /**
  * @jest-environment jsdom
  */
-
 import '@testing-library/jest-dom';
 import { render, screen, waitFor } from '@testing-library/react';
 import * as React from 'react';
+import { MockRemoteServerEvalClient, TestPromise } from 'statsig-test-helpers';
+
 import StatsigProvider from '../StatsigProvider';
 import useGate from '../useGate';
-import { TestPromise, MockRemoteServerEvalClient } from 'statsig-test-helpers';
 
 const GateComponent = () => {
   const { value } = useGate('a_gate');

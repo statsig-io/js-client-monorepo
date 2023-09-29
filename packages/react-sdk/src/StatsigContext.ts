@@ -1,8 +1,9 @@
+import { createContext } from 'react';
+
 import {
   OnDeviceEvalutationsInterface,
   PrecomputedEvalutationsInterface,
 } from '@sigstat/core';
-import { createContext } from 'react';
 
 export interface StatsigContext {
   readonly client:

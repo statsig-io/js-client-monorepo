@@ -1,4 +1,5 @@
 import { Experiment, StatsigUser } from '@sigstat/core';
+
 import useDynamicConfig from './useDynamicConfig';
 
 export type ExperimentResult = {

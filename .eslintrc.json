@@ -2,7 +2,13 @@
   "root": true,
   "ignorePatterns": ["**/*"],
   "plugins": ["@nx"],
+  "extends": ["eslint:recommended"],
+  "parserOptions": {
+    "tsconfigRootDir": ".",
+    "project": ["tsconfig.base.json"]
+  },
   "overrides": [
+    // Nx
     {
       "files": ["*.ts", "*.tsx", "*.js", "*.jsx"],
       "rules": {
@@ -21,27 +27,53 @@
         ]
       }
     },
+    // Typescript
     {
       "files": ["*.ts", "*.tsx"],
       "extends": ["plugin:@nx/typescript"],
-      "rules": {}
+      "rules": {
+        "@typescript-eslint/explicit-module-boundary-types": "error",
+        "@typescript-eslint/no-floating-promises": [
+          "error",
+          { "ignoreVoid": false }
+        ],
+        "@typescript-eslint/no-misused-promises": "error",
+        "@typescript-eslint/naming-convention": [
+          "error",
+          {
+            "selector": "memberLike",
+            "modifiers": ["private"],
+            "format": ["camelCase"],
+            "leadingUnderscore": "require"
+          }
+        ],
+        "@typescript-eslint/no-unsafe-argument": "warn",
+        "@typescript-eslint/no-unsafe-assignment": "warn",
+        "@typescript-eslint/no-unsafe-call": "warn",
+        "@typescript-eslint/no-unsafe-member-access": "warn",
+        "@typescript-eslint/no-unsafe-return": "warn",
+        "@typescript-eslint/no-unused-vars": [
+          "error",
+          { "argsIgnorePattern": "^_", "vars": "all", "args": "all" }
+        ],
+        "no-await-in-loop": "warn",
+        "no-console": "warn",
+        "no-warning-comments": [
+          "error",
+          { "terms": ["@nocommit"], "location": "anywhere" }
+        ],
+        "eqeqeq": ["warn", "smart"]
+      }
     },
+    // Javascript
     {
       "files": ["*.js", "*.jsx"],
       "extends": ["plugin:@nx/javascript"],
       "rules": {}
     },
+    // Tests
     {
-      "files": [
-        "*.spec.ts",
-        "*.spec.tsx",
-        "*.spec.js",
-        "*.spec.jsx",
-        "*.test.ts",
-        "*.test.tsx",
-        "*.test.js",
-        "*.test.jsx"
-      ],
+      "files": ["*.test.ts", "*.test.tsx", "*.test.js", "*.test.jsx"],
       "env": {
         "jest": true
       },

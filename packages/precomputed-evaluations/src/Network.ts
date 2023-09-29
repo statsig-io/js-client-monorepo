@@ -1,6 +1,7 @@
 import { NetworkCore, StatsigUser } from '@sigstat/core';
-import { SDK_TYPE } from './StatsigMetadata';
+
 import { EvaluationResponse } from './EvaluationData';
+import { SDK_TYPE } from './StatsigMetadata';
 
 export default class StatsigNetwork extends NetworkCore {
   constructor(sdkKey: string, stableID: string, api: string) {

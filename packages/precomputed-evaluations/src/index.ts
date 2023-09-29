@@ -1,11 +1,11 @@
+import PrecomputedEvalutationsClient from './PrecomputedEvalutationsClient';
+import type { StatsigOptions } from './StatsigOptions';
+
 export type {
   StatsigUser,
   StatsigEvent,
   StatsigEnvironment,
 } from '@sigstat/core';
-
-import PrecomputedEvalutationsClient from './PrecomputedEvalutationsClient';
-import type { StatsigOptions } from './StatsigOptions';
 
 export { PrecomputedEvalutationsClient, StatsigOptions };
 

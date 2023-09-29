@@ -1,8 +1,8 @@
 /**
  * @jest-environment jsdom
  */
-
 import fetchMock from 'jest-fetch-mock';
+
 import PrecomputedEvalutationsClient from '../PrecomputedEvalutationsClient';
 
 describe('PrecomputedEvalutationsClient', () => {

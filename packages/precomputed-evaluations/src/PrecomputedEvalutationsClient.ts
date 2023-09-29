@@ -17,6 +17,7 @@ import {
   getUUID,
   normalizeUser,
 } from '@sigstat/core';
+
 import Network from './Network';
 import SpecStore from './SpecStore';
 import type { StatsigOptions } from './StatsigOptions';
@@ -70,9 +71,8 @@ export default class PrecomputedEvalutationsClient
     const capturedUser = this._user;
 
     let pendingStatus: StatsigLoadingStatus = 'Bootstrap';
-    let response = await this._options.evaluationDataProvider?.fetchEvaluations(
-      user,
-    );
+    let response =
+      await this._options.evaluationDataProvider?.fetchEvaluations(user);
 
     if (response == null) {
       pendingStatus = 'Network';

@@ -1,8 +1,8 @@
 import StatsigContext from './StatsigContext';
 import StatsigProvider from './StatsigProvider';
-import useGate from './useGate';
 import useDynamicConfig from './useDynamicConfig';
 import useExperiment from './useExperiment';
+import useGate from './useGate';
 import useLayer from './useLayer';
 
 const EXPORTS = {

@@ -1,10 +1,12 @@
-import { Layer, StatsigUser, emptyLayer } from '@sigstat/core';
 import { useContext, useMemo } from 'react';
-import StatsigContext from './StatsigContext';
+
+import { Layer, StatsigUser, emptyLayer } from '@sigstat/core';
+
 import {
   isRemoteEvaluationClient,
   logMissingStatsigUserWarning,
 } from './RemoteVsLocalUtil';
+import StatsigContext from './StatsigContext';
 
 export type LayerResult = {
   layer: Layer;

@@ -1,9 +1,9 @@
+import { jest } from '@jest/globals';
+
 import {
   OnDeviceEvalutationsInterface,
   PrecomputedEvalutationsInterface,
 } from '@sigstat/core';
-
-import { jest } from '@jest/globals';
 
 export abstract class MockRemoteServerEvalClient {
   static create(): jest.Mocked<PrecomputedEvalutationsInterface> {

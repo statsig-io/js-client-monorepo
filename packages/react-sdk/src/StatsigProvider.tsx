@@ -1,8 +1,10 @@
+import React, { useEffect, useState } from 'react';
+
 import {
   OnDeviceEvalutationsInterface,
   PrecomputedEvalutationsInterface,
 } from '@sigstat/core';
-import React, { useEffect, useState } from 'react';
+
 import StatsigContext from './StatsigContext';
 
 type Props = {

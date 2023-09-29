@@ -5,6 +5,7 @@ import {
   getObjectFromStorage,
   setObjectInStorage,
 } from '@sigstat/core';
+
 import { EvaluationResponse } from './EvaluationData';
 
 const MANIFEST_KEY = 'statsig.manifest';

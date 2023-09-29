@@ -1,6 +1,6 @@
-import { getUUID } from './UUID';
 import { StatsigEvent } from './StatsigEvent';
 import { SDK_VERSION } from './StatsigMetadata';
+import { getUUID } from './UUID';
 
 type StatsigNetworkResponse = {
   success: boolean;
