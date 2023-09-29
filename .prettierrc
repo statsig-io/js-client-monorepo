@@ -1,0 +1,17 @@
+{
+  "semi": true,
+  "trailingComma": "all",
+  "singleQuote": true,
+  "printWidth": 80,
+  "tabWidth": 2,
+  "importOrder": ["^@sigstat/(.*)$", "^[./]"],
+  "importOrderSeparation": true,
+  "importOrderSortSpecifiers": true,
+  "importOrderParserPlugins": [
+    "classProperties",
+    "[\"decorators\", { \"decoratorsBeforeExport\": true }]",
+    "typescript",
+    "jsx"
+  ],
+  "plugins": ["@trivago/prettier-plugin-sort-imports"]
+}

@@ -1,12 +1,8 @@
 {
-  "name": "dloomb-client-core",
-  "version": "1.0.0-beta.3",
-  "description": "Core parts of a JS based Statsig client SDK",
-  "main": "build/index.js",
-  "types": "build/index.d.ts",
+  "name": "@sigstat/core",
+  "version": "0.0.1",
+  "dependencies": {},
   "type": "commonjs",
-  "scripts": {
-    "build": "tsc --build --verbose",
-    "prepare": "npm run build"
-  }
+  "main": "./src/index.js",
+  "typings": "./src/index.d.ts"
 }

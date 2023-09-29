@@ -1,0 +1,27 @@
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "rootDir": ".",
+    "sourceMap": true,
+    "declaration": false,
+    "moduleResolution": "node",
+    "emitDecoratorMetadata": false,
+    "experimentalDecorators": false,
+    "importHelpers": false,
+    "target": "es5",
+    "module": "commonjs",
+    "lib": ["es6", "dom", "esnext"],
+    "skipLibCheck": true,
+    "skipDefaultLibCheck": true,
+    "baseUrl": ".",
+    "paths": {
+      "@sigstat/core": ["packages/core/src/index.ts"],
+      "@sigstat/precomputed-evaluations": [
+        "packages/precomputed-evaluations/src/index.ts"
+      ],
+      "@sigstat/react-sdk": ["packages/react-sdk/src/index.ts"],
+      "statsig-test-helpers": ["packages/test-helpers/src/index.ts"]
+    }
+  },
+  "exclude": ["node_modules", "tmp"]
+}

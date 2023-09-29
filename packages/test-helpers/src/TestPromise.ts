@@ -10,8 +10,8 @@ export class TestPromise<T> extends Promise<T> {
       reject: (reason: T | Error) => void,
     ) => void,
   ) {
-    let resolver: (value: T | PromiseLike<T>) => void;
-    let rejector: (reason: T | Error) => void;
+    let resolver: ((value: T | PromiseLike<T>) => void) | null = null;
+    let rejector: ((reason: T | Error) => void) | null = null;
 
     super((resolve, reject) => {
       resolver = resolve;
@@ -19,13 +19,19 @@ export class TestPromise<T> extends Promise<T> {
       return executor(resolve, reject);
     });
 
-    this.resolve = resolver!;
-    this.reject = rejector!;
+    if (!resolver || !rejector) {
+      throw new Error('Resolver and Rejector should be set at this point.');
+    }
+
+    this.resolve = resolver;
+    this.reject = rejector;
 
     this.initialCallStack = Error().stack?.split('\n').slice(2).join('\n');
   }
 
   static create<T>(): TestPromise<T> {
-    return new TestPromise(() => {});
+    return new TestPromise(() => {
+      // noop
+    });
   }
 }

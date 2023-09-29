@@ -1,5 +1,5 @@
-import { StatsigEventInternal } from './StatsigEvent';
 import { NetworkCore } from './NetworkCore';
+import { StatsigEventInternal } from './StatsigEvent';
 
 export class Logger {
   private _queue: StatsigEventInternal[] = [];

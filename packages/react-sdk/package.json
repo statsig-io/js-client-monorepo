@@ -1,0 +1,13 @@
+{
+  "name": "@sigstat/react-sdk",
+  "version": "0.0.1",
+  "dependencies": {
+    "@sigstat/core": "*"
+  },
+  "peerDependencies": {
+    "react": "^16.6.3 || ^17.0.0 || ^18.0.0"
+  },
+  "type": "commonjs",
+  "main": "./src/index.js",
+  "typings": "./src/index.d.ts"
+}

@@ -1,13 +1,11 @@
 {
-  "name": "dloomb-client-test-helpers",
-  "version": "1.0.0-beta.3",
-  "description": "Test helpers for the Statsig JS monorepo",
-  "main": "build/index.js",
-  "types": "build/index.d.ts",
-  "type": "commonjs",
-  "scripts": {
-    "build": "tsc --build --verbose",
-    "prepare": "npm run build"
+  "name": "statsig-test-helpers",
+  "version": "0.0.1",
+  "dependencies": {
+    "@sigstat/core": "*",
+    "@jest/globals": "29.7.0"
   },
-  "devDependencies": {}
+  "type": "commonjs",
+  "main": "./src/index.js",
+  "typings": "./src/index.d.ts"
 }
