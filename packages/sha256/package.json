@@ -1,0 +1,11 @@
+{
+  "name": "@sigstat/sha256",
+  "version": "0.0.1",
+  "dependencies": {},
+  "devDependencies": {
+    "js-sha256": "0.10.1"
+  },
+  "type": "commonjs",
+  "main": "./src/index.js",
+  "typings": "./src/index.d.ts"
+}

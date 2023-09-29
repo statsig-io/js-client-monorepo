@@ -23,6 +23,7 @@
         "packages/precomputed-evaluations/src/index.ts"
       ],
       "@sigstat/react-sdk": ["packages/react-sdk/src/index.ts"],
+      "@sigstat/sha256": ["packages/sha256/src/index.ts"],
       "statsig-test-helpers": ["packages/test-helpers/src/index.ts"]
     }
   },
