@@ -1,3 +1,4 @@
 {
+  "./package.json": ["npm run sync-version"],
   "*": ["nx affected:lint --fix --files", "npx nx format:write --files"]
 }
