@@ -1,14 +1,14 @@
+import type { StatsigUser } from '@sigstat/core';
 import {
   DJB2,
   DynamicConfig,
   Experiment,
-  PrecomputedEvalutationsInterface,
   Layer,
   Logger,
   Monitored,
+  PrecomputedEvalutationsInterface,
   StatsigEvent,
   StatsigLoadingStatus,
-  StatsigUser,
   createConfigExposure,
   createGateExposure,
   createLayerParameterExposure,
@@ -20,7 +20,7 @@ import {
 import SpecStore from './SpecStore';
 
 import Network from './Network';
-import { StatsigOptions } from './StatsigOptions';
+import type { StatsigOptions } from './StatsigOptions';
 
 @Monitored
 export default class PrecomputedEvalutationsClient
