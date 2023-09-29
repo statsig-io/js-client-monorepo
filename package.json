@@ -2,7 +2,11 @@
   "name": "sigstat",
   "version": "0.0.0",
   "license": "MIT",
-  "scripts": {},
+  "scripts": {
+    "lint": "nx run-many --parallel=3 --target=lint",
+    "test": "nx run-many --parallel=3 --target=test",
+    "build": "nx run-many --parallel=3 --target=build"
+  },
   "private": true,
   "devDependencies": {
     "@babel/core": "^7.14.5",
