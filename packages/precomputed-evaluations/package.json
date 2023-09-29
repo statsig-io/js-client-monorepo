@@ -2,10 +2,7 @@
   "name": "@sigstat/precomputed-evaluations",
   "version": "0.0.1",
   "dependencies": {
-    "tslib": "^2.3.0",
-    "@sigstat/core": "*",
-    "jest-fetch-mock": "3.0.3",
-    "reflect-metadata": "^0.1.13"
+    "@sigstat/core": "*"
   },
   "type": "commonjs",
   "main": "./src/index.js",

@@ -17,7 +17,6 @@ import {
   getUUID,
   normalizeUser,
 } from '@sigstat/core';
-import 'reflect-metadata';
 import Network from './Network';
 import SpecStore from './SpecStore';
 import type { StatsigOptions } from './StatsigOptions';
@@ -48,6 +47,9 @@ export default class PrecomputedEvalutationsClient
     );
     this._logger = new Logger(this._network);
     this._user = user;
+    if (typeof window !== 'undefined') {
+      window.__STATSIG__[DJB2(sdkKey)] = this;
+    }
   }
 
   async initialize(): Promise<void> {
