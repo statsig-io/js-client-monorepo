@@ -4,7 +4,8 @@
   "dependencies": {
     "tslib": "^2.3.0",
     "@sigstat/core": "*",
-    "jest-fetch-mock": "3.0.3"
+    "jest-fetch-mock": "3.0.3",
+    "reflect-metadata": "^0.1.13"
   },
   "type": "commonjs",
   "main": "./src/index.js",
