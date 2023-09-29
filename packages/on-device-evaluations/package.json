@@ -2,7 +2,8 @@
   "name": "@sigstat/on-device-evaluations",
   "version": "0.0.1",
   "dependencies": {
-    "@sigstat/core": "*"
+    "@sigstat/core": "*",
+    "@sigstat/sha256": "*"
   },
   "type": "commonjs",
   "main": "./src/index.js",
