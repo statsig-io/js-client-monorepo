@@ -1,5 +1,5 @@
-// import { SHA256 } from 'dloomb-client-sha256';
 import { NormalizedStatsigUser, StatsigUser } from '@sigstat/core';
+import { SHA256 } from '@sigstat/sha256';
 
 import { StatsigUnsupportedEvaluationError } from './Errors';
 import SpecStore, { Spec, SpecCondition, SpecRule } from './SpecStore';
@@ -491,10 +491,9 @@ export default class Evaluator {
   }
 }
 
-function computeUserHash(_userHash: string): bigint {
-  return BigInt(1);
-  // const sha256 = SHA256(userHash);
-  // return sha256.dataView().getBigUint64(0, false);
+function computeUserHash(userHash: string): bigint {
+  const sha256 = SHA256(userHash);
+  return sha256.dataView().getBigUint64(0, false);
 }
 
 function getFromEnvironment(
