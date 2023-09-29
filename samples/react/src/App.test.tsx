@@ -1,6 +1,5 @@
 import { render } from '@testing-library/react';
 import fetchMock from 'jest-fetch-mock';
-
 import App from './App';
 
 describe('App', () => {

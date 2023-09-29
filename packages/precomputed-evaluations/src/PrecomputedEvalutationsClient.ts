@@ -47,7 +47,9 @@ export default class PrecomputedEvalutationsClient
     );
     this._logger = new Logger(this._network);
     this._user = user;
+
     if (typeof window !== 'undefined') {
+      window.__STATSIG__ = window.__STATSIG__ ?? {};
       window.__STATSIG__[DJB2(sdkKey)] = this;
     }
   }
