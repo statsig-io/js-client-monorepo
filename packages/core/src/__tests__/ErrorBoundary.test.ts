@@ -1,11 +1,5 @@
 import { configureErrorBoundary, errorBoundary } from '../ErrorBoundary';
 
-function throwing() {
-  errorBoundary('test', () => {
-    throw new Error('Test Error');
-  });
-}
-
 describe('Error Boundary', () => {
   const requests: { url: string; params: unknown }[] = [];
 
@@ -34,3 +28,9 @@ describe('Error Boundary', () => {
     expect(requests[0]?.url).toBe('https://statsigapi.net/v1/sdk_exception');
   });
 });
+
+function throwing() {
+  errorBoundary('test', () => {
+    throw new Error('Test Error');
+  });
+}
