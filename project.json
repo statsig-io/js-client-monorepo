@@ -4,6 +4,10 @@
   "targets": {
     "publish-all": {
       "command": "npx nx run-many --parallel=3 --target=publish",
+      "dependsOn": ["sync-version"]
+    },
+    "sync-version": {
+      "command": "npm run sync-version",
       "dependsOn": []
     }
   }
