@@ -1,0 +1,17 @@
+{
+  "feature_gates": {
+    "2867927529": {
+      "name": "2867927529",
+      "value": true,
+      "rule_id": "6X3qJgyfwA81IJ2dxI7lYp",
+      "id_type": "userID",
+      "secondary_exposures": []
+    }
+  },
+  "dynamic_configs": {},
+  "layer_configs": {},
+  "sdkParams": {},
+  "has_updates": true,
+  "time": 1695658149108,
+  "hash_used": "djb2"
+}
