@@ -1,16 +1,12 @@
 import { useContext, useMemo } from 'react';
 
-import { StatsigUser } from '@sigstat/core';
+import { FeatureGate, StatsigUser, emptyFeatureGate } from '@sigstat/core';
 
 import {
   isRemoteEvaluationClient,
   logMissingStatsigUserWarning,
 } from './RemoteVsLocalUtil';
 import StatsigContext from './StatsigContext';
-
-export type GateResult = {
-  value: boolean;
-};
 
 type CheckGateOptions = {
   logExposure: boolean;
@@ -20,23 +16,21 @@ type CheckGateOptions = {
 export default function (
   gateName: string,
   options: CheckGateOptions = { logExposure: true, user: null },
-): GateResult {
+): FeatureGate {
   const { client } = useContext(StatsigContext);
 
-  const value = useMemo(() => {
+  const gate = useMemo(() => {
     if (isRemoteEvaluationClient(client)) {
-      return client.checkGate(gateName);
+      return client.getFeatureGate(gateName);
     }
 
     if (options.user == null) {
       logMissingStatsigUserWarning();
-      return false;
+      return emptyFeatureGate(gateName);
     }
 
-    return client.checkGate(options.user, gateName);
+    return client.getFeatureGate(options.user, gateName);
   }, [client.loadingStatus, options]);
 
-  return {
-    value,
-  };
+  return gate;
 }

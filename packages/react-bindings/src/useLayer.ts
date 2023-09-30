@@ -8,10 +8,6 @@ import {
 } from './RemoteVsLocalUtil';
 import StatsigContext from './StatsigContext';
 
-export type LayerResult = {
-  layer: Layer;
-};
-
 type GetLayerOptions = {
   logExposure: boolean;
   user: StatsigUser | null;
@@ -20,7 +16,7 @@ type GetLayerOptions = {
 export default function (
   layerName: string,
   options: GetLayerOptions = { logExposure: true, user: null },
-): LayerResult {
+): Layer {
   const { client } = useContext(StatsigContext);
 
   const layer = useMemo(() => {
@@ -36,7 +32,5 @@ export default function (
     return client.getLayer(options.user, layerName);
   }, [client.loadingStatus, options]);
 
-  return {
-    layer,
-  };
+  return layer;
 }

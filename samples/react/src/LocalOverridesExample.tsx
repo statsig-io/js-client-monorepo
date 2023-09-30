@@ -1,7 +1,6 @@
 import '@react-native-async-storage/async-storage';
 
 import '@sigstat/client-extensions';
-import { OnDeviceEvaluationsClient } from '@sigstat/on-device-evaluations';
 import { PrecomputedEvaluationsClient } from '@sigstat/precomputed-evaluations';
 import {
   StatsigProvider,
@@ -12,8 +11,6 @@ import {
 const client = new PrecomputedEvaluationsClient('client-key', {
   userID: 'a-user',
 });
-
-const clientOnDev = new OnDeviceEvaluationsClient('client-key');
 
 client.overrideGate('overridden_gate', true);
 client.overrideExperiment('overridden_experiment', {
@@ -39,7 +36,7 @@ function CheckGate() {
 }
 
 function GetExperiment() {
-  const { experiment } = useExperiment('overridden_experiment');
+  const experiment = useExperiment('overridden_experiment');
 
   return (
     <Text

@@ -22,7 +22,7 @@ describe('useGate', () => {
 
     const client = MockRemoteServerEvalClient.create();
     client.initialize.mockReturnValue(promise);
-    client.checkGate.mockReturnValue(true);
+    client.getFeatureGate.mockReturnValue({ value: true } as any);
 
     render(
       <StatsigProvider client={client}>

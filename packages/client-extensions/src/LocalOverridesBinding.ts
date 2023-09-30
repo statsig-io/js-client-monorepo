@@ -33,7 +33,6 @@ export function bind(
       if (overrides[overrideKey][name] != null) {
         switch (overrideKey) {
           case 'gates':
-            return overrides[overrideKey][name] as U;
           case 'configs':
             return {
               name,
@@ -56,12 +55,12 @@ export function bind(
   };
 
   if ('updateUser' in client) {
-    client.checkGate = wrap(client.checkGate, 'gates');
+    client.getFeatureGate = wrap(client.getFeatureGate, 'gates');
     client.getDynamicConfig = wrap(client.getDynamicConfig, 'configs');
     client.getExperiment = wrap(client.getExperiment, 'configs');
     client.getLayer = wrap(client.getLayer, 'layers');
   } else {
-    client.checkGate = wrap(client.checkGate, 'gates');
+    client.getFeatureGate = wrap(client.getFeatureGate, 'gates');
     client.getDynamicConfig = wrap(client.getDynamicConfig, 'configs');
     client.getExperiment = wrap(client.getExperiment, 'configs');
     client.getLayer = wrap(client.getLayer, 'layers');

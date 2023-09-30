@@ -8,10 +8,6 @@ import {
 } from './RemoteVsLocalUtil';
 import StatsigContext from './StatsigContext';
 
-export type DynamicConfigResult = {
-  config: DynamicConfig;
-};
-
 type GetDynamicConfigOptions = {
   logExposure: boolean;
   user: StatsigUser | null;
@@ -20,7 +16,7 @@ type GetDynamicConfigOptions = {
 export default function (
   configName: string,
   options: GetDynamicConfigOptions = { logExposure: true, user: null },
-): DynamicConfigResult {
+): DynamicConfig {
   const { client } = useContext(StatsigContext);
 
   const config = useMemo(() => {
@@ -36,7 +32,5 @@ export default function (
     return client.getDynamicConfig(options.user, configName);
   }, [client.loadingStatus, options]);
 
-  return {
-    config,
-  };
+  return config;
 }
