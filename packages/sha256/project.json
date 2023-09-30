@@ -15,7 +15,7 @@
       }
     },
     "publish": {
-      "command": "node tools/scripts/publish.mjs sha256 {args.ver} {args.tag}",
+      "command": "ts-node ./tools/scripts/publish.ts sha256",
       "dependsOn": ["build"]
     },
     "lint": {

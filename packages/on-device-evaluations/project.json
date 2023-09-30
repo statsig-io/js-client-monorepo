@@ -15,7 +15,7 @@
       }
     },
     "publish": {
-      "command": "node tools/scripts/publish.mjs on-device-evaluations {args.ver} {args.tag}",
+      "command": "ts-node ./tools/scripts/publish.ts on-device-evaluations",
       "dependsOn": ["build"]
     },
     "lint": {

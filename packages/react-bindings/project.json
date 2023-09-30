@@ -15,7 +15,7 @@
       }
     },
     "publish": {
-      "command": "node tools/scripts/publish.mjs react-bindings {args.ver} {args.tag}",
+      "command": "ts-node ./tools/scripts/publish.ts react-bindings",
       "dependsOn": ["build"]
     },
     "lint": {

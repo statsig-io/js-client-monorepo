@@ -15,7 +15,7 @@
       }
     },
     "publish": {
-      "command": "node tools/scripts/publish.mjs core {args.ver} {args.tag}",
+      "command": "ts-node ./tools/scripts/publish.ts core",
       "dependsOn": ["build"]
     },
     "lint": {
