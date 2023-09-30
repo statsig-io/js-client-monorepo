@@ -1,8 +1,8 @@
 import { render } from '@testing-library/react';
 import fetchMock from 'jest-fetch-mock';
+import { InitResponse } from 'statsig-test-helpers';
 
 import App from '../App';
-import InitResponse from './initialize.json';
 
 describe('App', () => {
   beforeAll(() => {

@@ -10,6 +10,12 @@
     "react-native": "*",
     "react-native-svg": "*",
     "metro-config": "*",
-    "react-native-svg-transformer": "*"
+    "react-native-svg-transformer": "*",
+    "jest-fetch-mock": "*",
+    "@testing-library/react": "*",
+    "@jest/globals": "*",
+    "@testing-library/jest-dom": "*",
+    "@react-native-async-storage/async-storage": "*",
+    "reflect-metadata": "*"
   }
 }

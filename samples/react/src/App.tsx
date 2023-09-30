@@ -1,3 +1,5 @@
+import '@react-native-async-storage/async-storage';
+
 import { PrecomputedEvaluationsClient } from '@sigstat/precomputed-evaluations';
 import { StatsigProvider, useGate } from '@sigstat/react-bindings';
 

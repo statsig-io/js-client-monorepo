@@ -6,7 +6,21 @@ type StorageProvider = {
   removeItem: (key: string) => Promise<void>;
 };
 
-let provider: StorageProvider;
+const inMemoryStore: Record<string, string> = {};
+
+let provider: StorageProvider = {
+  getItem(key: string): Promise<string | null> {
+    return Promise.resolve(inMemoryStore[key] ?? null);
+  },
+  setItem(key: string, value: string): Promise<void> {
+    inMemoryStore[key] = value;
+    return Promise.resolve();
+  },
+  removeItem(key: string): Promise<void> {
+    delete inMemoryStore[key];
+    return Promise.resolve();
+  },
+};
 
 try {
   if (typeof window !== 'undefined' && 'localStorage' in window) {
@@ -24,27 +38,21 @@ try {
       },
     };
   } else {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    provider = require('@react-native-async-storage/async-storage');
+    const asyncStorage =
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-var-requires
+      require('@react-native-async-storage/async-storage') as {
+        [key: string]: unknown;
+      };
+    if (asyncStorage['default']) {
+      provider = asyncStorage['default'] as StorageProvider;
+    } else {
+      provider = asyncStorage as StorageProvider;
+    }
   }
 } catch (error) {
   Log.warn(
     '[Statsig] Failed to get storage provider. Failling back to in memory store.',
   );
-  const inMemoryStore: Record<string, string> = {};
-  provider = {
-    getItem(key: string): Promise<string | null> {
-      return Promise.resolve(inMemoryStore[key] ?? null);
-    },
-    setItem(key: string, value: string): Promise<void> {
-      inMemoryStore[key] = value;
-      return Promise.resolve();
-    },
-    removeItem(key: string): Promise<void> {
-      delete inMemoryStore[key];
-      return Promise.resolve();
-    },
-  };
 }
 
 const Storage = provider;
