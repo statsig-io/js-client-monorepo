@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 
 import {
+  Log,
   OnDeviceEvaluationsInterface,
   PrecomputedEvaluationsInterface,
 } from '@sigstat/core';
@@ -25,11 +26,7 @@ export default function StatsigProvider({
         setIsReady(true);
       })
       .catch((error) => {
-        // eslint-disable-next-line no-console
-        console.error(
-          '[Statsig] An error occurred during initialization',
-          error,
-        );
+        Log.error('An error occurred during initialization', error);
       });
   }, [client]);
 

@@ -57,7 +57,7 @@
           { "argsIgnorePattern": "^_", "vars": "all", "args": "all" }
         ],
         "no-await-in-loop": "warn",
-        "no-console": "warn",
+        "no-console": "error",
         "no-warning-comments": [
           "error",
           { "terms": ["@nocommit"], "location": "anywhere" }

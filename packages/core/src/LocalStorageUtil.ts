@@ -1,3 +1,5 @@
+import { Log } from './Log';
+
 type StorageProvider = {
   getItem: (key: string) => Promise<string | null>;
   setItem: (key: string, value: string) => Promise<void>;
@@ -26,7 +28,7 @@ try {
     provider = require('@react-native-async-storage/async-storage');
   }
 } catch (error) {
-  console.warn(
+  Log.warn(
     '[Statsig] Failed to get storage provider. Failling back to in memory store.',
   );
   const inMemoryStore: Record<string, string> = {};

@@ -20,5 +20,3 @@ execSync(
   `npm publish --tag beta --registry=https://registry.npmjs.org/ --userconfig=${root}/.npmrc --access public`,
   { cwd: dir },
 );
-
-console.log('Foo', dir);

@@ -1,7 +1,7 @@
 import { NetworkCore } from './NetworkCore';
 import { StatsigEventInternal } from './StatsigEvent';
 
-export class Logger {
+export class EventLogger {
   private _queue: StatsigEventInternal[] = [];
   private _flushTimer: ReturnType<typeof setInterval> | null;
 

@@ -1,3 +1,5 @@
+import { Log } from './Log';
+
 export const EXCEPTION_ENDPOINT = 'https://statsigapi.net/v1/sdk_exception';
 
 type Config = {
@@ -29,8 +31,7 @@ export function errorBoundary(tag: string, task: () => unknown): unknown {
 function _onError(tag: string, error: unknown) {
   try {
     if (_config?.isSilent !== true) {
-      // eslint-disable-next-line no-console
-      console.warn(`[Statsig]: Caught Error in ${tag}`, error);
+      Log.warn(`Caught error in ${tag}`, error);
     }
 
     const impl = async () => {

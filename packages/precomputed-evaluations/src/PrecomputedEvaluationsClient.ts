@@ -2,9 +2,9 @@ import type { StatsigUser } from '@sigstat/core';
 import {
   DJB2,
   DynamicConfig,
+  EventLogger,
   Experiment,
   Layer,
-  Logger,
   Monitored,
   PrecomputedEvaluationsInterface,
   StatsigEvent,
@@ -30,7 +30,7 @@ export default class PrecomputedEvaluationsClient
 
   private _options: StatsigOptions;
   private _network: Network;
-  private _logger: Logger;
+  private _logger: EventLogger;
   private _store: SpecStore;
   private _user: StatsigUser;
 
@@ -46,7 +46,7 @@ export default class PrecomputedEvaluationsClient
       this._options.overrideStableID ?? getUUID(),
       this._options.api,
     );
-    this._logger = new Logger(this._network);
+    this._logger = new EventLogger(this._network);
     this._user = user;
 
     if (typeof window !== 'undefined') {

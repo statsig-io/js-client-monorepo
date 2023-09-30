@@ -1,7 +1,7 @@
 import {
   DynamicConfig,
+  EventLogger,
   Layer,
-  Logger,
   OnDeviceEvaluationsInterface,
   StatsigEvent,
   StatsigLoadingStatus,
@@ -20,14 +20,14 @@ export default class OnDeviceEvaluationsClient
 
   private _network: Network;
   private _options: StatsigOptions;
-  private _logger: Logger;
+  private _logger: EventLogger;
   private _store: SpecStore;
   private _evaluator: Evaluator;
 
   constructor(sdkKey: string, options: StatsigOptions | null = null) {
     this._options = options ?? { api: 'https://api.statsig.com/v1' };
     this._network = new Network(sdkKey, this._options.api);
-    this._logger = new Logger(this._network);
+    this._logger = new EventLogger(this._network);
     this._store = new SpecStore();
     this._evaluator = new Evaluator(this._store);
   }

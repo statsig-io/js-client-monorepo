@@ -1,4 +1,5 @@
 import {
+  Log,
   OnDeviceEvaluationsInterface,
   PrecomputedEvaluationsInterface,
 } from '@sigstat/core';
@@ -10,8 +11,7 @@ export function isRemoteEvaluationClient(
 }
 
 export function logMissingStatsigUserWarning(): void {
-  // eslint-disable-next-line no-console
-  console.warn(
+  Log.warn(
     'StatsigUser not provided for Local Evaluation. Returning default value.',
   );
 }
