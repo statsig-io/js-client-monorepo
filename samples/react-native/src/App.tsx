@@ -5,7 +5,8 @@ import { SafeAreaView, StatusBar, Text, View } from 'react-native';
 import { PrecomputedEvaluationsClient } from '@sigstat/precomputed-evaluations';
 import { StatsigProvider, useGate } from '@sigstat/react-bindings';
 
-const client = new PrecomputedEvaluationsClient('client-key', {
+const DEMO_CLIENT_KEY = 'client-rfLvYGag3eyU0jYW5zcIJTQip7GXxSrhOFN69IGMjvq';
+const client = new PrecomputedEvaluationsClient(DEMO_CLIENT_KEY, {
   userID: 'a-user',
 });
 
