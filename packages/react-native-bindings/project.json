@@ -1,0 +1,47 @@
+{
+  "name": "react-native-bindings",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/react-native-bindings/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/react-native-bindings",
+        "main": "packages/react-native-bindings/src/index.ts",
+        "tsConfig": "packages/react-native-bindings/tsconfig.lib.json",
+        "assets": ["packages/react-native-bindings/*.md"]
+      }
+    },
+    "publish": {
+      "command": "ts-node ./tools/scripts/publish.ts react-native-bindings",
+      "dependsOn": ["build"]
+    },
+    "lint": {
+      "executor": "@nx/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": [
+          "packages/react-native-bindings/**/*.ts",
+          "packages/react-native-bindings/package.json"
+        ]
+      }
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "packages/react-native-bindings/jest.config.ts",
+        "passWithNoTests": true
+      },
+      "configurations": {
+        "ci": {
+          "ci": true,
+          "codeCoverage": true
+        }
+      }
+    }
+  },
+  "tags": []
+}

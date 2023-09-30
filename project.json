@@ -9,6 +9,14 @@
     "sync-version": {
       "command": "npm run sync-version",
       "dependsOn": []
+    },
+    "local-registry": {
+      "executor": "@nx/js:verdaccio",
+      "options": {
+        "port": 4873,
+        "config": ".verdaccio/config.yml",
+        "storage": "tmp/local-registry/storage"
+      }
     }
   }
 }

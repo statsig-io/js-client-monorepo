@@ -24,6 +24,9 @@
         "packages/precomputed-evaluations/src/index.ts"
       ],
       "@sigstat/react-bindings": ["packages/react-bindings/src/index.ts"],
+      "@sigstat/react-native-bindings": [
+        "packages/react-native-bindings/src/index.ts"
+      ],
       "@sigstat/sha256": ["packages/sha256/src/index.ts"],
       "statsig-test-helpers": ["packages/test-helpers/src/index.ts"]
     }

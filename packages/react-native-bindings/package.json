@@ -1,0 +1,13 @@
+{
+  "name": "@sigstat/react-native-bindings",
+  "version": "0.0.1",
+  "dependencies": {
+    "@sigstat/react-bindings": "*"
+  },
+  "peerDependencies": {
+    "@react-native-async-storage/async-storage": "1.*"
+  },
+  "type": "commonjs",
+  "main": "./src/index.js",
+  "typings": "./src/index.d.ts"
+}
