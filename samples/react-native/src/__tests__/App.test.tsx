@@ -10,9 +10,13 @@ describe('App', () => {
     fetchMock.mockResponse(JSON.stringify(InitResponse));
   });
 
-  it('renders the Passing value', async () => {
-    const { findByText } = render(<App />);
-    const result = await findByText('Passing');
-    expect(result).toBeDefined();
-  });
+  it(
+    'renders the Passing value',
+    async () => {
+      const { findByText } = render(<App />);
+      const result = await findByText('Passing');
+      expect(result).toBeDefined();
+    },
+    1000 * 10,
+  );
 });

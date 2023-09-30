@@ -31,5 +31,5 @@
       "statsig-test-helpers": ["packages/test-helpers/src/index.ts"]
     }
   },
-  "exclude": ["node_modules", "tmp"]
+  "exclude": ["node_modules", "tmp", "tools"]
 }

@@ -1,5 +1,5 @@
 import { StatsigEvent } from './StatsigEvent';
-import { SDK_VERSION } from './StatsigMetadata';
+import { SDK_VERSION } from './StatsigMetadataCore';
 import { getUUID } from './UUID';
 
 type StatsigNetworkResponse = {
