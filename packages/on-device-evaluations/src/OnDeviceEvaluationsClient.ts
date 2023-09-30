@@ -1,6 +1,7 @@
 import {
   DynamicConfig,
   EventLogger,
+  FeatureGate,
   Layer,
   OnDeviceEvaluationsInterface,
   StatsigEvent,
@@ -52,15 +53,23 @@ export default class OnDeviceEvaluationsClient
   checkGate(user: StatsigUser, name: string): boolean {
     return this._evaluator.checkGate(user, name).value;
   }
+
+  getFeatureGate(_user: StatsigUser, _name: string): FeatureGate {
+    throw new Error('Method not implemented.');
+  }
+
   getDynamicConfig(_user: StatsigUser, _name: string): DynamicConfig {
     throw new Error('Method not implemented.');
   }
+
   getExperiment(_user: StatsigUser, _name: string): DynamicConfig {
     throw new Error('Method not implemented.');
   }
+
   getLayer(_user: StatsigUser, _name: string): Layer {
     throw new Error('Method not implemented.');
   }
+
   logEvent(_user: StatsigUser, _event: StatsigEvent): void {
     throw new Error('Method not implemented.');
   }

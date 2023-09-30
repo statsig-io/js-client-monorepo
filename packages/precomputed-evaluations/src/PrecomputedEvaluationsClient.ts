@@ -1,4 +1,4 @@
-import type { StatsigUser } from '@sigstat/core';
+import type { FeatureGate, StatsigUser } from '@sigstat/core';
 import {
   DJB2,
   DynamicConfig,
@@ -13,6 +13,7 @@ import {
   createGateExposure,
   createLayerParameterExposure,
   emptyDynamicConfig,
+  emptyFeatureGate,
   emptyLayer,
   getUUID,
   normalizeUser,
@@ -88,10 +89,16 @@ export default class PrecomputedEvaluationsClient
   }
 
   checkGate(name: string): boolean {
+    return this.getFeatureGate(name).value;
+  }
+
+  getFeatureGate(name: string): FeatureGate {
     const hash = DJB2(name);
     const res = this._store.values?.feature_gates[hash];
+    const gate = emptyFeatureGate(name);
+
     if (res == null) {
-      return false;
+      return gate;
     }
 
     this._logger.enqueue(
@@ -104,7 +111,7 @@ export default class PrecomputedEvaluationsClient
       ),
     );
 
-    return res.value;
+    return { ...gate, ruleID: res.rule_id, value: res.value };
   }
 
   getDynamicConfig(name: string): DynamicConfig {
