@@ -1,2 +1,3 @@
 export * from './LocalOverrides';
-export * from './RemoteEvalExtensions';
+export * from './PrecomputedEvaluationsExtensions';
+export * from './OnDeviceEvaluationsExtensions';

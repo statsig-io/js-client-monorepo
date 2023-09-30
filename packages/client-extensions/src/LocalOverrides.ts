@@ -1,4 +1,4 @@
-import { getObjectFromStorage, setObjectInStorage } from 'dloomb-client-core';
+import { getObjectFromStorage, setObjectInStorage } from '@sigstat/core';
 
 export const STORAGE_KEY = 'STATSIG_JS_LOCAL_OVERRIDES';
 

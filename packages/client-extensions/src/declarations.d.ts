@@ -1,2 +1,2 @@
-declare module 'dloomb-client-on-device-eval';
-declare module 'dloomb-client-remote-server-eval';
+// declare module '@sigstat/on-device-evaluations';
+// declare module '@sigstat/precomputed-evaluations';

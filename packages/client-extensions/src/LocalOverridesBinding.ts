@@ -1,23 +1,14 @@
 import { LocalOverrides, makeEmptyOverrides } from './LocalOverrides';
 
-type Method = (...args: unknown[]) => unknown;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type Method = (...args: any[]) => unknown;
 
-type ClientPrototype = ClientWithOverrides & {
+export interface ClientPrototype {
   checkGate: Method;
   getDynamicConfig: Method;
   getExperiment: Method;
   getLayer: Method;
-  _overrides?: LocalOverrides;
-};
 
-type ExtendedClientPrototype = ClientPrototype & {
-  _checkGateActual: Method;
-  _getDynamicConfigActual: Method;
-  _getExperimentActual: Method;
-  _getLayerActual: Method;
-};
-
-export interface ClientWithOverrides {
   overrideGate: (name: string, value: boolean | null) => void;
   overrideDynamicConfig: (
     name: string,
@@ -30,6 +21,13 @@ export interface ClientWithOverrides {
   overrideLayer: (name: string, value: Record<string, unknown> | null) => void;
   _overrides?: LocalOverrides;
 }
+
+type ExtendedClientPrototype = ClientPrototype & {
+  _checkGateActual: Method;
+  _getDynamicConfigActual: Method;
+  _getExperimentActual: Method;
+  _getLayerActual: Method;
+};
 
 export function bind(proto?: ClientPrototype): void {
   if (!proto) {
