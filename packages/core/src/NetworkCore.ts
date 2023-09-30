@@ -1,5 +1,5 @@
 import { StatsigEvent } from './StatsigEvent';
-import { SDK_VERSION } from './StatsigMetadataCore';
+import { StatsigMetadata } from './StatsigMetadataCore';
 import { getUUID } from './UUID';
 
 type StatsigNetworkResponse = {
@@ -12,21 +12,20 @@ export class NetworkCore {
 
   constructor(
     sdkKey: string,
-    sdkType: string,
+    statsigMetadata: StatsigMetadata,
     stableID: string,
     protected readonly _api: string,
   ) {
     this._headers = {
       'Content-Type': 'application/json',
       'STATSIG-API-KEY': sdkKey,
-      'STATSIG-SDK-TYPE': sdkType,
-      'STATSIG-SDK-VERSION': SDK_VERSION,
+      'STATSIG-SDK-TYPE': statsigMetadata.sdkType,
+      'STATSIG-SDK-VERSION': statsigMetadata.sdkVersion,
     };
 
     this._statsigMetadata = {
+      ...statsigMetadata,
       stableID,
-      sdkType,
-      sdkVersion: SDK_VERSION,
       sessionID: getUUID(),
     };
   }

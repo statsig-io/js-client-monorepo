@@ -9,3 +9,9 @@ fetchMock.enableMocks();
 jest.mock('@react-native-async-storage/async-storage', () =>
   require('@react-native-async-storage/async-storage/jest/async-storage-mock'),
 );
+
+// Mock RN Device Info
+// eslint-disable-next-line @typescript-eslint/no-unsafe-return
+jest.mock('react-native-device-info', () =>
+  require('react-native-device-info/jest/react-native-device-info-mock'),
+);

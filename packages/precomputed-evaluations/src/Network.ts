@@ -1,11 +1,11 @@
 import { NetworkCore, StatsigUser } from '@sigstat/core';
 
 import { EvaluationResponse } from './EvaluationData';
-import { SDK_TYPE } from './StatsigMetadata';
+import { StatsigMetadata } from './StatsigMetadata';
 
 export default class StatsigNetwork extends NetworkCore {
   constructor(sdkKey: string, stableID: string, api: string) {
-    super(sdkKey, SDK_TYPE, stableID, api);
+    super(sdkKey, StatsigMetadata, stableID, api);
   }
 
   fetchEvaluations(user: StatsigUser): Promise<EvaluationResponse> {
