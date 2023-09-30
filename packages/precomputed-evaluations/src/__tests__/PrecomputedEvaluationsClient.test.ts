@@ -14,6 +14,8 @@ describe('PrecomputedEvaluationsClient', () => {
 
     client = new PrecomputedEvaluationsClient('client-key', {});
     await client.initialize();
+
+    client.getExperiment('');
   });
 
   it('calls /initialize', () => {

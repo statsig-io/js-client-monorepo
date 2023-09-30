@@ -1,21 +1,26 @@
 import '@react-native-async-storage/async-storage';
 
 import '@sigstat/client-extensions';
+import { OnDeviceEvaluationsClient } from '@sigstat/on-device-evaluations';
 import { PrecomputedEvaluationsClient } from '@sigstat/precomputed-evaluations';
-import { StatsigProvider, useExperiment } from '@sigstat/react-bindings';
+import {
+  StatsigProvider,
+  useExperiment,
+  useGate,
+} from '@sigstat/react-bindings';
 
 const client = new PrecomputedEvaluationsClient('client-key', {
   userID: 'a-user',
 });
+
+const clientOnDev = new OnDeviceEvaluationsClient('client-key');
 
 client.overrideGate('overridden_gate', true);
 client.overrideExperiment('overridden_experiment', {
   a_string: 'overridden_string',
 });
 
-function Content() {
-  const { experiment } = useExperiment('overridden_experiment');
-
+function Text({ value }: { value: string }) {
   return (
     <div
       style={{
@@ -23,15 +28,31 @@ function Content() {
         fontFamily: 'sans-serif',
       }}
     >
-      overridden_experiment: {JSON.stringify(experiment.value)}
+      {value}
     </div>
+  );
+}
+
+function CheckGate() {
+  const { value } = useGate('overridden_gate');
+  return <Text value={`overridden_gate: ${value ? 'Pass' : 'Fail'}`} />;
+}
+
+function GetExperiment() {
+  const { experiment } = useExperiment('overridden_experiment');
+
+  return (
+    <Text
+      value={`overridden_experiment: ${JSON.stringify(experiment.value)}`}
+    />
   );
 }
 
 export default function LocalOverridesExample(): React.ReactNode {
   return (
     <StatsigProvider client={client}>
-      <Content />
+      <CheckGate />
+      <GetExperiment />
     </StatsigProvider>
   );
 }
