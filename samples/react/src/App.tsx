@@ -1,7 +1,5 @@
-import StatsigProvider from 'packages/react-bindings/src/StatsigProvider';
-import useGate from 'packages/react-bindings/src/useGate';
-
 import { PrecomputedEvaluationsClient } from '@sigstat/precomputed-evaluations';
+import { StatsigProvider, useGate } from '@sigstat/react-bindings';
 
 const client = new PrecomputedEvaluationsClient('client-key', {
   userID: 'a-user',

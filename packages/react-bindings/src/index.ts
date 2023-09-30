@@ -5,17 +5,13 @@ import useExperiment from './useExperiment';
 import useGate from './useGate';
 import useLayer from './useLayer';
 
-const EXPORTS = {
+export {
   StatsigContext,
   StatsigProvider,
   useGate,
   useDynamicConfig,
   useExperiment,
   useLayer,
-};
-
-export = {
-  ...EXPORTS,
 };
 
 declare global {
@@ -29,6 +25,11 @@ declare global {
 if (typeof window !== 'undefined') {
   window.__STATSIG__ = {
     ...window.__STATSIG__,
-    ...EXPORTS,
+    StatsigContext,
+    StatsigProvider,
+    useGate,
+    useDynamicConfig,
+    useExperiment,
+    useLayer,
   };
 }
