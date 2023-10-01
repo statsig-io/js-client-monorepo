@@ -1,0 +1,17 @@
+{
+  "name": "@sigstat/expo-bindings",
+  "version": "0.0.1",
+  "dependencies": {
+    "@sigstat/core": "0.0.5",
+    "@sigstat/react-bindings": "*"
+  },
+  "peerDependencies": {
+    "react-native": "0.*",
+    "@react-native-async-storage/async-storage": "1.*",
+    "expo-application": "5.*",
+    "expo-device": "5.*"
+  },
+  "type": "commonjs",
+  "main": "./src/index.js",
+  "typings": "./src/index.d.ts"
+}

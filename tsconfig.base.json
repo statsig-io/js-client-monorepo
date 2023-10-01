@@ -17,6 +17,7 @@
     "paths": {
       "@sigstat/client-extensions": ["packages/client-extensions/src/index.ts"],
       "@sigstat/core": ["packages/core/src/index.ts"],
+      "@sigstat/expo-bindings": ["packages/expo-bindings/src/index.ts"],
       "@sigstat/on-device-evaluations": [
         "packages/on-device-evaluations/src/index.ts"
       ],
