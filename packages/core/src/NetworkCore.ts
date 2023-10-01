@@ -1,3 +1,4 @@
+import { StableID } from './StableID';
 import { StatsigEvent } from './StatsigEvent';
 import { StatsigMetadata } from './StatsigMetadata';
 import { getUUID } from './UUID';
@@ -10,8 +11,7 @@ export class NetworkCore {
   private readonly _sessionID: string;
 
   constructor(
-    private readonly _sdkKey: string,
-    private readonly _stableID: string,
+    protected readonly _sdkKey: string,
     protected readonly _api: string,
   ) {
     this._sessionID = getUUID();
@@ -31,11 +31,12 @@ export class NetworkCore {
     const controller = new AbortController();
     const handle = setTimeout(() => controller.abort(), timeoutMs);
     const statsigMetadata = StatsigMetadata.get();
+    const stableID = await StableID.get();
     const body = JSON.stringify({
       ...data,
       statsigMetadata: {
         ...statsigMetadata,
-        stableID: this._stableID,
+        stableID,
         sessionID: this._sessionID,
       },
     });

@@ -7,6 +7,7 @@ import {
   Layer,
   Monitored,
   PrecomputedEvaluationsInterface,
+  StableID,
   StatsigEvent,
   StatsigLoadingStatus,
   createConfigExposure,
@@ -15,7 +16,6 @@ import {
   emptyDynamicConfig,
   emptyFeatureGate,
   emptyLayer,
-  getUUID,
   normalizeUser,
 } from '@sigstat/core';
 
@@ -41,13 +41,13 @@ export default class PrecomputedEvaluationsClient
     user: StatsigUser,
     options: StatsigOptions | null = null,
   ) {
+    if (options?.overrideStableID) {
+      StableID.setOverride(options?.overrideStableID);
+    }
+
     this._options = options ?? { api: 'https://api.statsig.com/v1' };
     this._store = new SpecStore(sdkKey);
-    this._network = new Network(
-      sdkKey,
-      this._options.overrideStableID ?? getUUID(),
-      this._options.api,
-    );
+    this._network = new Network(sdkKey, this._options.api);
     this._logger = new EventLogger(this._network);
     this._user = user;
 

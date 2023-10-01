@@ -3,8 +3,8 @@ import { NetworkCore, StatsigUser } from '@sigstat/core';
 import { EvaluationResponse } from './EvaluationData';
 
 export default class StatsigNetwork extends NetworkCore {
-  constructor(sdkKey: string, stableID: string, api: string) {
-    super(sdkKey, stableID, api);
+  constructor(sdkKey: string, api: string) {
+    super(sdkKey, api);
   }
 
   fetchEvaluations(user: StatsigUser): Promise<EvaluationResponse> {

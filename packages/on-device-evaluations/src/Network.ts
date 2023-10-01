@@ -4,7 +4,7 @@ import { DownloadConfigSpecsResponse } from './SpecStore';
 
 export default class StatsigNetwork extends NetworkCore {
   constructor(sdkKey: string, api: string) {
-    super(sdkKey, '', api);
+    super(sdkKey, api);
   }
 
   fetchConfigSpecs(): Promise<DownloadConfigSpecsResponse> {
