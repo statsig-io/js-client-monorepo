@@ -1,9 +1,10 @@
 {
   "name": "@sigstat/precomputed-evaluations",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "dependencies": {
     "@sigstat/core": "*"
   },
+  "jsdelivr": "./build/precomputed-evaluations.min.js",
   "type": "commonjs",
   "main": "./src/index.js",
   "typings": "./src/index.d.ts"
