@@ -24,7 +24,7 @@ describe('StatsigMetadata - Expo Device Info', () => {
     body = JSON.parse(
       fetchMock.mock.calls[0][1]?.body?.toString() ?? '{}',
     ) as typeof body;
-  }, 1000 * 10);
+  });
 
   it('gets the expected metadata', () => {
     expect(body.statsigMetadata).toMatchObject({
