@@ -7,7 +7,18 @@
       "dependsOn": ["sync-version"]
     },
     "sync-version": {
-      "command": "npm run sync-version",
+      "command": "echo 'Version Sync Complete.'",
+      "dependsOn": [
+        "sync-version-statsig-metadata",
+        "sync-version-package-json"
+      ]
+    },
+    "sync-version-statsig-metadata": {
+      "command": "node ./tools/scripts/update-statsig-metadata-version.js",
+      "dependsOn": []
+    },
+    "sync-version-package-json": {
+      "command": "npx sync-json -v --property version --source package.json packages/**/package.json",
       "dependsOn": []
     },
     "local-registry": {
