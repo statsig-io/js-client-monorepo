@@ -16,7 +16,11 @@ if (!existsSync(configPath)) {
   throw new Error(`Failed to find package.json at ${configPath}`);
 }
 
-execSync(
-  `npm publish --registry=https://registry.npmjs.org/ --userconfig=${root}/.npmrc --access public`,
-  { cwd: dir },
-);
+try {
+  execSync(
+    `npm publish --registry=https://registry.npmjs.org/ --userconfig=${root}/.npmrc --access public`,
+    { cwd: dir },
+  );
+} catch {
+  throw new Error(`Failed to publish ${packageName}`);
+}

@@ -1,6 +1,6 @@
 {
   "name": "@sigstat/on-device-evaluations",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "dependencies": {
     "@sigstat/core": "*",
     "@sigstat/sha256": "*"

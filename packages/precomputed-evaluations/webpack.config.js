@@ -20,7 +20,7 @@ module.exports = composePlugins(withNx(), withWeb(), () =>
       },
       externals: ['@react-native-async-storage/async-storage'],
       output: {
-        filename: 'precomputed-evalutions.min.js',
+        filename: 'precomputed-evaluations.min.js',
         library: {
           type: 'umd',
           name: {

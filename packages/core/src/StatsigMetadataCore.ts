@@ -1,4 +1,4 @@
-const SDK_VERSION = '0.0.3';
+const SDK_VERSION = '0.0.4';
 
 export type StatsigMetadata = {
   readonly appVersion: string;
@@ -24,7 +24,6 @@ const metadata = {
   systemVersion: '',
 };
 
-// todo: move to outer most modules
 extractFromReactNativeDeviceInfo();
 extractFromExpoDevice();
 extractFromExpoConstants();

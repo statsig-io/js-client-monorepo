@@ -1,6 +1,6 @@
 {
   "name": "sigstat",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "license": "MIT",
   "scripts": {
     "lint": "nx run-many --parallel=3 --target=lint",

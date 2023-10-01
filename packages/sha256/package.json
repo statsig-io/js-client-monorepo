@@ -1,6 +1,6 @@
 {
   "name": "@sigstat/sha256",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "dependencies": {},
   "devDependencies": {
     "js-sha256": "0.10.1"
