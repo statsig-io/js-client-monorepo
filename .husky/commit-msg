@@ -1,4 +1,12 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
 
-npx --no -- commitlint --edit "$1"
+npx --no -- commitlint --edit "$1" || echo ""
+
+RED='\033[0;31m' # ANSI escape code for red text
+NC='\033[0m'    # ANSI escape code to reset text color
+
+if ! npx --no -- commitlint --edit "$1"; then
+  echo -e "${RED}Commitlint failed. Please see commitlint.config.js${NC}"
+  exit 1
+fi
