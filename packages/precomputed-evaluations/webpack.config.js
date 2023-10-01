@@ -1,7 +1,7 @@
 const { composePlugins, withNx, withWeb } = require('@nx/webpack');
 const path = require('path');
 
-module.exports = composePlugins(withNx(), withWeb(), (_config) => {
+module.exports = composePlugins(withNx(), withWeb(), () => {
   return {
     entry: ['./dist/packages/precomputed-evaluations/src/index.js'],
     mode: 'production',
@@ -10,14 +10,10 @@ module.exports = composePlugins(withNx(), withWeb(), (_config) => {
       alias: {
         '@sigstat/core': path.resolve(__dirname, '../../dist/packages/core'),
       },
-      extensions: [
-        // '.tsx', '.ts',
-        '.js',
-      ],
+      extensions: ['.js'],
     },
-    stats: true,
     output: {
-      filename: 'statsig-prod-web-sdk.js',
+      filename: 'precomputed-evalutions.min.js',
       library: {
         type: 'umd',
         name: {

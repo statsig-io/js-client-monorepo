@@ -16,7 +16,7 @@
     },
     "publish": {
       "command": "ts-node ./tools/scripts/publish.ts precomputed-evaluations",
-      "dependsOn": ["build"]
+      "dependsOn": ["build", "build-webpack"]
     },
     "lint": {
       "executor": "@nx/linter:eslint",
@@ -42,18 +42,27 @@
         }
       }
     },
-    "build-wp": {
+    "build-ts": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/precomputed-evaluations",
+        "main": "packages/precomputed-evaluations/src/index.ts",
+        "tsConfig": "packages/precomputed-evaluations/tsconfig.lib.json",
+        "assets": ["packages/precomputed-evaluations/*.md"]
+      }
+    },
+    "build-webpack": {
       "executor": "@nx/webpack:webpack",
       "outputs": ["{options.outputPath}"],
       "defaultConfiguration": "production",
       "options": {
-        "outputPath": "dist/builds/precomputed-evaluations",
-        "compiler": "babel",
-        "main": "dist/packages/precomputed-evaluations/src/index.js",
+        "outputPath": "overridden in webpack config",
+        "main": "overridden in webpack config",
         "tsConfig": "packages/precomputed-evaluations/tsconfig.lib.json",
         "webpackConfig": "packages/precomputed-evaluations/webpack.config.js"
       },
-      "dependsOn": ["build-ts"]
+      "dependsOn": ["build"]
     }
   },
   "tags": []

@@ -15,14 +15,14 @@ type StoreValues = EvaluationResponse & { has_updates: true };
 
 export default class SpecStore {
   values: StoreValues | null = null;
-  manifest: Record<string, number> = {};
-  _isReady: Promise<void>;
+  private _manifest: Record<string, number> = {};
+  private _isReady: Promise<void>;
 
   constructor(private _sdkKey: string) {
     this._isReady = getObjectFromStorage<Record<string, number>>(
       MANIFEST_KEY,
     ).then((value) => {
-      this.manifest = value ?? {};
+      this._manifest = value ?? {};
     });
   }
 
@@ -56,11 +56,11 @@ export default class SpecStore {
   }
 
   private async _enforceStorageLimit(cacheKey: string): Promise<void> {
-    this.manifest[cacheKey] = Date.now();
+    this._manifest[cacheKey] = Date.now();
 
-    const entries = Object.entries(this.manifest);
+    const entries = Object.entries(this._manifest);
     if (entries.length < CACHE_LIMIT) {
-      await setObjectInStorage(MANIFEST_KEY, this.manifest);
+      await setObjectInStorage(MANIFEST_KEY, this._manifest);
       return;
     }
 
@@ -69,8 +69,8 @@ export default class SpecStore {
     });
 
     await Storage.removeItem(oldest[0]);
-    delete this.manifest[oldest[0]];
-    await setObjectInStorage(MANIFEST_KEY, this.manifest);
+    delete this._manifest[oldest[0]];
+    await setObjectInStorage(MANIFEST_KEY, this._manifest);
   }
 }
 
