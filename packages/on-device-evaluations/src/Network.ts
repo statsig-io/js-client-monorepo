@@ -1,11 +1,10 @@
 import { NetworkCore } from '@sigstat/core';
 
 import { DownloadConfigSpecsResponse } from './SpecStore';
-import { StatsigMetadata } from './StatsigMetadata';
 
 export default class StatsigNetwork extends NetworkCore {
   constructor(sdkKey: string, api: string) {
-    super(sdkKey, StatsigMetadata, '', api);
+    super(sdkKey, '', api);
   }
 
   fetchConfigSpecs(): Promise<DownloadConfigSpecsResponse> {

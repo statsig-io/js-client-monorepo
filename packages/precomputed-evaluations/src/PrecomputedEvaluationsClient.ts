@@ -21,6 +21,7 @@ import {
 
 import Network from './Network';
 import SpecStore from './SpecStore';
+import './StatsigMetadataProvider';
 import type { StatsigOptions } from './StatsigOptions';
 
 @Monitored
@@ -50,10 +51,8 @@ export default class PrecomputedEvaluationsClient
     this._logger = new EventLogger(this._network);
     this._user = user;
 
-    if (typeof window !== 'undefined') {
-      window.__STATSIG__ = window.__STATSIG__ ?? {};
-      window.__STATSIG__[DJB2(sdkKey)] = this;
-    }
+    __STATSIG__ = __STATSIG__ ?? {};
+    __STATSIG__[DJB2(sdkKey)] = this;
   }
 
   async initialize(): Promise<void> {

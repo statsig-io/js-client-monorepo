@@ -4,6 +4,8 @@ import { SafeAreaView, StatusBar, Text, View } from 'react-native';
 import { PrecomputedEvaluationsClient } from '@sigstat/precomputed-evaluations';
 import { StatsigProvider, useGate } from '@sigstat/react-native-bindings';
 
+import StatsigMetadataExample from './StatsigMetadataExample';
+
 const DEMO_CLIENT_KEY = 'client-rfLvYGag3eyU0jYW5zcIJTQip7GXxSrhOFN69IGMjvq';
 const client = new PrecomputedEvaluationsClient(DEMO_CLIENT_KEY, {
   userID: 'a-user',
@@ -40,6 +42,7 @@ export default function App(): React.ReactNode {
       <SafeAreaView style={{ flex: 1, backgroundColor: '#194b7d' }}>
         <StatsigProvider client={client}>
           <Content />
+          <StatsigMetadataExample />
         </StatsigProvider>
       </SafeAreaView>
     </>

@@ -1,4 +1,5 @@
 import PrecomputedEvaluationsClient from './PrecomputedEvaluationsClient';
+import './StatsigMetadataProvider';
 import type { StatsigOptions } from './StatsigOptions';
 
 export type {
@@ -9,9 +10,7 @@ export type {
 
 export { PrecomputedEvaluationsClient, StatsigOptions };
 
-if (typeof window !== 'undefined') {
-  window.__STATSIG__ = {
-    ...window.__STATSIG__,
-    PrecomputedEvaluationsClient,
-  };
-}
+__STATSIG__ = {
+  ...(__STATSIG__ ?? {}),
+  PrecomputedEvaluationsClient,
+};

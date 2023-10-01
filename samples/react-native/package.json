@@ -16,6 +16,8 @@
     "@jest/globals": "*",
     "@testing-library/jest-dom": "*",
     "@react-native-async-storage/async-storage": "*",
-    "reflect-metadata": "*"
+    "reflect-metadata": "*",
+    "@nx/webpack": "*",
+    "react-native-device-info": "*"
   }
 }

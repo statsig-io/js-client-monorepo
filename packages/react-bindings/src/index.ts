@@ -14,22 +14,12 @@ export {
   useLayer,
 };
 
-declare global {
-  interface Window {
-    __STATSIG__: {
-      [key: string]: unknown;
-    };
-  }
-}
-
-if (typeof window !== 'undefined') {
-  window.__STATSIG__ = {
-    ...window.__STATSIG__,
-    StatsigContext,
-    StatsigProvider,
-    useGate,
-    useDynamicConfig,
-    useExperiment,
-    useLayer,
-  };
-}
+__STATSIG__ = {
+  ...__STATSIG__,
+  StatsigContext,
+  StatsigProvider,
+  useGate,
+  useDynamicConfig,
+  useExperiment,
+  useLayer,
+};

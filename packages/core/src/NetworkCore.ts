@@ -1,5 +1,5 @@
 import { StatsigEvent } from './StatsigEvent';
-import { StatsigMetadata } from './StatsigMetadataCore';
+import { StatsigMetadata } from './StatsigMetadata';
 import { getUUID } from './UUID';
 
 type StatsigNetworkResponse = {
@@ -7,27 +7,14 @@ type StatsigNetworkResponse = {
 };
 
 export class NetworkCore {
-  private readonly _headers: Record<string, string>;
-  private readonly _statsigMetadata: Record<string, string>;
+  private readonly _sessionID: string;
 
   constructor(
-    sdkKey: string,
-    statsigMetadata: StatsigMetadata,
-    stableID: string,
+    private readonly _sdkKey: string,
+    private readonly _stableID: string,
     protected readonly _api: string,
   ) {
-    this._headers = {
-      'Content-Type': 'application/json',
-      'STATSIG-API-KEY': sdkKey,
-      'STATSIG-SDK-TYPE': statsigMetadata.sdkType,
-      'STATSIG-SDK-VERSION': statsigMetadata.sdkVersion,
-    };
-
-    this._statsigMetadata = {
-      ...statsigMetadata,
-      stableID,
-      sessionID: getUUID(),
-    };
+    this._sessionID = getUUID();
   }
 
   async sendEvents(events: StatsigEvent[]): Promise<StatsigNetworkResponse> {
@@ -43,15 +30,25 @@ export class NetworkCore {
   ): Promise<T> {
     const controller = new AbortController();
     const handle = setTimeout(() => controller.abort(), timeoutMs);
+    const statsigMetadata = StatsigMetadata.get();
     const body = JSON.stringify({
       ...data,
-      statsigMetadata: this._statsigMetadata,
+      statsigMetadata: {
+        ...statsigMetadata,
+        stableID: this._stableID,
+        sessionID: this._sessionID,
+      },
     });
 
     const response = await fetch(url, {
       method: 'POST',
       body,
-      headers: this._headers,
+      headers: {
+        'Content-Type': 'application/json',
+        'STATSIG-API-KEY': this._sdkKey,
+        'STATSIG-SDK-TYPE': statsigMetadata.sdkType,
+        'STATSIG-SDK-VERSION': statsigMetadata.sdkVersion,
+      },
       signal: controller.signal,
     });
     clearTimeout(handle);

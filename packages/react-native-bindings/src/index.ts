@@ -1,5 +1,6 @@
 import '@react-native-async-storage/async-storage';
-import 'react-native-device-info';
+
+import './StatsigMetadataProvider';
 
 export {
   StatsigContext,
