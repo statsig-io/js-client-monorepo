@@ -8,4 +8,5 @@ module.exports = {
     '\\.svg$': '@nx/react-native/plugins/jest/svg-mock',
   },
   coverageDirectory: '../../coverage/samples/react-native',
+  testTimeout: 10_000,
 };

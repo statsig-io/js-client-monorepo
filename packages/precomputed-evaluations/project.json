@@ -41,6 +41,19 @@
           "codeCoverage": true
         }
       }
+    },
+    "build-wp": {
+      "executor": "@nx/webpack:webpack",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
+      "options": {
+        "outputPath": "dist/builds/precomputed-evaluations",
+        "compiler": "babel",
+        "main": "dist/packages/precomputed-evaluations/src/index.js",
+        "tsConfig": "packages/precomputed-evaluations/tsconfig.lib.json",
+        "webpackConfig": "packages/precomputed-evaluations/webpack.config.js"
+      },
+      "dependsOn": ["build-ts"]
     }
   },
   "tags": []
