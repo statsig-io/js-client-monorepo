@@ -57,6 +57,7 @@
       "outputs": ["{options.outputPath}"],
       "defaultConfiguration": "production",
       "options": {
+        "statsJson": true,
         "outputPath": "overridden in webpack config",
         "main": "overridden in webpack config",
         "tsConfig": "packages/precomputed-evaluations/tsconfig.lib.json",
