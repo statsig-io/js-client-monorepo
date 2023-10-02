@@ -1,5 +1,3 @@
-import { StableID } from './StableID';
-
 const SDK_VERSION = '0.0.5';
 
 export type StatsigMetadata = {
@@ -26,14 +24,6 @@ let metadata: StatsigMetadata = {
   systemName: '',
   systemVersion: '',
 };
-
-StableID.get()
-  .then((stableID) => {
-    metadata = { ...metadata, stableID };
-  })
-  .catch(() => {
-    // noop
-  });
 
 export const StatsigMetadata = {
   get: (): StatsigMetadata => metadata,

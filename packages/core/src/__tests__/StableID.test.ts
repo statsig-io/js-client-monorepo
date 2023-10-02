@@ -4,6 +4,16 @@ import { MockLocalStorage } from './MockLocalStorage';
 export const UUID_V4_REGEX =
   /^[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-4[0-9A-Fa-f]{3}-[89ABab][0-9A-Fa-f]{3}-[0-9A-Fa-f]{12}/;
 
+async function getStableIDFromIsolatedModule(): Promise<string> {
+  let result: string | null = null;
+  await jest.isolateModulesAsync(async () => {
+    const s = (await import('../StableID')).StableID;
+    result = await s.get();
+  });
+
+  return result ?? 'error';
+}
+
 describe('StableID', () => {
   let storageMock: MockLocalStorage;
 
@@ -15,9 +25,8 @@ describe('StableID', () => {
     let stableID: string;
 
     beforeAll(async () => {
-      StableID.setOverride(null as any);
       storageMock.clear();
-      stableID = await StableID.get();
+      stableID = await getStableIDFromIsolatedModule();
     });
 
     it('generates a new ID when none is set in storage', async () => {
@@ -42,11 +51,11 @@ describe('StableID', () => {
     let stableID: string;
 
     beforeAll(async () => {
-      StableID.setOverride(null as any);
       storageMock.clear();
       storageMock.data[STATSIG_STABLE_ID_KEY] =
         JSON.stringify(existingStableID);
-      stableID = await StableID.get();
+
+      stableID = await getStableIDFromIsolatedModule();
     });
 
     it('matches what is in storage', async () => {
@@ -60,15 +69,15 @@ describe('StableID', () => {
     });
 
     it('returns the same value when queried again', async () => {
-      const again = await StableID.get();
+      const again = await getStableIDFromIsolatedModule();
       expect(again).toBe(existingStableID);
     });
   });
 
   it('generates random ids', async () => {
-    const first = await StableID.get();
-    StableID.setOverride(null as any);
-    const second = await StableID.get();
+    const first = await getStableIDFromIsolatedModule();
+    storageMock.clear();
+    const second = await getStableIDFromIsolatedModule();
 
     expect(first).not.toBe(second);
   });

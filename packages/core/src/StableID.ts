@@ -4,9 +4,9 @@ import { getUUID } from './UUID';
 
 export const STATSIG_STABLE_ID_KEY = 'STATSIG_STABLE_ID';
 
-let stableID: string | null = null;
+let stableIDPromise: Promise<string> | null = null;
 
-function persistToStorage() {
+function persistToStorage(stableID: string) {
   setObjectInStorage(STATSIG_STABLE_ID_KEY, stableID).catch(() => {
     Log.warn('Failed to save StableID');
   });
@@ -14,21 +14,25 @@ function persistToStorage() {
 
 export const StableID = {
   get: async (): Promise<string> => {
-    if (stableID) {
-      return stableID;
+    if (stableIDPromise == null) {
+      stableIDPromise = getObjectFromStorage<string>(
+        STATSIG_STABLE_ID_KEY,
+      ).then((stableID) => {
+        if (stableID != null) {
+          return stableID;
+        }
+
+        const newStableID = getUUID();
+        persistToStorage(newStableID);
+        return newStableID;
+      });
     }
 
-    stableID = await getObjectFromStorage(STATSIG_STABLE_ID_KEY);
-    if (!stableID) {
-      stableID = getUUID();
-      persistToStorage();
-    }
-
-    return stableID;
+    return stableIDPromise;
   },
 
   setOverride: (override: string): void => {
-    stableID = override;
-    persistToStorage();
+    stableIDPromise = Promise.resolve(override);
+    persistToStorage(override);
   },
 };
