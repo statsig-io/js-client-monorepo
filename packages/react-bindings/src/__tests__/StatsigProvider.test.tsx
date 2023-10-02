@@ -12,6 +12,7 @@ describe('StatsigProvider', () => {
     const promise = TestPromise.create<void>();
     const client = MockRemoteServerEvalClient.create();
     client.initialize.mockReturnValueOnce(promise);
+    client.shutdown.mockReturnValue(Promise.resolve());
 
     render(
       <StatsigProvider client={client}>

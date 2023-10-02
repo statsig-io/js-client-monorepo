@@ -3,3 +3,7 @@ require('reflect-metadata'); // Fix for Reflect.metadata test error https://gith
 // Mock all fetch calls
 const fetchMock = require('jest-fetch-mock');
 fetchMock.enableMocks();
+
+jest.mock('react-native-device-info', () =>
+  require('react-native-device-info/jest/react-native-device-info-mock'),
+);

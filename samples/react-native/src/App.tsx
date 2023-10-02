@@ -1,50 +1,31 @@
+import { NativeBaseProvider } from 'native-base';
 import React from 'react';
-import { SafeAreaView, StatusBar, Text, View } from 'react-native';
+import { SafeAreaView, StatusBar } from 'react-native';
 
 import { PrecomputedEvaluationsClient } from '@sigstat/precomputed-evaluations';
-import { StatsigProvider, useGate } from '@sigstat/react-native-bindings';
+import { StatsigProvider } from '@sigstat/react-native-bindings';
 
-import StatsigMetadataExample from './StatsigMetadataExample';
+import ExamplesList from './ExamplesList';
 
 const DEMO_CLIENT_KEY = 'client-rfLvYGag3eyU0jYW5zcIJTQip7GXxSrhOFN69IGMjvq';
 const client = new PrecomputedEvaluationsClient(DEMO_CLIENT_KEY, {
   userID: 'a-user',
 });
 
-function Content() {
-  const { value } = useGate('a_gate');
-
-  return (
-    <View
-      style={{
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-      }}
-    >
-      <Text
-        style={{
-          fontSize: 24,
-          color: '#fff',
-          fontFamily: 'sans-serif',
-        }}
-      >
-        {value ? 'Passing' : 'Failing'}
-      </Text>
-    </View>
-  );
-}
-
 export default function App(): React.ReactNode {
   return (
-    <>
-      <StatusBar hidden />
-      <SafeAreaView style={{ flex: 1, backgroundColor: '#194b7d' }}>
-        <StatsigProvider client={client}>
-          <Content />
-          <StatsigMetadataExample />
-        </StatsigProvider>
-      </SafeAreaView>
-    </>
+    <StatsigProvider client={client}>
+      <NativeBaseProvider
+        initialWindowMetrics={{
+          frame: { x: 0, y: 0, width: 0, height: 0 },
+          insets: { top: 0, left: 0, right: 0, bottom: 0 },
+        }}
+      >
+        <StatusBar hidden />
+        <SafeAreaView style={{ flex: 1, backgroundColor: '#1F222A' }}>
+          <ExamplesList />
+        </SafeAreaView>
+      </NativeBaseProvider>
+    </StatsigProvider>
   );
 }

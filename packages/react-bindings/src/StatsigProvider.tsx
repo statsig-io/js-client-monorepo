@@ -28,6 +28,12 @@ export default function StatsigProvider({
       .catch((error) => {
         Log.error('An error occurred during initialization', error);
       });
+
+    return () => {
+      client.shutdown().catch((error) => {
+        Log.error('An error occured during shutdown', error);
+      });
+    };
   }, [client]);
 
   return (

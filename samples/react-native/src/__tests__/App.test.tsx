@@ -12,7 +12,7 @@ describe('App', () => {
 
   it('renders the Passing value', async () => {
     const { findByText } = render(<App />);
-    const result = await findByText('Passing');
+    const result = await findByText('a_gate: Passing');
     expect(result).toBeDefined();
   });
 });
