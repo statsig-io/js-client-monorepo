@@ -4,6 +4,7 @@ import {
   FeatureGate,
   Layer,
   OnDeviceEvaluationsInterface,
+  StatsigClientBase,
   StatsigEvent,
   StatsigLoadingStatus,
   StatsigUser,
@@ -15,6 +16,7 @@ import SpecStore from './SpecStore';
 import { StatsigOptions } from './StatsigOptions';
 
 export default class OnDeviceEvaluationsClient
+  extends StatsigClientBase
   implements OnDeviceEvaluationsInterface
 {
   loadingStatus: StatsigLoadingStatus = 'Uninitialized';
@@ -26,6 +28,8 @@ export default class OnDeviceEvaluationsClient
   private _evaluator: Evaluator;
 
   constructor(sdkKey: string, options: StatsigOptions | null = null) {
+    super();
+
     this._options = options ?? { api: 'https://api.statsig.com/v1' };
     this._network = new Network(sdkKey, this._options.api);
     this._logger = new EventLogger(this._network);

@@ -1,10 +1,9 @@
-/**
- * @jest-environment jsdom
- */
 import '@testing-library/jest-dom';
-import { render, screen, waitFor } from '@testing-library/react';
+import { act, render, screen, waitFor } from '@testing-library/react';
 import * as React from 'react';
-import { MockRemoteServerEvalClient, TestPromise } from 'statsig-test-helpers';
+import { MockRemoteServerEvalClient } from 'statsig-test-helpers';
+
+import { PrecomputedEvaluationsInterface } from '@sigstat/core';
 
 import StatsigProvider from '../StatsigProvider';
 import useGate from '../useGate';
@@ -15,15 +14,19 @@ const GateComponent = () => {
 };
 
 describe('useGate', () => {
-  let promise: TestPromise<void>;
+  let client: jest.Mocked<PrecomputedEvaluationsInterface>;
+  let onStatusChange: (data: Record<string, unknown>) => void;
 
   beforeEach(() => {
-    promise = TestPromise.create<void>();
-
-    const client = MockRemoteServerEvalClient.create();
-    client.initialize.mockReturnValue(promise);
+    client = MockRemoteServerEvalClient.create();
+    client.initialize.mockReturnValue(Promise.resolve());
     client.shutdown.mockReturnValue(Promise.resolve());
     client.getFeatureGate.mockReturnValue({ value: true } as any);
+    client.on.mockImplementation((event, callback) => {
+      if (event === 'status_change') {
+        onStatusChange = callback;
+      }
+    });
 
     render(
       <StatsigProvider client={client}>
@@ -37,7 +40,9 @@ describe('useGate', () => {
   });
 
   it('renders the gate value', async () => {
-    promise.resolve();
+    act(() => {
+      onStatusChange({ loadingStatus: 'Network' });
+    });
 
     await waitFor(() => {
       const loadingText = screen.queryByTestId('gate-value');

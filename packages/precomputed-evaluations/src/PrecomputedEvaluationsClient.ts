@@ -8,6 +8,7 @@ import {
   Monitored,
   PrecomputedEvaluationsInterface,
   StableID,
+  StatsigClientBase,
   StatsigEvent,
   StatsigLoadingStatus,
   createConfigExposure,
@@ -26,6 +27,7 @@ import type { StatsigOptions } from './StatsigOptions';
 
 @Monitored
 export default class PrecomputedEvaluationsClient
+  extends StatsigClientBase
   implements PrecomputedEvaluationsInterface
 {
   loadingStatus: StatsigLoadingStatus = 'Uninitialized';
@@ -41,6 +43,8 @@ export default class PrecomputedEvaluationsClient
     user: StatsigUser,
     options: StatsigOptions | null = null,
   ) {
+    super();
+
     if (options?.overrideStableID) {
       StableID.setOverride(options?.overrideStableID);
     }
@@ -60,12 +64,12 @@ export default class PrecomputedEvaluationsClient
   }
 
   async updateUser(user: StatsigUser): Promise<void> {
-    this.loadingStatus = 'Loading';
+    this._setStatus('Loading');
     this._user = normalizeUser(user, this._options.environment);
 
     const cacheHit = await this._store.switchToUser(this._user);
     if (cacheHit) {
-      this.loadingStatus = 'Cache';
+      this._setStatus('Loading');
     }
 
     const capturedUser = this._user;
@@ -80,7 +84,7 @@ export default class PrecomputedEvaluationsClient
     }
 
     await this._store.setValues(capturedUser, response);
-    this.loadingStatus = pendingStatus;
+    this._setStatus(pendingStatus);
   }
 
   async shutdown(): Promise<void> {
@@ -167,5 +171,10 @@ export default class PrecomputedEvaluationsClient
 
   logEvent(event: StatsigEvent): void {
     this._logger.enqueue({ ...event, user: this._user, time: Date.now() });
+  }
+
+  private _setStatus(newStatus: StatsigLoadingStatus): void {
+    this.loadingStatus = newStatus;
+    this.emit('status_change', { loadingStatus: newStatus });
   }
 }

@@ -3,6 +3,7 @@ import './$_StatsigGlobal';
 import { EventLogger } from './EventLogger';
 
 export * from './ClientInterfaces';
+export * from './StatsigClientBase';
 export * from './ErrorBoundary';
 export * from './Hashing';
 export * from './LocalStorageUtil';

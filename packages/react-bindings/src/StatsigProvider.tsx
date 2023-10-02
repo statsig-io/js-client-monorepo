@@ -4,6 +4,7 @@ import {
   Log,
   OnDeviceEvaluationsInterface,
   PrecomputedEvaluationsInterface,
+  StatsigLoadingStatus,
 } from '@sigstat/core';
 
 import StatsigContext from './StatsigContext';
@@ -17,28 +18,32 @@ export default function StatsigProvider({
   client,
   children,
 }: Props): JSX.Element {
-  const [isReady, setIsReady] = useState(false);
+  const [loadingStatus, setLoadingStatus] = useState(client.loadingStatus);
 
   useEffect(() => {
-    client
-      .initialize()
-      .then(() => {
-        setIsReady(true);
-      })
-      .catch((error) => {
-        Log.error('An error occurred during initialization', error);
-      });
+    client.initialize().catch((error) => {
+      Log.error('An error occurred during initialization', error);
+    });
+
+    const onStatusChange = (data: Record<string, unknown>) => {
+      setLoadingStatus(data['loadingStatus'] as StatsigLoadingStatus);
+    };
+    client.on('status_change', onStatusChange);
 
     return () => {
       client.shutdown().catch((error) => {
         Log.error('An error occured during shutdown', error);
       });
+
+      client.off('status_change', onStatusChange);
     };
   }, [client]);
 
   return (
     <StatsigContext.Provider value={{ client }}>
-      {isReady ? children : null}
+      {loadingStatus === 'Network' || loadingStatus === 'Cache'
+        ? children
+        : null}
     </StatsigContext.Provider>
   );
 }

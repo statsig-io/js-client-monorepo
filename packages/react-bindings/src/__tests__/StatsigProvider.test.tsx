@@ -1,18 +1,22 @@
-/**
- * @jest-environment jsdom
- */
-import { render, screen, waitFor } from '@testing-library/react';
+import { act, render, screen, waitFor } from '@testing-library/react';
 import * as React from 'react';
-import { MockRemoteServerEvalClient, TestPromise } from 'statsig-test-helpers';
+import { MockRemoteServerEvalClient } from 'statsig-test-helpers';
 
 import StatsigProvider from '../StatsigProvider';
 
 describe('StatsigProvider', () => {
+  let onStatusChange: (data: Record<string, unknown>) => void;
+
   it('renders children', async () => {
-    const promise = TestPromise.create<void>();
     const client = MockRemoteServerEvalClient.create();
-    client.initialize.mockReturnValueOnce(promise);
+    client.initialize.mockReturnValue(Promise.resolve());
     client.shutdown.mockReturnValue(Promise.resolve());
+
+    client.on.mockImplementation((event, callback) => {
+      if (event === 'status_change') {
+        onStatusChange = callback;
+      }
+    });
 
     render(
       <StatsigProvider client={client}>
@@ -20,7 +24,7 @@ describe('StatsigProvider', () => {
       </StatsigProvider>,
     );
 
-    promise.resolve();
+    act(() => onStatusChange({ loadingStatus: 'Network' }));
     await waitFor(() => screen.getByTestId('first-child'));
   });
 });

@@ -10,13 +10,20 @@ export type StatsigLoadingStatus =
   | 'Network'
   | 'Error';
 
-interface IStatsigClientCommon {
+type EventCallback = (data: Record<string, unknown>) => void;
+
+export interface StatsigClientCommonInterface {
   readonly loadingStatus: StatsigLoadingStatus;
+
   initialize(): Promise<void>;
   shutdown(): Promise<void>;
+
+  on(event: string, listener: EventCallback): void;
+  off(event: string, listener: EventCallback): void;
 }
 
-export interface OnDeviceEvaluationsInterface extends IStatsigClientCommon {
+export interface OnDeviceEvaluationsInterface
+  extends StatsigClientCommonInterface {
   checkGate(user: StatsigUser, name: string): boolean;
   getFeatureGate(user: StatsigUser, name: string): FeatureGate;
   getDynamicConfig(user: StatsigUser, name: string): DynamicConfig;
@@ -25,7 +32,8 @@ export interface OnDeviceEvaluationsInterface extends IStatsigClientCommon {
   logEvent(user: StatsigUser, event: StatsigEvent): void;
 }
 
-export interface PrecomputedEvaluationsInterface extends IStatsigClientCommon {
+export interface PrecomputedEvaluationsInterface
+  extends StatsigClientCommonInterface {
   updateUser(user: StatsigUser): Promise<void>;
   checkGate(name: string): boolean;
   getFeatureGate(name: string): FeatureGate;
