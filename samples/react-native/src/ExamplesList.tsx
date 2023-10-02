@@ -1,33 +1,40 @@
-import { Center, Heading, SectionList } from 'native-base';
+import { Heading, SectionList } from 'native-base';
 import React from 'react';
 
+import ExperimentHookExample from './ExperimentHookExample';
 import GateHookExample from './GateHookExample';
+import UpdateUserExample from './UpdateUserExample';
 
 const EXAMPLES = [
   {
+    group: 'User',
+    data: [<UpdateUserExample />],
+  },
+  {
     group: 'Gates',
-    data: [<GateHookExample />],
+    data: [
+      <GateHookExample gateName="a_gate" />,
+      <GateHookExample gateName="partial_gate" />,
+    ],
+  },
+  {
+    group: 'Experiments',
+    data: [<ExperimentHookExample />],
   },
 ];
 
 export default function ExamplesList(): React.ReactNode {
   return (
-    <Center h="80" w="100%">
-      <SectionList
-        maxW="300"
-        w="100%"
-        mb="4"
-        sections={EXAMPLES}
-        keyExtractor={(_item, index) => index + ''}
-        renderItem={({ item }) => item}
-        renderSectionHeader={({ section: { group } }) => (
-          <Center>
-            <Heading fontSize="xl" mt="8" pb="4" color="white">
-              {group}
-            </Heading>
-          </Center>
-        )}
-      />
-    </Center>
+    <SectionList
+      padding="16px"
+      sections={EXAMPLES}
+      keyExtractor={(_item, index) => index + ''}
+      renderItem={({ item }) => item}
+      renderSectionHeader={({ section: { group } }) => (
+        <Heading fontSize="xl" mt="8" pb="4" color="white">
+          {group}
+        </Heading>
+      )}
+    />
   );
 }

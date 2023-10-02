@@ -1,28 +1,18 @@
+import { Text } from 'native-base';
 import React from 'react';
-import { Text, View } from 'react-native';
 
 import { useGate } from '@sigstat/react-native-bindings';
 
-export default function GateHookExample(): React.ReactNode {
-  const { value } = useGate('a_gate');
+export default function GateHookExample({
+  gateName,
+}: {
+  gateName: string;
+}): React.ReactNode {
+  const { value } = useGate(gateName);
 
   return (
-    <View
-      style={{
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-      }}
-    >
-      <Text
-        style={{
-          fontSize: 24,
-          color: '#fff',
-          fontFamily: 'sans-serif',
-        }}
-      >
-        a_gate: {value ? 'Passing' : 'Failing'}
-      </Text>
-    </View>
+    <Text fontSize="md" color="white">
+      {gateName}: {value ? 'Passing' : 'Failing'}
+    </Text>
   );
 }
