@@ -1,12 +1,9 @@
-import { StatsigLoadingStatus } from './ClientInterfaces';
-
 const DEFAULT_RULE = 'default';
 
 export type StatsigOptionsCommon = {
   api: string;
   localMode?: boolean;
   environment?: StatsigEnvironment;
-  onLoadingStatusChanged?: (status: StatsigLoadingStatus) => void;
   overrideStableID?: string;
 };
 

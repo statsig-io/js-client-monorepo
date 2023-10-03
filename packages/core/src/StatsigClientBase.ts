@@ -1,16 +1,24 @@
-type EventCallback = (data: Record<string, unknown>) => void;
+import {
+  StatsigClientEvent,
+  StatsigClientEventCallback,
+  StatsigClientEventData,
+  StatsigClientEventEmitterInterface,
+  StatsigLoadingStatus,
+} from './StatsigClientEventEmitter';
 
-export class StatsigClientBase {
-  private _events: Record<string, EventCallback[]> = {};
+export class StatsigClientBase implements StatsigClientEventEmitterInterface {
+  loadingStatus: StatsigLoadingStatus = 'Uninitialized';
 
-  on(event: string, listener: EventCallback): void {
+  private _events: Record<string, StatsigClientEventCallback[]> = {};
+
+  on(event: StatsigClientEvent, listener: StatsigClientEventCallback): void {
     if (!this._events[event]) {
       this._events[event] = [];
     }
     this._events[event].push(listener);
   }
 
-  off(event: string, listener: EventCallback): void {
+  off(event: StatsigClientEvent, listener: StatsigClientEventCallback): void {
     if (this._events[event]) {
       const index = this._events[event].indexOf(listener);
       if (index !== -1) {
@@ -19,9 +27,9 @@ export class StatsigClientBase {
     }
   }
 
-  protected emit(event: string, data: Record<string, unknown>): void {
-    if (this._events[event]) {
-      this._events[event].forEach((listener) => listener(data));
+  protected emit(data: StatsigClientEventData): void {
+    if (this._events[data.event]) {
+      this._events[data.event].forEach((listener) => listener(data));
     }
   }
 }

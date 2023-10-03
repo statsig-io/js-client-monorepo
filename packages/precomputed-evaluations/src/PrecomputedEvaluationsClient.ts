@@ -1,4 +1,8 @@
-import type { FeatureGate, StatsigUser } from '@sigstat/core';
+import type {
+  FeatureGate,
+  StatsigLoadingStatus,
+  StatsigUser,
+} from '@sigstat/core';
 import {
   DJB2,
   DynamicConfig,
@@ -10,7 +14,6 @@ import {
   StableID,
   StatsigClientBase,
   StatsigEvent,
-  StatsigLoadingStatus,
   createConfigExposure,
   createGateExposure,
   createLayerParameterExposure,
@@ -30,8 +33,6 @@ export default class PrecomputedEvaluationsClient
   extends StatsigClientBase
   implements PrecomputedEvaluationsInterface
 {
-  loadingStatus: StatsigLoadingStatus = 'Uninitialized';
-
   private _options: StatsigOptions;
   private _network: Network;
   private _logger: EventLogger;
@@ -175,6 +176,6 @@ export default class PrecomputedEvaluationsClient
 
   private _setStatus(newStatus: StatsigLoadingStatus): void {
     this.loadingStatus = newStatus;
-    this.emit('status_change', { loadingStatus: newStatus });
+    this.emit({ event: 'status_change', loadingStatus: newStatus });
   }
 }

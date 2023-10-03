@@ -2,10 +2,12 @@ import { act, render, screen, waitFor } from '@testing-library/react';
 import * as React from 'react';
 import { MockRemoteServerEvalClient } from 'statsig-test-helpers';
 
+import { StatsigClientEventCallback } from '@sigstat/core';
+
 import StatsigProvider from '../StatsigProvider';
 
 describe('StatsigProvider', () => {
-  let onStatusChange: (data: Record<string, unknown>) => void;
+  let onStatusChange: StatsigClientEventCallback;
 
   it('renders children', async () => {
     const client = MockRemoteServerEvalClient.create();
@@ -24,7 +26,9 @@ describe('StatsigProvider', () => {
       </StatsigProvider>,
     );
 
-    act(() => onStatusChange({ loadingStatus: 'Network' }));
+    act(() =>
+      onStatusChange({ event: 'status_change', loadingStatus: 'Network' }),
+    );
     await waitFor(() => screen.getByTestId('first-child'));
   });
 });

@@ -3,7 +3,10 @@ import { act, render, screen, waitFor } from '@testing-library/react';
 import * as React from 'react';
 import { MockRemoteServerEvalClient } from 'statsig-test-helpers';
 
-import { PrecomputedEvaluationsInterface } from '@sigstat/core';
+import {
+  PrecomputedEvaluationsInterface,
+  StatsigClientEventCallback,
+} from '@sigstat/core';
 
 import StatsigProvider from '../StatsigProvider';
 import useGate from '../useGate';
@@ -15,7 +18,7 @@ const GateComponent = () => {
 
 describe('useGate', () => {
   let client: jest.Mocked<PrecomputedEvaluationsInterface>;
-  let onStatusChange: (data: Record<string, unknown>) => void;
+  let onStatusChange: StatsigClientEventCallback;
 
   beforeEach(() => {
     client = MockRemoteServerEvalClient.create();
@@ -41,7 +44,7 @@ describe('useGate', () => {
 
   it('renders the gate value', async () => {
     act(() => {
-      onStatusChange({ loadingStatus: 'Network' });
+      onStatusChange({ event: 'status_change', loadingStatus: 'Network' });
     });
 
     await waitFor(() => {

@@ -6,7 +6,6 @@ import {
   OnDeviceEvaluationsInterface,
   StatsigClientBase,
   StatsigEvent,
-  StatsigLoadingStatus,
   StatsigUser,
 } from '@sigstat/core';
 
@@ -19,8 +18,6 @@ export default class OnDeviceEvaluationsClient
   extends StatsigClientBase
   implements OnDeviceEvaluationsInterface
 {
-  loadingStatus: StatsigLoadingStatus = 'Uninitialized';
-
   private _network: Network;
   private _options: StatsigOptions;
   private _logger: EventLogger;

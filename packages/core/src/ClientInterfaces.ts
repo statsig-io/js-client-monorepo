@@ -1,25 +1,12 @@
+import { StatsigClientEventEmitterInterface } from './StatsigClientEventEmitter';
 import { StatsigEvent } from './StatsigEvent';
 import { DynamicConfig, Experiment, FeatureGate, Layer } from './StatsigTypes';
 import { StatsigUser } from './StatsigUser';
 
-export type StatsigLoadingStatus =
-  | 'Uninitialized'
-  | 'Loading'
-  | 'Cache'
-  | 'Bootstrap'
-  | 'Network'
-  | 'Error';
-
-type EventCallback = (data: Record<string, unknown>) => void;
-
-export interface StatsigClientCommonInterface {
-  readonly loadingStatus: StatsigLoadingStatus;
-
+export interface StatsigClientCommonInterface
+  extends StatsigClientEventEmitterInterface {
   initialize(): Promise<void>;
   shutdown(): Promise<void>;
-
-  on(event: string, listener: EventCallback): void;
-  off(event: string, listener: EventCallback): void;
 }
 
 export interface OnDeviceEvaluationsInterface
