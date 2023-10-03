@@ -39,9 +39,10 @@ export default function StatsigProvider(props: Props): JSX.Element {
     onDeviceClient = props.onDeviceClient;
   }
 
-  const [loadingStatus, setLoadingStatus] = useState(
-    precomputedClient.loadingStatus,
-  );
+  const [clientState, setClientState] = useState({
+    status: precomputedClient.loadingStatus,
+    version: 0,
+  });
 
   useEffect(() => {
     precomputedClient.initialize().catch((error) => {
@@ -50,7 +51,10 @@ export default function StatsigProvider(props: Props): JSX.Element {
 
     const onStatusChange = (data: StatsigClientEventData) => {
       if (data.event === 'status_change') {
-        setLoadingStatus(data.loadingStatus);
+        setClientState((old) => ({
+          status: data.loadingStatus,
+          version: old.version + 1,
+        }));
       }
     };
     precomputedClient.on('status_change', onStatusChange);
@@ -66,9 +70,9 @@ export default function StatsigProvider(props: Props): JSX.Element {
 
   return (
     <StatsigContext.Provider value={{ onDeviceClient, precomputedClient }}>
-      {loadingStatus === 'Network' ||
-      loadingStatus === 'Cache' ||
-      loadingStatus === 'Bootstrap'
+      {clientState.status === 'Network' ||
+      clientState.status === 'Cache' ||
+      clientState.status === 'Bootstrap'
         ? props.children
         : null}
     </StatsigContext.Provider>

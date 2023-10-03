@@ -14,11 +14,20 @@ import { StatsigProvider } from '@sigstat/react-native-bindings';
 
 import { AppStackParamList } from './AppStackParamList';
 import ExperimentHookExample from './ExperimentHookExample';
+import GateHookExample from './GateHookExample';
 import UpdateUserExample from './UpdateUserExample';
 
 function makeEvaluationResponse(userID: string): EvaluationResponse {
   return {
-    feature_gates: {},
+    feature_gates: {
+      '2867927529': {
+        name: '2867927529',
+        value: Math.random() < 0.5,
+        rule_id: 'Example',
+        id_type: 'userID',
+        secondary_exposures: [],
+      },
+    },
     dynamic_configs: {
       '2902556896': {
         name: '2902556896',
@@ -40,8 +49,8 @@ function makeEvaluationResponse(userID: string): EvaluationResponse {
 }
 
 class EvalDataProvider implements EvaluationDataProviderInterface {
-  fetchEvaluations(user: StatsigUser): Promise<EvaluationResponse> {
-    return Promise.resolve(makeEvaluationResponse(user.userID ?? 'N/A'));
+  fetchEvaluations(user: StatsigUser): EvaluationResponse | null {
+    return makeEvaluationResponse(user.userID ?? 'N/A');
   }
 }
 
@@ -65,6 +74,7 @@ export default function BootstrapExampleScreen(
       <SafeAreaView style={{ flex: 1, backgroundColor: '#272935' }}>
         <Box padding="16px">
           <ExperimentHookExample experimentName={'a_config'} />
+          <GateHookExample gateName={'a_gate'} />
           <UpdateUserExample />
         </Box>
       </SafeAreaView>

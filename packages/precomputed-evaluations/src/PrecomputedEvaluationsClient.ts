@@ -68,8 +68,17 @@ export default class PrecomputedEvaluationsClient
   }
 
   async updateUser(user: StatsigUser): Promise<void> {
-    this._setStatus('Loading');
     this._user = normalizeUser(user, this._options.environment);
+
+    const bootstrap =
+      this._options.evaluationDataProvider?.fetchEvaluations(user);
+    if (bootstrap != null) {
+      await this._store.setValues(user, bootstrap);
+      this._setStatus('Bootstrap');
+      return;
+    }
+
+    this._setStatus('Loading');
 
     const cacheHit = await this._store.switchToUser(this._user);
     if (cacheHit) {
@@ -78,17 +87,9 @@ export default class PrecomputedEvaluationsClient
 
     const capturedUser = this._user;
 
-    let pendingStatus: StatsigLoadingStatus = 'Bootstrap';
-    let response =
-      await this._options.evaluationDataProvider?.fetchEvaluations(user);
-
-    if (response == null) {
-      pendingStatus = 'Network';
-      response = await this._network.fetchEvaluations(capturedUser);
-    }
-
+    const response = await this._network.fetchEvaluations(capturedUser);
     await this._store.setValues(capturedUser, response);
-    this._setStatus(pendingStatus);
+    this._setStatus('Network');
   }
 
   async shutdown(): Promise<void> {

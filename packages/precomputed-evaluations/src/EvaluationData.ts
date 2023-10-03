@@ -39,7 +39,7 @@ export type EvaluationResponse =
   | { has_updates: false };
 
 export interface EvaluationDataProviderInterface {
-  fetchEvaluations(user: StatsigUser): Promise<EvaluationResponse>;
+  fetchEvaluations(user: StatsigUser): EvaluationResponse | null;
 }
 
 export class LocalEvaluationDataProvider
@@ -47,7 +47,7 @@ export class LocalEvaluationDataProvider
 {
   constructor(private _data: { [userID: string]: EvaluationResponse }) {}
 
-  fetchEvaluations(user: StatsigUser): Promise<EvaluationResponse> {
-    return Promise.resolve(this._data[user.userID ?? '']);
+  fetchEvaluations(user: StatsigUser): EvaluationResponse | null {
+    return this._data[user.userID ?? ''];
   }
 }
