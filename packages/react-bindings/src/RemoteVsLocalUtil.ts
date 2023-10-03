@@ -12,6 +12,6 @@ export function isRemoteEvaluationClient(
 
 export function logMissingStatsigUserWarning(): void {
   Log.warn(
-    'StatsigUser not provided for Local Evaluation. Returning default value.',
+    'StatsigUser not provided for On Device Evaluation. Returning default value.',
   );
 }

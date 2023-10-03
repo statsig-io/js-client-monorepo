@@ -1,6 +1,7 @@
 import {
   DynamicConfig,
   EventLogger,
+  Experiment,
   FeatureGate,
   Layer,
   OnDeviceEvaluationsInterface,
@@ -55,23 +56,39 @@ export default class OnDeviceEvaluationsClient
   }
 
   checkGate(user: StatsigUser, name: string): boolean {
-    return this._evaluator.checkGate(user, name).value;
+    return this.getFeatureGate(user, name).value;
   }
 
-  getFeatureGate(_user: StatsigUser, _name: string): FeatureGate {
-    throw new Error('Method not implemented.');
+  getFeatureGate(user: StatsigUser, name: string): FeatureGate {
+    const result = this._evaluator.checkGate(user, name);
+    return {
+      name,
+      ruleID: result.rule_id,
+      value: result.value,
+    };
   }
 
-  getDynamicConfig(_user: StatsigUser, _name: string): DynamicConfig {
-    throw new Error('Method not implemented.');
+  getDynamicConfig(user: StatsigUser, name: string): DynamicConfig {
+    const result = this._evaluator.getConfig(user, name);
+    return {
+      name,
+      ruleID: result.rule_id,
+      value: result.json_value,
+    };
   }
 
-  getExperiment(_user: StatsigUser, _name: string): DynamicConfig {
-    throw new Error('Method not implemented.');
+  getExperiment(user: StatsigUser, name: string): Experiment {
+    return this.getDynamicConfig(user, name);
   }
 
-  getLayer(_user: StatsigUser, _name: string): Layer {
-    throw new Error('Method not implemented.');
+  getLayer(user: StatsigUser, name: string): Layer {
+    const result = this._evaluator.getLayer(user, name);
+    const values = result.json_value;
+    return {
+      name,
+      ruleID: result.rule_id,
+      getValue: (param: string) => values[param] ?? null,
+    };
   }
 
   logEvent(_user: StatsigUser, _event: StatsigEvent): void {

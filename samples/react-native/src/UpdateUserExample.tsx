@@ -8,10 +8,12 @@ import {
 import { StatsigContext } from '@sigstat/react-native-bindings';
 
 export default function UpdateUserExample(): React.ReactNode {
-  const { client } = useContext(StatsigContext);
-  const [user, setUser] = useState((client as any)._user as StatsigUser);
+  const { precomputedClient } = useContext(StatsigContext);
+  const [user, setUser] = useState(
+    (precomputedClient as any)._user as StatsigUser,
+  );
 
-  if (!(client instanceof PrecomputedEvaluationsClient)) {
+  if (!(precomputedClient instanceof PrecomputedEvaluationsClient)) {
     return null;
   }
 
@@ -24,10 +26,10 @@ export default function UpdateUserExample(): React.ReactNode {
         onPress={() => {
           const uuid = Math.random().toString(36).slice(-6);
 
-          client
+          precomputedClient
             .updateUser({ userID: 'user-' + uuid })
             .then(() => {
-              setUser((client as any)._user as StatsigUser);
+              setUser((precomputedClient as any)._user as StatsigUser);
             })
             .catch(() => {
               //noop

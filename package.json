@@ -70,6 +70,7 @@
     "react-native-svg": "13.9.0",
     "react-native-svg-transformer": "1.0.0",
     "react-refresh": "^0.10.0",
+    "react-router-dom": "^6.16.0",
     "react-test-renderer": "18.2.0",
     "reflect-metadata": "^0.1.13",
     "sync-json": "^1.0.2",

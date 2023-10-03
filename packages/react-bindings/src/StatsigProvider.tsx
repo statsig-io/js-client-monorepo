@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { ReactNode, useEffect, useState } from 'react';
 
 import {
   Log,
@@ -7,21 +7,44 @@ import {
   StatsigClientEventData,
 } from '@sigstat/core';
 
+import { NoopEvaluationsClient } from './NoopEvaluationsClient';
+import { isRemoteEvaluationClient } from './RemoteVsLocalUtil';
 import StatsigContext from './StatsigContext';
 
 type Props = {
-  client: OnDeviceEvaluationsInterface | PrecomputedEvaluationsInterface;
-  children: React.ReactNode | React.ReactNode[];
-};
+  children: ReactNode | ReactNode[];
+} & (
+  | {
+      client: OnDeviceEvaluationsInterface | PrecomputedEvaluationsInterface;
+    }
+  | {
+      precomputedClient: PrecomputedEvaluationsInterface;
+      onDeviceClient: OnDeviceEvaluationsInterface;
+    }
+);
 
-export default function StatsigProvider({
-  client,
-  children,
-}: Props): JSX.Element {
-  const [loadingStatus, setLoadingStatus] = useState(client.loadingStatus);
+export default function StatsigProvider(props: Props): JSX.Element {
+  let precomputedClient: PrecomputedEvaluationsInterface;
+  let onDeviceClient: OnDeviceEvaluationsInterface;
+
+  if ('client' in props) {
+    precomputedClient = isRemoteEvaluationClient(props.client)
+      ? props.client
+      : NoopEvaluationsClient;
+    onDeviceClient = !isRemoteEvaluationClient(props.client)
+      ? props.client
+      : NoopEvaluationsClient;
+  } else {
+    precomputedClient = props.precomputedClient;
+    onDeviceClient = props.onDeviceClient;
+  }
+
+  const [loadingStatus, setLoadingStatus] = useState(
+    precomputedClient.loadingStatus,
+  );
 
   useEffect(() => {
-    client.initialize().catch((error) => {
+    precomputedClient.initialize().catch((error) => {
       Log.error('An error occurred during initialization', error);
     });
 
@@ -30,23 +53,23 @@ export default function StatsigProvider({
         setLoadingStatus(data.loadingStatus);
       }
     };
-    client.on('status_change', onStatusChange);
+    precomputedClient.on('status_change', onStatusChange);
 
     return () => {
-      client.shutdown().catch((error) => {
+      precomputedClient.shutdown().catch((error) => {
         Log.error('An error occured during shutdown', error);
       });
 
-      client.off('status_change', onStatusChange);
+      precomputedClient.off('status_change', onStatusChange);
     };
-  }, [client]);
+  }, [precomputedClient]);
 
   return (
-    <StatsigContext.Provider value={{ client }}>
+    <StatsigContext.Provider value={{ onDeviceClient, precomputedClient }}>
       {loadingStatus === 'Network' ||
       loadingStatus === 'Cache' ||
       loadingStatus === 'Bootstrap'
-        ? children
+        ? props.children
         : null}
     </StatsigContext.Provider>
   );

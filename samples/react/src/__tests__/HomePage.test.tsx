@@ -2,7 +2,7 @@ import { render } from '@testing-library/react';
 import fetchMock from 'jest-fetch-mock';
 import { InitResponse } from 'statsig-test-helpers';
 
-import App from '../App';
+import HomePage from '../HomePage';
 
 describe('App', () => {
   beforeAll(() => {
@@ -10,7 +10,7 @@ describe('App', () => {
   });
 
   it('renders the Passing value', async () => {
-    const { findByText } = render(<App />);
+    const { findByText } = render(<HomePage />);
     const result = await findByText('Passing');
     expect(result).toBeDefined();
   });

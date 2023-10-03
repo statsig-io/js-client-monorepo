@@ -19,16 +19,21 @@ function Content() {
       }}
     >
       {value ? 'Passing' : 'Failing'}
+      <div>
+        <ul>
+          <li>
+            <a href="/examples/multiple-clients">Multiple Clients</a>
+          </li>
+        </ul>
+      </div>
     </div>
   );
 }
 
-export function App() {
+export default function HomePage() {
   return (
     <StatsigProvider client={client}>
       <Content />
     </StatsigProvider>
   );
 }
-
-export default App;
