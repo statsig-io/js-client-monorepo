@@ -1,31 +1,61 @@
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { NativeBaseProvider } from 'native-base';
 import React from 'react';
-import { SafeAreaView, StatusBar } from 'react-native';
 
-import { PrecomputedEvaluationsClient } from '@sigstat/precomputed-evaluations';
-import { StatsigProvider } from '@sigstat/react-native-bindings';
+import BootstrapExampleScreen from './BootstrapExampleScreen';
+import HomeScreen from './HomeScreen';
 
-import ExamplesList from './ExamplesList';
+const routes: React.ComponentProps<typeof Stack.Screen>[] = [
+  {
+    name: 'Home',
+    component: HomeScreen,
+    options: {
+      headerShown: false,
+      statusBarHidden: true,
+    },
+  },
+  {
+    name: 'Bootstrap',
+    component: BootstrapExampleScreen,
+    options: {
+      statusBarHidden: true,
+      headerStyle: {
+        backgroundColor: '#1f222a',
+      },
+      headerTintColor: 'white',
+    },
+  },
+  {
+    name: 'Foo',
+    component: HomeScreen,
+    options: {
+      statusBarHidden: true,
+      headerStyle: {
+        backgroundColor: '#1f222a',
+      },
+      headerTintColor: 'white',
+    },
+  },
+];
 
-const DEMO_CLIENT_KEY = 'client-rfLvYGag3eyU0jYW5zcIJTQip7GXxSrhOFN69IGMjvq';
-const client = new PrecomputedEvaluationsClient(DEMO_CLIENT_KEY, {
-  userID: 'a-user',
-});
+const Stack = createNativeStackNavigator();
 
 export default function App(): React.ReactNode {
   return (
-    <StatsigProvider client={client}>
-      <NativeBaseProvider
-        initialWindowMetrics={{
-          frame: { x: 0, y: 0, width: 0, height: 0 },
-          insets: { top: 0, left: 0, right: 0, bottom: 0 },
-        }}
-      >
-        <StatusBar hidden />
-        <SafeAreaView style={{ flex: 1, backgroundColor: '#1F222A' }}>
-          <ExamplesList />
-        </SafeAreaView>
-      </NativeBaseProvider>
-    </StatsigProvider>
+    <NativeBaseProvider
+      initialWindowMetrics={{
+        frame: { x: 0, y: 0, width: 0, height: 0 },
+        insets: { top: 0, left: 0, right: 0, bottom: 0 },
+      }}
+    >
+      <NavigationContainer>
+        <Stack.Navigator>
+          {routes.map((routeConfig) => (
+            <Stack.Screen key={routeConfig.name} {...routeConfig} />
+          ))}
+        </Stack.Navigator>
+      </NavigationContainer>
+    </NativeBaseProvider>
   );
 }

@@ -7,6 +7,8 @@
     "@nx/webpack": "*",
     "@react-native-async-storage/async-storage": "*",
     "@react-native/metro-config": "*",
+    "@react-navigation/native": "*",
+    "@react-navigation/native-stack": "*",
     "@testing-library/jest-dom": "*",
     "@testing-library/jest-native": "*",
     "@testing-library/react-native": "*",
@@ -18,6 +20,7 @@
     "react-native-safe-area-context": "*",
     "react-native-svg-transformer": "*",
     "react-native-svg": "*",
+    "react-native-screens": "*",
     "react-native": "*",
     "react": "*",
     "reflect-metadata": "*"

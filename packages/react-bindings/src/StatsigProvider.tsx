@@ -43,7 +43,9 @@ export default function StatsigProvider({
 
   return (
     <StatsigContext.Provider value={{ client }}>
-      {loadingStatus === 'Network' || loadingStatus === 'Cache'
+      {loadingStatus === 'Network' ||
+      loadingStatus === 'Cache' ||
+      loadingStatus === 'Bootstrap'
         ? children
         : null}
     </StatsigContext.Provider>

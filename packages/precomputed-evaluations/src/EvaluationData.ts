@@ -4,7 +4,6 @@ type Spec<T> = {
   name: string;
   value: T;
   rule_id: string;
-  group_name: string;
   id_type: string;
   secondary_exposures: SecondaryExposure[];
 };
@@ -15,11 +14,11 @@ export type ConfigEvaluation = Spec<Record<string, unknown>> & {
   name: string;
   rule_id: string;
   group: string;
-  group_name: string;
   is_device_based: boolean;
   id_type: string;
-  is_experiment_active: boolean;
-  is_user_in_experiment: boolean;
+  group_name?: string;
+  is_user_in_experiment?: boolean;
+  is_experiment_active?: boolean;
 };
 
 export type LayerEvaluation = Omit<ConfigEvaluation, 'id_type'> & {
@@ -35,6 +34,7 @@ export type EvaluationResponse =
       layer_configs: Record<string, LayerEvaluation>;
       time: number;
       has_updates: true;
+      hash_used: 'none' | 'sha256' | 'djb2';
     }
   | { has_updates: false };
 

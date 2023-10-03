@@ -50,9 +50,12 @@ export default class PrecomputedEvaluationsClient
       StableID.setOverride(options?.overrideStableID);
     }
 
-    this._options = options ?? { api: 'https://api.statsig.com/v1' };
+    this._options = options ?? {};
     this._store = new SpecStore(sdkKey);
-    this._network = new Network(sdkKey, this._options.api);
+    this._network = new Network(
+      sdkKey,
+      this._options.api ?? 'https://api.statsig.com/v1',
+    );
     this._logger = new EventLogger(this._network);
     this._user = user;
 

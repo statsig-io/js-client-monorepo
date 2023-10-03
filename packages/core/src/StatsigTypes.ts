@@ -1,7 +1,7 @@
 const DEFAULT_RULE = 'default';
 
 export type StatsigOptionsCommon = {
-  api: string;
+  api?: string;
   localMode?: boolean;
   environment?: StatsigEnvironment;
   overrideStableID?: string;

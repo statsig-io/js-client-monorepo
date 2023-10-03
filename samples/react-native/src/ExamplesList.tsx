@@ -1,6 +1,9 @@
-import { Heading, SectionList } from 'native-base';
+import { useNavigation } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { Button, Heading, SectionList } from 'native-base';
 import React from 'react';
 
+import { AppStackParamList } from './AppStackParamList';
 import ExperimentHookExample from './ExperimentHookExample';
 import GateHookExample from './GateHookExample';
 import UpdateUserExample from './UpdateUserExample';
@@ -19,9 +22,26 @@ const EXAMPLES = [
   },
   {
     group: 'Experiments',
-    data: [<ExperimentHookExample />],
+    data: [<ExperimentHookExample experimentName="an_experiment" />],
+  },
+  {
+    group: 'More',
+    data: [<ToBootstrapExampleButton />],
   },
 ];
+
+function ToBootstrapExampleButton() {
+  const navigation =
+    useNavigation<
+      NativeStackNavigationProp<AppStackParamList, 'Home', undefined>
+    >();
+
+  return (
+    <Button onPress={() => navigation.navigate('Bootstrap')}>
+      Bootstrap Example
+    </Button>
+  );
+}
 
 export default function ExamplesList(): React.ReactNode {
   return (

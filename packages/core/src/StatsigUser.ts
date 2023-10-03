@@ -8,7 +8,7 @@ type StatsigUserPrimitives =
   | undefined;
 
 export type StatsigUser = {
-  userID?: string | number;
+  userID?: string;
   email?: string;
   ip?: string;
   userAgent?: string;

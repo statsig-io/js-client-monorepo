@@ -9,4 +9,7 @@ module.exports = {
   },
   coverageDirectory: '../../coverage/samples/react-native',
   testTimeout: 10_000,
+  transformIgnorePatterns: [
+    'node_modules/(?!(jest-)?@?react-native|@react-native-community|@react-navigation)',
+  ],
 };
