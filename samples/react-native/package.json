@@ -9,17 +9,17 @@
     "@react-native/metro-config": "*",
     "@testing-library/jest-dom": "*",
     "@testing-library/jest-native": "*",
-    "@testing-library/react": "*",
     "@testing-library/react-native": "*",
+    "@testing-library/react": "*",
     "jest-fetch-mock": "*",
     "metro-config": "*",
-    "native-base": "^3.4.28",
-    "react": "*",
-    "react-native": "*",
+    "native-base": "*",
     "react-native-device-info": "*",
-    "react-native-safe-area-context": "^4.7.2",
-    "react-native-svg": "^13.14.0",
+    "react-native-safe-area-context": "*",
     "react-native-svg-transformer": "*",
+    "react-native-svg": "*",
+    "react-native": "*",
+    "react": "*",
     "reflect-metadata": "*"
   }
 }
