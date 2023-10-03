@@ -4,7 +4,7 @@ import {
   Log,
   OnDeviceEvaluationsInterface,
   PrecomputedEvaluationsInterface,
-  StatsigLoadingStatus,
+  StatsigClientEventData,
 } from '@sigstat/core';
 
 import StatsigContext from './StatsigContext';
@@ -25,8 +25,10 @@ export default function StatsigProvider({
       Log.error('An error occurred during initialization', error);
     });
 
-    const onStatusChange = (data: Record<string, unknown>) => {
-      setLoadingStatus(data['loadingStatus'] as StatsigLoadingStatus);
+    const onStatusChange = (data: StatsigClientEventData) => {
+      if (data.event === 'status_change') {
+        setLoadingStatus(data.loadingStatus);
+      }
     };
     client.on('status_change', onStatusChange);
 
