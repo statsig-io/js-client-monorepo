@@ -82,7 +82,7 @@ export default class PrecomputedEvaluationsClient
 
     const cacheHit = await this._store.switchToUser(this._user);
     if (cacheHit) {
-      this._setStatus('Loading');
+      this._setStatus('Cache');
     }
 
     const capturedUser = this._user;
