@@ -28,8 +28,6 @@ export class NetworkCore {
     data: Record<string, unknown>,
     timeoutMs = 10_000,
   ): Promise<T> {
-    const controller = new AbortController();
-    const handle = setTimeout(() => controller.abort(), timeoutMs);
     const statsigMetadata = StatsigMetadata.get();
     const stableID = await StableID.get();
     const body = JSON.stringify({
@@ -41,8 +39,28 @@ export class NetworkCore {
       },
     });
 
+    return this._sendRequest('POST', url, timeoutMs, body);
+  }
+
+  protected async _sendGetRequest<T>(
+    url: string,
+    timeoutMs = 10_000,
+  ): Promise<T> {
+    return this._sendRequest('GET', url, timeoutMs);
+  }
+
+  protected async _sendRequest<T>(
+    method: 'POST' | 'GET',
+    url: string,
+    timeoutMs = 10_000,
+    body?: string,
+  ): Promise<T> {
+    const controller = new AbortController();
+    const handle = setTimeout(() => controller.abort(), timeoutMs);
+    const statsigMetadata = StatsigMetadata.get();
+
     const response = await fetch(url, {
-      method: 'POST',
+      method,
       body,
       headers: {
         'Content-Type': 'application/json',

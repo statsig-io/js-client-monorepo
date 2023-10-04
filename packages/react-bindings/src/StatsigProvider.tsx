@@ -44,11 +44,9 @@ export default function StatsigProvider(props: Props): JSX.Element {
     version: 0,
   });
 
-  useEffect(() => {
-    precomputedClient.initialize().catch((error) => {
-      Log.error('An error occurred during initialization', error);
-    });
+  const clients = [precomputedClient, onDeviceClient];
 
+  useEffect(() => {
     const onStatusChange = (data: StatsigClientEventData) => {
       if (data.event === 'status_change') {
         setClientState((old) => ({
@@ -57,16 +55,25 @@ export default function StatsigProvider(props: Props): JSX.Element {
         }));
       }
     };
-    precomputedClient.on('status_change', onStatusChange);
 
-    return () => {
-      precomputedClient.shutdown().catch((error) => {
-        Log.error('An error occured during shutdown', error);
+    clients.forEach((client) => {
+      client.initialize().catch((error) => {
+        Log.error('An error occurred during initialization', error);
       });
 
-      precomputedClient.off('status_change', onStatusChange);
+      client.on('status_change', onStatusChange);
+    });
+
+    return () => {
+      clients.forEach((client) => {
+        client.shutdown().catch((error) => {
+          Log.error('An error occured during shutdown', error);
+        });
+
+        client.off('status_change', onStatusChange);
+      });
     };
-  }, [precomputedClient]);
+  }, clients);
 
   return (
     <StatsigContext.Provider value={{ onDeviceClient, precomputedClient }}>

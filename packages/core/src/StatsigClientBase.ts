@@ -1,3 +1,5 @@
+import { EventLogger } from './EventLogger';
+import { NetworkCore } from './NetworkCore';
 import {
   StatsigClientEvent,
   StatsigClientEventCallback,
@@ -9,7 +11,12 @@ import {
 export class StatsigClientBase implements StatsigClientEventEmitterInterface {
   loadingStatus: StatsigLoadingStatus = 'Uninitialized';
 
+  protected _logger: EventLogger;
   private _events: Record<string, StatsigClientEventCallback[]> = {};
+
+  constructor(network: NetworkCore) {
+    this._logger = new EventLogger(network);
+  }
 
   on(event: StatsigClientEvent, listener: StatsigClientEventCallback): void {
     if (!this._events[event]) {
@@ -31,5 +38,10 @@ export class StatsigClientBase implements StatsigClientEventEmitterInterface {
     if (this._events[data.event]) {
       this._events[data.event].forEach((listener) => listener(data));
     }
+  }
+
+  protected setStatus(newStatus: StatsigLoadingStatus): void {
+    this.loadingStatus = newStatus;
+    this.emit({ event: 'status_change', loadingStatus: newStatus });
   }
 }

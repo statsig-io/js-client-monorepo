@@ -21,38 +21,35 @@ export default class OnDeviceEvaluationsClient
 {
   private _network: Network;
   private _options: StatsigOptions;
-  private _logger: EventLogger;
   private _store: SpecStore;
   private _evaluator: Evaluator;
 
   constructor(sdkKey: string, options: StatsigOptions | null = null) {
-    super();
+    const network = new Network(sdkKey, options);
+    super(network);
 
     this._options = options ?? {};
-    this._network = new Network(
-      sdkKey,
-      this._options.api ?? 'https://api.statsig.com/v1',
-    );
+    this._network = network;
     this._logger = new EventLogger(this._network);
     this._store = new SpecStore();
     this._evaluator = new Evaluator(this._store);
   }
 
   async initialize(): Promise<void> {
-    this.loadingStatus = 'Loading';
+    this.setStatus('Loading');
 
     const response = await this._network.fetchConfigSpecs();
 
     if (response.has_updates) {
       this._store.setValues(response);
-      this.loadingStatus = 'Network';
+      this.setStatus('Network');
     } else {
-      this.loadingStatus = 'Error';
+      this.setStatus('Error');
     }
   }
 
   async shutdown(): Promise<void> {
-    throw new Error('Method not implemented.');
+    return Promise.resolve();
   }
 
   checkGate(user: StatsigUser, name: string): boolean {

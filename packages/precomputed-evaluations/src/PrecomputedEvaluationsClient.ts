@@ -1,12 +1,7 @@
-import type {
-  FeatureGate,
-  StatsigLoadingStatus,
-  StatsigUser,
-} from '@sigstat/core';
+import type { FeatureGate, StatsigUser } from '@sigstat/core';
 import {
   DJB2,
   DynamicConfig,
-  EventLogger,
   Experiment,
   Layer,
   Monitored,
@@ -35,7 +30,6 @@ export default class PrecomputedEvaluationsClient
 {
   private _options: StatsigOptions;
   private _network: Network;
-  private _logger: EventLogger;
   private _store: SpecStore;
   private _user: StatsigUser;
 
@@ -44,7 +38,12 @@ export default class PrecomputedEvaluationsClient
     user: StatsigUser,
     options: StatsigOptions | null = null,
   ) {
-    super();
+    const network = new Network(
+      sdkKey,
+      options?.api ?? 'https://api.statsig.com/v1',
+    );
+
+    super(network);
 
     if (options?.overrideStableID) {
       StableID.setOverride(options?.overrideStableID);
@@ -52,11 +51,7 @@ export default class PrecomputedEvaluationsClient
 
     this._options = options ?? {};
     this._store = new SpecStore(sdkKey);
-    this._network = new Network(
-      sdkKey,
-      this._options.api ?? 'https://api.statsig.com/v1',
-    );
-    this._logger = new EventLogger(this._network);
+    this._network = network;
     this._user = user;
 
     __STATSIG__ = __STATSIG__ ?? {};
@@ -74,22 +69,22 @@ export default class PrecomputedEvaluationsClient
       this._options.evaluationDataProvider?.fetchEvaluations(user);
     if (bootstrap != null) {
       await this._store.setValues(user, bootstrap);
-      this._setStatus('Bootstrap');
+      this.setStatus('Bootstrap');
       return;
     }
 
-    this._setStatus('Loading');
+    this.setStatus('Loading');
 
     const cacheHit = await this._store.switchToUser(this._user);
     if (cacheHit) {
-      this._setStatus('Cache');
+      this.setStatus('Cache');
     }
 
     const capturedUser = this._user;
 
     const response = await this._network.fetchEvaluations(capturedUser);
     await this._store.setValues(capturedUser, response);
-    this._setStatus('Network');
+    this.setStatus('Network');
   }
 
   async shutdown(): Promise<void> {
@@ -176,10 +171,5 @@ export default class PrecomputedEvaluationsClient
 
   logEvent(event: StatsigEvent): void {
     this._logger.enqueue({ ...event, user: this._user, time: Date.now() });
-  }
-
-  private _setStatus(newStatus: StatsigLoadingStatus): void {
-    this.loadingStatus = newStatus;
-    this.emit({ event: 'status_change', loadingStatus: newStatus });
   }
 }
