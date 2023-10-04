@@ -43,7 +43,7 @@ export default class PrecomputedEvaluationsClient
       options?.api ?? 'https://api.statsig.com/v1',
     );
 
-    super(network);
+    super(sdkKey, network);
 
     if (options?.overrideStableID) {
       StableID.setOverride(options?.overrideStableID);
@@ -53,9 +53,6 @@ export default class PrecomputedEvaluationsClient
     this._store = new SpecStore(sdkKey);
     this._network = network;
     this._user = user;
-
-    __STATSIG__ = __STATSIG__ ?? {};
-    __STATSIG__[DJB2(sdkKey)] = this;
   }
 
   async initialize(): Promise<void> {

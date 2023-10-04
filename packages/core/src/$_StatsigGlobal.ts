@@ -1,6 +1,7 @@
 export type StatsigGlobal = {
   [key: string]: unknown;
   ExtraStatsigMetadata?: Record<string, unknown>;
+  instances?: Set<unknown>;
 };
 
 declare global {

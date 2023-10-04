@@ -12,8 +12,14 @@ import {
 
 import Evaluator from './Evaluator';
 import Network from './Network';
-import SpecStore from './SpecStore';
+import SpecStore, { DownloadConfigSpecsResponse } from './SpecStore';
 import { StatsigOptions } from './StatsigOptions';
+
+declare global {
+  interface Window {
+    statsigConfigSpecs: DownloadConfigSpecsResponse | undefined;
+  }
+}
 
 export default class OnDeviceEvaluationsClient
   extends StatsigClientBase
@@ -26,7 +32,7 @@ export default class OnDeviceEvaluationsClient
 
   constructor(sdkKey: string, options: StatsigOptions | null = null) {
     const network = new Network(sdkKey, options);
-    super(network);
+    super(sdkKey, network);
 
     this._options = options ?? {};
     this._network = network;
@@ -36,6 +42,11 @@ export default class OnDeviceEvaluationsClient
   }
 
   async initialize(): Promise<void> {
+    if (window.statsigConfigSpecs) {
+      this._store.setValues(window.statsigConfigSpecs);
+      this.setStatus('Bootstrap');
+      return;
+    }
     this.setStatus('Loading');
 
     const response = await this._network.fetchConfigSpecs();

@@ -1,4 +1,5 @@
 import '@react-native-async-storage/async-storage';
+import 'react';
 
 import { OnDeviceEvaluationsClient } from '@sigstat/on-device-evaluations';
 import { PrecomputedEvaluationsClient } from '@sigstat/precomputed-evaluations';
@@ -35,6 +36,7 @@ function Content() {
 export default function MultiClientDemoPage() {
   return (
     <>
+      <script src="https://api.statsigcdn.com/v1/download_config_specs/client-rfLvYGag3eyU0jYW5zcIJTQip7GXxSrhOFN69IGMjvq.js"></script>
       <StatsigProvider
         precomputedClient={precomputedClient}
         onDeviceClient={onDeviceClient}

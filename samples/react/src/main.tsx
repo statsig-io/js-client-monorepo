@@ -1,8 +1,9 @@
+import React, { Suspense } from 'react';
 import * as ReactDOM from 'react-dom/client';
 import { RouterProvider, createBrowserRouter } from 'react-router-dom';
 
-import HomePage from './HomePage';
-import MultiClientDemoPage from './MultiClientDemoPage';
+const HomePage = React.lazy(() => import('./HomePage'));
+const MultiClientDemoPage = React.lazy(() => import('./MultiClientDemoPage'));
 
 const router = createBrowserRouter([
   {
