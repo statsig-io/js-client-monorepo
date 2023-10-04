@@ -9,6 +9,11 @@ module.exports = composePlugins(withNx(), withWeb(), () =>
       // plugins: config.plugins.filter(
       //   (x) => x.constructor.name === 'StatsJsonPlugin',
       // ),
+      stats: {
+        assets: true,
+        modules: false,
+        colors: true,
+      },
       entry: ['./dist/packages/precomputed-evaluations/src/index.js'],
       mode: 'production',
       target: 'web',
@@ -35,6 +40,10 @@ module.exports = composePlugins(withNx(), withWeb(), () =>
         ),
         libraryExport: 'default',
         globalObject: 'this',
+      },
+      performance: {
+        maxEntrypointSize: 50000,
+        hints: 'error',
       },
     };
   },

@@ -5,18 +5,12 @@
   "projectType": "library",
   "targets": {
     "build": {
-      "executor": "@nx/js:tsc",
-      "outputs": ["{options.outputPath}"],
-      "options": {
-        "outputPath": "dist/packages/precomputed-evaluations",
-        "main": "packages/precomputed-evaluations/src/index.ts",
-        "tsConfig": "packages/precomputed-evaluations/tsconfig.lib.json",
-        "assets": ["packages/precomputed-evaluations/*.md"]
-      }
+      "command": ":",
+      "dependsOn": ["^build", "build-webpack"]
     },
     "publish": {
       "command": "ts-node ./tools/scripts/publish.ts precomputed-evaluations",
-      "dependsOn": ["build", "build-webpack"]
+      "dependsOn": ["build", "^build-webpack"]
     },
     "lint": {
       "executor": "@nx/linter:eslint",
@@ -58,12 +52,13 @@
       "defaultConfiguration": "production",
       "options": {
         "statsJson": true,
+        "verbose": true,
         "outputPath": "overridden in webpack config",
         "main": "overridden in webpack config",
         "tsConfig": "packages/precomputed-evaluations/tsconfig.lib.json",
         "webpackConfig": "packages/precomputed-evaluations/webpack.config.js"
       },
-      "dependsOn": ["build"]
+      "dependsOn": ["build-ts"]
     }
   },
   "tags": []
