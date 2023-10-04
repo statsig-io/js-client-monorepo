@@ -5,6 +5,10 @@
   "projectType": "library",
   "targets": {
     "build": {
+      "command": ":",
+      "dependsOn": ["^build", "build-webpack"]
+    },
+    "build-ts": {
       "executor": "@nx/js:tsc",
       "outputs": ["{options.outputPath}"],
       "options": {
@@ -41,6 +45,20 @@
           "codeCoverage": true
         }
       }
+    },
+    "build-webpack": {
+      "executor": "@nx/webpack:webpack",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
+      "options": {
+        "statsJson": true,
+        "verbose": true,
+        "outputPath": "overridden in webpack config",
+        "main": "overridden in webpack config",
+        "tsConfig": "packages/on-device-evaluations/tsconfig.lib.json",
+        "webpackConfig": "packages/on-device-evaluations/webpack.config.js"
+      },
+      "dependsOn": ["build-ts"]
     }
   },
   "tags": []

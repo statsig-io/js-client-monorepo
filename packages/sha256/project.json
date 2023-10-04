@@ -14,6 +14,16 @@
         "assets": ["packages/sha256/*.md"]
       }
     },
+    "build-ts": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/sha256",
+        "main": "packages/sha256/src/index.ts",
+        "tsConfig": "packages/sha256/tsconfig.lib.json",
+        "assets": ["packages/sha256/*.md"]
+      }
+    },
     "publish": {
       "command": "ts-node ./tools/scripts/publish.ts sha256",
       "dependsOn": ["build"]
