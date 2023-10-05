@@ -1,36 +1,30 @@
-import React from 'react';
+import React, { ReactNode } from 'react';
 import * as ReactDOM from 'react-dom/client';
 import { RouterProvider, createBrowserRouter } from 'react-router-dom';
 
-const HomePage = React.lazy(() => import('./HomePage'));
-const MultiClientExamplePage = React.lazy(
-  () => import('./MultiClientExamplePage'),
-);
-const PrecomputedClientPerfExamplePage = React.lazy(
-  () => import('./PrecomputedClientPerfExamplePage'),
-);
-const OnDeviceClientPerfExamplePage = React.lazy(
-  () => import('./OnDeviceClientPerfExamplePage'),
-);
+const routes: [string, Promise<{ default: () => ReactNode }>][] = [
+  ['/', import('./HomePage')],
+  ['/examples/multiple-clients', import('./MultiClientExamplePage')],
+  [
+    '/examples/precomputed-eval-performance',
+    import('./PrecomputedClientPerfExamplePage'),
+  ],
+  [
+    '/examples/on-device-eval-performance',
+    import('./OnDeviceClientPerfExamplePage'),
+  ],
+  ['/examples/bundle-size', import('./BundleSizeExamplePage')],
+];
 
-const router = createBrowserRouter([
-  {
-    path: '/',
-    element: <HomePage />,
-  },
-  {
-    path: '/examples/multiple-clients',
-    element: <MultiClientExamplePage />,
-  },
-  {
-    path: '/examples/precomputed-eval-performance',
-    element: <PrecomputedClientPerfExamplePage />,
-  },
-  {
-    path: '/examples/on-device-eval-performance',
-    element: <OnDeviceClientPerfExamplePage />,
-  },
-]);
+const router = createBrowserRouter(
+  routes.map(([path, mod]) => {
+    const Comp = React.lazy(() => mod);
+    return {
+      path,
+      element: <Comp />,
+    };
+  }),
+);
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement,

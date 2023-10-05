@@ -1,6 +1,5 @@
 import '@react-native-async-storage/async-storage';
-import 'react';
-import { useEffect, useState } from 'react';
+import { ReactNode, useEffect, useState } from 'react';
 
 import { PrecomputedEvaluationsClient } from '@sigstat/precomputed-evaluations';
 
@@ -52,21 +51,21 @@ function ManyChecks({
         `${marker}-end`,
       ),
     );
-  }, []);
+  }, [action, marker, iterations]);
+
+  if (!measurement) {
+    return <>...</>;
+  }
 
   return (
-    <>
-      {measurement && (
-        <MeasurementDetails
-          title={`${iterations} ${title} Measurement`}
-          measurement={measurement}
-        />
-      )}
-    </>
+    <MeasurementDetails
+      title={`${iterations} ${title} Measurement`}
+      measurement={measurement}
+    />
   );
 }
 
-export default function PrecomputedClientPerfExamplePage() {
+export default function PrecomputedClientPerfExamplePage(): ReactNode {
   const [initMeasurement, setInitMeasurement] =
     useState<PerformanceMeasure | null>(null);
 
@@ -84,6 +83,7 @@ export default function PrecomputedClientPerfExamplePage() {
           ),
         );
       })
+      // eslint-disable-next-line no-console
       .catch((reason) => console.error(reason));
   }, []);
 

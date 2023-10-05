@@ -23,7 +23,7 @@
       "outputs": ["{options.outputFile}"],
       "options": {
         "lintFilePatterns": [
-          "packages/react-bindings/**/*.ts",
+          "packages/react-bindings/**/*.{ts,tsx,js,jsx}",
           "packages/react-bindings/package.json"
         ]
       }

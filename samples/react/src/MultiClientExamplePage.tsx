@@ -1,5 +1,5 @@
 import '@react-native-async-storage/async-storage';
-import 'react';
+import { ReactNode } from 'react';
 
 import { OnDeviceEvaluationsClient } from '@sigstat/on-device-evaluations';
 import { PrecomputedEvaluationsClient } from '@sigstat/precomputed-evaluations';
@@ -33,15 +33,13 @@ function Content() {
   );
 }
 
-export default function MultiClientDemoPage() {
+export default function MultiClientDemoPage(): ReactNode {
   return (
-    <>
-      <StatsigProvider
-        precomputedClient={precomputedClient}
-        onDeviceClient={onDeviceClient}
-      >
-        <Content />
-      </StatsigProvider>
-    </>
+    <StatsigProvider
+      precomputedClient={precomputedClient}
+      onDeviceClient={onDeviceClient}
+    >
+      <Content />
+    </StatsigProvider>
   );
 }

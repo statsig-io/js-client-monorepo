@@ -1,4 +1,5 @@
 import '@react-native-async-storage/async-storage';
+import { ReactNode } from 'react';
 
 import { PrecomputedEvaluationsClient } from '@sigstat/precomputed-evaluations';
 import { StatsigProvider, useGate } from '@sigstat/react-bindings';
@@ -34,13 +35,16 @@ function Content() {
               On Device Evaluations Performance
             </a>
           </li>
+          <li>
+            <a href="/examples/bundle-size">Bundle Size</a>
+          </li>
         </ul>
       </div>
     </div>
   );
 }
 
-export default function HomePage() {
+export default function HomePage(): ReactNode {
   return (
     <StatsigProvider client={client}>
       <Content />

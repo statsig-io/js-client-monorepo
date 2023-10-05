@@ -23,7 +23,7 @@
       "outputs": ["{options.outputFile}"],
       "options": {
         "lintFilePatterns": [
-          "packages/react-native-bindings/**/*.ts",
+          "packages/react-native-bindings/**/*.{ts,tsx,js,jsx}",
           "packages/react-native-bindings/package.json"
         ]
       }
