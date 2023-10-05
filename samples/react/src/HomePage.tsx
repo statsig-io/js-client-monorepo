@@ -20,26 +20,6 @@ function Content() {
       }}
     >
       {value ? 'Passing' : 'Failing'}
-      <div>
-        <ul>
-          <li>
-            <a href="/examples/multiple-clients">Multiple Clients</a>
-          </li>
-          <li>
-            <a href="/examples/precomputed-eval-performance">
-              Precomputed Evaluations Performance
-            </a>
-          </li>
-          <li>
-            <a href="/examples/on-device-eval-performance">
-              On Device Evaluations Performance
-            </a>
-          </li>
-          <li>
-            <a href="/examples/bundle-size">Bundle Size</a>
-          </li>
-        </ul>
-      </div>
     </div>
   );
 }
