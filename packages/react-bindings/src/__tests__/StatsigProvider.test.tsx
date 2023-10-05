@@ -26,9 +26,10 @@ describe('StatsigProvider', () => {
       </StatsigProvider>,
     );
 
-    act(() =>
-      onStatusChange({ event: 'status_change', loadingStatus: 'Network' }),
-    );
+    act(() => {
+      (client.loadingStatus as any) = 'Network';
+      onStatusChange({ event: 'status_change', loadingStatus: 'Network' });
+    });
     await waitFor(() => screen.getByTestId('first-child'));
   });
 });

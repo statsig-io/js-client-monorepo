@@ -1,6 +1,6 @@
 {
   "name": "@sigstat/react-native-bindings",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "dependencies": {
     "@sigstat/core": "0.0.5",
     "@sigstat/react-bindings": "*"
