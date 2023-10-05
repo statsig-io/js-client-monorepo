@@ -1,9 +1,14 @@
-import React, { Suspense } from 'react';
+import React from 'react';
 import * as ReactDOM from 'react-dom/client';
 import { RouterProvider, createBrowserRouter } from 'react-router-dom';
 
 const HomePage = React.lazy(() => import('./HomePage'));
-const MultiClientDemoPage = React.lazy(() => import('./MultiClientDemoPage'));
+const MultiClientExamplePage = React.lazy(
+  () => import('./MultiClientExamplePage'),
+);
+const PrecomputedClientPerfExamplePage = React.lazy(
+  () => import('./PrecomputedClientPerfExamplePage'),
+);
 
 const router = createBrowserRouter([
   {
@@ -12,7 +17,11 @@ const router = createBrowserRouter([
   },
   {
     path: '/examples/multiple-clients',
-    element: <MultiClientDemoPage />,
+    element: <MultiClientExamplePage />,
+  },
+  {
+    path: '/examples/precomputed-eval-performance',
+    element: <PrecomputedClientPerfExamplePage />,
   },
 ]);
 

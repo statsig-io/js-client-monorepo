@@ -24,6 +24,11 @@ function Content() {
           <li>
             <a href="/examples/multiple-clients">Multiple Clients</a>
           </li>
+          <li>
+            <a href="/examples/precomputed-eval-performance">
+              Precomputed Evaluations Performance
+            </a>
+          </li>
         </ul>
       </div>
     </div>
