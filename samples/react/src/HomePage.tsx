@@ -29,6 +29,11 @@ function Content() {
               Precomputed Evaluations Performance
             </a>
           </li>
+          <li>
+            <a href="/examples/on-device-eval-performance">
+              On Device Evaluations Performance
+            </a>
+          </li>
         </ul>
       </div>
     </div>

@@ -9,6 +9,9 @@ const MultiClientExamplePage = React.lazy(
 const PrecomputedClientPerfExamplePage = React.lazy(
   () => import('./PrecomputedClientPerfExamplePage'),
 );
+const OnDeviceClientPerfExamplePage = React.lazy(
+  () => import('./OnDeviceClientPerfExamplePage'),
+);
 
 const router = createBrowserRouter([
   {
@@ -22,6 +25,10 @@ const router = createBrowserRouter([
   {
     path: '/examples/precomputed-eval-performance',
     element: <PrecomputedClientPerfExamplePage />,
+  },
+  {
+    path: '/examples/on-device-eval-performance',
+    element: <OnDeviceClientPerfExamplePage />,
   },
 ]);
 

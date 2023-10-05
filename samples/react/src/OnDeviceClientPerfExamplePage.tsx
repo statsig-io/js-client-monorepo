@@ -2,13 +2,13 @@ import '@react-native-async-storage/async-storage';
 import 'react';
 import { useEffect, useState } from 'react';
 
-import { PrecomputedEvaluationsClient } from '@sigstat/precomputed-evaluations';
+import { OnDeviceEvaluationsClient } from '@sigstat/on-device-evaluations';
 
-const DEMO_CLIENT_KEY = 'client-rfLvYGag3eyU0jYW5zcIJTQip7GXxSrhOFN69IGMjvq';
+const DEMO_CLIENT_KEY = 'client-QZ1butxQKLJVFgKJnSX6npZNVNpjACaIxjEoYSuUNLI';
 
 const user = { userID: 'a-user' };
 
-const client = new PrecomputedEvaluationsClient(DEMO_CLIENT_KEY, user);
+const client = new OnDeviceEvaluationsClient(DEMO_CLIENT_KEY);
 
 function MeasurementDetails({
   title,
@@ -34,7 +34,7 @@ function ManyChecks({
   title: string;
   action: (i: number) => void;
 }) {
-  const iterations = 10000;
+  const iterations = 1000;
   const [measurement, setMeasurement] = useState<PerformanceMeasure | null>(
     null,
   );
@@ -98,7 +98,7 @@ export default function PrecomputedClientPerfExamplePage() {
 
       {initMeasurement && (
         <ManyChecks
-          action={(i) => client.checkGate(`gate_num_${i}`)}
+          action={(i) => client.checkGate(user, `gate_num_${i}`)}
           title="Gate Checks"
           marker="precomputed-many-gates"
         />
@@ -106,7 +106,9 @@ export default function PrecomputedClientPerfExamplePage() {
 
       {initMeasurement && (
         <ManyChecks
-          action={(i) => client.getDynamicConfig(`dynamic_config_num_${i}`)}
+          action={(i) =>
+            client.getDynamicConfig(user, `dynamic_config_num_${i}`)
+          }
           title="Dynamic Config Gets"
           marker="precomputed-many-dynamic-configs"
         />
@@ -114,7 +116,7 @@ export default function PrecomputedClientPerfExamplePage() {
 
       {initMeasurement && (
         <ManyChecks
-          action={(i) => client.getExperiment(`experiment_num_${i}`)}
+          action={(i) => client.getExperiment(user, `experiment_num_${i}`)}
           title="Experiment Gets"
           marker="precomputed-many-experiments"
         />
@@ -122,7 +124,7 @@ export default function PrecomputedClientPerfExamplePage() {
 
       {initMeasurement && (
         <ManyChecks
-          action={(i) => client.getLayer(`layer_num_${i}`)}
+          action={(i) => client.getLayer(user, `layer_num_${i}`)}
           title="Layer Gets"
           marker="precomputed-many-layers"
         />
