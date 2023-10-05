@@ -3,67 +3,14 @@ import { ReactNode, useEffect, useState } from 'react';
 
 import { OnDeviceEvaluationsClient } from '@sigstat/on-device-evaluations';
 
+import ManyChecksExample from './ManyChecksExample';
+import MeasurementDetails from './MeasurementDetails';
+
 const DEMO_CLIENT_KEY = 'client-QZ1butxQKLJVFgKJnSX6npZNVNpjACaIxjEoYSuUNLI';
 
 const user = { userID: 'a-user' };
 
 const client = new OnDeviceEvaluationsClient(DEMO_CLIENT_KEY);
-
-function MeasurementDetails({
-  title,
-  measurement,
-}: {
-  title: string;
-  measurement: PerformanceMeasure;
-}) {
-  return (
-    <div style={{ marginBottom: '50px' }}>
-      {title}
-      <h2>{measurement.duration.toFixed(4)} ms</h2>
-    </div>
-  );
-}
-
-function ManyChecks({
-  marker,
-  title,
-  action,
-}: {
-  marker: string;
-  title: string;
-  action: (i: number) => void;
-}) {
-  const iterations = 1000;
-  const [measurement, setMeasurement] = useState<PerformanceMeasure | null>(
-    null,
-  );
-
-  useEffect(() => {
-    performance.mark(`${marker}-start`);
-    for (let i = 0; i < iterations; i++) {
-      action(i);
-    }
-    performance.mark(`${marker}-end`);
-    setMeasurement(
-      performance.measure(
-        `${marker}-duration`,
-        `${marker}-start`,
-        `${marker}-end`,
-      ),
-    );
-  }, [action, marker, iterations]);
-
-  if (!measurement) {
-    return <>...</>;
-  }
-
-  return (
-    <MeasurementDetails
-      title={`${iterations} ${title} Measurement`}
-      measurement={measurement}
-    />
-  );
-}
 
 export default function PrecomputedClientPerfExamplePage(): ReactNode {
   const [initMeasurement, setInitMeasurement] =
@@ -97,7 +44,7 @@ export default function PrecomputedClientPerfExamplePage(): ReactNode {
       )}
 
       {initMeasurement && (
-        <ManyChecks
+        <ManyChecksExample
           action={(i) => client.checkGate(user, `gate_num_${i}`)}
           title="Gate Checks"
           marker="precomputed-many-gates"
@@ -105,7 +52,7 @@ export default function PrecomputedClientPerfExamplePage(): ReactNode {
       )}
 
       {initMeasurement && (
-        <ManyChecks
+        <ManyChecksExample
           action={(i) =>
             client.getDynamicConfig(user, `dynamic_config_num_${i}`)
           }
@@ -115,7 +62,7 @@ export default function PrecomputedClientPerfExamplePage(): ReactNode {
       )}
 
       {initMeasurement && (
-        <ManyChecks
+        <ManyChecksExample
           action={(i) => client.getExperiment(user, `experiment_num_${i}`)}
           title="Experiment Gets"
           marker="precomputed-many-experiments"
@@ -123,7 +70,7 @@ export default function PrecomputedClientPerfExamplePage(): ReactNode {
       )}
 
       {initMeasurement && (
-        <ManyChecks
+        <ManyChecksExample
           action={(i) => client.getLayer(user, `layer_num_${i}`)}
           title="Layer Gets"
           marker="precomputed-many-layers"
