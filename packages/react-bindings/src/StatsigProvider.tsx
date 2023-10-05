@@ -5,10 +5,11 @@ import {
   OnDeviceEvaluationsInterface,
   PrecomputedEvaluationsInterface,
   StatsigClientEventData,
+  StatsigClientInterface,
 } from '@sigstat/core';
 
 import { NoopEvaluationsClient } from './NoopEvaluationsClient';
-import { isRemoteEvaluationClient } from './RemoteVsLocalUtil';
+import { isPrecompoutedEvaluationsClient } from './OnDeviceVsPrecomputedUtils';
 import StatsigContext from './StatsigContext';
 
 type Props = {
@@ -28,10 +29,10 @@ export default function StatsigProvider(props: Props): JSX.Element {
   let onDeviceClient: OnDeviceEvaluationsInterface;
 
   if ('client' in props) {
-    precomputedClient = isRemoteEvaluationClient(props.client)
+    precomputedClient = isPrecompoutedEvaluationsClient(props.client)
       ? props.client
       : NoopEvaluationsClient;
-    onDeviceClient = !isRemoteEvaluationClient(props.client)
+    onDeviceClient = !isPrecompoutedEvaluationsClient(props.client)
       ? props.client
       : NoopEvaluationsClient;
   } else {
@@ -39,20 +40,13 @@ export default function StatsigProvider(props: Props): JSX.Element {
     onDeviceClient = props.onDeviceClient;
   }
 
-  const [clientState, setClientState] = useState({
-    status: precomputedClient.loadingStatus,
-    version: 0,
-  });
-
+  const [version, setVersion] = useState(0);
   const clients = [precomputedClient, onDeviceClient];
 
   useEffect(() => {
     const onStatusChange = (data: StatsigClientEventData) => {
       if (data.event === 'status_change') {
-        setClientState((old) => ({
-          status: data.loadingStatus,
-          version: old.version + 1,
-        }));
+        setVersion((v) => v + 1);
       }
     };
 
@@ -77,11 +71,28 @@ export default function StatsigProvider(props: Props): JSX.Element {
 
   return (
     <StatsigContext.Provider value={{ onDeviceClient, precomputedClient }}>
-      {clientState.status === 'Network' ||
-      clientState.status === 'Cache' ||
-      clientState.status === 'Bootstrap'
+      <input type="hidden" name="provider_version" value={version} />
+      {shouldRender(precomputedClient) && shouldRender(onDeviceClient)
         ? props.children
         : null}
     </StatsigContext.Provider>
   );
+}
+
+function shouldRender(
+  client: StatsigClientInterface | { isNoop: true },
+): boolean {
+  if ('isNoop' in client) {
+    return true;
+  }
+
+  switch (client.loadingStatus) {
+    case 'Network':
+    case 'Bootstrap':
+      return true;
+    case 'Cache':
+      return true;
+    default:
+      return false;
+  }
 }

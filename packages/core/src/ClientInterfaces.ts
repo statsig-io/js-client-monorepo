@@ -29,3 +29,7 @@ export interface PrecomputedEvaluationsInterface
   getLayer(name: string): Layer;
   logEvent(event: StatsigEvent): void;
 }
+
+export type StatsigClientInterface =
+  | OnDeviceEvaluationsInterface
+  | PrecomputedEvaluationsInterface;
