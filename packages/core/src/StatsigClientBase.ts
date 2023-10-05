@@ -26,10 +26,6 @@ export class StatsigClientBase implements StatsigClientEventEmitterInterface {
     __STATSIG__.instances = instances;
   }
 
-  toString(): string {
-    return 'foo';
-  }
-
   on(event: StatsigClientEvent, listener: StatsigClientEventCallback): void {
     if (!this._listeners[event]) {
       this._listeners[event] = [];

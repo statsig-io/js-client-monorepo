@@ -12,21 +12,21 @@ const user = { userID: 'a-user' };
 
 const client = new OnDeviceEvaluationsClient(DEMO_CLIENT_KEY);
 
-export default function PrecomputedClientPerfExamplePage(): ReactNode {
+export default function OnDeviceClientPerfExamplePage(): ReactNode {
   const [initMeasurement, setInitMeasurement] =
     useState<PerformanceMeasure | null>(null);
 
   useEffect(() => {
-    performance.mark('precomputed-initialize-start');
+    performance.mark('on-device-initialize-start');
     client
       .initialize()
       .then(() => {
-        performance.mark('precomputed-initialize-end');
+        performance.mark('on-device-initialize-end');
         setInitMeasurement(
           performance.measure(
-            'precomputed-initialize-duration',
-            'precomputed-initialize-start',
-            'precomputed-initialize-end',
+            'on-device-initialize-duration',
+            'on-device-initialize-start',
+            'on-device-initialize-end',
           ),
         );
       })
@@ -45,9 +45,11 @@ export default function PrecomputedClientPerfExamplePage(): ReactNode {
 
       {initMeasurement && (
         <ManyChecksExample
-          action={(i) => client.checkGate(user, `gate_num_${i}`)}
+          action={(i) =>
+            client.checkGate({ userID: `user_${i}` }, 'partial_gate')
+          }
           title="Gate Checks"
-          marker="precomputed-many-gates"
+          marker="on-device-many-gates"
         />
       )}
 
@@ -57,15 +59,17 @@ export default function PrecomputedClientPerfExamplePage(): ReactNode {
             client.getDynamicConfig(user, `dynamic_config_num_${i}`)
           }
           title="Dynamic Config Gets"
-          marker="precomputed-many-dynamic-configs"
+          marker="on-device-many-dynamic-configs"
         />
       )}
 
       {initMeasurement && (
         <ManyChecksExample
-          action={(i) => client.getExperiment(user, `experiment_num_${i}`)}
+          action={(i) =>
+            client.getExperiment({ userID: `user_${i}` }, 'an_experiment')
+          }
           title="Experiment Gets"
-          marker="precomputed-many-experiments"
+          marker="on-device-many-experiments"
         />
       )}
 
@@ -73,7 +77,7 @@ export default function PrecomputedClientPerfExamplePage(): ReactNode {
         <ManyChecksExample
           action={(i) => client.getLayer(user, `layer_num_${i}`)}
           title="Layer Gets"
-          marker="precomputed-many-layers"
+          marker="on-device-many-layers"
         />
       )}
     </>

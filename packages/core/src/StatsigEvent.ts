@@ -9,7 +9,7 @@ export type SecondaryExposure = {
 export type StatsigEvent = {
   eventName: string;
   value: string | number | null;
-  metadata: object | null;
+  metadata: { [key: string]: string } | null;
 };
 
 export type StatsigEventInternal = StatsigEvent & {
@@ -19,6 +19,7 @@ export type StatsigEventInternal = StatsigEvent & {
 };
 
 const CONFIG_EXPOSURE_NAME = 'statsig::config_exposure';
+const GATE_EXPOSURE_NAME = 'statsig::gate_exposure';
 
 function createExposure(
   eventName: string,
@@ -36,6 +37,10 @@ function createExposure(
   };
 }
 
+export function isExposureEvent({ eventName }: StatsigEventInternal): boolean {
+  return eventName === GATE_EXPOSURE_NAME || eventName === CONFIG_EXPOSURE_NAME;
+}
+
 export function createGateExposure(
   user: StatsigUser,
   gateName: string,
@@ -44,7 +49,7 @@ export function createGateExposure(
   secondaryExposures: SecondaryExposure[],
 ): StatsigEventInternal {
   return createExposure(
-    'statsig::gate_exposure',
+    GATE_EXPOSURE_NAME,
     user,
     {
       gate: gateName,

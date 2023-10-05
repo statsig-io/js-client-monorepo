@@ -60,6 +60,7 @@ export default class PrecomputedEvaluationsClient
   }
 
   async updateUser(user: StatsigUser): Promise<void> {
+    this._logger.reset();
     this._user = normalizeUser(user, this._options.environment);
 
     const bootstrap =

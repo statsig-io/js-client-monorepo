@@ -45,7 +45,9 @@ export default function PrecomputedClientPerfExamplePage(): ReactNode {
 
       {initMeasurement && (
         <ManyChecksExample
-          action={(i) => client.checkGate(`gate_num_${i}`)}
+          action={(i) =>
+            client.checkGate(i % 2 === 0 ? 'partial_gate' : 'a_gate')
+          }
           title="Gate Checks"
           marker="precomputed-many-gates"
         />
@@ -53,7 +55,7 @@ export default function PrecomputedClientPerfExamplePage(): ReactNode {
 
       {initMeasurement && (
         <ManyChecksExample
-          action={(i) => client.getDynamicConfig(`dynamic_config_num_${i}`)}
+          action={(_i) => client.getDynamicConfig('a_dynamic_config')}
           title="Dynamic Config Gets"
           marker="precomputed-many-dynamic-configs"
         />
@@ -61,7 +63,7 @@ export default function PrecomputedClientPerfExamplePage(): ReactNode {
 
       {initMeasurement && (
         <ManyChecksExample
-          action={(i) => client.getExperiment(`experiment_num_${i}`)}
+          action={(_i) => client.getExperiment('an_experiment')}
           title="Experiment Gets"
           marker="precomputed-many-experiments"
         />

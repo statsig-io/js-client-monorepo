@@ -39,7 +39,7 @@ export class NetworkCore {
       },
     });
 
-    return this._sendRequest('POST', url, timeoutMs, body);
+    return this._sendRequest('POST', url, timeoutMs, { body });
   }
 
   protected async _sendGetRequest<T>(
@@ -53,7 +53,7 @@ export class NetworkCore {
     method: 'POST' | 'GET',
     url: string,
     timeoutMs = 10_000,
-    body?: string,
+    options?: { body?: string; headers?: Record<string, string> },
   ): Promise<T> {
     const controller = new AbortController();
     const handle = setTimeout(() => controller.abort(), timeoutMs);
@@ -61,8 +61,9 @@ export class NetworkCore {
 
     const response = await fetch(url, {
       method,
-      body,
+      body: options?.body,
       headers: {
+        ...options?.headers,
         'Content-Type': 'application/json',
         'STATSIG-API-KEY': this._sdkKey,
         'STATSIG-SDK-TYPE': statsigMetadata.sdkType,
