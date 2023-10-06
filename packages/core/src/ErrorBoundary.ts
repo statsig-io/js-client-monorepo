@@ -5,7 +5,7 @@ export const EXCEPTION_ENDPOINT = 'https://statsigapi.net/v1/sdk_exception';
 type Config = {
   sdkKey: string;
   metadata: Record<string, unknown>;
-  isSilent?: boolean;
+  isSilent?: boolean; // todo: replace with StatsigOpts.LogLevel
 };
 
 const _seen = new Set<string>();
@@ -31,7 +31,7 @@ export function errorBoundary(tag: string, task: () => unknown): unknown {
 function _onError(tag: string, error: unknown) {
   try {
     if (_config?.isSilent !== true) {
-      Log.warn(`Caught error in ${tag}`, error);
+      Log.warn(`Caught error in ${tag}`, { error, foo: 1 });
     }
 
     const impl = async () => {

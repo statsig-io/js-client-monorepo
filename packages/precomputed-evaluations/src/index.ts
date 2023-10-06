@@ -1,6 +1,6 @@
 import type { EvaluationDataProviderInterface } from './EvaluationData';
 import PrecomputedEvaluationsClient from './PrecomputedEvaluationsClient';
-import './StatsigMetadataProvider';
+import './StatsigMetadataAdditions';
 import type { StatsigOptions } from './StatsigOptions';
 
 export type {

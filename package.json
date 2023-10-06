@@ -3,9 +3,9 @@
   "version": "0.0.6",
   "license": "MIT",
   "scripts": {
-    "lint": "nx run-many --parallel=3 --target=lint",
-    "test": "nx run-many --parallel=3 --target=test",
-    "build": "nx run-many --parallel=3 --target=build",
+    "lint": "nx run-many --parallel=4 --target=lint",
+    "test": "nx run-many --parallel=4 --target=test",
+    "build": "nx run-many --parallel=4 --target=build",
     "format": "nx format:write",
     "sync-version": "nx sync-version",
     "prepare": "husky install"

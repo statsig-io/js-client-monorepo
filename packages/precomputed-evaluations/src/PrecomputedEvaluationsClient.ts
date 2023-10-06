@@ -20,7 +20,7 @@ import {
 
 import EvaluationStore from './EvaluationStore';
 import Network from './Network';
-import './StatsigMetadataProvider';
+import './StatsigMetadataAdditions';
 import type { StatsigOptions } from './StatsigOptions';
 
 @Monitored

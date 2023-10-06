@@ -1,6 +1,5 @@
 export type StatsigGlobal = {
   [key: string]: unknown;
-  ExtraStatsigMetadata?: Record<string, unknown>;
   instances?: Set<unknown>;
 };
 
@@ -18,6 +17,12 @@ if (typeof window !== 'undefined') {
   window.__STATSIG__ = statsigGlobal;
 }
 
-if (typeof __STATSIG__ !== 'undefined') {
-  __STATSIG__ = statsigGlobal;
+if (typeof global !== 'undefined') {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-explicit-any
+  (global as any).__STATSIG__ = statsigGlobal;
+}
+
+if (typeof globalThis !== 'undefined') {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-explicit-any
+  (globalThis as any).__STATSIG__ = statsigGlobal;
 }

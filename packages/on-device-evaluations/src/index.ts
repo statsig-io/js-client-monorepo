@@ -1,4 +1,5 @@
 import OnDeviceEvaluationsClient from './OnDeviceEvaluationsClient';
+import './StatsigMetadataAdditions';
 
 export { OnDeviceEvaluationsClient };
 

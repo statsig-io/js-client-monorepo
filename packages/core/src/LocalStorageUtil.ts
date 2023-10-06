@@ -50,9 +50,7 @@ try {
     }
   }
 } catch (error) {
-  Log.warn(
-    '[Statsig] Failed to get storage provider. Failling back to in memory store.',
-  );
+  Log.warn('Failed to get storage provider. Failling back to in memory store.');
 }
 
 const Storage = provider;

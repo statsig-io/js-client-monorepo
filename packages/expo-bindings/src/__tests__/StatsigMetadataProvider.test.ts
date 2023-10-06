@@ -1,4 +1,4 @@
-import { StatsigMetadata } from '@sigstat/core';
+import { StatsigMetadataProvider } from '@sigstat/core';
 
 jest.mock('expo-application', () => ({
   nativeApplicationVersion: 'a-native-app-version',
@@ -20,9 +20,9 @@ describe('StatsigMetadataProvider', () => {
   let metadata: Record<string, unknown>;
 
   beforeAll(async () => {
-    await import('../StatsigMetadataProvider');
+    await import('../StatsigMetadataAdditions');
 
-    metadata = StatsigMetadata.get();
+    metadata = StatsigMetadataProvider.get();
   });
 
   it('gets the expected metadata', () => {

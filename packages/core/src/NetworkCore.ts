@@ -1,6 +1,6 @@
 import { StableID } from './StableID';
 import { StatsigEvent } from './StatsigEvent';
-import { StatsigMetadata } from './StatsigMetadata';
+import { StatsigMetadataProvider } from './StatsigMetadata';
 import { getUUID } from './UUID';
 
 type StatsigNetworkResponse = {
@@ -28,12 +28,11 @@ export class NetworkCore {
     data: Record<string, unknown>,
     timeoutMs = 10_000,
   ): Promise<T> {
-    const statsigMetadata = StatsigMetadata.get();
     const stableID = await StableID.get();
     const body = JSON.stringify({
       ...data,
       statsigMetadata: {
-        ...statsigMetadata,
+        ...StatsigMetadataProvider.get(),
         stableID,
         sessionID: this._sessionID,
       },
@@ -57,7 +56,7 @@ export class NetworkCore {
   ): Promise<T> {
     const controller = new AbortController();
     const handle = setTimeout(() => controller.abort(), timeoutMs);
-    const statsigMetadata = StatsigMetadata.get();
+    const statsigMetadata = StatsigMetadataProvider.get();
 
     const response = await fetch(url, {
       method,

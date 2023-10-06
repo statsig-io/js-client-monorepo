@@ -8,7 +8,7 @@ export function captureDiagnostics(func: string, task: () => unknown): unknown {
   };
 
   if (result && result instanceof Promise) {
-    result.finally(() => markEnd());
+    return result.finally(() => markEnd());
   } else {
     markEnd();
   }

@@ -20,6 +20,7 @@ export type StatsigEventInternal = StatsigEvent & {
 
 const CONFIG_EXPOSURE_NAME = 'statsig::config_exposure';
 const GATE_EXPOSURE_NAME = 'statsig::gate_exposure';
+const LAYER_EXPOSURE_NAME = 'statsig::layer_exposure';
 
 function createExposure(
   eventName: string,
@@ -99,13 +100,14 @@ export function createLayerParameterExposure(
   }
 
   return createExposure(
-    CONFIG_EXPOSURE_NAME,
+    LAYER_EXPOSURE_NAME,
     user,
     {
       config: layerName,
       parameterName,
       ruleID: spec.rule_id,
       allocatedExperiment,
+      isExplicitParameter: String(isExplicit),
     },
     secondaryExposures,
   );

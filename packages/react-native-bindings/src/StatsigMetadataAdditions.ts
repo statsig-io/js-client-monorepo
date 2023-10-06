@@ -1,8 +1,7 @@
-import { nativeApplicationVersion } from 'expo-application';
-import { modelId, modelName, osName, osVersion } from 'expo-device';
 import { NativeModules, Platform } from 'react-native';
+import DeviceInfo from 'react-native-device-info';
 
-import { StatsigMetadata } from '@sigstat/core';
+import { StatsigMetadataProvider } from '@sigstat/core';
 
 type I18nManager = { localIdentifer: string };
 type SettingsManager = {
@@ -27,11 +26,11 @@ if (Platform.OS === 'ios') {
   locale = settings?.AppLocale ?? settings?.AppleLanguages?.[0] ?? '';
 }
 
-StatsigMetadata.add({
-  appVersion: nativeApplicationVersion ?? '',
-  systemVersion: osVersion ?? '',
-  systemName: osName ?? '',
-  deviceModelName: modelName ?? '',
-  deviceModel: String(modelId ?? ''),
+StatsigMetadataProvider.add({
+  appVersion: DeviceInfo.getVersion() ?? '',
+  systemVersion: DeviceInfo.getSystemVersion() ?? '',
+  systemName: DeviceInfo.getSystemName() ?? '',
+  deviceModelName: DeviceInfo.getModel() ?? '',
+  deviceModel: DeviceInfo.getDeviceId() ?? '',
   locale,
 });
