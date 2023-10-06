@@ -2,35 +2,59 @@ import '@fontsource/roboto/300.css';
 import '@fontsource/roboto/400.css';
 import '@fontsource/roboto/500.css';
 import '@fontsource/roboto/700.css';
-import React, { ReactNode } from 'react';
+import { Box } from '@mui/material';
+import { ReactNode, lazy } from 'react';
 import * as ReactDOM from 'react-dom/client';
-import { RouterProvider, createBrowserRouter } from 'react-router-dom';
+import {
+  RouteObject,
+  RouterProvider,
+  createBrowserRouter,
+} from 'react-router-dom';
 
 import LeftRail from './LeftRail';
 
-const routes: [string, Promise<{ default: () => ReactNode }>][] = [
-  ['/', import('./HomePage')],
-  ['/examples/multiple-clients', import('./MultiClientExamplePage')],
+type ComponentResolver = () => Promise<{ default: () => ReactNode }>;
+type RouteMap = [string, string, ComponentResolver | RouteMap][];
+
+// prettier-ignore
+const routes: RouteMap = [
+  ['/', 'Home', () => import('./HomePage')],
   [
-    '/examples/precomputed-eval-performance',
-    import('./PrecomputedClientPerfExamplePage'),
+    '/examples', '',
+    [
+      ['/multiple-clients', 'Multiple Clients', () => import('./MultiClientExamplePage')],
+      ['/precomputed-eval-performance', 'Precomputed Client Perf', () => import('./PrecomputedClientPerfExamplePage')],
+      ['/on-device-eval-performance', 'On Device Client Perf', () => import('./OnDeviceClientPerfExamplePage')],
+      ['/bundle-size', 'Bundle Size', () => import('./BundleSizeExamplePage')],
+    ],
   ],
-  [
-    '/examples/on-device-eval-performance',
-    import('./OnDeviceClientPerfExamplePage'),
-  ],
-  ['/examples/bundle-size', import('./BundleSizeExamplePage')],
 ];
 
-const router = createBrowserRouter(
-  routes.map(([path, mod]) => {
-    const Comp = React.lazy(() => mod);
-    return {
+const routeResolver = (
+  path: string,
+  title: string,
+  resolverOrMap: ComponentResolver | RouteMap,
+): (RouteObject & { path: string; title: string })[] => {
+  if (typeof resolverOrMap !== 'function') {
+    return resolverOrMap.flatMap((entry) =>
+      routeResolver(`${path}${entry[0]}`, entry[1], entry[2]),
+    );
+  }
+
+  const Comp = lazy(resolverOrMap);
+  return [
+    {
       path,
+      title,
       element: <Comp />,
-    };
-  }),
+    },
+  ];
+};
+
+const resolvedRoutes = routes.flatMap((entry) =>
+  routeResolver(entry[0], entry[1], entry[2]),
 );
+const router = createBrowserRouter(resolvedRoutes);
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement,
@@ -38,20 +62,26 @@ const root = ReactDOM.createRoot(
 
 function App() {
   return (
-    <div
-      style={{
-        display: 'flex',
-        justifyContent: 'flex-start',
-        position: 'relative',
-        width: '100vw',
-        minHeight: '100vh',
-      }}
+    <Box
+      width="100vw"
+      minHeight="100vh"
+      position="relative"
+      display="flex"
+      justifyContent="flex-start"
     >
-      <LeftRail />
-      <div style={{ padding: '16px' }}>
-        <RouterProvider router={router} />
-      </div>
-    </div>
+      <LeftRail routes={resolvedRoutes} />
+      <Box
+        flex={1}
+        padding="16px"
+        display="flex"
+        alignItems="center"
+        justifyContent="center"
+      >
+        <Box>
+          <RouterProvider router={router} />
+        </Box>
+      </Box>
+    </Box>
   );
 }
 

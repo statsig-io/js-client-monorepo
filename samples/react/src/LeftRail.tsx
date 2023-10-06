@@ -1,5 +1,6 @@
 import InboxIcon from '@mui/icons-material/Inbox';
 import {
+  Box,
   List,
   ListItem,
   ListItemButton,
@@ -9,30 +10,28 @@ import {
 import '@react-native-async-storage/async-storage';
 import { ReactNode } from 'react';
 
-const ITEMS = [
-  ['/', 'Home'],
-  ['/examples/multiple-clients', 'Multiple Clients'],
-  [
-    '/examples/precomputed-eval-performance',
-    'Precomputed Evaluations Performance',
-  ],
-  ['/examples/on-device-eval-performance', 'On Device Evaluations Performance'],
-  ['/examples/bundle-size', 'Bundle Size'],
-];
-
-export default function LeftRail(): ReactNode {
+export default function LeftRail({
+  routes,
+}: {
+  routes: {
+    path: string;
+    title: string;
+  }[];
+}): ReactNode {
   return (
-    <List>
-      {ITEMS.map(([href, title]) => (
-        <ListItem disablePadding>
-          <ListItemButton onClick={() => (window.location.href = href)}>
-            <ListItemIcon>
-              <InboxIcon />
-            </ListItemIcon>
-            <ListItemText primary={title} />
-          </ListItemButton>
-        </ListItem>
-      ))}
-    </List>
+    <Box display="flex" alignItems="center">
+      <List>
+        {routes.map(({ path, title }) => (
+          <ListItem disablePadding key={`left-rail-${path}`}>
+            <ListItemButton onClick={() => (window.location.href = path)}>
+              <ListItemIcon>
+                <InboxIcon />
+              </ListItemIcon>
+              <ListItemText primary={title} />
+            </ListItemButton>
+          </ListItem>
+        ))}
+      </List>
+    </Box>
   );
 }
