@@ -2,7 +2,7 @@ import { Heading } from 'native-base';
 import React from 'react';
 import { Text, View } from 'react-native';
 
-import { StatsigMetadata } from '@sigstat/core';
+import { StatsigMetadataProvider } from '@sigstat/core';
 
 export default function StatsigMetadataExample(): React.ReactNode {
   return (
@@ -11,7 +11,7 @@ export default function StatsigMetadataExample(): React.ReactNode {
         Statsig Metadata
       </Heading>
       <Text style={{ color: 'white' }}>
-        {JSON.stringify(StatsigMetadata.get(), null, 2)}
+        {JSON.stringify(StatsigMetadataProvider.get(), null, 2)}
       </Text>
     </View>
   );

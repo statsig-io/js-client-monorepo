@@ -1,5 +1,6 @@
 import '@testing-library/jest-native/extend-expect';
 import fetchMock from 'jest-fetch-mock';
+import { performance } from 'perf_hooks';
 // Fix for Reflect.metadata test error https://github.com/nrwl/nx/issues/8905
 import 'reflect-metadata';
 
@@ -17,7 +18,7 @@ jest.mock('react-native-device-info', () =>
 );
 
 Object.defineProperty(window, 'performance', {
-  value: require('perf_hooks').performance,
+  value: performance,
 });
 
 jest.setTimeout(10_000);

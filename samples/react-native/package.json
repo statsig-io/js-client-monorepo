@@ -23,7 +23,6 @@
     "react-native-screens": "*",
     "react-native": "*",
     "react": "*",
-    "reflect-metadata": "*",
-    "perf_hooks": "*"
+    "reflect-metadata": "*"
   }
 }
