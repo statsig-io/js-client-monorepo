@@ -14,7 +14,7 @@ export * from './StableID';
 export * from './StatsigClientBase';
 export * from './StatsigClientEventEmitter';
 export * from './StatsigEvent';
-export * from './StatsigMetadata';
+export { StatsigMetadataProvider } from './StatsigMetadata';
 export * from './StatsigTypes';
 export * from './StatsigUser';
 export * from './UUID';

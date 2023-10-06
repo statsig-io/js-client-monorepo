@@ -7,3 +7,7 @@ fetchMock.enableMocks();
 jest.mock('react-native-device-info', () =>
   require('react-native-device-info/jest/react-native-device-info-mock'),
 );
+
+Object.defineProperty(window, 'performance', {
+  value: require('perf_hooks').performance,
+});

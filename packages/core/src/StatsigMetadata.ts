@@ -25,15 +25,9 @@ let metadata: StatsigMetadata = {
   systemVersion: '',
 };
 
-function get(): StatsigMetadata {
-  return metadata;
-}
-
-function add(additions: { [key: string]: string }): void {
-  metadata = { ...metadata, ...additions };
-}
-
 export const StatsigMetadataProvider = {
-  get,
-  add,
+  get: (): StatsigMetadata => metadata,
+  add: (additions: { [key: string]: string }): void => {
+    metadata = { ...metadata, ...additions };
+  },
 };
