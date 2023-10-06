@@ -1,5 +1,4 @@
 import { ReactNode, useEffect, useState } from 'react';
-import { View } from 'react-native';
 
 import {
   Log,
@@ -41,13 +40,13 @@ export default function StatsigProvider(props: Props): JSX.Element {
     onDeviceClient = props.onDeviceClient;
   }
 
-  const [version, setVersion] = useState(0);
+  const [renderVersion, setRenderVersion] = useState(0);
   const clients = [precomputedClient, onDeviceClient];
 
   useEffect(() => {
     const onStatusChange = (data: StatsigClientEventData) => {
       if (data.event === 'status_change') {
-        setVersion((v) => v + 1);
+        setRenderVersion((v) => v + 1);
       }
     };
 
@@ -71,8 +70,9 @@ export default function StatsigProvider(props: Props): JSX.Element {
   }, clients);
 
   return (
-    <StatsigContext.Provider value={{ onDeviceClient, precomputedClient }}>
-      <View style={{ display: 'none' }} testID={`${version}`} />
+    <StatsigContext.Provider
+      value={{ renderVersion, onDeviceClient, precomputedClient }}
+    >
       {shouldRender(precomputedClient) && shouldRender(onDeviceClient)
         ? props.children
         : null}

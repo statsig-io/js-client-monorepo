@@ -7,7 +7,6 @@ import {
   ListItemIcon,
   ListItemText,
 } from '@mui/material';
-import '@react-native-async-storage/async-storage';
 import { ReactNode } from 'react';
 
 export default function LeftRail({

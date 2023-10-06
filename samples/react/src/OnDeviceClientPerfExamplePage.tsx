@@ -1,4 +1,3 @@
-import '@react-native-async-storage/async-storage';
 import { ReactNode, useEffect, useState } from 'react';
 
 import { OnDeviceEvaluationsClient } from '@sigstat/on-device-evaluations';

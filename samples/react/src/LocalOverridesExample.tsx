@@ -1,5 +1,3 @@
-import '@react-native-async-storage/async-storage';
-
 import '@sigstat/client-extensions';
 import { PrecomputedEvaluationsClient } from '@sigstat/precomputed-evaluations';
 import {
