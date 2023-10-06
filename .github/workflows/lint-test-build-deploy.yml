@@ -28,7 +28,7 @@ jobs:
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v2
         with:
-          path: './dist/samples'
+          path: './dist/samples/react'
 
   deploy:
     needs: lint-test-build
