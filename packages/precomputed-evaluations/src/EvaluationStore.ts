@@ -11,10 +11,10 @@ import { EvaluationResponse } from './EvaluationData';
 const MANIFEST_KEY = 'statsig.manifest';
 const CACHE_LIMIT = 10;
 
-type StoreValues = EvaluationResponse & { has_updates: true };
+type EvaluationStoreValues = EvaluationResponse & { has_updates: true };
 
-export default class SpecStore {
-  values: StoreValues | null = null;
+export default class EvaluationStore {
+  values: EvaluationStoreValues | null = null;
   private _manifest: Record<string, number> = {};
   private _isReady: Promise<void>;
 
@@ -45,7 +45,7 @@ export default class SpecStore {
   async switchToUser(user: StatsigUser): Promise<boolean> {
     this.values = null;
     const cacheKey = createCacheKey(user, this._sdkKey);
-    const json = await getObjectFromStorage<StoreValues>(cacheKey);
+    const json = await getObjectFromStorage<EvaluationStoreValues>(cacheKey);
 
     if (json) {
       this.values = json;

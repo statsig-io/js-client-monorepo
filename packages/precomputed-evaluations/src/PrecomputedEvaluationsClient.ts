@@ -18,8 +18,8 @@ import {
   normalizeUser,
 } from '@sigstat/core';
 
+import EvaluationStore from './EvaluationStore';
 import Network from './Network';
-import SpecStore from './SpecStore';
 import './StatsigMetadataProvider';
 import type { StatsigOptions } from './StatsigOptions';
 
@@ -30,7 +30,7 @@ export default class PrecomputedEvaluationsClient
 {
   private _options: StatsigOptions;
   private _network: Network;
-  private _store: SpecStore;
+  private _store: EvaluationStore;
   private _user: StatsigUser;
 
   constructor(
@@ -50,7 +50,7 @@ export default class PrecomputedEvaluationsClient
     }
 
     this._options = options ?? {};
-    this._store = new SpecStore(sdkKey);
+    this._store = new EvaluationStore(sdkKey);
     this._network = network;
     this._user = user;
   }

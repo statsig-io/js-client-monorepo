@@ -7,8 +7,8 @@ import { ReactNode, lazy } from 'react';
 import * as ReactDOM from 'react-dom/client';
 import {
   RouteObject,
-  RouterProvider,
-  createBrowserRouter,
+  RouterProvider, // createBrowserRouter,
+  createHashRouter,
 } from 'react-router-dom';
 
 import LeftRail from './LeftRail';
@@ -54,7 +54,7 @@ const routeResolver = (
 const resolvedRoutes = routes.flatMap((entry) =>
   routeResolver(entry[0], entry[1], entry[2]),
 );
-const router = createBrowserRouter(resolvedRoutes);
+const router = createHashRouter(resolvedRoutes);
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement,
