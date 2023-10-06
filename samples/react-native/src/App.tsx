@@ -26,17 +26,6 @@ const routes: React.ComponentProps<typeof Stack.Screen>[] = [
       headerTintColor: 'white',
     },
   },
-  {
-    name: 'Foo',
-    component: HomeScreen,
-    options: {
-      statusBarHidden: true,
-      headerStyle: {
-        backgroundColor: '#1f222a',
-      },
-      headerTintColor: 'white',
-    },
-  },
 ];
 
 const Stack = createNativeStackNavigator();

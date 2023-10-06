@@ -1,4 +1,5 @@
-// import { PerformanceMark, performance } from 'perf_hooks';
+const SUPPORTS_PERFORMANCE_API =
+  typeof performance !== 'undefined' && typeof performance.mark !== 'undefined';
 
 export function captureDiagnostics(func: string, task: () => unknown): unknown {
   const start = Diagnostics.mark(`${func}-start`);
@@ -19,11 +20,22 @@ export function captureDiagnostics(func: string, task: () => unknown): unknown {
 }
 
 export abstract class Diagnostics {
-  static mark(tag: string): PerformanceMark {
+  static mark(tag: string): PerformanceMark | null {
+    if (!SUPPORTS_PERFORMANCE_API) {
+      return null;
+    }
+
     return performance.mark(tag);
   }
 
-  static span(start: PerformanceMark, end: PerformanceMark): void {
+  static span(
+    start: PerformanceMark | null,
+    end: PerformanceMark | null,
+  ): void {
+    if (start == null || end == null || !SUPPORTS_PERFORMANCE_API) {
+      return;
+    }
+
     performance.measure(`${start.name} -> ${end.name}`, start.name, end.name);
   }
 }

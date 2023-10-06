@@ -1,4 +1,5 @@
 import { ReactNode, useEffect, useState } from 'react';
+import { View } from 'react-native';
 
 import {
   Log,
@@ -71,7 +72,7 @@ export default function StatsigProvider(props: Props): JSX.Element {
 
   return (
     <StatsigContext.Provider value={{ onDeviceClient, precomputedClient }}>
-      <input type="hidden" name="provider_version" value={version} />
+      <View style={{ display: 'none' }} testID={`${version}`} />
       {shouldRender(precomputedClient) && shouldRender(onDeviceClient)
         ? props.children
         : null}
