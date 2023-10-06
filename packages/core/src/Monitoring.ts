@@ -33,7 +33,7 @@ function _generateDescriptor(
 
   descriptor.value = function (...args: unknown[]) {
     return errorBoundary(propertyKey, () =>
-      captureDiagnostics(() => original.apply(this, args)),
+      captureDiagnostics(propertyKey, () => original.apply(this, args)),
     );
   };
 
