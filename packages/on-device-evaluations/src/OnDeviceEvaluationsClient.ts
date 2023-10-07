@@ -53,12 +53,16 @@ export default class OnDeviceEvaluationsClient
 
     const response = await this._network.fetchConfigSpecs();
 
+    if (!response) {
+      this.setStatus('Error');
+      return;
+    }
+
     if (response.has_updates) {
       this._store.setValues(response);
-      this.setStatus('Network');
-    } else {
-      this.setStatus('Error');
     }
+
+    this.setStatus('Network');
   }
 
   async shutdown(): Promise<void> {

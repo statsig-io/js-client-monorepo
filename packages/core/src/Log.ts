@@ -5,21 +5,32 @@ function addTag(args: unknown[]) {
   return args; // ['[Statsig]', ...args];
 }
 
+export type LogLevel = 'verbose' | 'none';
+
 export abstract class Log {
+  static level: LogLevel = 'verbose';
+
   static info(...args: unknown[]): void {
-    console.info(...addTag(args));
+    if (this.level !== 'none') {
+      console.info(...addTag(args));
+    }
   }
 
   static debug(...args: unknown[]): void {
-    console.debug(...addTag(args));
+    if (this.level !== 'none') {
+      console.debug(...addTag(args));
+    }
   }
 
   static warn(...args: unknown[]): void {
-    console.warn(...addTag(args));
-    // console.warn(...args);
+    if (this.level !== 'none') {
+      console.warn(...addTag(args));
+    }
   }
 
   static error(...args: unknown[]): void {
-    console.error(...addTag(args));
+    if (this.level !== 'none') {
+      console.error(...addTag(args));
+    }
   }
 }

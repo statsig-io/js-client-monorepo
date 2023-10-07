@@ -7,14 +7,15 @@ export default class StatsigNetwork extends NetworkCore {
     super(sdkKey, api);
   }
 
-  fetchEvaluations(user: StatsigUser): Promise<EvaluationResponse> {
-    return this._sendPostRequest(
-      `${this._api}/initialize`,
-      {
+  fetchEvaluations(user: StatsigUser): Promise<EvaluationResponse | null> {
+    return this.post({
+      url: `initialize`,
+      data: {
         user,
         hash: 'djb2',
       },
-      2000,
-    );
+      timeoutMs: 2000,
+      retries: 2,
+    });
   }
 }

@@ -8,6 +8,10 @@ const MAX_DEDUPER_KEYS = 1000;
 const _60_SECONDS = 60_000;
 const _10_SECONDS = 10_000;
 
+type SendEventsResponse = {
+  success: boolean;
+};
+
 export class EventLogger {
   private _queue: StatsigEventInternal[] = [];
   private _flushTimer: ReturnType<typeof setInterval> | null;
@@ -87,11 +91,25 @@ export class EventLogger {
     this._queueLimit = Math.min(this._queueLimit + MIN_QUEUE, MAX_QUEUE);
 
     try {
-      await this._network.sendEvents(events);
+      await this._sendEvents(events);
     } catch {
       Log.warn('Failed to flush events.');
     }
 
     this._queueLimit = Math.max(this._queueLimit - MIN_QUEUE, MIN_QUEUE);
+  }
+
+  private async _sendEvents(
+    events: StatsigEventInternal[],
+  ): Promise<SendEventsResponse> {
+    const result = await this._network.post<SendEventsResponse>({
+      url: `rgstr`,
+      data: {
+        events,
+      },
+      retries: 3,
+    });
+
+    return result ?? { success: false };
   }
 }

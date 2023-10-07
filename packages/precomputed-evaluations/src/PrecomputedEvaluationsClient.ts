@@ -79,10 +79,14 @@ export default class PrecomputedEvaluationsClient
     }
 
     const capturedUser = this._user;
-
     const response = await this._network.fetchEvaluations(capturedUser);
-    await this._store.setValues(capturedUser, response);
-    this.setStatus('Network');
+
+    if (response) {
+      await this._store.setValues(capturedUser, response);
+      this.setStatus('Network');
+    } else if (!cacheHit) {
+      this.setStatus('Error');
+    }
   }
 
   async shutdown(): Promise<void> {
