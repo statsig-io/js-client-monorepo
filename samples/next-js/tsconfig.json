@@ -1,5 +1,5 @@
 {
-  "extends": "../tsconfig.base.json",
+  "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "jsx": "preserve",
     "allowJs": true,
@@ -23,8 +23,8 @@
     "**/*.tsx",
     "**/*.js",
     "**/*.jsx",
-    "../next-js/.next/types/**/*.ts",
-    "../dist/next-js/.next/types/**/*.ts",
+    "../../next-js/.next/types/**/*.ts",
+    "../../dist/next-js/.next/types/**/*.ts",
     "next-env.d.ts"
   ],
   "exclude": [
