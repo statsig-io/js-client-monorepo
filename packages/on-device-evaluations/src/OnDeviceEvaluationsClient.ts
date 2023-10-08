@@ -105,7 +105,7 @@ export default class OnDeviceEvaluationsClient
     };
   }
 
-  logEvent(_user: StatsigUser, _event: StatsigEvent): void {
-    throw new Error('Method not implemented.');
+  logEvent(user: StatsigUser, event: StatsigEvent): void {
+    this._logger.enqueue({ ...event, user, time: Date.now() });
   }
 }
