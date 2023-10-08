@@ -4,8 +4,8 @@
   },
   "props": {
     "props": {
-      "$__esModule": "t",
-      "$__STATSIG__": "i",
+      "$__esModule": "__esModule",
+      "$__STATSIG__": "__STATSIG__",
       "$_network": "u",
       "$_options": "o",
       "$_queue": "l",
