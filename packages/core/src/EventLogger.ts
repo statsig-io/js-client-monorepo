@@ -1,6 +1,7 @@
 import { Log } from './Log';
 import { NetworkCore } from './NetworkCore';
 import { StatsigEventInternal, isExposureEvent } from './StatsigEvent';
+import { StatsigOptionsCommon } from './StatsigTypes';
 
 const MAX_QUEUE = 700;
 const MIN_QUEUE = 50;
@@ -8,13 +9,20 @@ const MAX_DEDUPER_KEYS = 1000;
 const _60_SECONDS = 60_000;
 const _10_SECONDS = 10_000;
 
+type SendEventsResponse = {
+  success: boolean;
+};
+
 export class EventLogger {
   private _queue: StatsigEventInternal[] = [];
   private _flushTimer: ReturnType<typeof setInterval> | null;
   private _lastExposureMap: Record<string, number> = {};
   private _queueLimit = MIN_QUEUE;
 
-  constructor(private _network: NetworkCore) {
+  constructor(
+    private _network: NetworkCore,
+    private _options: StatsigOptionsCommon | null,
+  ) {
     this._flushTimer = setInterval(() => this._flushAndForget(), _10_SECONDS);
   }
 
@@ -87,11 +95,26 @@ export class EventLogger {
     this._queueLimit = Math.min(this._queueLimit + MIN_QUEUE, MAX_QUEUE);
 
     try {
-      await this._network.sendEvents(events);
+      await this._sendEvents(events);
     } catch {
       Log.warn('Failed to flush events.');
     }
 
     this._queueLimit = Math.max(this._queueLimit - MIN_QUEUE, MIN_QUEUE);
+  }
+
+  private async _sendEvents(
+    events: StatsigEventInternal[],
+  ): Promise<SendEventsResponse> {
+    const api = this._options?.api ?? 'https://api.statsig.com/v1'; // todo: more centralized location for urls/api
+    const result = await this._network.post<SendEventsResponse>({
+      url: `${api}/rgstr`,
+      data: {
+        events,
+      },
+      retries: 3,
+    });
+
+    return result ?? { success: false };
   }
 }

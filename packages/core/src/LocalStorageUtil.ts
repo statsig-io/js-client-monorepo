@@ -38,16 +38,16 @@ try {
       },
     };
   } else {
-    const asyncStorage =
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-var-requires
-      require('@react-native-async-storage/async-storage') as {
-        [key: string]: unknown;
-      };
-    if (asyncStorage['default']) {
-      provider = asyncStorage['default'] as StorageProvider;
-    } else {
-      provider = asyncStorage as StorageProvider;
-    }
+    // const asyncStorage =
+    //   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-var-requires
+    //   require('@react-native-async-storage/async-storage') as {
+    //     [key: string]: unknown;
+    //   };
+    // if (asyncStorage['default']) {
+    //   provider = asyncStorage['default'] as StorageProvider;
+    // } else {
+    //   provider = asyncStorage as StorageProvider;
+    // }
   }
 } catch (error) {
   Log.warn('Failed to get storage provider. Failling back to in memory store.');

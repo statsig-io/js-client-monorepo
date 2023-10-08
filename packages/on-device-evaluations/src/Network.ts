@@ -3,17 +3,25 @@ import { NetworkCore } from '@sigstat/core';
 import { DownloadConfigSpecsResponse } from './SpecStore';
 import { StatsigOptions } from './StatsigOptions';
 
+const DEFAULT_SPECS_URL = 'https://api.statsigcdn.com/v1/download_config_specs';
+
 export default class StatsigNetwork extends NetworkCore {
   private _downloadConfigSpecsUrl: string;
+  private _mainApi: string;
 
   constructor(sdkKey: string, options: StatsigOptions | null = null) {
-    super(sdkKey, options?.api ?? 'https://api.statsig.com/v1');
-    this._downloadConfigSpecsUrl =
-      // options.baseDownloadConfigSpecsUrl ??
-      `https://api.statsigcdn.com/v1/download_config_specs/${sdkKey}.json`;
+    super(sdkKey);
+
+    const base = options?.baseDownloadConfigSpecsUrl ?? DEFAULT_SPECS_URL;
+
+    this._mainApi = options?.api ?? 'https://api.statsig.com/v1';
+    this._downloadConfigSpecsUrl = `${base}/${sdkKey}.json`;
   }
 
-  fetchConfigSpecs(): Promise<DownloadConfigSpecsResponse> {
-    return this._sendGetRequest(this._downloadConfigSpecsUrl, 2000);
+  fetchConfigSpecs(): Promise<DownloadConfigSpecsResponse | null> {
+    return this.get({
+      url: this._downloadConfigSpecsUrl,
+      timeoutMs: 2000,
+    });
   }
 }

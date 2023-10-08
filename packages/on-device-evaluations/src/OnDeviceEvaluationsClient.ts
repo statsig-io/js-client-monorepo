@@ -34,11 +34,11 @@ export default class OnDeviceEvaluationsClient
 
   constructor(sdkKey: string, options: StatsigOptions | null = null) {
     const network = new Network(sdkKey, options);
-    super(sdkKey, network);
+    super(sdkKey, network, options);
 
     this._options = options ?? {};
     this._network = network;
-    this._logger = new EventLogger(this._network);
+    this._logger = new EventLogger(this._network, options);
     this._store = new SpecStore();
     this._evaluator = new Evaluator(this._store);
   }
@@ -53,12 +53,16 @@ export default class OnDeviceEvaluationsClient
 
     const response = await this._network.fetchConfigSpecs();
 
+    if (!response) {
+      this.setStatus('Error');
+      return;
+    }
+
     if (response.has_updates) {
       this._store.setValues(response);
-      this.setStatus('Network');
-    } else {
-      this.setStatus('Error');
     }
+
+    this.setStatus('Network');
   }
 
   async shutdown(): Promise<void> {

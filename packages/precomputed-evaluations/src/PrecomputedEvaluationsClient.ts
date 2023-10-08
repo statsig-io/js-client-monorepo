@@ -38,12 +38,10 @@ export default class PrecomputedEvaluationsClient
     user: StatsigUser,
     options: StatsigOptions | null = null,
   ) {
-    const network = new Network(
-      sdkKey,
-      options?.api ?? 'https://api.statsig.com/v1',
-    );
+    const api = options?.api ?? 'https://api.statsig.com/v1';
+    const network = new Network(sdkKey, api);
 
-    super(sdkKey, network);
+    super(sdkKey, network, options);
 
     if (options?.overrideStableID) {
       StableID.setOverride(options?.overrideStableID);
@@ -79,10 +77,14 @@ export default class PrecomputedEvaluationsClient
     }
 
     const capturedUser = this._user;
-
     const response = await this._network.fetchEvaluations(capturedUser);
-    await this._store.setValues(capturedUser, response);
-    this.setStatus('Network');
+
+    if (response) {
+      await this._store.setValues(capturedUser, response);
+      this.setStatus('Network');
+    } else if (!cacheHit) {
+      this.setStatus('Error');
+    }
   }
 
   async shutdown(): Promise<void> {

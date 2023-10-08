@@ -1,33 +1,44 @@
+import { Log } from './Log';
 import { StableID } from './StableID';
-import { StatsigEvent } from './StatsigEvent';
 import { StatsigMetadataProvider } from './StatsigMetadata';
 import { getUUID } from './UUID';
 
-type StatsigNetworkResponse = {
-  success: boolean;
+const DEFAULT_TIMEOUT = 10_000;
+
+type CommonArgs = {
+  url: string;
+  timeoutMs?: number;
+  retries?: number;
 };
+
+type PostRequestArgs = CommonArgs & {
+  data: Record<string, unknown>;
+};
+
+type RequestArgs = CommonArgs & {
+  method: 'POST' | 'GET';
+  body?: string;
+  headers?: Record<string, string>;
+};
+
+class NetworkError extends Error {
+  constructor(
+    message: string,
+    public errorDescription: string,
+  ) {
+    super(message);
+  }
+}
 
 export class NetworkCore {
   private readonly _sessionID: string;
 
-  constructor(
-    protected readonly _sdkKey: string,
-    protected readonly _api: string,
-  ) {
+  constructor(protected readonly _sdkKey: string) {
     this._sessionID = getUUID();
   }
 
-  async sendEvents(events: StatsigEvent[]): Promise<StatsigNetworkResponse> {
-    return this._sendPostRequest(`${this._api}/rgstr`, {
-      events,
-    });
-  }
-
-  protected async _sendPostRequest<T>(
-    url: string,
-    data: Record<string, unknown>,
-    timeoutMs = 10_000,
-  ): Promise<T> {
+  async post<T>(args: PostRequestArgs): Promise<T | null> {
+    const { data } = args;
     const stableID = await StableID.get();
     const body = JSON.stringify({
       ...data,
@@ -38,41 +49,53 @@ export class NetworkCore {
       },
     });
 
-    return this._sendRequest('POST', url, timeoutMs, { body });
+    return this._sendRequest({ method: 'POST', body, ...args });
   }
 
-  protected async _sendGetRequest<T>(
-    url: string,
-    timeoutMs = 10_000,
-  ): Promise<T> {
-    return this._sendRequest('GET', url, timeoutMs);
+  async get<T>(args: CommonArgs): Promise<T | null> {
+    return this._sendRequest({ method: 'GET', ...args });
   }
 
-  protected async _sendRequest<T>(
-    method: 'POST' | 'GET',
-    url: string,
-    timeoutMs = 10_000,
-    options?: { body?: string; headers?: Record<string, string> },
-  ): Promise<T> {
+  protected async _sendRequest<T>(args: RequestArgs): Promise<T | null> {
+    const { method, url, headers, body, retries } = args;
+
     const controller = new AbortController();
-    const handle = setTimeout(() => controller.abort(), timeoutMs);
+    const handle = setTimeout(() => controller.abort(), DEFAULT_TIMEOUT);
+
+    try {
+      const response = await fetch(url, {
+        method,
+        body,
+        headers: this._getPopulatedHeaders(headers),
+        signal: controller.signal,
+      });
+      clearTimeout(handle);
+
+      const text = await response.text();
+      if (!response.ok) {
+        throw new NetworkError('Fetch Failure', text);
+      }
+
+      return JSON.parse(text) as T;
+    } catch (error) {
+      if (!retries || retries <= 0) {
+        Log.error('A networking error occured.', error);
+        return null;
+      }
+
+      return this._sendRequest({ ...args, retries: retries - 1 });
+    }
+  }
+
+  private _getPopulatedHeaders(additions?: Record<string, string>) {
     const statsigMetadata = StatsigMetadataProvider.get();
-
-    const response = await fetch(url, {
-      method,
-      body: options?.body,
-      headers: {
-        ...options?.headers,
-        'Content-Type': 'application/json',
-        'STATSIG-API-KEY': this._sdkKey,
-        'STATSIG-SDK-TYPE': statsigMetadata.sdkType,
-        'STATSIG-SDK-VERSION': statsigMetadata.sdkVersion,
-      },
-      signal: controller.signal,
-    });
-    clearTimeout(handle);
-
-    const text = await response.text();
-    return JSON.parse(text) as T;
+    return {
+      ...additions,
+      'Content-Type': 'application/json',
+      'STATSIG-API-KEY': this._sdkKey,
+      'STATSIG-SDK-TYPE': statsigMetadata.sdkType,
+      'STATSIG-SDK-VERSION': statsigMetadata.sdkVersion,
+      'STATSIG-CLIENT-TIME': String(Date.now()),
+    };
   }
 }
