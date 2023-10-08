@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { StatsigUser } from 'statsig-node';
 
 import {
   EvaluationResponse,
@@ -17,20 +18,18 @@ function Content() {
 }
 
 export default function ClientApp({
+  user,
   values,
 }: {
+  user: StatsigUser;
   values: EvaluationResponse;
 }): JSX.Element {
   const [client] = useState(
-    new PrecomputedEvaluationsClient(
-      DEMO_CLIENT_KEY,
-      { userID: 'a-user' },
-      {
-        evaluationDataProvider: new LocalEvaluationDataProvider({
-          'a-user': values,
-        }),
-      },
-    ),
+    new PrecomputedEvaluationsClient(DEMO_CLIENT_KEY, user, {
+      evaluationDataProvider: new LocalEvaluationDataProvider({
+        [user.userID ?? '']: values,
+      }),
+    }),
   );
 
   return (

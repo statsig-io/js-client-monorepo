@@ -7,8 +7,12 @@ type StatsigUserPrimitives =
   | Array<string>
   | undefined;
 
-export type StatsigUser = {
+export type StatsigUser = (
+  | { userID: string }
+  | { customIDs: Record<string, string> }
+) & {
   userID?: string;
+  customIDs?: Record<string, string>;
   email?: string;
   ip?: string;
   userAgent?: string;
@@ -16,11 +20,10 @@ export type StatsigUser = {
   locale?: string;
   appVersion?: string;
   custom?: Record<string, StatsigUserPrimitives>;
-  privateAttributes?: Record<string, StatsigUserPrimitives>;
-  customIDs?: Record<string, string>;
+  privateAttributes?: Record<string, StatsigUserPrimitives> | null;
 };
 
-export type NormalizedStatsigUser = StatsigUser & {
+export type StatsigUserInternal = StatsigUser & {
   statsigEnvironment?: StatsigEnvironment;
 };
 
@@ -28,17 +31,15 @@ export function normalizeUser(
   original: StatsigUser,
   environment?: StatsigEnvironment,
 ): StatsigUser {
-  let copy: NormalizedStatsigUser = {};
-
   try {
-    copy = JSON.parse(JSON.stringify(original)) as StatsigUser;
+    const copy = JSON.parse(JSON.stringify(original)) as StatsigUserInternal;
+
+    if (environment != null) {
+      copy.statsigEnvironment = environment;
+    }
+
+    return copy;
   } catch (error) {
     throw new Error('User object must be convertable to JSON string.');
   }
-
-  if (environment != null) {
-    copy.statsigEnvironment = environment;
-  }
-
-  return copy;
 }

@@ -1,4 +1,4 @@
-import Statsig from 'statsig-node';
+import Statsig, { StatsigUser } from 'statsig-node';
 
 import { EvaluationResponse } from '@sigstat/precomputed-evaluations';
 
@@ -6,10 +6,12 @@ const isStatsigReady = Statsig.initialize(
   'secret-IiDuNzovZ5z9x75BEjyZ4Y2evYa94CJ9zNtDViKBVdv',
 );
 
-export async function getStatsigValues(): Promise<EvaluationResponse> {
+export async function getStatsigValues(
+  user: StatsigUser,
+): Promise<EvaluationResponse> {
   await isStatsigReady;
 
-  const values = Statsig.getClientInitializeResponse({ userID: 'a-user' });
+  const values = Statsig.getClientInitializeResponse(user);
   return { ...values, ...HACK } as EvaluationResponse;
 }
 

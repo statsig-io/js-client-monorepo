@@ -1,4 +1,4 @@
-import { NormalizedStatsigUser, StatsigUser } from '@sigstat/core';
+import { StatsigUserInternal } from '@sigstat/core';
 import { SHA256 } from '@sigstat/sha256';
 
 import { StatsigUnsupportedEvaluationError } from './Errors';
@@ -58,28 +58,40 @@ function makeConfigEvaluation(
 export default class Evaluator {
   constructor(private _store: SpecStore) {}
 
-  public checkGate(user: StatsigUser, gateName: string): ConfigEvaluation {
+  public checkGate(
+    user: StatsigUserInternal,
+    gateName: string,
+  ): ConfigEvaluation {
     const gateDef = this._store.values?.feature_gates.find(
       (gate) => gate.name === gateName,
     );
     return this._evalConfigSpec(user, gateDef);
   }
 
-  public getConfig(user: StatsigUser, configName: string): ConfigEvaluation {
+  public getConfig(
+    user: StatsigUserInternal,
+    configName: string,
+  ): ConfigEvaluation {
     const configDef = this._store.values?.dynamic_configs.find(
       (config) => config.name === configName,
     );
     return this._evalConfigSpec(user, configDef);
   }
 
-  public getLayer(user: StatsigUser, layerName: string): ConfigEvaluation {
+  public getLayer(
+    user: StatsigUserInternal,
+    layerName: string,
+  ): ConfigEvaluation {
     const layerDef = this._store.values?.dynamic_configs.find(
       (layer) => layer.name === layerName,
     );
     return this._evalConfigSpec(user, layerDef);
   }
 
-  private _evalConfigSpec(user: StatsigUser, config?: Spec): ConfigEvaluation {
+  private _evalConfigSpec(
+    user: StatsigUserInternal,
+    config?: Spec,
+  ): ConfigEvaluation {
     if (!config) {
       return makeConfigEvaluation({
         evaluation_details: {
@@ -99,7 +111,7 @@ export default class Evaluator {
     };
   }
 
-  private _eval(user: StatsigUser, config: Spec): ConfigEvaluation {
+  private _eval(user: StatsigUserInternal, config: Spec): ConfigEvaluation {
     const defaultValue = isRecord(config.defaultValue)
       ? config.defaultValue
       : undefined;
@@ -171,7 +183,7 @@ export default class Evaluator {
   }
 
   private _evalDelegate(
-    user: StatsigUser,
+    user: StatsigUserInternal,
     rule: SpecRule,
     exposures: Record<string, string>[],
   ) {
@@ -194,7 +206,11 @@ export default class Evaluator {
     };
   }
 
-  private _evalPassPercent(user: StatsigUser, rule: SpecRule, config: Spec) {
+  private _evalPassPercent(
+    user: StatsigUserInternal,
+    rule: SpecRule,
+    config: Spec,
+  ) {
     if (rule.passPercentage === 100) {
       return true;
     } else if (rule.passPercentage === 0) {
@@ -212,7 +228,7 @@ export default class Evaluator {
     );
   }
 
-  private _getUnitID(user: StatsigUser, idType: string) {
+  private _getUnitID(user: StatsigUserInternal, idType: string) {
     if (typeof idType === 'string' && idType.toLowerCase() !== 'userid') {
       return (
         user?.customIDs?.[idType] ?? user?.customIDs?.[idType.toLowerCase()]
@@ -221,7 +237,7 @@ export default class Evaluator {
     return user?.userID;
   }
 
-  private _evalRule(user: StatsigUser, rule: SpecRule) {
+  private _evalRule(user: StatsigUserInternal, rule: SpecRule) {
     let secondaryExposures: Record<string, string>[] = [];
     let pass = true;
 
@@ -246,7 +262,7 @@ export default class Evaluator {
   }
 
   private _evalCondition(
-    user: StatsigUser,
+    user: StatsigUserInternal,
     condition: SpecCondition,
   ): {
     passes: boolean;
@@ -497,7 +513,7 @@ function computeUserHash(userHash: string): bigint {
 }
 
 function getFromEnvironment(
-  user: NormalizedStatsigUser,
+  user: StatsigUserInternal,
   field: string | null,
 ): unknown {
   if (field == null) {
@@ -523,7 +539,7 @@ function getParameterCaseInsensitive(
   return object[keyMatch];
 }
 
-function getFromUser(user: StatsigUser, field: string | null): unknown {
+function getFromUser(user: StatsigUserInternal, field: string | null): unknown {
   if (field == null || typeof user !== 'object' || user == null) {
     return null;
   }
