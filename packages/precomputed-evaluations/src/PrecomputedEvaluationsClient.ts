@@ -3,8 +3,7 @@ import {
   DJB2,
   DynamicConfig,
   Experiment,
-  Layer,
-  Monitored,
+  Layer, // Monitored,
   PrecomputedEvaluationsInterface,
   StableID,
   StatsigClientBase,
@@ -23,7 +22,7 @@ import Network from './Network';
 import './StatsigMetadataAdditions';
 import type { StatsigOptions } from './StatsigOptions';
 
-@Monitored
+// @Monitored
 export default class PrecomputedEvaluationsClient
   extends StatsigClientBase
   implements PrecomputedEvaluationsInterface
