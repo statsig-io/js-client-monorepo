@@ -1,5 +1,5 @@
 {
-  "name": "next-js",
+  "name": "next-js-sample",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "next-js",
   "projectType": "application",
@@ -9,11 +9,11 @@
       "outputs": ["{options.outputPath}"],
       "defaultConfiguration": "production",
       "options": {
-        "outputPath": "dist/next-js"
+        "outputPath": "dist/samples/next-js"
       },
       "configurations": {
         "development": {
-          "outputPath": "next-js"
+          "outputPath": "next-js-sample"
         },
         "production": {}
       }
@@ -22,16 +22,16 @@
       "executor": "@nx/next:server",
       "defaultConfiguration": "development",
       "options": {
-        "buildTarget": "next-js:build",
+        "buildTarget": "next-js-sample:build",
         "dev": true
       },
       "configurations": {
         "development": {
-          "buildTarget": "next-js:build:development",
+          "buildTarget": "next-js-sample:build:development",
           "dev": true
         },
         "production": {
-          "buildTarget": "next-js:build:production",
+          "buildTarget": "next-js-sample:build:production",
           "dev": false
         }
       }
@@ -39,7 +39,7 @@
     "export": {
       "executor": "@nx/next:export",
       "options": {
-        "buildTarget": "next-js:build:production"
+        "buildTarget": "next-js-sample:build:production"
       }
     },
     "test": {

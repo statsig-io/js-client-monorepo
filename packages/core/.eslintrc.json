@@ -21,7 +21,10 @@
         "@nx/dependency-checks": [
           "error",
           {
-            "ignoredDependencies": ["@react-native-async-storage/async-storage"]
+            "ignoredDependencies": [
+              "@react-native-async-storage/async-storage",
+              "jest-fetch-mock"
+            ]
           }
         ]
       }
