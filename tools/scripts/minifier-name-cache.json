@@ -1,0 +1,39 @@
+{
+  "vars": {
+    "props": {}
+  },
+  "props": {
+    "props": {
+      "$__esModule": "t",
+      "$__STATSIG__": "i",
+      "$_network": "u",
+      "$_options": "o",
+      "$_queue": "l",
+      "$_lastExposureMap": "h",
+      "$_queueLimit": "v",
+      "$_flushTimer": "_",
+      "$_flushAndForget": "p",
+      "$_shouldLogEvent": "m",
+      "$_flush": "S",
+      "$_sendEvents": "j",
+      "$_sdkKey": "O",
+      "$_sessionID": "T",
+      "$_sendRequest": "I",
+      "$_getPopulatedHeaders": "k",
+      "$_listeners": "N",
+      "$_logger": "M",
+      "$_store": "D",
+      "$_evalConfigSpec": "A",
+      "$_eval": "G",
+      "$_evalRule": "P",
+      "$_evalDelegate": "C",
+      "$_evalPassPercent": "V",
+      "$_getUnitID": "F",
+      "$_evalCondition": "J",
+      "$_downloadConfigSpecsUrl": "K",
+      "$_mainApi": "B",
+      "$_evaluator": "L",
+      "$_getOutputs": "U"
+    }
+  }
+}

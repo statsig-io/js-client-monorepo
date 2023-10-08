@@ -82,7 +82,7 @@ export default class Evaluator {
     user: StatsigUserInternal,
     layerName: string,
   ): ConfigEvaluation {
-    const layerDef = this._store.values?.dynamic_configs.find(
+    const layerDef = this._store.values?.layer_configs.find(
       (layer) => layer.name === layerName,
     );
     return this._evalConfigSpec(user, layerDef);
@@ -112,7 +112,7 @@ export default class Evaluator {
   }
 
   private _eval(user: StatsigUserInternal, config: Spec): ConfigEvaluation {
-    const defaultValue = isRecord(config.defaultValue)
+    const defaultValue = _isRecord(config.defaultValue)
       ? config.defaultValue
       : undefined;
 
@@ -216,7 +216,7 @@ export default class Evaluator {
     } else if (rule.passPercentage === 0) {
       return false;
     }
-    const hash = computeUserHash(
+    const hash = _computeUserHash(
       config.salt +
         '.' +
         (rule.salt ?? rule.id) +
@@ -255,7 +255,7 @@ export default class Evaluator {
       value: pass,
       rule_id: rule.id,
       secondary_exposures: secondaryExposures,
-      json_value: isRecord(rule.returnValue) ? rule.returnValue : undefined,
+      json_value: _isRecord(rule.returnValue) ? rule.returnValue : undefined,
       group_name: rule.groupName,
       is_experiment_group: rule.isExperimentGroup ?? false,
     });
@@ -307,17 +307,17 @@ export default class Evaluator {
         // this would apply to things like 'os', 'browser', etc.
         throw new StatsigUnsupportedEvaluationError(condition.type);
       case 'user_field':
-        value = getFromUser(user, field);
+        value = _getFromUser(user, field);
         break;
       case 'environment_field':
-        value = getFromEnvironment(user, field);
+        value = _getFromEnvironment(user, field);
         break;
       case 'current_time':
         value = Date.now();
         break;
       case 'user_bucket': {
         const salt = String(condition.additionalValues?.['salt'] ?? '');
-        const userHash = computeUserHash(
+        const userHash = _computeUserHash(
           salt + '.' + this._getUnitID(user, idType) ?? '',
         );
         value = Number(userHash % BigInt(USER_BUCKET_COUNT));
@@ -335,25 +335,25 @@ export default class Evaluator {
     switch (op) {
       // numerical
       case 'gt':
-        evalResult = numberCompare((a: number, b: number) => a > b)(
+        evalResult = _numberCompare((a: number, b: number) => a > b)(
           value,
           target,
         );
         break;
       case 'gte':
-        evalResult = numberCompare((a: number, b: number) => a >= b)(
+        evalResult = _numberCompare((a: number, b: number) => a >= b)(
           value,
           target,
         );
         break;
       case 'lt':
-        evalResult = numberCompare((a: number, b: number) => a < b)(
+        evalResult = _numberCompare((a: number, b: number) => a < b)(
           value,
           target,
         );
         break;
       case 'lte':
-        evalResult = numberCompare((a: number, b: number) => a <= b)(
+        evalResult = _numberCompare((a: number, b: number) => a <= b)(
           value,
           target,
         );
@@ -361,37 +361,37 @@ export default class Evaluator {
 
       // version
       case 'version_gt':
-        evalResult = versionCompareHelper((result) => result > 0)(
+        evalResult = _versionCompareHelper((result) => result > 0)(
           value as string,
           target as string,
         );
         break;
       case 'version_gte':
-        evalResult = versionCompareHelper((result) => result >= 0)(
+        evalResult = _versionCompareHelper((result) => result >= 0)(
           value as string,
           target as string,
         );
         break;
       case 'version_lt':
-        evalResult = versionCompareHelper((result) => result < 0)(
+        evalResult = _versionCompareHelper((result) => result < 0)(
           value as string,
           target as string,
         );
         break;
       case 'version_lte':
-        evalResult = versionCompareHelper((result) => result <= 0)(
+        evalResult = _versionCompareHelper((result) => result <= 0)(
           value as string,
           target as string,
         );
         break;
       case 'version_eq':
-        evalResult = versionCompareHelper((result) => result === 0)(
+        evalResult = _versionCompareHelper((result) => result === 0)(
           value as string,
           target as string,
         );
         break;
       case 'version_neq':
-        evalResult = versionCompareHelper((result) => result !== 0)(
+        evalResult = _versionCompareHelper((result) => result !== 0)(
           value as string,
           target as string,
         );
@@ -399,61 +399,61 @@ export default class Evaluator {
 
       // array
       case 'any':
-        evalResult = arrayAny(
+        evalResult = _arrayAny(
           value,
           target,
-          stringCompare(true, (a, b) => a === b),
+          _stringCompare(true, (a, b) => a === b),
         );
         break;
       case 'none':
-        evalResult = !arrayAny(
+        evalResult = !_arrayAny(
           value,
           target,
-          stringCompare(true, (a, b) => a === b),
+          _stringCompare(true, (a, b) => a === b),
         );
         break;
       case 'any_case_sensitive':
-        evalResult = arrayAny(
+        evalResult = _arrayAny(
           value,
           target,
-          stringCompare(false, (a, b) => a === b),
+          _stringCompare(false, (a, b) => a === b),
         );
         break;
       case 'none_case_sensitive':
-        evalResult = !arrayAny(
+        evalResult = !_arrayAny(
           value,
           target,
-          stringCompare(false, (a, b) => a === b),
+          _stringCompare(false, (a, b) => a === b),
         );
         break;
 
       // string
       case 'str_starts_with_any':
-        evalResult = arrayAny(
+        evalResult = _arrayAny(
           value,
           target,
-          stringCompare(true, (a, b) => a.startsWith(b)),
+          _stringCompare(true, (a, b) => a.startsWith(b)),
         );
         break;
       case 'str_ends_with_any':
-        evalResult = arrayAny(
+        evalResult = _arrayAny(
           value,
           target,
-          stringCompare(true, (a, b) => a.endsWith(b)),
+          _stringCompare(true, (a, b) => a.endsWith(b)),
         );
         break;
       case 'str_contains_any':
-        evalResult = arrayAny(
+        evalResult = _arrayAny(
           value,
           target,
-          stringCompare(true, (a, b) => a.includes(b)),
+          _stringCompare(true, (a, b) => a.includes(b)),
         );
         break;
       case 'str_contains_none':
-        evalResult = !arrayAny(
+        evalResult = !_arrayAny(
           value,
           target,
-          stringCompare(true, (a, b) => a.includes(b)),
+          _stringCompare(true, (a, b) => a.includes(b)),
         );
         break;
       case 'str_matches':
@@ -479,19 +479,19 @@ export default class Evaluator {
 
       // dates
       case 'before':
-        evalResult = dateCompare((a, b) => a < b)(
+        evalResult = _dateCompare((a, b) => a < b)(
           value as string,
           target as string,
         );
         break;
       case 'after':
-        evalResult = dateCompare((a, b) => a > b)(
+        evalResult = _dateCompare((a, b) => a > b)(
           value as string,
           target as string,
         );
         break;
       case 'on':
-        evalResult = dateCompare((a, b) => {
+        evalResult = _dateCompare((a, b) => {
           a?.setHours(0, 0, 0, 0);
           b?.setHours(0, 0, 0, 0);
           return a?.getTime() === b?.getTime();
@@ -507,22 +507,22 @@ export default class Evaluator {
   }
 }
 
-function computeUserHash(userHash: string): bigint {
+function _computeUserHash(userHash: string): bigint {
   const sha256 = SHA256(userHash);
   return sha256.dataView().getBigUint64(0, false);
 }
 
-function getFromEnvironment(
+function _getFromEnvironment(
   user: StatsigUserInternal,
   field: string | null,
 ): unknown {
   if (field == null) {
     return null;
   }
-  return getParameterCaseInsensitive(user.statsigEnvironment, field);
+  return _getParameterCaseInsensitive(user.statsigEnvironment, field);
 }
 
-function getParameterCaseInsensitive(
+function _getParameterCaseInsensitive(
   object: Record<string, unknown> | undefined | null,
   key: string,
 ): unknown {
@@ -539,7 +539,10 @@ function getParameterCaseInsensitive(
   return object[keyMatch];
 }
 
-function getFromUser(user: StatsigUserInternal, field: string | null): unknown {
+function _getFromUser(
+  user: StatsigUserInternal,
+  field: string | null,
+): unknown {
   if (field == null || typeof user !== 'object' || user == null) {
     return null;
   }
@@ -555,7 +558,7 @@ function getFromUser(user: StatsigUserInternal, field: string | null): unknown {
   );
 }
 
-function numberCompare(
+function _numberCompare(
   fn: (a: number, b: number) => boolean,
 ): (a: unknown, b: unknown) => boolean {
   return (a: unknown, b: unknown) => {
@@ -571,11 +574,11 @@ function numberCompare(
   };
 }
 
-function versionCompareHelper(
+function _versionCompareHelper(
   fn: (res: number) => boolean,
 ): (a: string | null, b: string | null) => boolean {
   return (a: string | null, b: string | null) => {
-    const comparison = versionCompare(a, b);
+    const comparison = _versionCompare(a, b);
     if (comparison == null) {
       return false;
     }
@@ -586,7 +589,7 @@ function versionCompareHelper(
 // Compare two version strings without the extensions.
 // returns -1, 0, or 1 if first is smaller than, equal to, or larger than second.
 // returns false if any of the version strings is not valid.
-function versionCompare(
+function _versionCompare(
   first: string | null,
   second: string | null,
 ): number | null {
@@ -598,8 +601,8 @@ function versionCompare(
   ) {
     return null;
   }
-  const version1 = removeVersionExtension(first);
-  const version2 = removeVersionExtension(second);
+  const version1 = _removeVersionExtension(first);
+  const version2 = _removeVersionExtension(second);
   if (version1.length === 0 || version2.length === 0) {
     return null;
   }
@@ -632,7 +635,7 @@ function versionCompare(
   return 0;
 }
 
-function removeVersionExtension(version: string): string {
+function _removeVersionExtension(version: string): string {
   const hyphenIndex = version.indexOf('-');
   if (hyphenIndex >= 0) {
     return version.substr(0, hyphenIndex);
@@ -640,7 +643,7 @@ function removeVersionExtension(version: string): string {
   return version;
 }
 
-function stringCompare(
+function _stringCompare(
   ignoreCase: boolean,
   fn: (a: string, b: string) => boolean,
 ): (a: unknown, b: unknown) => boolean {
@@ -654,7 +657,7 @@ function stringCompare(
   };
 }
 
-function dateCompare(
+function _dateCompare(
   fn: (a: Date, b: Date) => boolean,
 ): (a: string | null, b: string | null) => boolean {
   return (a: string | null, b: string | null): boolean => {
@@ -682,7 +685,7 @@ function dateCompare(
   };
 }
 
-function arrayAny(
+function _arrayAny(
   value: unknown,
   array: unknown,
   fn: (value: unknown, otherValue: unknown) => boolean,
@@ -698,6 +701,6 @@ function arrayAny(
   return false;
 }
 
-function isRecord(obj: unknown): obj is Record<string, unknown> {
+function _isRecord(obj: unknown): obj is Record<string, unknown> {
   return obj != null && typeof obj === 'object';
 }
