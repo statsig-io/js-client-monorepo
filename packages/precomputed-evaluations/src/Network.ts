@@ -3,13 +3,16 @@ import { NetworkCore, StatsigUser } from '@sigstat/core';
 import { EvaluationResponse } from './EvaluationData';
 
 export default class StatsigNetwork extends NetworkCore {
-  constructor(sdkKey: string, api: string) {
-    super(sdkKey, api);
+  constructor(
+    sdkKey: string,
+    private _api: string,
+  ) {
+    super(sdkKey);
   }
 
   fetchEvaluations(user: StatsigUser): Promise<EvaluationResponse | null> {
     return this.post({
-      url: `initialize`,
+      url: `${this._api}/initialize`,
       data: {
         user,
         hash: 'djb2',

@@ -3,7 +3,8 @@ import {
   DJB2,
   DynamicConfig,
   Experiment,
-  Layer, // Monitored,
+  Layer,
+  Monitored,
   PrecomputedEvaluationsInterface,
   StableID,
   StatsigClientBase,
@@ -22,7 +23,7 @@ import Network from './Network';
 import './StatsigMetadataAdditions';
 import type { StatsigOptions } from './StatsigOptions';
 
-// @Monitored
+@Monitored
 export default class PrecomputedEvaluationsClient
   extends StatsigClientBase
   implements PrecomputedEvaluationsInterface
@@ -37,12 +38,10 @@ export default class PrecomputedEvaluationsClient
     user: StatsigUser,
     options: StatsigOptions | null = null,
   ) {
-    const network = new Network(
-      sdkKey,
-      options?.api ?? 'https://api.statsig.com/v1',
-    );
+    const api = options?.api ?? 'https://api.statsig.com/v1';
+    const network = new Network(sdkKey, api);
 
-    super(sdkKey, network);
+    super(sdkKey, network, options);
 
     if (options?.overrideStableID) {
       StableID.setOverride(options?.overrideStableID);

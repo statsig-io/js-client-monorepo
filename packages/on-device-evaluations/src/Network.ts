@@ -7,11 +7,14 @@ const DEFAULT_SPECS_URL = 'https://api.statsigcdn.com/v1/download_config_specs';
 
 export default class StatsigNetwork extends NetworkCore {
   private _downloadConfigSpecsUrl: string;
+  private _mainApi: string;
 
   constructor(sdkKey: string, options: StatsigOptions | null = null) {
-    super(sdkKey, options?.api ?? 'https://api.statsig.com/v1');
+    super(sdkKey);
 
     const base = options?.baseDownloadConfigSpecsUrl ?? DEFAULT_SPECS_URL;
+
+    this._mainApi = options?.api ?? 'https://api.statsig.com/v1';
     this._downloadConfigSpecsUrl = `${base}/${sdkKey}.json`;
   }
 

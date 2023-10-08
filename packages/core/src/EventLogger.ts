@@ -1,6 +1,7 @@
 import { Log } from './Log';
 import { NetworkCore } from './NetworkCore';
 import { StatsigEventInternal, isExposureEvent } from './StatsigEvent';
+import { StatsigOptionsCommon } from './StatsigTypes';
 
 const MAX_QUEUE = 700;
 const MIN_QUEUE = 50;
@@ -18,7 +19,10 @@ export class EventLogger {
   private _lastExposureMap: Record<string, number> = {};
   private _queueLimit = MIN_QUEUE;
 
-  constructor(private _network: NetworkCore) {
+  constructor(
+    private _network: NetworkCore,
+    private _options: StatsigOptionsCommon | null,
+  ) {
     this._flushTimer = setInterval(() => this._flushAndForget(), _10_SECONDS);
   }
 
@@ -102,8 +106,9 @@ export class EventLogger {
   private async _sendEvents(
     events: StatsigEventInternal[],
   ): Promise<SendEventsResponse> {
+    const api = this._options?.api ?? 'https://api.statsig.com/v1'; // todo: more centralized location for urls/api
     const result = await this._network.post<SendEventsResponse>({
-      url: `rgstr`,
+      url: `${api}/rgstr`,
       data: {
         events,
       },

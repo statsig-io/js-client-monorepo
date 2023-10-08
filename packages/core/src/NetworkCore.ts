@@ -33,10 +33,7 @@ class NetworkError extends Error {
 export class NetworkCore {
   private readonly _sessionID: string;
 
-  constructor(
-    protected readonly _sdkKey: string,
-    protected readonly _api: string,
-  ) {
+  constructor(protected readonly _sdkKey: string) {
     this._sessionID = getUUID();
   }
 

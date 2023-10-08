@@ -7,6 +7,7 @@ import {
   StatsigClientEventEmitterInterface,
   StatsigLoadingStatus,
 } from './StatsigClientEventEmitter';
+import { StatsigOptionsCommon } from './StatsigTypes';
 
 export class StatsigClientBase implements StatsigClientEventEmitterInterface {
   loadingStatus: StatsigLoadingStatus = 'Uninitialized';
@@ -16,8 +17,12 @@ export class StatsigClientBase implements StatsigClientEventEmitterInterface {
   private _sdkKey: string;
   private _listeners: Record<string, StatsigClientEventCallback[]> = {};
 
-  constructor(sdkKey: string, network: NetworkCore) {
-    this._logger = new EventLogger(network);
+  constructor(
+    sdkKey: string,
+    network: NetworkCore,
+    options: StatsigOptionsCommon | null,
+  ) {
+    this._logger = new EventLogger(network, options);
     this._sdkKey = sdkKey;
 
     __STATSIG__ = __STATSIG__ ?? {};

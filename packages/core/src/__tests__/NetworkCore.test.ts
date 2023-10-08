@@ -7,7 +7,7 @@ Log.level = 'none';
 
 describe('Network Core', () => {
   const url = 'http://localhost';
-  const network = new NetworkCore('', url);
+  const network = new NetworkCore('');
 
   describe('Success', () => {
     beforeAll(async () => {
@@ -26,11 +26,11 @@ describe('Network Core', () => {
     beforeAll(async () => {
       fetchMock.mockClear();
       fetchMock.mockReject(new Error('Lost Connection'));
-      await network.post({ url, data: {} });
+      await network.post({ url, data: {}, retries: 2 });
     });
 
-    it('retries 4 times', () => {
-      expect(fetchMock).toHaveBeenCalledTimes(4);
+    it('make 1 initial and then 2 retries', () => {
+      expect(fetchMock).toHaveBeenCalledTimes(3);
     });
   });
 
@@ -38,11 +38,11 @@ describe('Network Core', () => {
     beforeAll(async () => {
       fetchMock.mockClear();
       fetchMock.mockResponse('', { status: 500 });
-      await network.post({ url, data: {} });
+      await network.post({ url, data: {}, retries: 2 });
     });
 
-    it('retries 4 times', () => {
-      expect(fetchMock).toHaveBeenCalledTimes(4);
+    it('make 1 initial and then 2 retries', () => {
+      expect(fetchMock).toHaveBeenCalledTimes(3);
     });
   });
 });

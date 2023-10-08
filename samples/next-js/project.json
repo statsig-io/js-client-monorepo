@@ -46,7 +46,7 @@
       "executor": "@nx/jest:jest",
       "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
       "options": {
-        "jestConfig": "next-js/jest.config.ts",
+        "jestConfig": "samples/next-js/jest.config.ts",
         "passWithNoTests": true
       },
       "configurations": {
@@ -60,7 +60,7 @@
       "executor": "@nx/linter:eslint",
       "outputs": ["{options.outputFile}"],
       "options": {
-        "lintFilePatterns": ["next-js/**/*.{ts,tsx,js,jsx}"]
+        "lintFilePatterns": ["samples/next-js/**/*.{ts,tsx,js,jsx}"]
       }
     }
   },
