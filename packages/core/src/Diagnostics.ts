@@ -1,13 +1,17 @@
+import { Log } from './Log';
+
 const SUPPORTS_PERFORMANCE_API =
   typeof performance !== 'undefined' && typeof performance.mark !== 'undefined';
 
+let markers: PerformanceMeasure[] = [];
+
 export function captureDiagnostics(func: string, task: () => unknown): unknown {
-  const start = Diagnostics.mark(`${func}-start`);
+  Diagnostics.mark(`${func}:start`);
   const result = task();
 
   const markEnd = () => {
-    const end = Diagnostics.mark(`${func}-end`);
-    Diagnostics.span(start, end);
+    Diagnostics.mark(`${func}:end`);
+    maybeFlush(`${func}:end`);
   };
 
   if (result && result instanceof Promise) {
@@ -20,22 +24,34 @@ export function captureDiagnostics(func: string, task: () => unknown): unknown {
 }
 
 export abstract class Diagnostics {
-  static mark(tag: string): PerformanceMark | null {
+  static mark(tag: string, metadata?: Record<string, unknown>): void {
     if (!SUPPORTS_PERFORMANCE_API) {
-      return null;
-    }
-
-    return performance.mark(tag);
-  }
-
-  static span(
-    start: PerformanceMark | null,
-    end: PerformanceMark | null,
-  ): void {
-    if (start == null || end == null || !SUPPORTS_PERFORMANCE_API) {
       return;
     }
 
-    performance.measure(`${start.name} -> ${end.name}`, start.name, end.name);
+    const marker = performance.mark(tag, { detail: metadata });
+    markers.push(marker);
+  }
+
+  static flush(): void {
+    const resources = performance
+      .getEntriesByType('resource')
+      .filter((resource) =>
+        resource.name.startsWith('https://api.statsig.com'),
+      );
+
+    const payload = {
+      markers,
+      resources,
+    };
+
+    Log.debug('Diagnostics', payload, JSON.stringify(payload));
+    markers = [];
+  }
+}
+
+function maybeFlush(tag: string): void {
+  if (tag.startsWith('initialize:')) {
+    Diagnostics.flush();
   }
 }

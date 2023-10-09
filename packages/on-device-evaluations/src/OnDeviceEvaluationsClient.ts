@@ -4,7 +4,7 @@ import {
   Experiment,
   FeatureGate,
   Layer,
-  Monitored,
+  MonitoredClass,
   OnDeviceEvaluationsInterface,
   StatsigClientBase,
   StatsigEvent,
@@ -22,7 +22,7 @@ declare global {
   }
 }
 
-@Monitored
+@MonitoredClass()
 export default class OnDeviceEvaluationsClient
   extends StatsigClientBase
   implements OnDeviceEvaluationsInterface

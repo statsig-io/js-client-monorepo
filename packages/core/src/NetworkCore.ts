@@ -1,4 +1,6 @@
+import { Diagnostics } from './Diagnostics';
 import { Log } from './Log';
+import { MonitoredFunction } from './Monitoring';
 import { StableID } from './StableID';
 import { StatsigMetadataProvider } from './StatsigMetadata';
 import { getUUID } from './UUID';
@@ -56,14 +58,19 @@ export class NetworkCore {
     return this._sendRequest({ method: 'GET', ...args });
   }
 
+  @MonitoredFunction()
   protected async _sendRequest<T>(args: RequestArgs): Promise<T | null> {
     const { method, url, headers, body, retries } = args;
 
     const controller = new AbortController();
-    const handle = setTimeout(() => controller.abort(), DEFAULT_TIMEOUT);
+    const handle = setTimeout(
+      () => controller.abort(`Timeout of ${DEFAULT_TIMEOUT}ms expired.`),
+      100,
+    );
 
+    let response: Response | null = null;
     try {
-      const response = await fetch(url, {
+      response = await fetch(url, {
         method,
         body,
         headers: this._getPopulatedHeaders(headers),
@@ -76,10 +83,22 @@ export class NetworkCore {
         throw new NetworkError('Fetch Failure', text);
       }
 
+      Diagnostics.mark('_sendRequest:response-received', {
+        status: response.status,
+        contentLength: response.headers.get('content-length'),
+      });
+
       return JSON.parse(text) as T;
     } catch (error) {
+      const errorMessage = _getErrorMessage(controller, error);
+      Diagnostics.mark('_sendRequest:error', {
+        error: errorMessage,
+        status: response?.status,
+        contentLength: response?.headers.get('content-length'),
+      });
+
       if (!retries || retries <= 0) {
-        Log.error('A networking error occured.', error);
+        Log.error('A networking error occured.', errorMessage);
         return null;
       }
 
@@ -98,4 +117,26 @@ export class NetworkCore {
       'STATSIG-CLIENT-TIME': String(Date.now()),
     };
   }
+}
+
+function _getErrorMessage(
+  controller: AbortController,
+  error: unknown,
+): string | null {
+  if (
+    controller.signal.aborted &&
+    typeof controller.signal.reason === 'string'
+  ) {
+    return controller.signal.reason;
+  }
+
+  if (typeof error === 'string') {
+    return error;
+  }
+
+  if (error instanceof Error) {
+    return `${error.name}: ${error.message}`;
+  }
+
+  return null;
 }
