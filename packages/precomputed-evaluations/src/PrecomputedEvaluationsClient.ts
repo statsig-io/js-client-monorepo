@@ -4,7 +4,7 @@ import {
   DynamicConfig,
   Experiment,
   Layer,
-  Monitored,
+  MonitoredClass,
   PrecomputedEvaluationsInterface,
   StableID,
   StatsigClientBase,
@@ -23,7 +23,7 @@ import Network from './Network';
 import './StatsigMetadataAdditions';
 import type { StatsigOptions } from './StatsigOptions';
 
-@Monitored
+@MonitoredClass
 export default class PrecomputedEvaluationsClient
   extends StatsigClientBase
   implements PrecomputedEvaluationsInterface

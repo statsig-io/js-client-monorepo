@@ -2,7 +2,7 @@ import * as Diagnostics from '../Diagnostics';
 import * as ErrorBoundary from '../ErrorBoundary';
 import { MonitoredClass } from '../Monitoring';
 
-@MonitoredClass()
+@MonitoredClass
 class TestClass {
   instanceMethod() {
     // noop
