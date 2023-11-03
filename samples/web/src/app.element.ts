@@ -2,7 +2,9 @@ import { PrecomputedEvaluationsClient } from '@sigstat/precomputed-evaluations';
 
 import './app.element.css';
 
-const client = new PrecomputedEvaluationsClient('client-key', {
+const DEMO_CLIENT_KEY = 'client-rfLvYGag3eyU0jYW5zcIJTQip7GXxSrhOFN69IGMjvq';
+
+const client = new PrecomputedEvaluationsClient(DEMO_CLIENT_KEY, {
   userID: 'a-user',
 });
 
