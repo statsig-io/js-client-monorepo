@@ -4,7 +4,7 @@ import { version } from '../../package.json';
 import PrecomputedEvaluationsClient from '../PrecomputedEvaluationsClient';
 
 describe('StatsigMetadata', () => {
-  const client = new PrecomputedEvaluationsClient('client-key', {});
+  const client = new PrecomputedEvaluationsClient('client-key', { userID: '' });
   let body: Record<string, unknown>;
 
   beforeAll(async () => {

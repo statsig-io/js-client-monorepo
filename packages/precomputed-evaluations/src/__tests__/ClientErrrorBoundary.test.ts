@@ -9,7 +9,7 @@ describe('Client Error Boundary', () => {
   let client: PrecomputedEvaluationsClient;
 
   beforeAll(async () => {
-    client = new PrecomputedEvaluationsClient('client-key', {});
+    client = new PrecomputedEvaluationsClient('client-key', { userID: '' });
     configureErrorBoundary({
       isSilent: true, // todo: replace with StatsigOptions.logLevel
       metadata: {},
