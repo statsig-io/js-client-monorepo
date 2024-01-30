@@ -1,3 +1,5 @@
+import { LogLevel } from './Log';
+
 const DEFAULT_RULE = 'default';
 
 export type Flatten<T> = {
@@ -12,6 +14,7 @@ export type StatsigOptionsCommon = {
   localMode?: boolean;
   environment?: StatsigEnvironment;
   overrideStableID?: string;
+  logLevel?: LogLevel;
 };
 
 export type StatsigEnvironment = {

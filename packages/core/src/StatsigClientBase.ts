@@ -1,4 +1,5 @@
 import { EventLogger } from './EventLogger';
+import { Log } from './Log';
 import { NetworkCore } from './NetworkCore';
 import {
   StatsigClientEvent,
@@ -29,6 +30,8 @@ export class StatsigClientBase implements StatsigClientEventEmitterInterface {
     const instances = __STATSIG__.instances ?? new Set();
     instances.add(this);
     __STATSIG__.instances = instances;
+
+    Log.level = options?.logLevel ?? 'none';
   }
 
   on(event: StatsigClientEvent, listener: StatsigClientEventCallback): void {
