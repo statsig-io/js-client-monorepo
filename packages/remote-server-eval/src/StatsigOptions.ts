@@ -1,6 +1,10 @@
-import { StatsigOptionsCommon } from '@statsig-client/core';
+import { Prettify, StatsigOptionsCommon } from '@statsig-client/core';
 import { EvaluationDataProviderInterface } from './EvaluationData';
 
-export type StatsigOptions = StatsigOptionsCommon & {
+type StatsigRemoteServerEvalOptions = {
   evaluationDataProvider?: EvaluationDataProviderInterface;
 };
+
+export type StatsigOptions = Prettify<
+  StatsigOptionsCommon & StatsigRemoteServerEvalOptions
+>;

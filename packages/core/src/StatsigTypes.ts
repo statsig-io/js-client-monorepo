@@ -2,6 +2,10 @@ import { StatsigLoadingStatus } from './ClientInterfaces';
 
 const DEFAULT_RULE = 'default';
 
+export type Prettify<T> = {
+  [K in keyof T]: T[K];
+} & {};
+
 export type StatsigOptionsCommon = {
   api: string;
   localMode?: boolean;
