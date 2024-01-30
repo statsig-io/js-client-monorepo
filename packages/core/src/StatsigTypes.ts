@@ -1,5 +1,9 @@
 const DEFAULT_RULE = 'default';
 
+export type Flatten<T> = {
+  [K in keyof T]: T[K];
+} & {};
+
 export type StatsigOptionsCommon = {
   api?: string;
   localMode?: boolean;
