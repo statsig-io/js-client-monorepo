@@ -1,6 +1,4 @@
-import { SecondaryExposure, StatsigUser } from '@sigstat/core';
-
-import StatsigNetwork from './Network';
+import { SecondaryExposure } from '@sigstat/core';
 
 type Spec<T> = {
   name: string;
@@ -39,39 +37,3 @@ export type EvaluationResponse =
       hash_used: 'none' | 'sha256' | 'djb2';
     }
   | { has_updates: false };
-
-export interface EvaluationDataProviderInterface {
-  getEvaluationsForUser(user: StatsigUser): EvaluationResponse | null;
-}
-
-export class LocalEvaluationDataProvider
-  implements EvaluationDataProviderInterface
-{
-  constructor(private _data: { [userID: string]: EvaluationResponse }) {}
-
-  getEvaluationsForUser(user: StatsigUser): EvaluationResponse | null {
-    return this._data[user.userID ?? ''];
-  }
-}
-
-export class PrefetchEvaluationDataProvider
-  implements EvaluationDataProviderInterface
-{
-  private _data: { [userID: string]: EvaluationResponse } = {};
-  private _network: StatsigNetwork;
-
-  constructor(sdkKey: string, api?: string) {
-    this._network = new StatsigNetwork(sdkKey, api);
-  }
-
-  async prefetchEvaluationsForUser(user: StatsigUser): Promise<void> {
-    const response = await this._network.fetchEvaluations(user);
-    if (response) {
-      this._data[user.userID ?? ''] = response;
-    }
-  }
-
-  getEvaluationsForUser(user: StatsigUser): EvaluationResponse | null {
-    return this._data[user.userID ?? ''];
-  }
-}

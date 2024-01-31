@@ -89,7 +89,7 @@ function shouldRender(
 
   switch (client.loadingStatus) {
     case 'Network':
-    case 'Bootstrap':
+    case 'Provided':
       return true;
     case 'Cache':
       return true;

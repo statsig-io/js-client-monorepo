@@ -1,8 +1,8 @@
 import {
-  DJB2,
   StatsigUser,
   Storage,
   getObjectFromStorage,
+  getUserStorageKey,
   setObjectInStorage,
 } from '@sigstat/core';
 
@@ -37,14 +37,14 @@ export default class EvaluationStore {
     await this._isReady;
 
     this.values = values;
-    const cacheKey = createCacheKey(user, this._sdkKey);
+    const cacheKey = getUserStorageKey(user, this._sdkKey);
     await setObjectInStorage(cacheKey, values);
     await this._enforceStorageLimit(cacheKey);
   }
 
   async switchToUser(user: StatsigUser): Promise<boolean> {
     this.values = null;
-    const cacheKey = createCacheKey(user, this._sdkKey);
+    const cacheKey = getUserStorageKey(user, this._sdkKey);
     const json = await getObjectFromStorage<EvaluationStoreValues>(cacheKey);
 
     if (json) {
@@ -72,17 +72,4 @@ export default class EvaluationStore {
     delete this._manifest[oldest[0]];
     await setObjectInStorage(MANIFEST_KEY, this._manifest);
   }
-}
-
-function createCacheKey(user: StatsigUser, sdkKey: string): string {
-  const parts = [
-    `uid:${user.userID ?? ''}`,
-    `cids:${Object.entries(user.customIDs ?? {})
-      .sort(([leftKey], [rightKey]) => leftKey.localeCompare(rightKey))
-      .map(([key, value]) => `${key}-${value}`)
-      .join(',')}`,
-    `k:${sdkKey}`,
-  ];
-
-  return DJB2(parts.join('|'));
 }
