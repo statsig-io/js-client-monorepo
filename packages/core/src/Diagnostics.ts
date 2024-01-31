@@ -45,6 +45,7 @@ export abstract class Diagnostics {
       resources,
     };
 
+    // TODO: Send as log to Statsig
     Log.debug('Diagnostics', payload, JSON.stringify(payload));
     markers = [];
   }

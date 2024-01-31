@@ -3,9 +3,11 @@ import { NetworkCore, StatsigUser } from '@sigstat/core';
 import { EvaluationResponse } from './EvaluationData';
 
 export default class StatsigNetwork extends NetworkCore {
+  static DefaultApi = 'https://api.statsig.com/v1';
+
   constructor(
     sdkKey: string,
-    private _api: string,
+    private _api: string = StatsigNetwork.DefaultApi,
   ) {
     super(sdkKey);
   }

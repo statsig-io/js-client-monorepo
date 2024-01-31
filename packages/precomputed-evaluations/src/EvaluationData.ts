@@ -1,4 +1,4 @@
-import { SecondaryExposure, StatsigUser } from '@sigstat/core';
+import { SecondaryExposure } from '@sigstat/core';
 
 type Spec<T> = {
   name: string;
@@ -37,17 +37,3 @@ export type EvaluationResponse =
       hash_used: 'none' | 'sha256' | 'djb2';
     }
   | { has_updates: false };
-
-export interface EvaluationDataProviderInterface {
-  fetchEvaluations(user: StatsigUser): EvaluationResponse | null;
-}
-
-export class LocalEvaluationDataProvider
-  implements EvaluationDataProviderInterface
-{
-  constructor(private _data: { [userID: string]: EvaluationResponse }) {}
-
-  fetchEvaluations(user: StatsigUser): EvaluationResponse | null {
-    return this._data[user.userID ?? ''];
-  }
-}

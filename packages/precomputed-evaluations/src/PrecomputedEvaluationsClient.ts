@@ -38,8 +38,7 @@ export default class PrecomputedEvaluationsClient
     user: StatsigUser,
     options: StatsigOptions | null = null,
   ) {
-    const api = options?.api ?? 'https://api.statsig.com/v1';
-    const network = new Network(sdkKey, api);
+    const network = new Network(sdkKey, options?.api);
 
     super(sdkKey, network, options);
 
@@ -61,11 +60,11 @@ export default class PrecomputedEvaluationsClient
     this._logger.reset();
     this._user = normalizeUser(user, this._options.environment);
 
-    const bootstrap =
-      this._options.evaluationDataProvider?.fetchEvaluations(user);
-    if (bootstrap != null) {
-      await this._store.setValues(user, bootstrap);
-      this.setStatus('Bootstrap');
+    const provided =
+      this._options.evaluationDataProvider?.getEvaluationsForUser(user);
+    if (provided != null) {
+      await this._store.setValues(user, provided);
+      this.setStatus('Provided');
       return;
     }
 

@@ -1,3 +1,4 @@
+import { DJB2 } from './Hashing';
 import { StatsigEnvironment } from './StatsigTypes';
 
 type StatsigUserPrimitives =
@@ -42,4 +43,17 @@ export function normalizeUser(
   } catch (error) {
     throw new Error('User object must be convertable to JSON string.');
   }
+}
+
+export function getUserStorageKey(user: StatsigUser, sdkKey: string): string {
+  const parts = [
+    `uid:${user.userID ?? ''}`,
+    `cids:${Object.entries(user.customIDs ?? {})
+      .sort(([leftKey], [rightKey]) => leftKey.localeCompare(rightKey))
+      .map(([key, value]) => `${key}-${value}`)
+      .join(',')}`,
+    `k:${sdkKey}`,
+  ];
+
+  return DJB2(parts.join('|'));
 }

@@ -24,11 +24,14 @@ export default function ClientApp({
   user: StatsigUser;
   values: EvaluationResponse;
 }): JSX.Element {
+  const evaluationDataProvider = new LocalEvaluationDataProvider(
+    DEMO_CLIENT_KEY,
+  );
+  evaluationDataProvider.addEvaluationsForUser(user, values);
+
   const [client] = useState(
     new PrecomputedEvaluationsClient(DEMO_CLIENT_KEY, user, {
-      evaluationDataProvider: new LocalEvaluationDataProvider({
-        [user.userID ?? '']: values,
-      }),
+      evaluationDataProvider,
     }),
   );
 
