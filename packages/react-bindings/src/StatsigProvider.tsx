@@ -9,7 +9,7 @@ import {
 } from '@sigstat/core';
 
 import { NoopEvaluationsClient } from './NoopEvaluationsClient';
-import { isPrecompoutedEvaluationsClient } from './OnDeviceVsPrecomputedUtils';
+import { isPrecomputedEvaluationsClient } from './OnDeviceVsPrecomputedUtils';
 import StatsigContext from './StatsigContext';
 
 type Props = {
@@ -29,10 +29,10 @@ export default function StatsigProvider(props: Props): JSX.Element {
   let onDeviceClient: OnDeviceEvaluationsInterface;
 
   if ('client' in props) {
-    precomputedClient = isPrecompoutedEvaluationsClient(props.client)
+    precomputedClient = isPrecomputedEvaluationsClient(props.client)
       ? props.client
       : NoopEvaluationsClient;
-    onDeviceClient = !isPrecompoutedEvaluationsClient(props.client)
+    onDeviceClient = !isPrecomputedEvaluationsClient(props.client)
       ? props.client
       : NoopEvaluationsClient;
   } else {

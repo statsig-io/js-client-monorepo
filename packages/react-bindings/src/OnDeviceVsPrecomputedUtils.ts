@@ -4,7 +4,7 @@ import {
   PrecomputedEvaluationsInterface,
 } from '@sigstat/core';
 
-export function isPrecompoutedEvaluationsClient(
+export function isPrecomputedEvaluationsClient(
   client: OnDeviceEvaluationsInterface | PrecomputedEvaluationsInterface,
 ): client is PrecomputedEvaluationsInterface {
   return 'updateUser' in client;
