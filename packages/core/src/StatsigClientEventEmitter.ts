@@ -2,7 +2,7 @@ export type StatsigLoadingStatus =
   | 'Uninitialized'
   | 'Loading'
   | 'Cache'
-  | 'Bootstrap'
+  | 'Provided'
   | 'Network'
   | 'Error';
 

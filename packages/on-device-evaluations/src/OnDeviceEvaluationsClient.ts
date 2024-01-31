@@ -46,7 +46,7 @@ export default class OnDeviceEvaluationsClient
   async initialize(): Promise<void> {
     if (window.statsigConfigSpecs) {
       this._store.setValues(window.statsigConfigSpecs);
-      this.setStatus('Bootstrap');
+      this.setStatus('Provided');
       return;
     }
     this.setStatus('Loading');
