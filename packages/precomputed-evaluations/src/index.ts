@@ -1,20 +1,24 @@
 import type { EvaluationDataProviderInterface } from './EvaluationDataProvider';
-import { LocalEvaluationDataProvider } from './EvaluationDataProvider';
+import {
+  LocalEvaluationDataProvider,
+  PrefetchEvaluationDataProvider,
+} from './EvaluationDataProvider';
 import PrecomputedEvaluationsClient from './PrecomputedEvaluationsClient';
 import './StatsigMetadataAdditions';
 import type { StatsigOptions } from './StatsigOptions';
 
 export type {
-  StatsigUser,
-  StatsigEvent,
   StatsigEnvironment,
+  StatsigEvent,
+  StatsigUser,
 } from '@sigstat/core';
 
 export {
-  PrecomputedEvaluationsClient,
-  StatsigOptions,
-  LocalEvaluationDataProvider,
   EvaluationDataProviderInterface,
+  LocalEvaluationDataProvider,
+  PrecomputedEvaluationsClient,
+  PrefetchEvaluationDataProvider,
+  StatsigOptions,
 };
 
 export type { EvaluationResponse } from './EvaluationData';
