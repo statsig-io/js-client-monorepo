@@ -1,4 +1,4 @@
-const SDK_VERSION = '0.0.6';
+const SDK_VERSION = '0.0.7';
 
 export type StatsigMetadata = {
   readonly [key: string]: string;

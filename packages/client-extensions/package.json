@@ -1,6 +1,6 @@
 {
   "name": "@sigstat/client-extensions",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "dependencies": {
     "@sigstat/core": "*",
     "@sigstat/precomputed-evaluations": "*",

@@ -1,6 +1,6 @@
 {
   "name": "sigstat",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "license": "MIT",
   "scripts": {
     "lint": "nx run-many --parallel=4 --target=lint",
@@ -70,7 +70,7 @@
     "metro-react-native-babel-preset": "0.76.7",
     "metro-react-native-babel-transformer": "0.76.7",
     "metro-resolver": "0.76.7",
-    "native-base": "^2.15.2",
+    "native-base": "^3.4.28",
     "nx": "16.10.0",
     "prettier": "^3.0.3",
     "react-native-safe-area-context": "^4.7.2",
