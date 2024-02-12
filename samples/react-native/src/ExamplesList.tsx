@@ -1,6 +1,6 @@
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { Button, Heading, SectionList, View } from 'native-base';
+import { Button, Heading, SectionList } from 'native-base';
 import React from 'react';
 
 import { AppStackParamList } from './AppStackParamList';

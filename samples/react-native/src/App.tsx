@@ -6,7 +6,9 @@ import React from 'react';
 import BootstrapExampleScreen from './BootstrapExampleScreen';
 import HomeScreen from './HomeScreen';
 
-const routes: React.ComponentProps<typeof Stack.Screen>[] = [
+const Stack = createNativeStackNavigator();
+
+const routes = [
   {
     name: 'Home',
     component: HomeScreen,
@@ -27,8 +29,6 @@ const routes: React.ComponentProps<typeof Stack.Screen>[] = [
     },
   },
 ];
-
-const Stack = createNativeStackNavigator();
 
 export default function App(): React.ReactNode {
   return (
