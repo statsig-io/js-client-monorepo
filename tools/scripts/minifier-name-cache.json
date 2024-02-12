@@ -33,7 +33,8 @@
       "$_downloadConfigSpecsUrl": "K",
       "$_mainApi": "B",
       "$_evaluator": "L",
-      "$_getOutputs": "U"
+      "$_getOutputs": "U",
+      "$_source": "t"
     }
   }
 }

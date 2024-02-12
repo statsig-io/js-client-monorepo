@@ -30,6 +30,7 @@ export default class EvaluationStore {
   }
 
   reset(): void {
+    this.values = null;
     this.source = 'Loading';
   }
 
