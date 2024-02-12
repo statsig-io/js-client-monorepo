@@ -17,14 +17,13 @@ jobs:
 
       - uses: nrwl/nx-set-shas@v3
 
-      - run: npm ci
-      - run: npx nx run react-native-sample:ensure-symlink
+      - run: pnpm install --frozen-lockfile
 
-      - run: npx nx format:check
+      - run: pnpm nx format:check
 
-      - run: npm run lint
-      - run: npm run test
-      - run: npm run build
+      - run: pnpm run lint
+      - run: pnpm run test
+      - run: pnpm run build
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v2
