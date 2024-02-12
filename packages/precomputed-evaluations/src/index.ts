@@ -3,6 +3,7 @@ import PrecomputedEvaluationsClient from './PrecomputedEvaluationsClient';
 import './StatsigMetadataAdditions';
 import type { StatsigOptions } from './StatsigOptions';
 import { BootstrapEvaluationsDataProvider } from './data-providers/BootstrapEvaluationsDataProvider';
+import { DelayedNetworkEvaluationsDataProvider } from './data-providers/DelayedNetworkEvaluationsDataProvider';
 import { LocalStorageCacheEvaluationsDataProvider } from './data-providers/LocalStorageCacheEvaluationsDataProvider';
 import { NetworkEvaluationsDataProvider } from './data-providers/NetworkEvaluationsDataProvider';
 import { PrefetchEvaluationDataProvider } from './data-providers/PrefetchEvaluationsDataProvider';
@@ -20,6 +21,7 @@ export {
   BootstrapEvaluationsDataProvider,
   PrecomputedEvaluationsClient,
   PrefetchEvaluationDataProvider,
+  DelayedNetworkEvaluationsDataProvider,
   StatsigOptions,
 };
 

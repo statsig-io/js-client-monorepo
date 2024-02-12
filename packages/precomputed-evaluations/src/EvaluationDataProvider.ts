@@ -21,4 +21,6 @@ export interface EvaluationDataProviderInterface {
   source(): EvaluationSource;
 
   isTerminal(): boolean;
+
+  runsPostInit(): boolean;
 }

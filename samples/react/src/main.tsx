@@ -27,6 +27,7 @@ const routes: RouteMap = [
       ['/on-device-eval-performance', 'On Device Client Perf', () => import('./OnDeviceClientPerfExamplePage')],
       ['/bundle-size', 'Bundle Size', () => import('./BundleSizeExamplePage')],
       ['/prefetch-users', 'Prefetching Users', () => import('./PrefetchUsersExamplePage')],
+      ['/delayed-init', 'Delayed Network Init', () => import('./DelayedNetworkInitExamplePage')],
     ],
   ],
 ];

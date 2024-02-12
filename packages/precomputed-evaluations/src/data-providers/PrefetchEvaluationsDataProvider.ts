@@ -24,6 +24,10 @@ export class PrefetchEvaluationDataProvider
     return true;
   }
 
+  runsPostInit(): boolean {
+    return false;
+  }
+
   getEvaluationsData(
     sdkKey: string,
     user: StatsigUser,

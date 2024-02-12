@@ -31,6 +31,10 @@ export class BootstrapEvaluationsDataProvider
     return true;
   }
 
+  runsPostInit(): boolean {
+    return false;
+  }
+
   source(): EvaluationSource {
     return 'Bootstrap';
   }

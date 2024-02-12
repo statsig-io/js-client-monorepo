@@ -7,13 +7,15 @@ import {
 import StatsigNetwork from '../Network';
 import { StatsigOptions } from '../StatsigOptions';
 
-export class NetworkEvaluationsDataProvider
+export class DelayedNetworkEvaluationsDataProvider
   implements EvaluationDataProviderInterface
 {
   static create(
     options: StatsigOptions | null = null,
-  ): NetworkEvaluationsDataProvider {
-    return new NetworkEvaluationsDataProvider(new StatsigNetwork(options?.api));
+  ): DelayedNetworkEvaluationsDataProvider {
+    return new DelayedNetworkEvaluationsDataProvider(
+      new StatsigNetwork(options?.api),
+    );
   }
 
   constructor(private _network: StatsigNetwork) {}
@@ -38,11 +40,11 @@ export class NetworkEvaluationsDataProvider
     return false;
   }
 
-  runsPostInit(): boolean {
-    return false;
-  }
-
   source(): EvaluationSource {
     return 'Network';
+  }
+
+  runsPostInit(): boolean {
+    return true;
   }
 }

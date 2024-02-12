@@ -73,13 +73,16 @@ export default class PrecomputedEvaluationsClient
 
     let result: string | null = null;
     for await (const provider of this._dataProviders) {
+      if (provider.runsPostInit()) {
+        continue;
+      }
+
       result = await provider.getEvaluationsData(this._sdkKey, this._user);
       if (!result) {
         continue;
       }
 
       this._store.setValuesFromData(result, provider.source());
-
       if (provider.isTerminal()) {
         break;
       }
@@ -89,13 +92,9 @@ export default class PrecomputedEvaluationsClient
 
     this.setStatus('Ready');
 
-    if (!result) {
-      return;
-    }
-
-    for await (const provider of this._dataProviders) {
-      await provider.setEvaluationsData(this._sdkKey, this._user, result);
-    }
+    this._runPostInitDataProviders(result).catch(() => {
+      // noop
+    });
   }
 
   async shutdown(): Promise<void> {
@@ -193,5 +192,29 @@ export default class PrecomputedEvaluationsClient
       new LocalStorageCacheEvaluationsDataProvider(),
       new NetworkEvaluationsDataProvider(this._network),
     ];
+  }
+
+  private async _runPostInitDataProviders(
+    result: string | null,
+  ): Promise<void> {
+    for await (const provider of this._dataProviders) {
+      if (!provider.runsPostInit()) {
+        continue;
+      }
+
+      result = await provider.getEvaluationsData(this._sdkKey, this._user);
+
+      if (!result) {
+        continue;
+      }
+    }
+
+    if (!result) {
+      return;
+    }
+
+    for await (const provider of this._dataProviders) {
+      await provider.setEvaluationsData(this._sdkKey, this._user, result);
+    }
   }
 }
