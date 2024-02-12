@@ -25,6 +25,7 @@ export type StatsigEnvironment = {
 type EvaluatedSpec = {
   readonly name: string;
   readonly ruleID: string;
+  readonly source: string;
 };
 
 export type FeatureGate = EvaluatedSpec & {
@@ -40,30 +41,35 @@ export type Layer = EvaluatedSpec & {
   readonly getValue: (parameterName: string) => unknown;
 };
 
-function makeEmptyEvaluatedSpec(name: string): EvaluatedSpec {
+type EmptyEvaluationArgs = {
+  name: string;
+  source: string;
+};
+
+function makeEmptyEvaluatedSpec(args: EmptyEvaluationArgs): EvaluatedSpec {
   return {
-    name,
+    ...args,
     ruleID: DEFAULT_RULE,
   };
 }
 
-export function emptyFeatureGate(name: string): FeatureGate {
+export function emptyFeatureGate(args: EmptyEvaluationArgs): FeatureGate {
   return {
-    ...makeEmptyEvaluatedSpec(name),
+    ...makeEmptyEvaluatedSpec(args),
     value: false,
   };
 }
 
-export function emptyDynamicConfig(name: string): DynamicConfig {
+export function emptyDynamicConfig(args: EmptyEvaluationArgs): DynamicConfig {
   return {
-    ...makeEmptyEvaluatedSpec(name),
+    ...makeEmptyEvaluatedSpec(args),
     value: {},
   };
 }
 
-export function emptyLayer(name: string): Layer {
+export function emptyLayer(args: EmptyEvaluationArgs): Layer {
   return {
-    ...makeEmptyEvaluatedSpec(name),
+    ...makeEmptyEvaluatedSpec(args),
     getValue: (): unknown => undefined,
   };
 }

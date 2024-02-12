@@ -109,7 +109,7 @@ export default class PrecomputedEvaluationsClient
   getFeatureGate(name: string): FeatureGate {
     const hash = DJB2(name);
     const res = this._store.values?.feature_gates[hash];
-    const gate = emptyFeatureGate(name);
+    const gate = emptyFeatureGate({ name, source: this._store.source });
 
     if (res == null) {
       return gate;
@@ -135,7 +135,7 @@ export default class PrecomputedEvaluationsClient
   getDynamicConfig(name: string): DynamicConfig {
     const hash = DJB2(name);
     const res = this._store.values?.dynamic_configs[hash];
-    const config = emptyDynamicConfig(name);
+    const config = emptyDynamicConfig({ name, source: this._store.source });
 
     if (res == null) {
       return config;
@@ -161,7 +161,7 @@ export default class PrecomputedEvaluationsClient
     const hash = DJB2(name);
     const res = this._store.values?.layer_configs[hash];
 
-    const layer = emptyLayer(name);
+    const layer = emptyLayer({ name, source: this._store.source });
 
     if (res == null) {
       return layer;

@@ -17,14 +17,15 @@ const noop = (): void => {
 const defaultEvaluation = <T>(type: 'gate' | 'config' | 'layer') => {
   return (...args: unknown[]): T => {
     const name = typeof args[0] === 'string' ? args[0] : (args[1] as string);
+    const evalArgs = { name, source: 'Error' };
 
     switch (type) {
       case 'gate':
-        return emptyFeatureGate(name) as T;
+        return emptyFeatureGate(evalArgs) as T;
       case 'config':
-        return emptyDynamicConfig(name) as T;
+        return emptyDynamicConfig(evalArgs) as T;
       case 'layer':
-        return emptyLayer(name) as T;
+        return emptyLayer(evalArgs) as T;
     }
   };
 };

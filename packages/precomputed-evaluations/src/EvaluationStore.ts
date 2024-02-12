@@ -16,10 +16,10 @@ type EvaluationStoreValues = EvaluationResponse & { has_updates: true };
 
 export default class EvaluationStore {
   values: EvaluationStoreValues | null = null;
+  source: EvaluationSource = 'Loading';
 
   private _manifest: Record<string, number> = {};
   private _isReady: Promise<void>;
-  private _source: EvaluationSource = 'Loading';
 
   constructor(private _sdkKey: string) {
     this._isReady = getObjectFromStorage<Record<string, number>>(
@@ -30,7 +30,7 @@ export default class EvaluationStore {
   }
 
   reset(): void {
-    this._source = 'Loading';
+    this.source = 'Loading';
   }
 
   finalize(): void {
@@ -38,7 +38,7 @@ export default class EvaluationStore {
       return;
     }
 
-    this._source = 'NoValues';
+    this.source = 'NoValues';
   }
 
   setValuesFromData(data: string, source: EvaluationSource): void {
@@ -47,7 +47,7 @@ export default class EvaluationStore {
       return;
     }
 
-    this._source = source;
+    this.source = source;
     this.values = values;
   }
 

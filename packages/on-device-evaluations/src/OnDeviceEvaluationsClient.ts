@@ -31,6 +31,7 @@ export default class OnDeviceEvaluationsClient
   private _options: StatsigOptions;
   private _store: SpecStore;
   private _evaluator: Evaluator;
+  private _source: string;
 
   constructor(sdkKey: string, options: StatsigOptions | null = null) {
     const network = new Network(sdkKey, options);
@@ -41,19 +42,24 @@ export default class OnDeviceEvaluationsClient
     this._logger = new EventLogger(this._sdkKey, this._network, options);
     this._store = new SpecStore();
     this._evaluator = new Evaluator(this._store);
+    this._source = 'NoValues';
   }
 
   async initialize(): Promise<void> {
     if (window.statsigConfigSpecs) {
       this._store.setValues(window.statsigConfigSpecs);
+      this._source = 'Bootstrap';
       this.setStatus('Ready');
       return;
     }
+
+    this._source = 'Loading';
     this.setStatus('Loading');
 
     const response = await this._network.fetchConfigSpecs();
 
     if (!response) {
+      this._source = 'Error';
       this.setStatus('Error');
       return;
     }
@@ -61,7 +67,7 @@ export default class OnDeviceEvaluationsClient
     if (response.has_updates) {
       this._store.setValues(response);
     }
-
+    this._source = 'Network';
     this.setStatus('Ready');
   }
 
@@ -79,6 +85,7 @@ export default class OnDeviceEvaluationsClient
       name,
       ruleID: result.rule_id,
       value: result.value,
+      source: this._source,
     };
   }
 
@@ -88,6 +95,7 @@ export default class OnDeviceEvaluationsClient
       name,
       ruleID: result.rule_id,
       value: result.json_value,
+      source: this._source,
     };
   }
 
@@ -102,6 +110,7 @@ export default class OnDeviceEvaluationsClient
       name,
       ruleID: result.rule_id,
       getValue: (param: string) => values[param] ?? null,
+      source: this._source,
     };
   }
 

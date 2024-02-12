@@ -36,7 +36,9 @@ function Content({
       justifyContent="space-between"
     >
       <Typography>Compare Prefetching Before Switching</Typography>
-      <Typography>partial_gate: {gate.value ? 'Pass' : 'Fail'}</Typography>
+      <Typography>partial_gate</Typography>
+      <Typography> - Result: {gate.value ? 'Pass' : 'Fail'}</Typography>
+      <Typography> - Source: {gate.source}</Typography>
 
       <TextField
         variant="filled"
