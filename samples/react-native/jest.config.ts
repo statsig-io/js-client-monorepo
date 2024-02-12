@@ -9,7 +9,5 @@ export default {
     '\\.svg$': '@nx/react-native/plugins/jest/svg-mock',
   },
   coverageDirectory: '../../coverage/samples/react-native',
-  transformIgnorePatterns: [
-    'node_modules/(?!(jest-)?@?react-native|@react-native-community|@react-navigation)',
-  ],
+  transformIgnorePatterns: [],
 };
