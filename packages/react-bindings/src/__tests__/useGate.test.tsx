@@ -44,8 +44,8 @@ describe('useGate', () => {
 
   it('renders the gate value', async () => {
     act(() => {
-      (client.loadingStatus as any) = 'Network';
-      onStatusChange({ event: 'status_change', loadingStatus: 'Network' });
+      (client.loadingStatus as any) = 'Ready';
+      onStatusChange({ event: 'status_change', loadingStatus: 'Ready' });
     });
 
     await waitFor(() => {
