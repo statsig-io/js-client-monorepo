@@ -14,10 +14,10 @@
     "incremental": true,
     "plugins": [
       {
-        "name": "next"
-      }
+        "name": "next",
+      },
     ],
-    "types": ["jest", "node"]
+    "types": ["jest", "node"],
   },
   "include": [
     "**/*.ts",
@@ -28,12 +28,12 @@
     "../../dist/next-js/.next/types/**/*.ts",
     "next-env.d.ts",
     "../../dist/samples/next-js/.next/types/**/*.ts",
-    "../../next-js-sample/.next/types/**/*.ts"
+    "../../next-js-sample/.next/types/**/*.ts",
   ],
   "exclude": [
     "node_modules",
     "jest.config.ts",
     "src/**/*.spec.ts",
-    "src/**/*.test.ts"
-  ]
+    "src/**/*.test.ts",
+  ],
 }
