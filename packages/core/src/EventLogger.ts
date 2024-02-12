@@ -20,6 +20,7 @@ export class EventLogger {
   private _queueLimit = MIN_QUEUE;
 
   constructor(
+    private _sdkKey: string,
     private _network: NetworkCore,
     private _options: StatsigOptionsCommon | null,
   ) {
@@ -107,7 +108,8 @@ export class EventLogger {
     events: StatsigEventInternal[],
   ): Promise<SendEventsResponse> {
     const api = this._options?.api ?? 'https://api.statsig.com/v1'; // todo: more centralized location for urls/api
-    const result = await this._network.post<SendEventsResponse>({
+    const result = await this._network.post({
+      sdkKey: this._sdkKey,
       url: `${api}/rgstr`,
       data: {
         events,
@@ -115,6 +117,10 @@ export class EventLogger {
       retries: 3,
     });
 
-    return result ?? { success: false };
+    if (result) {
+      return JSON.parse(result) as SendEventsResponse;
+    }
+
+    return { success: false };
   }
 }

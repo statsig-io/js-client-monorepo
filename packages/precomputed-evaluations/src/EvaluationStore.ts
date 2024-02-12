@@ -7,6 +7,7 @@ import {
 } from '@sigstat/core';
 
 import { EvaluationResponse } from './EvaluationData';
+import { EvaluationSource } from './EvaluationDataProvider';
 
 const MANIFEST_KEY = 'statsig.manifest';
 const CACHE_LIMIT = 10;
@@ -15,8 +16,10 @@ type EvaluationStoreValues = EvaluationResponse & { has_updates: true };
 
 export default class EvaluationStore {
   values: EvaluationStoreValues | null = null;
+
   private _manifest: Record<string, number> = {};
   private _isReady: Promise<void>;
+  private _source: EvaluationSource = 'Loading';
 
   constructor(private _sdkKey: string) {
     this._isReady = getObjectFromStorage<Record<string, number>>(
@@ -24,6 +27,28 @@ export default class EvaluationStore {
     ).then((value) => {
       this._manifest = value ?? {};
     });
+  }
+
+  reset(): void {
+    this._source = 'Loading';
+  }
+
+  finalize(): void {
+    if (this.values) {
+      return;
+    }
+
+    this._source = 'NoValues';
+  }
+
+  setValuesFromData(data: string, source: EvaluationSource): void {
+    const values = JSON.parse(data) as EvaluationResponse;
+    if (!values.has_updates) {
+      return;
+    }
+
+    this._source = source;
+    this.values = values;
   }
 
   async setValues(

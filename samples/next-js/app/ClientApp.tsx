@@ -4,8 +4,7 @@ import { useState } from 'react';
 import { StatsigUser } from 'statsig-node';
 
 import {
-  EvaluationResponse,
-  LocalEvaluationDataProvider,
+  BootstrapEvaluationsDataProvider,
   PrecomputedEvaluationsClient,
 } from '@sigstat/precomputed-evaluations';
 import { StatsigProvider, useGate } from '@sigstat/react-bindings';
@@ -22,16 +21,14 @@ export default function ClientApp({
   values,
 }: {
   user: StatsigUser;
-  values: EvaluationResponse;
+  values: string;
 }): JSX.Element {
-  const evaluationDataProvider = new LocalEvaluationDataProvider(
-    DEMO_CLIENT_KEY,
-  );
-  evaluationDataProvider.addEvaluationsForUser(user, values);
+  const bootstrapProvider = new BootstrapEvaluationsDataProvider();
+  bootstrapProvider.addDataForUser(DEMO_CLIENT_KEY, user, values);
 
   const [client] = useState(
     new PrecomputedEvaluationsClient(DEMO_CLIENT_KEY, user, {
-      evaluationDataProvider,
+      dataProviders: [bootstrapProvider],
     }),
   );
 

@@ -18,10 +18,13 @@ import {
   normalizeUser,
 } from '@sigstat/core';
 
+import { EvaluationDataProviderInterface } from './EvaluationDataProvider';
 import EvaluationStore from './EvaluationStore';
 import Network from './Network';
 import './StatsigMetadataAdditions';
 import type { StatsigOptions } from './StatsigOptions';
+import { LocalStorageCacheEvaluationsDataProvider } from './data-providers/LocalStorageCacheEvaluationsDataProvider';
+import { NetworkEvaluationsDataProvider } from './data-providers/NetworkEvaluationsDataProvider';
 
 @MonitoredClass
 export default class PrecomputedEvaluationsClient
@@ -32,13 +35,14 @@ export default class PrecomputedEvaluationsClient
   private _network: Network;
   private _store: EvaluationStore;
   private _user: StatsigUser;
+  private _dataProviders: EvaluationDataProviderInterface[];
 
   constructor(
     sdkKey: string,
     user: StatsigUser,
     options: StatsigOptions | null = null,
   ) {
-    const network = new Network(sdkKey, options?.api);
+    const network = new Network(options?.api);
 
     super(sdkKey, network, options);
 
@@ -46,10 +50,13 @@ export default class PrecomputedEvaluationsClient
       StableID.setOverride(options?.overrideStableID);
     }
 
+    this._sdkKey = sdkKey;
     this._options = options ?? {};
     this._store = new EvaluationStore(sdkKey);
     this._network = network;
     this._user = user;
+    this._dataProviders =
+      this._options.dataProviders ?? this._getDefaultDataProviders();
   }
 
   async initialize(): Promise<void> {
@@ -58,31 +65,36 @@ export default class PrecomputedEvaluationsClient
 
   async updateUser(user: StatsigUser): Promise<void> {
     this._logger.reset();
-    this._user = normalizeUser(user, this._options.environment);
+    this._store.reset();
 
-    const provided =
-      this._options.evaluationDataProvider?.getEvaluationsForUser(user);
-    if (provided != null) {
-      await this._store.setValues(user, provided);
-      this.setStatus('Provided');
-      return;
-    }
+    this._user = normalizeUser(user, this._options.environment);
 
     this.setStatus('Loading');
 
-    const cacheHit = await this._store.switchToUser(this._user);
-    if (cacheHit) {
-      this.setStatus('Cache');
+    let result: string | null = null;
+    for await (const provider of this._dataProviders) {
+      result = await provider.getEvaluationsData(this._sdkKey, this._user);
+      if (!result) {
+        continue;
+      }
+
+      this._store.setValuesFromData(result, provider.source());
+
+      if (provider.isTerminal()) {
+        break;
+      }
     }
 
-    const capturedUser = this._user;
-    const response = await this._network.fetchEvaluations(capturedUser);
+    this._store.finalize();
 
-    if (response) {
-      await this._store.setValues(capturedUser, response);
-      this.setStatus('Network');
-    } else if (!cacheHit) {
-      this.setStatus('Error');
+    this.setStatus('Provided');
+
+    if (!result) {
+      return;
+    }
+
+    for await (const provider of this._dataProviders) {
+      await provider.setEvaluationsData(this._sdkKey, this._user, result);
     }
   }
 
@@ -170,5 +182,12 @@ export default class PrecomputedEvaluationsClient
 
   logEvent(event: StatsigEvent): void {
     this._logger.enqueue({ ...event, user: this._user, time: Date.now() });
+  }
+
+  private _getDefaultDataProviders(): EvaluationDataProviderInterface[] {
+    return [
+      new LocalStorageCacheEvaluationsDataProvider(),
+      new NetworkEvaluationsDataProvider(this._network),
+    ];
   }
 }

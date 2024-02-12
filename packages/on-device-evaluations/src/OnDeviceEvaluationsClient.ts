@@ -38,7 +38,7 @@ export default class OnDeviceEvaluationsClient
 
     this._options = options ?? {};
     this._network = network;
-    this._logger = new EventLogger(this._network, options);
+    this._logger = new EventLogger(this._sdkKey, this._network, options);
     this._store = new SpecStore();
     this._evaluator = new Evaluator(this._store);
   }

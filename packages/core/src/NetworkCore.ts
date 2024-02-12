@@ -8,6 +8,7 @@ import { getUUID } from './UUID';
 const DEFAULT_TIMEOUT = 10_000;
 
 type CommonArgs = {
+  sdkKey: string;
   url: string;
   timeoutMs?: number;
   retries?: number;
@@ -35,11 +36,11 @@ class NetworkError extends Error {
 export class NetworkCore {
   private readonly _sessionID: string;
 
-  constructor(protected readonly _sdkKey: string) {
+  constructor() {
     this._sessionID = getUUID();
   }
 
-  async post<T>(args: PostRequestArgs): Promise<T | null> {
+  async post(args: PostRequestArgs): Promise<string | null> {
     const { data } = args;
     const stableID = await StableID.get();
     const body = JSON.stringify({
@@ -54,13 +55,13 @@ export class NetworkCore {
     return this._sendRequest({ method: 'POST', body, ...args });
   }
 
-  async get<T>(args: CommonArgs): Promise<T | null> {
+  async get(args: CommonArgs): Promise<string | null> {
     return this._sendRequest({ method: 'GET', ...args });
   }
 
   @MonitoredFunction()
-  protected async _sendRequest<T>(args: RequestArgs): Promise<T | null> {
-    const { method, url, headers, body, retries } = args;
+  protected async _sendRequest(args: RequestArgs): Promise<string | null> {
+    const { method, url, body, retries } = args;
 
     const controller = new AbortController();
     const handle = setTimeout(
@@ -73,7 +74,7 @@ export class NetworkCore {
       response = await fetch(url, {
         method,
         body,
-        headers: this._getPopulatedHeaders(headers),
+        headers: this._getPopulatedHeaders(args),
         signal: controller.signal,
       });
       clearTimeout(handle);
@@ -88,7 +89,7 @@ export class NetworkCore {
         contentLength: response.headers.get('content-length'),
       });
 
-      return JSON.parse(text) as T;
+      return text;
     } catch (error) {
       const errorMessage = _getErrorMessage(controller, error);
       Diagnostics.mark('_sendRequest:error', {
@@ -106,12 +107,12 @@ export class NetworkCore {
     }
   }
 
-  private _getPopulatedHeaders(additions?: Record<string, string>) {
+  private _getPopulatedHeaders(args: RequestArgs) {
     const statsigMetadata = StatsigMetadataProvider.get();
     return {
-      ...additions,
+      ...args.headers,
       'Content-Type': 'application/json',
-      'STATSIG-API-KEY': this._sdkKey,
+      'STATSIG-API-KEY': args.sdkKey,
       'STATSIG-SDK-TYPE': statsigMetadata.sdkType,
       'STATSIG-SDK-VERSION': statsigMetadata.sdkVersion,
       'STATSIG-CLIENT-TIME': String(Date.now()),

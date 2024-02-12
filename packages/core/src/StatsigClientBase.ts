@@ -15,7 +15,7 @@ export class StatsigClientBase implements StatsigClientEventEmitterInterface {
 
   protected _logger: EventLogger;
 
-  private _sdkKey: string;
+  protected _sdkKey: string;
   private _listeners: Record<string, StatsigClientEventCallback[]> = {};
 
   constructor(
@@ -23,7 +23,7 @@ export class StatsigClientBase implements StatsigClientEventEmitterInterface {
     network: NetworkCore,
     options: StatsigOptionsCommon | null,
   ) {
-    this._logger = new EventLogger(network, options);
+    this._logger = new EventLogger(sdkKey, network, options);
     this._sdkKey = sdkKey;
 
     __STATSIG__ = __STATSIG__ ?? {};

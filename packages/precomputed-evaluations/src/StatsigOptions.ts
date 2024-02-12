@@ -4,6 +4,6 @@ import { EvaluationDataProviderInterface } from './EvaluationDataProvider';
 
 export type StatsigOptions = Flatten<
   StatsigOptionsCommon & {
-    evaluationDataProvider?: EvaluationDataProviderInterface;
+    dataProviders?: EvaluationDataProviderInterface[];
   }
 >;

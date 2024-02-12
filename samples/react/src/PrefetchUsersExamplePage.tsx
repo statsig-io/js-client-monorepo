@@ -11,12 +11,10 @@ const DEMO_CLIENT_KEY = 'client-rfLvYGag3eyU0jYW5zcIJTQip7GXxSrhOFN69IGMjvq';
 
 const user = { userID: 'a-user' };
 
-const evaluationDataProvider = new PrefetchEvaluationDataProvider(
-  DEMO_CLIENT_KEY,
-);
+const prefetchProvider = new PrefetchEvaluationDataProvider(DEMO_CLIENT_KEY);
 
 const client = new PrecomputedEvaluationsClient(DEMO_CLIENT_KEY, user, {
-  evaluationDataProvider,
+  dataProviders: [prefetchProvider],
 });
 
 function Content({
@@ -50,7 +48,7 @@ function Content({
       <Button
         variant="contained"
         onClick={() => {
-          evaluationDataProvider
+          prefetchProvider
             .prefetchEvaluationsForUser({ userID })
             .catch(() => setError('prefetchEvaluationsForUser Failed'));
         }}

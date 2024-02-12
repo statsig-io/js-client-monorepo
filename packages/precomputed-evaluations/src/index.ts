@@ -1,11 +1,11 @@
 import type { EvaluationDataProviderInterface } from './EvaluationDataProvider';
-import {
-  LocalEvaluationDataProvider,
-  PrefetchEvaluationDataProvider,
-} from './EvaluationDataProvider';
 import PrecomputedEvaluationsClient from './PrecomputedEvaluationsClient';
 import './StatsigMetadataAdditions';
 import type { StatsigOptions } from './StatsigOptions';
+import { BootstrapEvaluationsDataProvider } from './data-providers/BootstrapEvaluationsDataProvider';
+import { LocalStorageCacheEvaluationsDataProvider } from './data-providers/LocalStorageCacheEvaluationsDataProvider';
+import { NetworkEvaluationsDataProvider } from './data-providers/NetworkEvaluationsDataProvider';
+import { PrefetchEvaluationDataProvider } from './data-providers/PrefetchEvaluationsDataProvider';
 
 export type {
   StatsigEnvironment,
@@ -15,7 +15,9 @@ export type {
 
 export {
   EvaluationDataProviderInterface,
-  LocalEvaluationDataProvider,
+  NetworkEvaluationsDataProvider,
+  LocalStorageCacheEvaluationsDataProvider,
+  BootstrapEvaluationsDataProvider,
   PrecomputedEvaluationsClient,
   PrefetchEvaluationDataProvider,
   StatsigOptions,
