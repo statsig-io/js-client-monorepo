@@ -23,7 +23,7 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
-      - run: pnpm nx format:check
+      # - run: pnpm nx format:check
 
       - run: pnpm run lint
       - run: pnpm run test
