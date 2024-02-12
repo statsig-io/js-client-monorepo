@@ -1,9 +1,7 @@
 export type StatsigLoadingStatus =
   | 'Uninitialized'
   | 'Loading'
-  | 'Cache'
-  | 'Provided'
-  | 'Network'
+  | 'Ready'
   | 'Error';
 
 export type StatsigClientEvent = 'status_change';

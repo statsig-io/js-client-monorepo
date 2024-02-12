@@ -5,10 +5,17 @@ import {
   EvaluationSource,
 } from '../EvaluationDataProvider';
 import StatsigNetwork from '../Network';
+import { StatsigOptions } from '../StatsigOptions';
 
 export class NetworkEvaluationsDataProvider
   implements EvaluationDataProviderInterface
 {
+  static create(
+    options: StatsigOptions | null = null,
+  ): NetworkEvaluationsDataProvider {
+    return new NetworkEvaluationsDataProvider(new StatsigNetwork(options?.api));
+  }
+
   constructor(private _network: StatsigNetwork) {}
 
   async getEvaluationsData(

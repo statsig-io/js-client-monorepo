@@ -46,7 +46,7 @@ export default class OnDeviceEvaluationsClient
   async initialize(): Promise<void> {
     if (window.statsigConfigSpecs) {
       this._store.setValues(window.statsigConfigSpecs);
-      this.setStatus('Provided');
+      this.setStatus('Ready');
       return;
     }
     this.setStatus('Loading');
@@ -62,7 +62,7 @@ export default class OnDeviceEvaluationsClient
       this._store.setValues(response);
     }
 
-    this.setStatus('Network');
+    this.setStatus('Ready');
   }
 
   async shutdown(): Promise<void> {

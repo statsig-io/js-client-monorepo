@@ -87,7 +87,7 @@ export default class PrecomputedEvaluationsClient
 
     this._store.finalize();
 
-    this.setStatus('Provided');
+    this.setStatus('Ready');
 
     if (!result) {
       return;
@@ -125,7 +125,11 @@ export default class PrecomputedEvaluationsClient
       ),
     );
 
-    return { ...gate, ruleID: res.rule_id, value: res.value };
+    return {
+      ...gate,
+      ruleID: res.rule_id,
+      value: res.value,
+    };
   }
 
   getDynamicConfig(name: string): DynamicConfig {

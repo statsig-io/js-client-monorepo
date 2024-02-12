@@ -2,6 +2,7 @@ import { Alert, Box, Button, TextField, Typography } from '@mui/material';
 import { ReactNode, useState } from 'react';
 
 import {
+  NetworkEvaluationsDataProvider,
   PrecomputedEvaluationsClient,
   PrefetchEvaluationDataProvider,
 } from '@sigstat/precomputed-evaluations';
@@ -11,10 +12,10 @@ const DEMO_CLIENT_KEY = 'client-rfLvYGag3eyU0jYW5zcIJTQip7GXxSrhOFN69IGMjvq';
 
 const user = { userID: 'a-user' };
 
-const prefetchProvider = new PrefetchEvaluationDataProvider(DEMO_CLIENT_KEY);
+const prefetchProvider = new PrefetchEvaluationDataProvider();
 
 const client = new PrecomputedEvaluationsClient(DEMO_CLIENT_KEY, user, {
-  dataProviders: [prefetchProvider],
+  dataProviders: [prefetchProvider, NetworkEvaluationsDataProvider.create()],
 });
 
 function Content({
@@ -71,7 +72,7 @@ function Content({
 }
 
 export default function PrefetchUsersExample(): ReactNode {
-  const [userID, setUserID] = useState('user-b');
+  const [userID, setUserID] = useState('user-c');
 
   return (
     <StatsigProvider client={client}>

@@ -88,10 +88,7 @@ function shouldRender(
   }
 
   switch (client.loadingStatus) {
-    case 'Network':
-    case 'Provided':
-      return true;
-    case 'Cache':
+    case 'Ready':
       return true;
     default:
       return false;
