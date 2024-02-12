@@ -49,7 +49,7 @@ function Content({
         variant="contained"
         onClick={() => {
           prefetchProvider
-            .prefetchEvaluationsForUser({ userID })
+            .prefetchEvaluationsForUser(DEMO_CLIENT_KEY, { userID })
             .catch(() => setError('prefetchEvaluationsForUser Failed'));
         }}
       >
