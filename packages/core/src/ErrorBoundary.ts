@@ -1,4 +1,5 @@
 import { Log } from './Log';
+import { StatsigClientBase } from './StatsigClientBase';
 
 export const EXCEPTION_ENDPOINT = 'https://statsigapi.net/v1/sdk_exception';
 
@@ -14,20 +15,24 @@ export function configureErrorBoundary(config: Config): void {
   _config = config;
 }
 
-export function errorBoundary(tag: string, task: () => unknown): unknown {
+export function errorBoundary(
+  tag: string,
+  task: () => unknown,
+  client?: StatsigClientBase,
+): unknown {
   try {
     const res = task();
     if (res && res instanceof Promise) {
-      return res.catch((err) => _onError(tag, err));
+      return res.catch((err) => _onError(tag, err, client));
     }
     return res;
   } catch (error) {
-    _onError(tag, error);
+    _onError(tag, error, client);
     return null;
   }
 }
 
-function _onError(tag: string, error: unknown) {
+function _onError(tag: string, error: unknown, client?: StatsigClientBase) {
   try {
     Log.warn(`Caught error in ${tag}`, { error });
 
@@ -37,29 +42,33 @@ function _onError(tag: string, error: unknown) {
       const isError = unwrapped instanceof Error;
       const name = isError ? unwrapped.name : 'No Name';
 
-      if (_seen.has(name) || !_config?.sdkKey) {
+      if (_seen.has(name)) {
         return;
       }
       _seen.add(name);
 
-      const info = isError ? unwrapped.stack : _getDescription(unwrapped);
-      const body = JSON.stringify({
-        tag,
-        exception: name,
-        info,
-        ..._config.metadata,
-      });
+      if (_config?.sdkKey) {
+        const info = isError ? unwrapped.stack : _getDescription(unwrapped);
+        const body = JSON.stringify({
+          tag,
+          exception: name,
+          info,
+          ..._config.metadata,
+        });
 
-      return fetch(EXCEPTION_ENDPOINT, {
-        method: 'POST',
-        headers: {
-          'STATSIG-API-KEY': _config.sdkKey,
-          'STATSIG-SDK-TYPE': String(_config.metadata?.['sdkType']),
-          'STATSIG-SDK-VERSION': String(_config.metadata?.['sdkVersion']),
-          'Content-Type': 'application/json',
-        },
-        body,
-      });
+        await fetch(EXCEPTION_ENDPOINT, {
+          method: 'POST',
+          headers: {
+            'STATSIG-API-KEY': _config.sdkKey,
+            'STATSIG-SDK-TYPE': String(_config.metadata?.['sdkType']),
+            'STATSIG-SDK-VERSION': String(_config.metadata?.['sdkVersion']),
+            'Content-Type': 'application/json',
+          },
+          body,
+        });
+      }
+
+      client?.emit({ event: 'error', error });
     };
 
     impl()

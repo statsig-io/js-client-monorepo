@@ -1,5 +1,6 @@
 import { captureDiagnostics } from './Diagnostics';
 import { errorBoundary } from './ErrorBoundary';
+import { StatsigClientBase } from './StatsigClientBase';
 
 type Target = { prototype: unknown };
 
@@ -50,8 +51,15 @@ function _generateDescriptor(
   const original = descriptor.value as (...args: unknown[]) => unknown;
 
   descriptor.value = function (...args: unknown[]) {
-    return errorBoundary(propertyKey, () =>
-      captureDiagnostics(propertyKey, () => original.apply(this, args)),
+    const client =
+      this instanceof StatsigClientBase
+        ? (this as StatsigClientBase)
+        : undefined;
+
+    return errorBoundary(
+      propertyKey,
+      () => captureDiagnostics(propertyKey, () => original.apply(this, args)),
+      client,
     );
   };
 

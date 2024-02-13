@@ -50,7 +50,7 @@ export class StatsigClientBase implements StatsigClientEventEmitterInterface {
     }
   }
 
-  protected emit(data: StatsigClientEventData): void {
+  emit(data: StatsigClientEventData): void {
     if (this._listeners[data.event]) {
       this._listeners[data.event].forEach((listener) => listener(data));
     }
