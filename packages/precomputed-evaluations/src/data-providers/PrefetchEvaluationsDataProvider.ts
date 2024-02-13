@@ -24,24 +24,12 @@ export class PrefetchEvaluationDataProvider
     return true;
   }
 
-  runsPostInit(): boolean {
-    return false;
-  }
-
   getEvaluationsData(
     sdkKey: string,
     user: StatsigUser,
   ): Promise<string | null> {
     const key = getUserStorageKey(user, sdkKey);
     return Promise.resolve(this._data[key]);
-  }
-
-  async setEvaluationsData(
-    _sdkKey: string,
-    _user: StatsigUser,
-    _data: string,
-  ): Promise<void> {
-    // noop
   }
 
   async prefetchEvaluationsForUser(

@@ -20,20 +20,12 @@ export class DelayedNetworkEvaluationsDataProvider
 
   constructor(private _network: StatsigNetwork) {}
 
-  async getEvaluationsData(
+  async getEvaluationsDataPostInit(
     sdkKey: string,
     user: StatsigUser,
   ): Promise<string | null> {
     const response = await this._network.fetchEvaluations(sdkKey, user);
     return response;
-  }
-
-  async setEvaluationsData(
-    _sdkKey: string,
-    _user: StatsigUser,
-    _data: string,
-  ): Promise<void> {
-    // noop
   }
 
   isTerminal(): boolean {
@@ -42,9 +34,5 @@ export class DelayedNetworkEvaluationsDataProvider
 
   source(): EvaluationSource {
     return 'Network';
-  }
-
-  runsPostInit(): boolean {
-    return true;
   }
 }

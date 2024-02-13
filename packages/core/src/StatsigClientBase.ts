@@ -1,5 +1,5 @@
 import { EventLogger } from './EventLogger';
-import { Log } from './Log';
+import { Log, LogLevel } from './Log';
 import { NetworkCore } from './NetworkCore';
 import {
   StatsigClientEvent,
@@ -31,7 +31,7 @@ export class StatsigClientBase implements StatsigClientEventEmitterInterface {
     instances.add(this);
     __STATSIG__.instances = instances;
 
-    Log.level = options?.logLevel ?? 'none';
+    Log.level = options?.logLevel ?? LogLevel.Error;
   }
 
   on(event: StatsigClientEvent, listener: StatsigClientEventCallback): void {

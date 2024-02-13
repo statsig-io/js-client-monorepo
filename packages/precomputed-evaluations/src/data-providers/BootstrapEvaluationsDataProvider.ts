@@ -19,14 +19,6 @@ export class BootstrapEvaluationsDataProvider
     return Promise.resolve(result);
   }
 
-  async setEvaluationsData(
-    _sdkKey: string,
-    _user: StatsigUser,
-    _data: string,
-  ): Promise<void> {
-    // noop
-  }
-
   isTerminal(): boolean {
     return true;
   }

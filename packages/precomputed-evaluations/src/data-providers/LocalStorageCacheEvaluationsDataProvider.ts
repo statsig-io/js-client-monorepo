@@ -42,10 +42,6 @@ export class LocalStorageCacheEvaluationsDataProvider
     return false;
   }
 
-  runsPostInit(): boolean {
-    return false;
-  }
-
   source(): EvaluationSource {
     return 'Cache';
   }

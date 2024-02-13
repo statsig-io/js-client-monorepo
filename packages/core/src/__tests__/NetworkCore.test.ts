@@ -1,9 +1,9 @@
 import 'jest-fetch-mock';
 
-import { Log } from '../Log';
+import { Log, LogLevel } from '../Log';
 import { NetworkCore } from '../NetworkCore';
 
-Log.level = 'none';
+Log.level = LogLevel.None;
 
 describe('Network Core', () => {
   const url = 'http://localhost';

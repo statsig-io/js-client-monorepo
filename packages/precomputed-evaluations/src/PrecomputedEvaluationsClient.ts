@@ -18,13 +18,18 @@ import {
   normalizeUser,
 } from '@sigstat/core';
 
-import { EvaluationDataProviderInterface } from './EvaluationDataProvider';
+import {
+  EvaluationDataProviderInterface,
+  EvaluationSource,
+} from './EvaluationDataProvider';
 import EvaluationStore from './EvaluationStore';
 import Network from './Network';
 import './StatsigMetadataAdditions';
 import type { StatsigOptions } from './StatsigOptions';
 import { LocalStorageCacheEvaluationsDataProvider } from './data-providers/LocalStorageCacheEvaluationsDataProvider';
 import { NetworkEvaluationsDataProvider } from './data-providers/NetworkEvaluationsDataProvider';
+
+type DataProviderResult = { data: string | null; source: EvaluationSource };
 
 @MonitoredClass
 export default class PrecomputedEvaluationsClient
@@ -71,29 +76,18 @@ export default class PrecomputedEvaluationsClient
 
     this.setStatus('Loading');
 
-    let result: string | null = null;
-    for await (const provider of this._dataProviders) {
-      if (provider.runsPostInit()) {
-        continue;
-      }
+    const result = await this._getResultFromDataProviders('during-init');
 
-      result = await provider.getEvaluationsData(this._sdkKey, this._user);
-      if (!result) {
-        continue;
-      }
-
-      this._store.setValuesFromData(result, provider.source());
-      if (provider.isTerminal()) {
-        break;
-      }
+    if (result.data) {
+      this._store.setValuesFromData(result.data, result.source);
     }
 
     this._store.finalize();
 
     this.setStatus('Ready');
 
-    this._runPostInitDataProviders(result).catch(() => {
-      // noop
+    this._runPostInitDataProviders(result.data).catch((error) => {
+      this.emit({ event: 'error', error: error as unknown });
     });
   }
 
@@ -194,27 +188,43 @@ export default class PrecomputedEvaluationsClient
     ];
   }
 
-  private async _runPostInitDataProviders(
-    result: string | null,
-  ): Promise<void> {
+  private async _getResultFromDataProviders(
+    mode: 'during-init' | 'post-init',
+  ): Promise<DataProviderResult> {
+    let result: DataProviderResult = { data: null, source: 'NoValues' };
+
     for await (const provider of this._dataProviders) {
-      if (!provider.runsPostInit()) {
+      const func =
+        mode === 'during-init'
+          ? provider.getEvaluationsData?.(this._sdkKey, this._user)
+          : provider.getEvaluationsDataPostInit?.(this._sdkKey, this._user);
+
+      const data = (await func) ?? null;
+
+      if (!data) {
         continue;
       }
 
-      result = await provider.getEvaluationsData(this._sdkKey, this._user);
+      result = { data, source: provider.source() };
 
-      if (!result) {
-        continue;
+      if (provider.isTerminal()) {
+        break;
       }
     }
 
-    if (!result) {
+    return result;
+  }
+
+  private async _runPostInitDataProviders(data: string | null): Promise<void> {
+    const localResult = await this._getResultFromDataProviders('post-init');
+    data = localResult.data ?? data;
+
+    if (!data) {
       return;
     }
 
     for await (const provider of this._dataProviders) {
-      await provider.setEvaluationsData(this._sdkKey, this._user, result);
+      await provider.setEvaluationsData?.(this._sdkKey, this._user, data);
     }
   }
 }

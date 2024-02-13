@@ -4,13 +4,19 @@ export type StatsigLoadingStatus =
   | 'Ready'
   | 'Error';
 
-export type StatsigClientEvent = 'status_change';
-export type StatsigClientEventData = {
-  event: StatsigClientEvent;
-} & {
-  event: 'status_change';
-  loadingStatus: StatsigLoadingStatus;
-};
+export type StatsigClientEvent = 'status_change' | 'error';
+export type StatsigClientEventData =
+  | {
+      event: StatsigClientEvent;
+    }
+  | {
+      event: 'status_change';
+      loadingStatus: StatsigLoadingStatus;
+    }
+  | {
+      event: 'error';
+      error: unknown;
+    };
 
 export type StatsigClientEventCallback = (data: StatsigClientEventData) => void;
 

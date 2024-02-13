@@ -26,19 +26,7 @@ export class NetworkEvaluationsDataProvider
     return response;
   }
 
-  async setEvaluationsData(
-    _sdkKey: string,
-    _user: StatsigUser,
-    _data: string,
-  ): Promise<void> {
-    // noop
-  }
-
   isTerminal(): boolean {
-    return false;
-  }
-
-  runsPostInit(): boolean {
     return false;
   }
 

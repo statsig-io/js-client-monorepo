@@ -10,9 +10,17 @@ export type EvaluationSource =
   | 'Prefetch';
 
 export interface EvaluationDataProviderInterface {
-  getEvaluationsData(sdkKey: string, user: StatsigUser): Promise<string | null>;
+  getEvaluationsData?(
+    sdkKey: string,
+    user: StatsigUser,
+  ): Promise<string | null>;
 
-  setEvaluationsData(
+  getEvaluationsDataPostInit?(
+    sdkKey: string,
+    user: StatsigUser,
+  ): Promise<string | null>;
+
+  setEvaluationsData?(
     sdkKey: string,
     user: StatsigUser,
     data: string,
@@ -21,6 +29,4 @@ export interface EvaluationDataProviderInterface {
   source(): EvaluationSource;
 
   isTerminal(): boolean;
-
-  runsPostInit(): boolean;
 }
