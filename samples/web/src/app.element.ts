@@ -15,15 +15,24 @@ export class AppElement extends HTMLElement {
     client
       .initialize()
       .then(() => {
+        const gate = client.checkGate('a_gate');
+        const experiment = client.getExperiment('an_experiment');
+
         this.innerHTML = `
       <div class="wrapper">
         <div class="container">
           <!--  WELCOME  -->
           <div id="welcome">
             <h1>
-              <span> Hello there, </span>
-              Welcome ${client.loadingStatus} 👋
+               Statsig: ${client.loadingStatus}
             </h1>
+            <br />
+            <span> a_gate: ${gate ? 'Pass' : 'Fail'} </span>
+            <span>an_experiment: 
+              <pre>${JSON.stringify(experiment, null, 2)}</pre>
+            </span>
+            
+
           </div>
         </div>
       </div>

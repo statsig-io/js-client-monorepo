@@ -21,10 +21,6 @@ const client = new PrecomputedEvaluationsClient(DEMO_CLIENT_KEY, user, {
   ],
 });
 
-client.on('error', (event: unknown) => {
-  console.log(event);
-});
-
 function Content() {
   const gate = useGate('partial_gate');
 
