@@ -1,4 +1,4 @@
-import { StatsigUser } from '@sigstat/core';
+import { StatsigUser } from './StatsigUser';
 
 export type EvaluationSource =
   | 'Uninitialized'

@@ -1,14 +1,11 @@
 import {
+  EvaluationDataProviderInterface,
+  EvaluationSource,
   StatsigUser,
   Storage,
   getUserStorageKey,
   setObjectInStorage,
 } from '@sigstat/core';
-
-import {
-  EvaluationDataProviderInterface,
-  EvaluationSource,
-} from '../EvaluationDataProvider';
 
 const LAST_MODIFIED_STORAGE_KEY = 'statsig.cache.last_modified_time';
 const CACHE_LIMIT = 10;

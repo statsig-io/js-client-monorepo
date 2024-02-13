@@ -1,9 +1,10 @@
-import { StatsigUser, getUserStorageKey } from '@sigstat/core';
-
 import {
   EvaluationDataProviderInterface,
   EvaluationSource,
-} from '../EvaluationDataProvider';
+  StatsigUser,
+  getUserStorageKey,
+} from '@sigstat/core';
+
 import StatsigNetwork from '../Network';
 
 export class PrefetchEvaluationDataProvider

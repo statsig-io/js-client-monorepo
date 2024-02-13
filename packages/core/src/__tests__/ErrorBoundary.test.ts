@@ -1,4 +1,5 @@
 import { configureErrorBoundary, errorBoundary } from '../ErrorBoundary';
+import { Log, LogLevel } from '../Log';
 
 describe('Error Boundary', () => {
   const requests: { url: string; params: unknown }[] = [];
@@ -8,9 +9,10 @@ describe('Error Boundary', () => {
   });
 
   beforeAll(() => {
+    Log.level = LogLevel.None;
+
     configureErrorBoundary({
       sdkKey: 'client-key',
-      isSilent: true,
       metadata: {
         sdkType: 'test-type',
         sdkVersion: 'test-version',

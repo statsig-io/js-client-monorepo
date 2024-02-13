@@ -21,7 +21,7 @@ import {
 import {
   EvaluationDataProviderInterface,
   EvaluationSource,
-} from './EvaluationDataProvider';
+} from '../../core/src/EvaluationDataProvider';
 import EvaluationStore from './EvaluationStore';
 import Network from './Network';
 import './StatsigMetadataAdditions';

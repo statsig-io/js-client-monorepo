@@ -6,8 +6,8 @@ import {
   setObjectInStorage,
 } from '@sigstat/core';
 
+import { EvaluationSource } from '../../core/src/EvaluationDataProvider';
 import { EvaluationResponse } from './EvaluationData';
-import { EvaluationSource } from './EvaluationDataProvider';
 
 const MANIFEST_KEY = 'statsig.manifest';
 const CACHE_LIMIT = 10;

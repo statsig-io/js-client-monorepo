@@ -1,3 +1,4 @@
+import './$_StatsigGlobal';
 import { EventLogger } from './EventLogger';
 import { Log, LogLevel } from './Log';
 import { NetworkCore } from './NetworkCore';

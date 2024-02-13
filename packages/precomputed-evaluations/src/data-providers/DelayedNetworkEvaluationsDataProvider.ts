@@ -1,9 +1,9 @@
-import { StatsigUser } from '@sigstat/core';
-
 import {
   EvaluationDataProviderInterface,
   EvaluationSource,
-} from '../EvaluationDataProvider';
+  StatsigUser,
+} from '@sigstat/core';
+
 import StatsigNetwork from '../Network';
 import { StatsigOptions } from '../StatsigOptions';
 

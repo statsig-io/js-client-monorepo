@@ -1,9 +1,9 @@
-import { StatsigUser, getUserStorageKey } from '@sigstat/core';
-
 import {
   EvaluationDataProviderInterface,
   EvaluationSource,
-} from '../EvaluationDataProvider';
+  StatsigUser,
+  getUserStorageKey,
+} from '@sigstat/core';
 
 export class BootstrapEvaluationsDataProvider
   implements EvaluationDataProviderInterface
