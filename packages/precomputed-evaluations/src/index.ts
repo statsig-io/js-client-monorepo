@@ -1,4 +1,3 @@
-import type { EvaluationDataProviderInterface } from '../../core/src/EvaluationDataProvider';
 import PrecomputedEvaluationsClient from './PrecomputedEvaluationsClient';
 import './StatsigMetadataAdditions';
 import type { StatsigOptions } from './StatsigOptions';
@@ -15,7 +14,6 @@ export type {
 } from '@sigstat/core';
 
 export {
-  EvaluationDataProviderInterface,
   NetworkEvaluationsDataProvider,
   LocalStorageCacheEvaluationsDataProvider,
   BootstrapEvaluationsDataProvider,

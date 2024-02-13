@@ -1,32 +1,29 @@
 name: Lint, Test, Build, Deploy
 on:
+  workflow_dispatch:
   push:
-    branches:
-      - main
+    branches: [main]
   pull_request:
+    branches: [main]
 
 env:
   FORCE_COLOR: true
 
 jobs:
-  lint-test-build:
+  lint:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v3
-
-      - uses: nrwl/nx-set-shas@v3
-
-      - uses: pnpm/action-setup@v3
-        with:
-          version: 8
-
-      - run: pnpm install --frozen-lockfile
-
-      # - run: pnpm nx format:check
-
+      - uses: ./.github/actions/setup-action
       - run: pnpm run lint
-      - run: pnpm run test
+
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ./.github/actions/setup-action
       - run: pnpm run build
 
       - name: Upload Pages artifact
@@ -34,8 +31,16 @@ jobs:
         with:
           path: './dist/samples/react'
 
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ./.github/actions/setup-action
+      - run: pnpm run test
+
   deploy:
-    needs: lint-test-build
+    needs: [lint, build, test]
     runs-on: ubuntu-latest
 
     permissions:

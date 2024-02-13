@@ -2,6 +2,8 @@ import type { FeatureGate, StatsigUser } from '@sigstat/core';
 import {
   DJB2,
   DynamicConfig,
+  EvaluationDataProviderInterface,
+  EvaluationSource,
   Experiment,
   Layer,
   MonitoredClass,
@@ -18,10 +20,6 @@ import {
   normalizeUser,
 } from '@sigstat/core';
 
-import {
-  EvaluationDataProviderInterface,
-  EvaluationSource,
-} from '../../core/src/EvaluationDataProvider';
 import EvaluationStore from './EvaluationStore';
 import Network from './Network';
 import './StatsigMetadataAdditions';

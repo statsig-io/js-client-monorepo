@@ -1,4 +1,5 @@
 import {
+  EvaluationSource,
   StatsigUser,
   Storage,
   getObjectFromStorage,
@@ -6,7 +7,6 @@ import {
   setObjectInStorage,
 } from '@sigstat/core';
 
-import { EvaluationSource } from '../../core/src/EvaluationDataProvider';
 import { EvaluationResponse } from './EvaluationData';
 
 const MANIFEST_KEY = 'statsig.manifest';
