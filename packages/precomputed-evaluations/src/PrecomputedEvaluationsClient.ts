@@ -2,7 +2,7 @@ import type { FeatureGate, StatsigUser } from '@sigstat/core';
 import {
   DJB2,
   DynamicConfig,
-  EvaluationDataProviderInterface,
+  EvaluationDataProvider,
   EvaluationSource,
   Experiment,
   Layer,
@@ -38,7 +38,7 @@ export default class PrecomputedEvaluationsClient
   private _network: Network;
   private _store: EvaluationStore;
   private _user: StatsigUser;
-  private _dataProviders: EvaluationDataProviderInterface[];
+  private _dataProviders: EvaluationDataProvider[];
 
   constructor(
     sdkKey: string,
@@ -179,7 +179,7 @@ export default class PrecomputedEvaluationsClient
     this._logger.enqueue({ ...event, user: this._user, time: Date.now() });
   }
 
-  private _getDefaultDataProviders(): EvaluationDataProviderInterface[] {
+  private _getDefaultDataProviders(): EvaluationDataProvider[] {
     return [
       new LocalStorageCacheEvaluationsDataProvider(),
       new NetworkEvaluationsDataProvider(this._network),
@@ -203,9 +203,9 @@ export default class PrecomputedEvaluationsClient
         continue;
       }
 
-      result = { data, source: provider.source() };
+      result = { data, source: provider.source };
 
-      if (provider.isTerminal()) {
+      if (provider.isTerminal) {
         break;
       }
     }

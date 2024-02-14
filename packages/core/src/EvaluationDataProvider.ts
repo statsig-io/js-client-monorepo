@@ -9,24 +9,22 @@ export type EvaluationSource =
   | 'Bootstrap'
   | 'Prefetch';
 
-export interface EvaluationDataProviderInterface {
-  getEvaluationsData?(
+export type EvaluationDataProvider = {
+  readonly getEvaluationsData?: (
     sdkKey: string,
     user: StatsigUser,
-  ): Promise<string | null>;
-
-  getEvaluationsDataPostInit?(
+  ) => Promise<string | null>;
+  readonly getEvaluationsDataPostInit?: (
     sdkKey: string,
     user: StatsigUser,
-  ): Promise<string | null>;
+  ) => Promise<string | null>;
 
-  setEvaluationsData?(
+  readonly setEvaluationsData?: (
     sdkKey: string,
     user: StatsigUser,
     data: string,
-  ): Promise<void>;
+  ) => Promise<void>;
 
-  source(): EvaluationSource;
-
-  isTerminal(): boolean;
-}
+  readonly source: EvaluationSource;
+  readonly isTerminal: boolean;
+};

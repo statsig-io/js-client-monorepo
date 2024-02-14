@@ -1,15 +1,12 @@
-import {
-  EvaluationDataProviderInterface,
-  EvaluationSource,
-  StatsigUser,
-} from '@sigstat/core';
+import { EvaluationDataProvider, StatsigUser } from '@sigstat/core';
 
 import StatsigNetwork from '../Network';
 import { StatsigOptions } from '../StatsigOptions';
 
-export class NetworkEvaluationsDataProvider
-  implements EvaluationDataProviderInterface
-{
+export class NetworkEvaluationsDataProvider implements EvaluationDataProvider {
+  readonly isTerminal = false;
+  readonly source = 'Network';
+
   static create(
     options: StatsigOptions | null = null,
   ): NetworkEvaluationsDataProvider {
@@ -24,13 +21,5 @@ export class NetworkEvaluationsDataProvider
   ): Promise<string | null> {
     const response = await this._network.fetchEvaluations(sdkKey, user);
     return response;
-  }
-
-  isTerminal(): boolean {
-    return false;
-  }
-
-  source(): EvaluationSource {
-    return 'Network';
   }
 }

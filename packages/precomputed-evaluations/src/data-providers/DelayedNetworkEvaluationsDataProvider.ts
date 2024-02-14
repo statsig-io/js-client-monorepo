@@ -1,15 +1,14 @@
-import {
-  EvaluationDataProviderInterface,
-  EvaluationSource,
-  StatsigUser,
-} from '@sigstat/core';
+import { EvaluationDataProvider, StatsigUser } from '@sigstat/core';
 
 import StatsigNetwork from '../Network';
 import { StatsigOptions } from '../StatsigOptions';
 
 export class DelayedNetworkEvaluationsDataProvider
-  implements EvaluationDataProviderInterface
+  implements EvaluationDataProvider
 {
+  readonly isTerminal = false;
+  readonly source = 'Network';
+
   static create(
     options: StatsigOptions | null = null,
   ): DelayedNetworkEvaluationsDataProvider {
@@ -26,13 +25,5 @@ export class DelayedNetworkEvaluationsDataProvider
   ): Promise<string | null> {
     const response = await this._network.fetchEvaluations(sdkKey, user);
     return response;
-  }
-
-  isTerminal(): boolean {
-    return false;
-  }
-
-  source(): EvaluationSource {
-    return 'Network';
   }
 }

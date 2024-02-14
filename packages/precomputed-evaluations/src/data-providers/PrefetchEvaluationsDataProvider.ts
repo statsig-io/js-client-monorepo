@@ -1,28 +1,20 @@
 import {
-  EvaluationDataProviderInterface,
-  EvaluationSource,
+  EvaluationDataProvider,
   StatsigUser,
   getUserStorageKey,
 } from '@sigstat/core';
 
 import StatsigNetwork from '../Network';
 
-export class PrefetchEvaluationDataProvider
-  implements EvaluationDataProviderInterface
-{
+export class PrefetchEvaluationDataProvider implements EvaluationDataProvider {
+  readonly isTerminal = true;
+  readonly source = 'Prefetch';
+
   private _network: StatsigNetwork;
   private _data: Record<string, string> = {};
 
   constructor(api?: string) {
     this._network = new StatsigNetwork(api);
-  }
-
-  source(): EvaluationSource {
-    return 'Prefetch';
-  }
-
-  isTerminal(): boolean {
-    return true;
   }
 
   getEvaluationsData(

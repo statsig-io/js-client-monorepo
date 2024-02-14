@@ -1,6 +1,5 @@
 import {
-  EvaluationDataProviderInterface,
-  EvaluationSource,
+  EvaluationDataProvider,
   StatsigUser,
   Storage,
   getUserStorageKey,
@@ -11,8 +10,11 @@ const LAST_MODIFIED_STORAGE_KEY = 'statsig.cache.last_modified_time';
 const CACHE_LIMIT = 10;
 
 export class LocalStorageCacheEvaluationsDataProvider
-  implements EvaluationDataProviderInterface
+  implements EvaluationDataProvider
 {
+  readonly isTerminal = false;
+  readonly source = 'Cache';
+
   private _lastModifiedTimeMap: Record<string, number> = {};
 
   async getEvaluationsData(
@@ -33,14 +35,6 @@ export class LocalStorageCacheEvaluationsDataProvider
     await Storage.setItem(cacheKey, data);
     await this._runCacheEviction(cacheKey);
     return Promise.resolve();
-  }
-
-  isTerminal(): boolean {
-    return false;
-  }
-
-  source(): EvaluationSource {
-    return 'Cache';
   }
 
   private async _runCacheEviction(cacheKey: string): Promise<void> {

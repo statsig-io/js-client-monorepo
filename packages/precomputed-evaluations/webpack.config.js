@@ -1,5 +1,6 @@
 const { composePlugins, withNx, withWeb } = require('@nx/webpack');
 const path = require('path');
+const minifier = require('../../tools/scripts/webpack-minifier');
 
 module.exports = composePlugins(withNx(), withWeb(), () =>
   // config
@@ -44,6 +45,10 @@ module.exports = composePlugins(withNx(), withWeb(), () =>
       performance: {
         maxEntrypointSize: 50000,
         hints: 'error',
+      },
+      optimization: {
+        minimize: true,
+        minimizer: [minifier],
       },
     };
   },

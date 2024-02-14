@@ -1,11 +1,11 @@
 import {
-  EvaluationDataProviderInterface,
+  EvaluationDataProvider,
   Flatten,
   StatsigOptionsCommon,
 } from '@sigstat/core';
 
 export type StatsigOptions = Flatten<
   StatsigOptionsCommon & {
-    dataProviders?: EvaluationDataProviderInterface[];
+    dataProviders?: EvaluationDataProvider[];
   }
 >;

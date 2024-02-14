@@ -1,13 +1,15 @@
 import {
-  EvaluationDataProviderInterface,
-  EvaluationSource,
+  EvaluationDataProvider,
   StatsigUser,
   getUserStorageKey,
 } from '@sigstat/core';
 
 export class BootstrapEvaluationsDataProvider
-  implements EvaluationDataProviderInterface
+  implements EvaluationDataProvider
 {
+  readonly isTerminal = true;
+  readonly source = 'Bootstrap';
+
   private _data: Record<string, string> = {};
 
   async getEvaluationsData(
@@ -17,18 +19,6 @@ export class BootstrapEvaluationsDataProvider
     const cacheKey = getUserStorageKey(user, sdkKey);
     const result = this._data[cacheKey] ?? null;
     return Promise.resolve(result);
-  }
-
-  isTerminal(): boolean {
-    return true;
-  }
-
-  runsPostInit(): boolean {
-    return false;
-  }
-
-  source(): EvaluationSource {
-    return 'Bootstrap';
   }
 
   addDataForUser(sdkKey: string, user: StatsigUser, data: string): void {
