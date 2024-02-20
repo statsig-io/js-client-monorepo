@@ -42,6 +42,9 @@ importers:
       '@babel/preset-react':
         specifier: ^7.14.5
         version: 7.23.3(@babel/core@7.23.9)
+      '@babel/runtime':
+        specifier: 7.22.6
+        version: 7.22.6
       '@commitlint/cli':
         specifier: ^17.7.2
         version: 17.8.1
@@ -1741,6 +1744,7 @@ packages:
     engines: {node: '>=6.9.0'}
     dependencies:
       regenerator-runtime: 0.14.1
+    dev: true
 
   /@babel/template@7.23.9:
     resolution: {integrity: sha512-+xrD2BWLpvHKNmX2QbpdpsBaWnRxahMwJjO+KZk2JOElj5nSmKezyS1B4u+QbHMTX69t4ukm6hh9lsYQ7GHCKA==}
@@ -2152,7 +2156,7 @@ packages:
     resolution: {integrity: sha512-9cMquL/5bBfV73CbZcWipk3KZSo8mBqdgvkoWCtEtnnlm/879ayxzMWjVIgT5yV4w+X7+N6KkBSUIIj4t9Xqew==}
     hasBin: true
     dependencies:
-      '@babel/runtime': 7.23.9
+      '@babel/runtime': 7.22.6
       '@expo/code-signing-certificates': 0.0.5
       '@expo/config': 8.5.4
       '@expo/config-plugins': 7.8.4
@@ -9434,7 +9438,7 @@ packages:
     resolution: {integrity: sha512-CVg0h9bmYeTWtw4EOL0HKNL+zu84YZl5nLWRPKrcpt8jox1VQQAYmvJGMdM5gSRxq5CFNLlWGxq9O8Zvfi1SOQ==}
     hasBin: true
     dependencies:
-      '@babel/runtime': 7.23.9
+      '@babel/runtime': 7.22.6
       '@expo/cli': 0.17.5(@react-native/babel-preset@0.73.21)(encoding@0.1.13)(expo-modules-autolinking@1.10.3)
       '@expo/config': 8.5.4
       '@expo/config-plugins': 7.8.4
@@ -14925,6 +14929,7 @@ packages:
 
   /regenerator-runtime@0.14.1:
     resolution: {integrity: sha512-dYnhHh0nJoMfnkZs6GmmhFknAGRrLznOu5nc9ML+EJxGvrx6H7teuevqVqCuPcPK//3eDrrjQhehXVx9cnkGdw==}
+    dev: true
 
   /regenerator-transform@0.15.2:
     resolution: {integrity: sha512-hfMp2BoF0qOk3uc5V20ALGDS2ddjQaLrdl7xrGXvAIow7qeWRM2VA2HuCHkUKk9slq3VwEwLNK3DFBqDfPGYtg==}

@@ -1,5 +1,5 @@
 {
-  "name": "react-native-sample",
+  "name": "react-native-samples",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "samples/react-native/src",
   "projectType": "application",
@@ -14,7 +14,7 @@
     "serve": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "nx start react-native-sample"
+        "command": "nx start react-native-samples"
       }
     },
     "run-ios": {
@@ -79,20 +79,6 @@
       "outputs": ["{options.outputFile}"],
       "options": {
         "lintFilePatterns": ["samples/react-native/**/*.{ts,tsx,js,jsx}"]
-      }
-    },
-    "test": {
-      "executor": "@nx/jest:jest",
-      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
-      "options": {
-        "jestConfig": "samples/react-native/jest.config.ts",
-        "passWithNoTests": true
-      },
-      "configurations": {
-        "ci": {
-          "ci": true,
-          "codeCoverage": true
-        }
       }
     }
   },

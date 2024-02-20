@@ -5,7 +5,7 @@ import { DynamicConfig, StatsigUser } from '@sigstat/core';
 import StatsigContext from './StatsigContext';
 
 type GetDynamicConfigOptions = {
-  logExposure: boolean;
+  logExposure?: boolean;
   user: StatsigUser | null;
 };
 

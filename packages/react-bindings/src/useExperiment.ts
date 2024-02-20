@@ -3,7 +3,7 @@ import { Experiment, StatsigUser } from '@sigstat/core';
 import useDynamicConfig from './useDynamicConfig';
 
 type GetExperimentOptions = {
-  logExposure: boolean;
+  logExposure?: boolean;
   user: StatsigUser | null;
 };
 
