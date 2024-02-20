@@ -1,11 +1,5 @@
-# client-extensions
+# Statsig - Client Extensions
 
-This library was generated with [Nx](https://nx.dev).
+Optional additions to add functionality to a Statsig Javascript SDK.
 
-## Building
-
-Run `nx build client-extensions` to build the library.
-
-## Running unit tests
-
-Run `nx test client-extensions` to execute the unit tests via [Jest](https://jestjs.io).
+Learn more by visiting: https://docs.statsig.com/client/jsClientSDK

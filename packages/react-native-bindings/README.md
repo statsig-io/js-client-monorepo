@@ -1,11 +1,5 @@
-# react-native-bindings
+# Statsig - React Native
 
-This library was generated with [Nx](https://nx.dev).
+ReactNative specific additions for use with a Statsig Javascript SDK.
 
-## Building
-
-Run `nx build react-native-bindings` to build the library.
-
-## Running unit tests
-
-Run `nx test react-native-bindings` to execute the unit tests via [Jest](https://jestjs.io).
+Learn more by visiting: https://docs.statsig.com/client/jsClientSDK

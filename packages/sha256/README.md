@@ -1,11 +1,5 @@
-# sha256
+# Statsig - SHA256
 
-This library was generated with [Nx](https://nx.dev).
+A SHA 256 implementation used in Statsig Javascript packages.
 
-## Building
-
-Run `nx build sha256` to build the library.
-
-## Running unit tests
-
-Run `nx test sha256` to execute the unit tests via [Jest](https://jestjs.io).
+Learn more by visiting: https://docs.statsig.com/client/jsClientSDK

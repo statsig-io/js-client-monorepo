@@ -1,11 +1,5 @@
-# core
+# Statsig - Core
 
-This library was generated with [Nx](https://nx.dev).
+The package that contains all the common logic shared by the various Statsig Javascript packages.
 
-## Building
-
-Run `nx build core` to build the library.
-
-## Running unit tests
-
-Run `nx test core` to execute the unit tests via [Jest](https://jestjs.io).
+Learn more by visiting: https://docs.statsig.com/client/jsClientSDK

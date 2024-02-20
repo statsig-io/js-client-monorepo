@@ -34,7 +34,19 @@
       "$_mainApi": "B",
       "$_evaluator": "L",
       "$_getOutputs": "U",
-      "$_source": "t"
+      "$_source": "t",
+      "$_manifest": "i",
+      "$_isReady": "R",
+      "$_enforceStorageLimit": "Y",
+      "$_api": "q",
+      "$_user": "W",
+      "$_getResultFromDataProviders": "H",
+      "$_runPostInitDataProviders": "X",
+      "$_getDefaultDataProviders": "Z",
+      "$_dataProviders": "$",
+      "$_data": "tt",
+      "$_lastModifiedTimeMap": "nt",
+      "$_runCacheEviction": "et"
     }
   }
 }

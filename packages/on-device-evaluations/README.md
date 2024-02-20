@@ -1,11 +1,12 @@
-# on-device-evaluations
+# Statsig - On Device Evaluations
 
-This library was generated with [Nx](https://nx.dev).
+[![npm version](https://badge.fury.io/js/statsig-js.svg)](https://badge.fury.io/js/statsig-js)
+[![jsdelivr](https://data.jsdelivr.com/v1/package/npm/statsig-js/badge)](https://www.jsdelivr.com/package/npm/statsig-js)
 
-## Building
+The JavaScript SDK for single user client environments. If you need a SDK for another language or server environment, check out our [other SDKs](https://docs.statsig.com/#sdks).
 
-Run `nx build on-device-evaluations` to build the library.
+Statsig helps you move faster with feature gates (feature flags), and/or dynamic configs. It also allows you to run A/B/n tests to validate your new features and understand their impact on your KPIs. If you're new to Statsig, check out our product and create an account at [statsig.com](https://www.statsig.com).
 
-## Running unit tests
+## Getting Started
 
-Run `nx test on-device-evaluations` to execute the unit tests via [Jest](https://jestjs.io).
+Check out our [SDK docs](https://docs.statsig.com/client/jsClientSDK) to get started.
