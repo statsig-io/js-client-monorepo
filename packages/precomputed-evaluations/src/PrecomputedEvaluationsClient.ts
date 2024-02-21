@@ -6,7 +6,6 @@ import {
   EvaluationSource,
   Experiment,
   Layer,
-  MonitoredClass,
   PrecomputedEvaluationsInterface,
   StableID,
   StatsigClientBase,
@@ -17,6 +16,7 @@ import {
   emptyDynamicConfig,
   emptyFeatureGate,
   emptyLayer,
+  monitorClass,
   normalizeUser,
 } from '@sigstat/core';
 
@@ -29,7 +29,6 @@ import { NetworkEvaluationsDataProvider } from './data-providers/NetworkEvaluati
 
 type DataProviderResult = { data: string | null; source: EvaluationSource };
 
-@MonitoredClass
 export default class PrecomputedEvaluationsClient
   extends StatsigClientBase
   implements PrecomputedEvaluationsInterface
@@ -48,6 +47,7 @@ export default class PrecomputedEvaluationsClient
     const network = new Network(options?.api);
 
     super(sdkKey, network, options);
+    monitorClass(PrecomputedEvaluationsClient, this);
 
     if (options?.overrideStableID) {
       StableID.setOverride(options?.overrideStableID);

@@ -4,11 +4,11 @@ import {
   Experiment,
   FeatureGate,
   Layer,
-  MonitoredClass,
   OnDeviceEvaluationsInterface,
   StatsigClientBase,
   StatsigEvent,
   StatsigUser,
+  monitorClass,
 } from '@sigstat/core';
 
 import Evaluator from './Evaluator';
@@ -22,7 +22,6 @@ declare global {
   }
 }
 
-@MonitoredClass
 export default class OnDeviceEvaluationsClient
   extends StatsigClientBase
   implements OnDeviceEvaluationsInterface
@@ -36,6 +35,7 @@ export default class OnDeviceEvaluationsClient
   constructor(sdkKey: string, options: StatsigOptions | null = null) {
     const network = new Network(sdkKey, options);
     super(sdkKey, network, options);
+    monitorClass(OnDeviceEvaluationsClient, this);
 
     this._options = options ?? {};
     this._network = network;

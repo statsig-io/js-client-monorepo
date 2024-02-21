@@ -1,9 +1,12 @@
 import * as Diagnostics from '../Diagnostics';
 import * as ErrorBoundary from '../ErrorBoundary';
-import { MonitoredClass } from '../Monitoring';
+import { monitorClass } from '../Monitoring';
 
-@MonitoredClass
 class TestClass {
+  constructor() {
+    monitorClass(TestClass, this);
+  }
+
   instanceMethod() {
     // noop
   }

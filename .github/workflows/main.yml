@@ -1,4 +1,4 @@
-name: Lint, Test, Build, Deploy
+name: Main
 on:
   workflow_dispatch:
   push:

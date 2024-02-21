@@ -5,7 +5,6 @@
     "types": [
       "node"
     ],
-    "experimentalDecorators": true,
   },
   "files": [
     "../../node_modules/@nx/react-native/typings/svg.d.ts"

@@ -1,6 +1,6 @@
 import { Diagnostics } from './Diagnostics';
 import { Log } from './Log';
-import { MonitoredFunction } from './Monitoring';
+import { monitorFunction } from './Monitoring';
 import { StableID } from './StableID';
 import { StatsigMetadataProvider } from './StatsigMetadata';
 import { getUUID } from './UUID';
@@ -59,8 +59,15 @@ export class NetworkCore {
     return this._sendRequest({ method: 'GET', ...args });
   }
 
-  @MonitoredFunction()
   protected async _sendRequest(args: RequestArgs): Promise<string | null> {
+    return monitorFunction(
+      '_sendRequest',
+      () => this._sendRequestImpl(args),
+      this,
+    );
+  }
+
+  private async _sendRequestImpl(args: RequestArgs): Promise<string | null> {
     const { method, url, body, retries } = args;
 
     const controller = new AbortController();
