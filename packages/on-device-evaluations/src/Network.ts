@@ -8,7 +8,7 @@ export default class StatsigNetwork extends NetworkCore {
   private _downloadConfigSpecsUrlBase: string;
 
   constructor(options: StatsigOptions | null = null) {
-    super();
+    super(options);
 
     this._downloadConfigSpecsUrlBase =
       options?.baseDownloadConfigSpecsUrl ?? DEFAULT_SPECS_URL;

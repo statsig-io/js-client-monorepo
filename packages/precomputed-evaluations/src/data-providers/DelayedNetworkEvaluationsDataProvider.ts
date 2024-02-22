@@ -13,7 +13,7 @@ export class DelayedNetworkEvaluationsDataProvider
     options: StatsigOptions | null = null,
   ): DelayedNetworkEvaluationsDataProvider {
     return new DelayedNetworkEvaluationsDataProvider(
-      new StatsigNetwork(options?.api),
+      new StatsigNetwork(options),
     );
   }
 

@@ -17,6 +17,9 @@ export type StatsigOptionsCommon = {
   overrideStableID?: string;
   logLevel?: LogLevel;
   dataProviders?: StatsigDataProvider[];
+  networkTimeoutMs?: number;
+  loggingBufferMaxSize?: number;
+  loggingIntervalMs?: number;
 };
 
 export type StatsigEnvironment = {

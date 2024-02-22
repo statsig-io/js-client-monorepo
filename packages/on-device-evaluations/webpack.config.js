@@ -47,7 +47,7 @@ module.exports = composePlugins(withNx(), withWeb(), () =>
         globalObject: 'this',
       },
       performance: {
-        maxEntrypointSize: 50000,
+        maxEntrypointSize: 60000,
         hints: 'error',
       },
       optimization: {

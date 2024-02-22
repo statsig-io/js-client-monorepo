@@ -48,7 +48,17 @@
       "$_lastModifiedTimeMap": "nt",
       "$_runCacheEviction": "et",
       "$_sendRequestImpl": "rt",
-      "$_setStatus": "it"
+      "$_setStatus": "it",
+      "$_maxQueueSize": "ut",
+      "$_getDetailedEvaluation": "ot",
+      "$_evaluateSpec": "st",
+      "$_evaluateRule": "ct",
+      "$_evaluateDelegate": "ft",
+      "$_evaluateCondition": "lt",
+      "$_evaluateNestedGate": "ht",
+      "$_evaluateMultiNestedGates": "vt",
+      "$_downloadConfigSpecsUrlBase": "dt",
+      "$_getSpecs": "_t"
     }
   }
 }

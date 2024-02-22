@@ -7,7 +7,7 @@ Log.level = LogLevel.None;
 
 describe('Network Core', () => {
   const url = 'http://localhost';
-  const network = new NetworkCore();
+  const network = new NetworkCore(null);
 
   describe('Success', () => {
     beforeAll(async () => {

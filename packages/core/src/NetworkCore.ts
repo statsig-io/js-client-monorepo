@@ -3,9 +3,10 @@ import { Log } from './Log';
 import { monitorFunction } from './Monitoring';
 import { StableID } from './StableID';
 import { StatsigMetadataProvider } from './StatsigMetadata';
+import { StatsigOptionsCommon } from './StatsigTypes';
 import { getUUID } from './UUID';
 
-const DEFAULT_TIMEOUT = 10_000;
+const DEFAULT_TIMEOUT_MS = 10_000;
 
 type CommonArgs = {
   sdkKey: string;
@@ -35,8 +36,10 @@ class NetworkError extends Error {
 
 export class NetworkCore {
   private readonly _sessionID: string;
+  private readonly _timeout: number;
 
-  constructor() {
+  constructor(private _options: StatsigOptionsCommon | null) {
+    this._timeout = _options?.networkTimeoutMs ?? DEFAULT_TIMEOUT_MS;
     this._sessionID = getUUID();
   }
 
@@ -72,8 +75,8 @@ export class NetworkCore {
 
     const controller = new AbortController();
     const handle = setTimeout(
-      () => controller.abort(`Timeout of ${DEFAULT_TIMEOUT}ms expired.`),
-      100,
+      () => controller.abort(`Timeout of ${this._timeout}ms expired.`),
+      this._timeout,
     );
 
     let response: Response | null = null;

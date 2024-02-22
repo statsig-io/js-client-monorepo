@@ -39,7 +39,7 @@ export default class PrecomputedEvaluationsClient
     user: StatsigUser,
     options: StatsigOptions | null = null,
   ) {
-    const network = new Network(options?.api);
+    const network = new Network(options);
 
     super(
       sdkKey,

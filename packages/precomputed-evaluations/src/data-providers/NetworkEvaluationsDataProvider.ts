@@ -10,7 +10,7 @@ export class NetworkEvaluationsDataProvider implements StatsigDataProvider {
   static create(
     options: StatsigOptions | null = null,
   ): NetworkEvaluationsDataProvider {
-    return new NetworkEvaluationsDataProvider(new StatsigNetwork(options?.api));
+    return new NetworkEvaluationsDataProvider(new StatsigNetwork(options));
   }
 
   constructor(private _network: StatsigNetwork) {}
