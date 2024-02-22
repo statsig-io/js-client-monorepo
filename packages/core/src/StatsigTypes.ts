@@ -43,35 +43,44 @@ export type Layer = EvaluatedSpec & {
   readonly getValue: (parameterName: string) => unknown;
 };
 
-type EmptyEvaluationArgs = {
-  name: string;
-  source: string;
-};
-
-function makeEmptyEvaluatedSpec(args: EmptyEvaluationArgs): EvaluatedSpec {
+export function makeFeatureGate(
+  name: string,
+  source: string,
+  ruleID?: string,
+  value?: boolean,
+): FeatureGate {
   return {
-    ...args,
-    ruleID: DEFAULT_RULE,
+    name,
+    source,
+    ruleID: ruleID ?? DEFAULT_RULE,
+    value: value === true,
   };
 }
 
-export function emptyFeatureGate(args: EmptyEvaluationArgs): FeatureGate {
+export function makeDynamicConfig(
+  name: string,
+  source: string,
+  ruleID?: string,
+  value?: Record<string, unknown>,
+): DynamicConfig {
   return {
-    ...makeEmptyEvaluatedSpec(args),
-    value: false,
+    name,
+    source,
+    ruleID: ruleID ?? DEFAULT_RULE,
+    value: value ?? {},
   };
 }
 
-export function emptyDynamicConfig(args: EmptyEvaluationArgs): DynamicConfig {
+export function makeLayer(
+  name: string,
+  source: string,
+  ruleID?: string,
+  getValue?: (param: string) => unknown,
+): Layer {
   return {
-    ...makeEmptyEvaluatedSpec(args),
-    value: {},
-  };
-}
-
-export function emptyLayer(args: EmptyEvaluationArgs): Layer {
-  return {
-    ...makeEmptyEvaluatedSpec(args),
-    getValue: (): unknown => undefined,
+    name,
+    source,
+    getValue: getValue ?? ((): unknown => undefined),
+    ruleID: ruleID ?? DEFAULT_RULE,
   };
 }

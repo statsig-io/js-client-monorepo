@@ -5,9 +5,9 @@ import {
   Layer,
   OnDeviceEvaluationsInterface,
   PrecomputedEvaluationsInterface,
-  emptyDynamicConfig,
-  emptyFeatureGate,
-  emptyLayer,
+  makeDynamicConfig,
+  makeFeatureGate,
+  makeLayer,
 } from '@sigstat/core';
 
 const noop = (): void => {
@@ -17,15 +17,14 @@ const noop = (): void => {
 const defaultEvaluation = <T>(type: 'gate' | 'config' | 'layer') => {
   return (...args: unknown[]): T => {
     const name = typeof args[0] === 'string' ? args[0] : (args[1] as string);
-    const evalArgs = { name, source: 'Error' };
 
     switch (type) {
       case 'gate':
-        return emptyFeatureGate(evalArgs) as T;
+        return makeFeatureGate(name, 'Error') as T;
       case 'config':
-        return emptyDynamicConfig(evalArgs) as T;
+        return makeDynamicConfig(name, 'Error') as T;
       case 'layer':
-        return emptyLayer(evalArgs) as T;
+        return makeLayer(name, 'Error') as T;
     }
   };
 };

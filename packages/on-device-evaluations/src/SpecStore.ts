@@ -1,5 +1,7 @@
 import { DataSource } from '@sigstat/core';
 
+type SpecType = 'gate' | 'config' | 'layer';
+
 export type SpecCondition = {
   type: string;
   targetValue: unknown;
@@ -70,5 +72,22 @@ export default class SpecStore {
     }
 
     this.source = 'NoValues';
+  }
+
+  getSpec(type: SpecType, name: string): Spec | null {
+    // todo: use Object instead of Array
+    const specs = this._getSpecs(type);
+    return specs?.find((spec) => spec.name === name) ?? null;
+  }
+
+  private _getSpecs(type: SpecType) {
+    switch (type) {
+      case 'gate':
+        return this.values?.feature_gates;
+      case 'config':
+        return this.values?.dynamic_configs;
+      case 'layer':
+        return this.values?.layer_configs;
+    }
   }
 }

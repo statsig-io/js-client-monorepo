@@ -1,3 +1,4 @@
+import { DynamicConfig, FeatureGate } from './StatsigTypes';
 import { StatsigUser } from './StatsigUser';
 
 export type SecondaryExposure = {
@@ -44,37 +45,34 @@ export function isExposureEvent({ eventName }: StatsigEventInternal): boolean {
 
 export function createGateExposure(
   user: StatsigUser,
-  gateName: string,
-  gateValue: boolean,
-  ruleID: string,
-  secondaryExposures: SecondaryExposure[],
+  gate: FeatureGate,
+  secondaryExposures: SecondaryExposure[] | undefined,
 ): StatsigEventInternal {
   return createExposure(
     GATE_EXPOSURE_NAME,
     user,
     {
-      gate: gateName,
-      gateValue: String(gateValue),
-      ruleID,
+      gate: gate.name,
+      gateValue: String(gate.value),
+      ruleID: gate.ruleID,
     },
-    secondaryExposures,
+    secondaryExposures ?? [],
   );
 }
 
 export function createConfigExposure(
   user: StatsigUser,
-  configName: string,
-  ruleID: string,
-  secondaryExposures: SecondaryExposure[],
+  config: DynamicConfig,
+  secondaryExposures: SecondaryExposure[] | undefined,
 ): StatsigEventInternal {
   return createExposure(
     CONFIG_EXPOSURE_NAME,
     user,
     {
-      config: configName,
-      ruleID,
+      config: config.name,
+      ruleID: config.ruleID,
     },
-    secondaryExposures,
+    secondaryExposures ?? [],
   );
 }
 

@@ -28,6 +28,7 @@ export class StatsigClientBase implements StatsigClientEventEmitterInterface {
     sdkKey: string,
     network: NetworkCore,
     options: StatsigOptionsCommon | null,
+    dataProviders: StatsigDataProvider[],
   ) {
     this._logger = new EventLogger(sdkKey, network, options);
     this._sdkKey = sdkKey;
@@ -38,8 +39,7 @@ export class StatsigClientBase implements StatsigClientEventEmitterInterface {
     __STATSIG__.instances = instances;
 
     Log.level = options?.logLevel ?? LogLevel.Error;
-    this._dataProviders =
-      options?.dataProviders ?? this._getDefaultDataProviders();
+    this._dataProviders = dataProviders;
   }
 
   on(event: StatsigClientEvent, listener: StatsigClientEventCallback): void {
@@ -67,10 +67,6 @@ export class StatsigClientBase implements StatsigClientEventEmitterInterface {
   protected _setStatus(newStatus: StatsigLoadingStatus): void {
     this.loadingStatus = newStatus;
     this.emit({ event: 'status_change', loadingStatus: newStatus });
-  }
-
-  protected _getDefaultDataProviders(): StatsigDataProvider[] {
-    return [];
   }
 
   protected async _getResultFromDataProviders(

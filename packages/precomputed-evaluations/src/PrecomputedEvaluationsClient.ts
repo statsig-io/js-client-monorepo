@@ -7,14 +7,13 @@ import {
   PrecomputedEvaluationsInterface,
   StableID,
   StatsigClientBase,
-  StatsigDataProvider,
   StatsigEvent,
   createConfigExposure,
   createGateExposure,
   createLayerParameterExposure,
-  emptyDynamicConfig,
-  emptyFeatureGate,
-  emptyLayer,
+  makeDynamicConfig,
+  makeFeatureGate,
+  makeLayer,
   monitorClass,
   normalizeUser,
 } from '@sigstat/core';
@@ -42,7 +41,15 @@ export default class PrecomputedEvaluationsClient
   ) {
     const network = new Network(options?.api);
 
-    super(sdkKey, network, options);
+    super(
+      sdkKey,
+      network,
+      options,
+      options?.dataProviders ?? [
+        new LocalStorageCacheEvaluationsDataProvider(),
+        new NetworkEvaluationsDataProvider(network),
+      ],
+    );
     monitorClass(PrecomputedEvaluationsClient, this);
 
     if (options?.overrideStableID) {
@@ -54,8 +61,6 @@ export default class PrecomputedEvaluationsClient
     this._store = new EvaluationStore(sdkKey);
     this._network = network;
     this._user = user;
-    this._dataProviders =
-      this._options.dataProviders ?? this._getDefaultDataProviders();
   }
 
   async initialize(): Promise<void> {
@@ -97,48 +102,36 @@ export default class PrecomputedEvaluationsClient
   getFeatureGate(name: string): FeatureGate {
     const hash = DJB2(name);
     const res = this._store.values?.feature_gates[hash];
-    const gate = emptyFeatureGate({ name, source: this._store.source });
 
-    if (res == null) {
-      return gate;
-    }
-
-    this._logger.enqueue(
-      createGateExposure(
-        this._user,
-        name,
-        res.value,
-        res.rule_id,
-        res.secondary_exposures,
-      ),
+    const gate = makeFeatureGate(
+      name,
+      this._store.source,
+      res?.rule_id,
+      res?.value,
     );
 
-    return {
-      ...gate,
-      ruleID: res.rule_id,
-      value: res.value,
-    };
+    this._logger.enqueue(
+      createGateExposure(this._user, gate, res?.secondary_exposures),
+    );
+
+    return gate;
   }
 
   getDynamicConfig(name: string): DynamicConfig {
     const hash = DJB2(name);
     const res = this._store.values?.dynamic_configs[hash];
-    const config = emptyDynamicConfig({ name, source: this._store.source });
-
-    if (res == null) {
-      return config;
-    }
-
-    this._logger.enqueue(
-      createConfigExposure(
-        this._user,
-        name,
-        res.rule_id,
-        res.secondary_exposures,
-      ),
+    const config = makeDynamicConfig(
+      name,
+      this._store.source,
+      res?.rule_id,
+      res?.value,
     );
 
-    return { ...config, ruleID: res.rule_id, value: res.value };
+    this._logger.enqueue(
+      createConfigExposure(this._user, config, res?.secondary_exposures),
+    );
+
+    return config;
   }
 
   getExperiment(name: string): Experiment {
@@ -149,37 +142,27 @@ export default class PrecomputedEvaluationsClient
     const hash = DJB2(name);
     const res = this._store.values?.layer_configs[hash];
 
-    const layer = emptyLayer({ name, source: this._store.source });
+    // todo: un-ugly
+    const layer = makeLayer(name, this._store.source, res?.rule_id, (param) => {
+      if (!res) {
+        return;
+      }
 
-    if (res == null) {
-      return layer;
-    }
+      if (!(param in res.value)) {
+        return undefined;
+      }
 
-    return {
-      ...layer,
-      ruleID: res.rule_id,
-      getValue: (param) => {
-        if (!(param in res.value)) {
-          return undefined;
-        }
+      this._logger.enqueue(
+        createLayerParameterExposure(this._user, name, param, res),
+      );
 
-        this._logger.enqueue(
-          createLayerParameterExposure(this._user, name, param, res),
-        );
+      return res.value[param];
+    });
 
-        return res.value[param];
-      },
-    };
+    return layer;
   }
 
   logEvent(event: StatsigEvent): void {
     this._logger.enqueue({ ...event, user: this._user, time: Date.now() });
-  }
-
-  protected override _getDefaultDataProviders(): StatsigDataProvider[] {
-    return [
-      new LocalStorageCacheEvaluationsDataProvider(),
-      new NetworkEvaluationsDataProvider(this._network),
-    ];
   }
 }
