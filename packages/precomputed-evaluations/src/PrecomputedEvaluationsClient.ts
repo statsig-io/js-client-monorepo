@@ -2,13 +2,12 @@ import type { FeatureGate, StatsigUser } from '@sigstat/core';
 import {
   DJB2,
   DynamicConfig,
-  EvaluationDataProvider,
-  EvaluationSource,
   Experiment,
   Layer,
   PrecomputedEvaluationsInterface,
   StableID,
   StatsigClientBase,
+  StatsigDataProvider,
   StatsigEvent,
   createConfigExposure,
   createGateExposure,
@@ -27,8 +26,6 @@ import type { StatsigOptions } from './StatsigOptions';
 import { LocalStorageCacheEvaluationsDataProvider } from './data-providers/LocalStorageCacheEvaluationsDataProvider';
 import { NetworkEvaluationsDataProvider } from './data-providers/NetworkEvaluationsDataProvider';
 
-type DataProviderResult = { data: string | null; source: EvaluationSource };
-
 export default class PrecomputedEvaluationsClient
   extends StatsigClientBase
   implements PrecomputedEvaluationsInterface
@@ -37,7 +34,6 @@ export default class PrecomputedEvaluationsClient
   private _network: Network;
   private _store: EvaluationStore;
   private _user: StatsigUser;
-  private _dataProviders: EvaluationDataProvider[];
 
   constructor(
     sdkKey: string,
@@ -72,9 +68,12 @@ export default class PrecomputedEvaluationsClient
 
     this._user = normalizeUser(user, this._options.environment);
 
-    this.setStatus('Loading');
+    this._setStatus('Loading');
 
-    const result = await this._getResultFromDataProviders('during-init');
+    const result = await this._getResultFromDataProviders(
+      'during-init',
+      this._user,
+    );
 
     if (result.data) {
       this._store.setValuesFromData(result.data, result.source);
@@ -82,11 +81,9 @@ export default class PrecomputedEvaluationsClient
 
     this._store.finalize();
 
-    this.setStatus('Ready');
+    this._setStatus('Ready');
 
-    this._runPostInitDataProviders(result.data).catch((error) => {
-      this.emit({ event: 'error', error: error as unknown });
-    });
+    this._runPostInitDataProviders(result.data, this._user);
   }
 
   async shutdown(): Promise<void> {
@@ -179,50 +176,10 @@ export default class PrecomputedEvaluationsClient
     this._logger.enqueue({ ...event, user: this._user, time: Date.now() });
   }
 
-  private _getDefaultDataProviders(): EvaluationDataProvider[] {
+  protected override _getDefaultDataProviders(): StatsigDataProvider[] {
     return [
       new LocalStorageCacheEvaluationsDataProvider(),
       new NetworkEvaluationsDataProvider(this._network),
     ];
-  }
-
-  private async _getResultFromDataProviders(
-    mode: 'during-init' | 'post-init',
-  ): Promise<DataProviderResult> {
-    let result: DataProviderResult = { data: null, source: 'NoValues' };
-
-    for await (const provider of this._dataProviders) {
-      const func =
-        mode === 'during-init'
-          ? provider.getEvaluationsData?.(this._sdkKey, this._user)
-          : provider.getEvaluationsDataPostInit?.(this._sdkKey, this._user);
-
-      const data = (await func) ?? null;
-
-      if (!data) {
-        continue;
-      }
-
-      result = { data, source: provider.source };
-
-      if (provider.isTerminal) {
-        break;
-      }
-    }
-
-    return result;
-  }
-
-  private async _runPostInitDataProviders(data: string | null): Promise<void> {
-    const localResult = await this._getResultFromDataProviders('post-init');
-    data = localResult.data ?? data;
-
-    if (!data) {
-      return;
-    }
-
-    for await (const provider of this._dataProviders) {
-      await provider.setEvaluationsData?.(this._sdkKey, this._user, data);
-    }
   }
 }

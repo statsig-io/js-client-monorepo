@@ -1,3 +1,5 @@
+import { DataSource } from '@sigstat/core';
+
 export type SpecCondition = {
   type: string;
   targetValue: unknown;
@@ -45,8 +47,28 @@ export type DownloadConfigSpecsResponse = {
 
 export default class SpecStore {
   values: DownloadConfigSpecsResponse | null = null;
+  source: DataSource = 'Loading';
 
-  setValues(values: DownloadConfigSpecsResponse): void {
+  setValuesFromData(data: string, source: DataSource): void {
+    const values = JSON.parse(data) as DownloadConfigSpecsResponse;
+    if (!values.has_updates) {
+      return;
+    }
+
+    this.source = source;
     this.values = values;
+  }
+
+  reset(): void {
+    this.values = null;
+    this.source = 'Loading';
+  }
+
+  finalize(): void {
+    if (this.values) {
+      return;
+    }
+
+    this.source = 'NoValues';
   }
 }

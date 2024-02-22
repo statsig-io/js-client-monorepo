@@ -24,7 +24,7 @@ export default function ClientApp({
   values: string;
 }): JSX.Element {
   const bootstrapProvider = new BootstrapEvaluationsDataProvider();
-  bootstrapProvider.addDataForUser(DEMO_CLIENT_KEY, user, values);
+  bootstrapProvider.addDataForUser(DEMO_CLIENT_KEY, values, user);
 
   const [client] = useState(
     new PrecomputedEvaluationsClient(DEMO_CLIENT_KEY, user, {

@@ -6,6 +6,7 @@ import {
   Layer,
   OnDeviceEvaluationsInterface,
   StatsigClientBase,
+  StatsigDataProvider,
   StatsigEvent,
   StatsigUser,
   createConfigExposure,
@@ -36,7 +37,7 @@ export default class OnDeviceEvaluationsClient
   private _source: string;
 
   constructor(sdkKey: string, options: StatsigOptions | null = null) {
-    const network = new Network(sdkKey, options);
+    const network = new Network(options);
     super(sdkKey, network, options);
     monitorClass(OnDeviceEvaluationsClient, this);
 
@@ -49,32 +50,21 @@ export default class OnDeviceEvaluationsClient
   }
 
   async initialize(): Promise<void> {
-    const values =
-      typeof window !== 'undefined' ? window.statsigConfigSpecs : null;
+    this._store.reset();
 
-    if (values) {
-      this._store.setValues(values);
-      this._source = 'Bootstrap';
-      this.setStatus('Ready');
-      return;
+    this._setStatus('Loading');
+
+    const result = await this._getResultFromDataProviders('during-init');
+
+    if (result.data) {
+      this._store.setValuesFromData(result.data, result.source);
     }
 
-    this._source = 'Loading';
-    this.setStatus('Loading');
+    this._store.finalize();
 
-    const response = await this._network.fetchConfigSpecs();
+    this._setStatus('Ready');
 
-    if (!response) {
-      this._source = 'Error';
-      this.setStatus('Error');
-      return;
-    }
-
-    if (response.has_updates) {
-      this._store.setValues(response);
-    }
-    this._source = 'Network';
-    this.setStatus('Ready');
+    this._runPostInitDataProviders(result.data);
   }
 
   async shutdown(): Promise<void> {
@@ -146,6 +136,10 @@ export default class OnDeviceEvaluationsClient
 
   logEvent(user: StatsigUser, event: StatsigEvent): void {
     this._logger.enqueue({ ...event, user, time: Date.now() });
+  }
+
+  protected override _getDefaultDataProviders(): StatsigDataProvider[] {
+    return [];
   }
 
   private _logLayerParamExposure(

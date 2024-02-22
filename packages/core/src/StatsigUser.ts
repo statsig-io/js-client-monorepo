@@ -45,10 +45,10 @@ export function normalizeUser(
   }
 }
 
-export function getUserStorageKey(user: StatsigUser, sdkKey: string): string {
+export function getUserStorageKey(sdkKey: string, user?: StatsigUser): string {
   const parts = [
-    `uid:${user.userID ?? ''}`,
-    `cids:${Object.entries(user.customIDs ?? {})
+    `uid:${user?.userID ?? ''}`,
+    `cids:${Object.entries(user?.customIDs ?? {})
       .sort(([leftKey], [rightKey]) => leftKey.localeCompare(rightKey))
       .map(([key, value]) => `${key}-${value}`)
       .join(',')}`,

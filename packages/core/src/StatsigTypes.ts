@@ -1,4 +1,5 @@
 import { LogLevel } from './Log';
+import { StatsigDataProvider } from './StatsigDataProvider';
 
 const DEFAULT_RULE = 'default';
 
@@ -15,6 +16,7 @@ export type StatsigOptionsCommon = {
   environment?: StatsigEnvironment;
   overrideStableID?: string;
   logLevel?: LogLevel;
+  dataProviders?: StatsigDataProvider[];
 };
 
 export type StatsigEnvironment = {

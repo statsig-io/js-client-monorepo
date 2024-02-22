@@ -1,5 +1,5 @@
 import {
-  EvaluationSource,
+  DataSource,
   StatsigUser,
   Storage,
   getObjectFromStorage,
@@ -16,7 +16,7 @@ type EvaluationStoreValues = EvaluationResponse & { has_updates: true };
 
 export default class EvaluationStore {
   values: EvaluationStoreValues | null = null;
-  source: EvaluationSource = 'Loading';
+  source: DataSource = 'Loading';
 
   private _manifest: Record<string, number> = {};
   private _isReady: Promise<void>;
@@ -42,7 +42,7 @@ export default class EvaluationStore {
     this.source = 'NoValues';
   }
 
-  setValuesFromData(data: string, source: EvaluationSource): void {
+  setValuesFromData(data: string, source: DataSource): void {
     const values = JSON.parse(data) as EvaluationResponse;
     if (!values.has_updates) {
       return;
@@ -63,14 +63,14 @@ export default class EvaluationStore {
     await this._isReady;
 
     this.values = values;
-    const cacheKey = getUserStorageKey(user, this._sdkKey);
+    const cacheKey = getUserStorageKey(this._sdkKey, user);
     await setObjectInStorage(cacheKey, values);
     await this._enforceStorageLimit(cacheKey);
   }
 
   async switchToUser(user: StatsigUser): Promise<boolean> {
     this.values = null;
-    const cacheKey = getUserStorageKey(user, this._sdkKey);
+    const cacheKey = getUserStorageKey(this._sdkKey, user);
     const json = await getObjectFromStorage<EvaluationStoreValues>(cacheKey);
 
     if (json) {

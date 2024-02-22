@@ -1,11 +1,7 @@
-import {
-  EvaluationDataProvider,
-  Flatten,
-  StatsigOptionsCommon,
-} from '@sigstat/core';
+import { Flatten, StatsigOptionsCommon } from '@sigstat/core';
 
 export type StatsigOptions = Flatten<
   StatsigOptionsCommon & {
-    dataProviders?: EvaluationDataProvider[];
+    // precomputed eval specific options
   }
 >;

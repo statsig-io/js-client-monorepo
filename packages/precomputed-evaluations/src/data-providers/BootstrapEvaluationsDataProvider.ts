@@ -1,28 +1,23 @@
 import {
-  EvaluationDataProvider,
+  StatsigDataProvider,
   StatsigUser,
   getUserStorageKey,
 } from '@sigstat/core';
 
-export class BootstrapEvaluationsDataProvider
-  implements EvaluationDataProvider
-{
+export class BootstrapEvaluationsDataProvider implements StatsigDataProvider {
   readonly isTerminal = true;
   readonly source = 'Bootstrap';
 
   private _data: Record<string, string> = {};
 
-  async getEvaluationsData(
-    sdkKey: string,
-    user: StatsigUser,
-  ): Promise<string | null> {
-    const cacheKey = getUserStorageKey(user, sdkKey);
+  async getData(sdkKey: string, user?: StatsigUser): Promise<string | null> {
+    const cacheKey = getUserStorageKey(sdkKey, user);
     const result = this._data[cacheKey] ?? null;
     return Promise.resolve(result);
   }
 
-  addDataForUser(sdkKey: string, user: StatsigUser, data: string): void {
-    const cacheKey = getUserStorageKey(user, sdkKey);
+  addDataForUser(sdkKey: string, data: string, user: StatsigUser): void {
+    const cacheKey = getUserStorageKey(sdkKey, user);
     this._data[cacheKey] = data;
   }
 }

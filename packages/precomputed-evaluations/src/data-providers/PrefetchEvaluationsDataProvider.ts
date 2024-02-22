@@ -1,12 +1,12 @@
 import {
-  EvaluationDataProvider,
+  StatsigDataProvider,
   StatsigUser,
   getUserStorageKey,
 } from '@sigstat/core';
 
 import StatsigNetwork from '../Network';
 
-export class PrefetchEvaluationDataProvider implements EvaluationDataProvider {
+export class PrefetchEvaluationDataProvider implements StatsigDataProvider {
   readonly isTerminal = true;
   readonly source = 'Prefetch';
 
@@ -17,11 +17,8 @@ export class PrefetchEvaluationDataProvider implements EvaluationDataProvider {
     this._network = new StatsigNetwork(api);
   }
 
-  getEvaluationsData(
-    sdkKey: string,
-    user: StatsigUser,
-  ): Promise<string | null> {
-    const key = getUserStorageKey(user, sdkKey);
+  getData(sdkKey: string, user?: StatsigUser): Promise<string | null> {
+    const key = getUserStorageKey(sdkKey, user);
     return Promise.resolve(this._data[key]);
   }
 
@@ -31,7 +28,7 @@ export class PrefetchEvaluationDataProvider implements EvaluationDataProvider {
   ): Promise<void> {
     const response = await this._network.fetchEvaluations(sdkKey, user);
     if (response) {
-      const key = getUserStorageKey(user, sdkKey);
+      const key = getUserStorageKey(sdkKey, user);
       this._data[key] = response;
     }
   }

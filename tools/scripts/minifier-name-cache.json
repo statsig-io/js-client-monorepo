@@ -47,7 +47,8 @@
       "$_data": "tt",
       "$_lastModifiedTimeMap": "nt",
       "$_runCacheEviction": "et",
-      "$_sendRequestImpl": "rt"
+      "$_sendRequestImpl": "rt",
+      "$_setStatus": "it"
     }
   }
 }

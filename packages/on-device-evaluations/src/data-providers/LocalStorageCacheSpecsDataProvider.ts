@@ -1,6 +1,5 @@
 import {
   StatsigDataProvider,
-  StatsigUser,
   Storage,
   getUserStorageKey,
   setObjectInStorage,
@@ -9,26 +8,20 @@ import {
 const LAST_MODIFIED_STORAGE_KEY = 'statsig.cache.last_modified_time';
 const CACHE_LIMIT = 10;
 
-export class LocalStorageCacheEvaluationsDataProvider
-  implements StatsigDataProvider
-{
+export class LocalStorageCacheSpecsDataProvider implements StatsigDataProvider {
   readonly isTerminal = false;
   readonly source = 'Cache';
 
   private _lastModifiedTimeMap: Record<string, number> = {};
 
-  async getData(sdkKey: string, user?: StatsigUser): Promise<string | null> {
-    const cacheKey = getUserStorageKey(sdkKey, user);
+  async getData(sdkKey: string): Promise<string | null> {
+    const cacheKey = getUserStorageKey(sdkKey);
     const result = await Storage.getItem(cacheKey);
     return Promise.resolve(result);
   }
 
-  async setData(
-    sdkKey: string,
-    data: string,
-    user?: StatsigUser,
-  ): Promise<void> {
-    const cacheKey = getUserStorageKey(sdkKey, user);
+  async setData(sdkKey: string, data: string): Promise<void> {
+    const cacheKey = getUserStorageKey(sdkKey);
     await Storage.setItem(cacheKey, data);
     await this._runCacheEviction(cacheKey);
     return Promise.resolve();

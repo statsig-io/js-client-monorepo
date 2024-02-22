@@ -7,7 +7,7 @@ export default class StatsigNetwork extends NetworkCore {
     super();
   }
 
-  fetchEvaluations(sdkKey: string, user: StatsigUser): Promise<string | null> {
+  fetchEvaluations(sdkKey: string, user?: StatsigUser): Promise<string | null> {
     return this.post({
       sdkKey,
       url: `${this._api}/initialize`,

@@ -1,9 +1,9 @@
-import { EvaluationDataProvider, StatsigUser } from '@sigstat/core';
+import { StatsigDataProvider, StatsigUser } from '@sigstat/core';
 
 import StatsigNetwork from '../Network';
 import { StatsigOptions } from '../StatsigOptions';
 
-export class NetworkEvaluationsDataProvider implements EvaluationDataProvider {
+export class NetworkEvaluationsDataProvider implements StatsigDataProvider {
   readonly isTerminal = false;
   readonly source = 'Network';
 
@@ -15,10 +15,7 @@ export class NetworkEvaluationsDataProvider implements EvaluationDataProvider {
 
   constructor(private _network: StatsigNetwork) {}
 
-  async getEvaluationsData(
-    sdkKey: string,
-    user: StatsigUser,
-  ): Promise<string | null> {
+  async getData(sdkKey: string, user?: StatsigUser): Promise<string | null> {
     const response = await this._network.fetchEvaluations(sdkKey, user);
     return response;
   }

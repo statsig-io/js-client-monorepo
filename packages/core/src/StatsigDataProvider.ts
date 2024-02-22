@@ -1,6 +1,6 @@
 import { StatsigUser } from './StatsigUser';
 
-export type EvaluationSource =
+export type DataSource =
   | 'Uninitialized'
   | 'Loading'
   | 'NoValues'
@@ -9,22 +9,23 @@ export type EvaluationSource =
   | 'Bootstrap'
   | 'Prefetch';
 
-export type EvaluationDataProvider = {
-  readonly getEvaluationsData?: (
+export type StatsigDataProvider = {
+  readonly getData?: (
     sdkKey: string,
-    user: StatsigUser,
-  ) => Promise<string | null>;
-  readonly getEvaluationsDataPostInit?: (
-    sdkKey: string,
-    user: StatsigUser,
+    user?: StatsigUser,
   ) => Promise<string | null>;
 
-  readonly setEvaluationsData?: (
+  readonly getDataPostInit?: (
     sdkKey: string,
-    user: StatsigUser,
+    user?: StatsigUser,
+  ) => Promise<string | null>;
+
+  readonly setData?: (
+    sdkKey: string,
     data: string,
+    user?: StatsigUser,
   ) => Promise<void>;
 
-  readonly source: EvaluationSource;
+  readonly source: DataSource;
   readonly isTerminal: boolean;
 };
