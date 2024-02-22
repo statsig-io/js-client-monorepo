@@ -160,10 +160,11 @@ export default class Evaluator {
 
       const pass = _evalPassPercent(rule, user, spec);
       return makeEvalResult({
-        rule_id: rule.id,
+        rule_id: result.rule_id,
         bool_value: pass,
         json_value: pass ? result.json_value : defaultValue,
         secondary_exposures: exposures,
+        undelegated_secondary_exposures: exposures,
         is_experiment_group: result.is_experiment_group,
         group_name: result.group_name,
       });
@@ -182,7 +183,7 @@ export default class Evaluator {
     user: StatsigUserInternal,
   ): EvaluationResult {
     const exposures: SecondaryExposure[] = [];
-    let pass = false;
+    let pass = true;
 
     for (const condition of rule.conditions) {
       const result = this._evaluateCondition(condition, user);
@@ -221,7 +222,7 @@ export default class Evaluator {
     const type = condition.type;
 
     switch (type) {
-      case 'test_public':
+      case 'public':
         return makeEvalResult({ bool_value: true });
 
       case 'pass_gate':
@@ -240,6 +241,13 @@ export default class Evaluator {
         return this._evaluateMultiNestedGates(target, type, user);
 
       case 'user_field':
+        value = _getFromUser(user, field);
+        break;
+
+      case 'ip_based':
+        value = _getFromUser(user, field);
+        break;
+      case 'ua_based':
         value = _getFromUser(user, field);
         break;
 
@@ -264,8 +272,6 @@ export default class Evaluator {
         value = _getUnitID(user, idType);
         break;
 
-      case 'ip_based':
-      case 'ua_based':
       default:
         return makeEvalResult({ unsupported: true });
     }

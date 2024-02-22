@@ -95,12 +95,11 @@ export default {
 
     const result =
       array.findIndex((current) => {
-        if (typeof value !== 'string' || typeof current !== 'string') {
-          return false;
-        }
+        const valueString = String(value);
+        const currentString = String(current);
 
-        const left = ignoreCase ? value.toLowerCase() : value;
-        const right = ignoreCase ? current.toLowerCase() : current;
+        const left = ignoreCase ? valueString.toLowerCase() : valueString;
+        const right = ignoreCase ? currentString.toLowerCase() : currentString;
 
         switch (operator) {
           case 'any':
@@ -144,18 +143,18 @@ export default {
   },
 
   compareTime(left: unknown, right: unknown, operator: string): boolean {
-    if (typeof left !== 'string' || typeof right !== 'string') {
+    if (left == null || right == null) {
       return false;
     }
 
     try {
       // Try to parse into date as a string first, if not, try unixtime
-      let dateLeft = new Date(left);
+      let dateLeft = new Date(String(left));
       if (isNaN(dateLeft.getTime())) {
         dateLeft = new Date(Number(left));
       }
 
-      let dateRight = new Date(right);
+      let dateRight = new Date(String(right));
       if (isNaN(dateRight.getTime())) {
         dateRight = new Date(Number(right));
       }
