@@ -1,4 +1,4 @@
-import { StatsigUserInternal } from '@sigstat/core';
+import { SecondaryExposure, StatsigUserInternal } from '@sigstat/core';
 import { SHA256 } from '@sigstat/sha256';
 
 import { StatsigUnsupportedEvaluationError } from './Errors';
@@ -24,13 +24,11 @@ export type EvaluationDetails = {
 export type ConfigEvaluation = {
   readonly value: boolean;
   readonly rule_id: string;
-  readonly secondary_exposures: Record<string, string>[];
+  readonly secondary_exposures: SecondaryExposure[];
   readonly json_value: Record<string, unknown>;
   readonly explicit_parameters: string[] | null;
   readonly config_delegate: string | null;
-  readonly undelegated_secondary_exposures:
-    | Record<string, string>[]
-    | undefined;
+  readonly undelegated_secondary_exposures: SecondaryExposure[] | undefined;
   readonly is_experiment_group: boolean;
   readonly group_name: string | null;
   readonly evaluation_details: EvaluationDetails | undefined;
@@ -123,7 +121,7 @@ export default class Evaluator {
       });
     }
 
-    let secondary_exposures: Record<string, string>[] = [];
+    let secondary_exposures: SecondaryExposure[] = [];
 
     try {
       for (let i = 0; i < config.rules.length; i++) {
@@ -185,8 +183,8 @@ export default class Evaluator {
   private _evalDelegate(
     user: StatsigUserInternal,
     rule: SpecRule,
-    exposures: Record<string, string>[],
-  ) {
+    exposures: SecondaryExposure[],
+  ): ConfigEvaluation | null {
     if (rule.configDelegate == null) {
       return null;
     }
@@ -201,7 +199,7 @@ export default class Evaluator {
     const delegatedResult = this._eval(user, config);
     return {
       ...delegatedResult,
-      conifg_delegate: rule.configDelegate,
+      config_delegate: rule.configDelegate,
       undelegated_secondary_exposures: exposures,
     };
   }
@@ -210,7 +208,7 @@ export default class Evaluator {
     user: StatsigUserInternal,
     rule: SpecRule,
     config: Spec,
-  ) {
+  ): boolean {
     if (rule.passPercentage === 100) {
       return true;
     } else if (rule.passPercentage === 0) {
@@ -238,7 +236,7 @@ export default class Evaluator {
   }
 
   private _evalRule(user: StatsigUserInternal, rule: SpecRule) {
-    let secondaryExposures: Record<string, string>[] = [];
+    let secondaryExposures: SecondaryExposure[] = [];
     let pass = true;
 
     for (const condition of rule.conditions) {
@@ -266,7 +264,7 @@ export default class Evaluator {
     condition: SpecCondition,
   ): {
     passes: boolean;
-    exposures?: Record<string, string>[];
+    exposures?: SecondaryExposure[];
   } {
     let value: unknown = null;
 

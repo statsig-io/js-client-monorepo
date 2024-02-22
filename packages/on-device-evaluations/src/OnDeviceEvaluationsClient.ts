@@ -8,10 +8,13 @@ import {
   StatsigClientBase,
   StatsigEvent,
   StatsigUser,
+  createConfigExposure,
+  createGateExposure,
+  createLayerParameterExposure,
   monitorClass,
 } from '@sigstat/core';
 
-import Evaluator from './Evaluator';
+import Evaluator, { ConfigEvaluation } from './Evaluator';
 import Network from './Network';
 import SpecStore, { DownloadConfigSpecsResponse } from './SpecStore';
 import { StatsigOptions } from './StatsigOptions';
@@ -46,8 +49,11 @@ export default class OnDeviceEvaluationsClient
   }
 
   async initialize(): Promise<void> {
-    if (window.statsigConfigSpecs) {
-      this._store.setValues(window.statsigConfigSpecs);
+    const values =
+      typeof window !== 'undefined' ? window.statsigConfigSpecs : null;
+
+    if (values) {
+      this._store.setValues(values);
       this._source = 'Bootstrap';
       this.setStatus('Ready');
       return;
@@ -72,7 +78,7 @@ export default class OnDeviceEvaluationsClient
   }
 
   async shutdown(): Promise<void> {
-    return Promise.resolve();
+    await this._logger.shutdown();
   }
 
   checkGate(user: StatsigUser, name: string): boolean {
@@ -81,6 +87,17 @@ export default class OnDeviceEvaluationsClient
 
   getFeatureGate(user: StatsigUser, name: string): FeatureGate {
     const result = this._evaluator.checkGate(user, name);
+
+    this._logger.enqueue(
+      createGateExposure(
+        user,
+        name,
+        result.value,
+        result.rule_id,
+        result.secondary_exposures,
+      ),
+    );
+
     return {
       name,
       ruleID: result.rule_id,
@@ -91,6 +108,16 @@ export default class OnDeviceEvaluationsClient
 
   getDynamicConfig(user: StatsigUser, name: string): DynamicConfig {
     const result = this._evaluator.getConfig(user, name);
+
+    this._logger.enqueue(
+      createConfigExposure(
+        user,
+        name,
+        result.rule_id,
+        result.secondary_exposures,
+      ),
+    );
+
     return {
       name,
       ruleID: result.rule_id,
@@ -109,12 +136,40 @@ export default class OnDeviceEvaluationsClient
     return {
       name,
       ruleID: result.rule_id,
-      getValue: (param: string) => values[param] ?? null,
+      getValue: (param: string) => {
+        this._logLayerParamExposure(user, name, param, result);
+        return values[param] ?? null;
+      },
       source: this._source,
     };
   }
 
   logEvent(user: StatsigUser, event: StatsigEvent): void {
     this._logger.enqueue({ ...event, user, time: Date.now() });
+  }
+
+  private _logLayerParamExposure(
+    user: StatsigUser,
+    layerName: string,
+    parameterName: string,
+    evaluation: ConfigEvaluation,
+  ) {
+    const {
+      rule_id,
+      undelegated_secondary_exposures,
+      secondary_exposures,
+      explicit_parameters,
+      config_delegate,
+    } = evaluation;
+
+    this._logger.enqueue(
+      createLayerParameterExposure(user, layerName, parameterName, {
+        rule_id,
+        explicit_parameters: explicit_parameters ?? [],
+        undelegated_secondary_exposures,
+        secondary_exposures,
+        allocated_experiment_name: config_delegate ?? '',
+      }),
+    );
   }
 }

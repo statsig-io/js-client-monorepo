@@ -1,6 +1,7 @@
 import { Log } from './Log';
 import { NetworkCore } from './NetworkCore';
 import { StatsigEventInternal, isExposureEvent } from './StatsigEvent';
+import { StatsigMetadataProvider } from './StatsigMetadata';
 import { StatsigOptionsCommon } from './StatsigTypes';
 
 const MAX_QUEUE = 700;
@@ -13,8 +14,15 @@ type SendEventsResponse = {
   success: boolean;
 };
 
+type StatsigEventExtras = {
+  statsigMetadata: {
+    sdkType: string;
+    sdkVersion: string;
+  };
+};
+
 export class EventLogger {
-  private _queue: StatsigEventInternal[] = [];
+  private _queue: (StatsigEventInternal & StatsigEventExtras)[] = [];
   private _flushTimer: ReturnType<typeof setInterval> | null;
   private _lastExposureMap: Record<string, number> = {};
   private _queueLimit = MIN_QUEUE;
@@ -32,7 +40,17 @@ export class EventLogger {
       return;
     }
 
-    this._queue.push(event);
+    if (event.user) {
+      event.user = { ...event.user };
+      delete event.user.privateAttributes;
+    }
+
+    const { sdkType, sdkVersion } = StatsigMetadataProvider.get();
+
+    this._queue.push({
+      ...event,
+      ...{ statsigMetadata: { sdkType, sdkVersion } },
+    });
 
     if (this._queue.length > this._queueLimit) {
       this._flushAndForget();
