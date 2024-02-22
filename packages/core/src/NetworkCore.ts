@@ -123,6 +123,7 @@ export class NetworkCore {
       'STATSIG-SDK-TYPE': statsigMetadata.sdkType,
       'STATSIG-SDK-VERSION': statsigMetadata.sdkVersion,
       'STATSIG-CLIENT-TIME': String(Date.now()),
+      'STATSIG-SESSION-ID': this._sessionID,
     };
   }
 }

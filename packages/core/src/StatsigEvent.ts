@@ -1,3 +1,4 @@
+import { DataSource } from './StatsigDataProvider';
 import { DynamicConfig, FeatureGate } from './StatsigTypes';
 import { StatsigUser } from './StatsigUser';
 
@@ -55,6 +56,7 @@ export function createGateExposure(
       gate: gate.name,
       gateValue: String(gate.value),
       ruleID: gate.ruleID,
+      reason: gate.source,
     },
     secondaryExposures ?? [],
   );
@@ -71,6 +73,7 @@ export function createConfigExposure(
     {
       config: config.name,
       ruleID: config.ruleID,
+      reason: config.source,
     },
     secondaryExposures ?? [],
   );
@@ -86,6 +89,7 @@ export function createLayerParameterExposure(
     undelegated_secondary_exposures?: SecondaryExposure[];
     secondary_exposures: SecondaryExposure[];
     allocated_experiment_name: string;
+    source: DataSource;
   },
 ): StatsigEventInternal {
   const isExplicit = spec.explicit_parameters.includes(parameterName);
@@ -106,6 +110,7 @@ export function createLayerParameterExposure(
       ruleID: spec.rule_id,
       allocatedExperiment,
       isExplicitParameter: String(isExplicit),
+      reason: spec.source,
     },
     secondaryExposures,
   );

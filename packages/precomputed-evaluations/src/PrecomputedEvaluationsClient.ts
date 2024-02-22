@@ -153,7 +153,10 @@ export default class PrecomputedEvaluationsClient
       }
 
       this._logger.enqueue(
-        createLayerParameterExposure(this._user, name, param, res),
+        createLayerParameterExposure(this._user, name, param, {
+          ...res,
+          source: this._store.source,
+        }),
       );
 
       return res.value[param];

@@ -15,6 +15,7 @@ import {
   makeFeatureGate,
   makeLayer,
   monitorClass,
+  normalizeUser,
 } from '@sigstat/core';
 
 import Evaluator from './Evaluator';
@@ -88,6 +89,7 @@ export default class OnDeviceEvaluationsClient
   }
 
   getFeatureGate(user: StatsigUser, name: string): FeatureGate {
+    user = normalizeUser(user, this._options.environment);
     const { details, result } = this._evaluator.evaluateGate(name, user);
 
     const gate = makeFeatureGate(
@@ -105,6 +107,7 @@ export default class OnDeviceEvaluationsClient
   }
 
   getDynamicConfig(user: StatsigUser, name: string): DynamicConfig {
+    user = normalizeUser(user, this._options.environment);
     const { details, result } = this._evaluator.evaluateConfig(name, user);
     const config = makeDynamicConfig(
       name,
@@ -125,6 +128,7 @@ export default class OnDeviceEvaluationsClient
   }
 
   getLayer(user: StatsigUser, name: string): Layer {
+    user = normalizeUser(user, this._options.environment);
     const { details, result } = this._evaluator.evaluateLayer(name, user);
 
     const layer = makeLayer(
@@ -151,6 +155,7 @@ export default class OnDeviceEvaluationsClient
             undelegated_secondary_exposures,
             secondary_exposures,
             allocated_experiment_name: config_delegate ?? '',
+            source: details.source,
           }),
         );
 
