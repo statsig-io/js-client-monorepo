@@ -5,6 +5,7 @@ import {
 } from '@sigstat/core';
 
 import StatsigNetwork from '../Network';
+import { StatsigOptions } from '../StatsigOptions';
 
 export class PrefetchEvaluationDataProvider implements StatsigDataProvider {
   readonly isTerminal = true;
@@ -13,8 +14,8 @@ export class PrefetchEvaluationDataProvider implements StatsigDataProvider {
   private _network: StatsigNetwork;
   private _data: Record<string, string> = {};
 
-  constructor(api?: string) {
-    this._network = new StatsigNetwork(api);
+  constructor(options: StatsigOptions | null = null) {
+    this._network = new StatsigNetwork(options);
   }
 
   getData(sdkKey: string, user?: StatsigUser): Promise<string | null> {

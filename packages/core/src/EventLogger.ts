@@ -4,11 +4,11 @@ import { StatsigEventInternal, isExposureEvent } from './StatsigEvent';
 import { StatsigMetadataProvider } from './StatsigMetadata';
 import { StatsigOptionsCommon } from './StatsigTypes';
 
-const MAX_QUEUE = 700;
-const MIN_QUEUE = 50;
+const DEFAULT_QUEUE_SIZE = 50;
+const DEFAULT_FLUSH_INTERVAL_MS = 10_000;
+
 const MAX_DEDUPER_KEYS = 1000;
-const _60_SECONDS = 60_000;
-const _10_SECONDS = 10_000;
+const DEDUPER_WINDOW_DURATION_MS = 60_000;
 
 type SendEventsResponse = {
   success: boolean;
@@ -25,14 +25,19 @@ export class EventLogger {
   private _queue: (StatsigEventInternal & StatsigEventExtras)[] = [];
   private _flushTimer: ReturnType<typeof setInterval> | null;
   private _lastExposureMap: Record<string, number> = {};
-  private _queueLimit = MIN_QUEUE;
+
+  private _maxQueueSize: number;
 
   constructor(
     private _sdkKey: string,
     private _network: NetworkCore,
     private _options: StatsigOptionsCommon | null,
   ) {
-    this._flushTimer = setInterval(() => this._flushAndForget(), _10_SECONDS);
+    this._maxQueueSize = _options?.loggingBufferMaxSize ?? DEFAULT_QUEUE_SIZE;
+
+    const flushInterval =
+      _options?.loggingIntervalMs ?? DEFAULT_FLUSH_INTERVAL_MS;
+    this._flushTimer = setInterval(() => this._flushAndForget(), flushInterval);
   }
 
   enqueue(event: StatsigEventInternal): void {
@@ -52,7 +57,7 @@ export class EventLogger {
       ...{ statsigMetadata: { sdkType, sdkVersion } },
     });
 
-    if (this._queue.length > this._queueLimit) {
+    if (this._queue.length > this._maxQueueSize) {
       this._flushAndForget();
     }
   }
@@ -85,7 +90,7 @@ export class EventLogger {
     const previous = this._lastExposureMap[key];
     const now = Date.now();
 
-    if (previous && now - previous < _60_SECONDS) {
+    if (previous && now - previous < DEDUPER_WINDOW_DURATION_MS) {
       return false;
     }
 
@@ -111,15 +116,11 @@ export class EventLogger {
     const events = this._queue;
     this._queue = [];
 
-    this._queueLimit = Math.min(this._queueLimit + MIN_QUEUE, MAX_QUEUE);
-
     try {
       await this._sendEvents(events);
     } catch {
       Log.warn('Failed to flush events.');
     }
-
-    this._queueLimit = Math.max(this._queueLimit - MIN_QUEUE, MIN_QUEUE);
   }
 
   private async _sendEvents(
