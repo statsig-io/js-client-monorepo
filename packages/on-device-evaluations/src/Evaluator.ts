@@ -241,12 +241,7 @@ export default class Evaluator {
         return this._evaluateMultiNestedGates(target, type, user);
 
       case 'user_field':
-        value = _getFromUser(user, field);
-        break;
-
       case 'ip_based':
-        value = _getFromUser(user, field);
-        break;
       case 'ua_based':
         value = _getFromUser(user, field);
         break;
