@@ -2,8 +2,6 @@ name: 'Setup Action'
 runs:
   using: 'composite'
   steps:
-    - uses: nrwl/nx-set-shas@v3
-
     - uses: pnpm/action-setup@v3
       with:
         version: 8
