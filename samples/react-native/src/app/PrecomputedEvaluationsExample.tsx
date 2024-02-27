@@ -18,6 +18,9 @@ function Content() {
 
   return (
     <View style={{ padding: 16 }}>
+      <Text style={{ fontWeight: 'bold' }}>
+        Precomputed Evaluations Example
+      </Text>
       <Text>PrecomputedEvaluationsClient status: {client.loadingStatus}</Text>
       <Text>a_gate: {gate.value ? 'Pass' : 'Fail'}</Text>
       <Text>an_experiment: {JSON.stringify(experiment.value)}</Text>

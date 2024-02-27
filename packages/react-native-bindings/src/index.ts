@@ -1,6 +1,10 @@
-import '@react-native-async-storage/async-storage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+import { Storage } from '@sigstat/core';
 
 import './StatsigMetadataAdditions';
+
+Storage.setProvider(AsyncStorage);
 
 export {
   StatsigContext,

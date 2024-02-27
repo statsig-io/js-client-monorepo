@@ -6,7 +6,7 @@ export * from './$_StatsigGlobal';
 export * from './ClientInterfaces';
 export * from './ErrorBoundary';
 export * from './Hashing';
-export * from './LocalStorageUtil';
+export * from './StorageProvider';
 export * from './Log';
 export * from './Monitoring';
 export * from './NetworkCore';

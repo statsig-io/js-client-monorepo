@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Button, SafeAreaView, StatusBar } from 'react-native';
 
 import ChangeExampleModal from './ChangeExampleModal';
+import DelayedInitExample from './DelayedInitExample';
 import OnDeviceEvaluationsExample from './OnDeviceEvaluationsExample';
 import PrecomputedEvaluationsExample from './PrecomputedEvaluationsExample';
 
@@ -28,6 +29,8 @@ export default function App(): React.ReactNode {
               return <OnDeviceEvaluationsExample />;
             case 'precomputed-eval':
               return <PrecomputedEvaluationsExample />;
+            case 'delayed-init':
+              return <DelayedInitExample />;
             default:
               throw new Error('No such sample: ' + sample);
           }

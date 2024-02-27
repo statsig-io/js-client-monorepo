@@ -1,5 +1,5 @@
-import { getObjectFromStorage, setObjectInStorage } from './LocalStorageUtil';
 import { Log } from './Log';
+import { getObjectFromStorage, setObjectInStorage } from './StorageProvider';
 import { getUUID } from './UUID';
 
 export const STATSIG_STABLE_ID_KEY = 'STATSIG_STABLE_ID';

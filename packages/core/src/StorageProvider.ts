@@ -37,27 +37,24 @@ try {
         return Promise.resolve();
       },
     };
-  } else {
-    // const asyncStorage =
-    //   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-var-requires
-    //   require('@react-native-async-storage/async-storage') as {
-    //     [key: string]: unknown;
-    //   };
-    // if (asyncStorage['default']) {
-    //   provider = asyncStorage['default'] as StorageProvider;
-    // } else {
-    //   provider = asyncStorage as StorageProvider;
-    // }
   }
 } catch (error) {
   Log.warn('Failed to get storage provider. Failling back to in memory store.');
 }
 
-const Storage = provider;
-export { Storage };
+export const Storage: StorageProvider & {
+  setProvider: (n: StorageProvider) => void;
+} = {
+  getItem: (key: string) => provider.getItem(key),
+  setItem: (key: string, value: string) => provider.setItem(key, value),
+  removeItem: (key: string) => provider.removeItem(key),
+  setProvider: (newProvider: StorageProvider) => {
+    provider = newProvider;
+  },
+};
 
 export async function getObjectFromStorage<T>(key: string): Promise<T | null> {
-  const value = await Storage.getItem(key);
+  const value = await provider.getItem(key);
   return JSON.parse(value ?? 'null') as T | null;
 }
 
@@ -65,5 +62,5 @@ export async function setObjectInStorage(
   key: string,
   obj: unknown,
 ): Promise<void> {
-  await Storage.setItem(key, JSON.stringify(obj));
+  await provider.setItem(key, JSON.stringify(obj));
 }

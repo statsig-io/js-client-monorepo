@@ -48,6 +48,10 @@ export default function ChangeExampleModal({
             title="Precomputed Evaluations"
             onPress={() => changeSample('precomputed-eval')}
           />
+          <Button
+            title="Delayed Init Evaluations"
+            onPress={() => changeSample('delayed-init')}
+          />
         </View>
       </View>
     </Modal>
