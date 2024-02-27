@@ -1,29 +1,37 @@
+import { DJB2 } from './Hashing';
 import { Log } from './Log';
 import { getObjectFromStorage, setObjectInStorage } from './StorageProvider';
 import { getUUID } from './UUID';
 
-export const STATSIG_STABLE_ID_KEY = 'STATSIG_STABLE_ID';
-
 let stableIDPromise: Promise<string> | null = null;
 
-function persistToStorage(stableID: string) {
-  setObjectInStorage(STATSIG_STABLE_ID_KEY, stableID).catch(() => {
+function persistToStorage(stableID: string, sdkKey: string) {
+  const storageKey = getStorageKey(sdkKey);
+
+  setObjectInStorage(storageKey, stableID).catch(() => {
     Log.warn('Failed to save StableID');
   });
 }
 
+function loadFromStorage(sdkKey: string) {
+  const storageKey = getStorageKey(sdkKey);
+  return getObjectFromStorage<string>(storageKey);
+}
+
+export function getStorageKey(sdkKey: string): string {
+  return `STATSIG_STABLE_ID:${DJB2(sdkKey)}`;
+}
+
 export const StableID = {
-  get: async (): Promise<string> => {
+  get: async (sdkKey: string): Promise<string> => {
     if (stableIDPromise == null) {
-      stableIDPromise = getObjectFromStorage<string>(
-        STATSIG_STABLE_ID_KEY,
-      ).then((stableID) => {
+      stableIDPromise = loadFromStorage(sdkKey).then((stableID) => {
         if (stableID != null) {
           return stableID;
         }
 
         const newStableID = getUUID();
-        persistToStorage(newStableID);
+        persistToStorage(newStableID, sdkKey);
         return newStableID;
       });
     }
@@ -31,8 +39,8 @@ export const StableID = {
     return stableIDPromise;
   },
 
-  setOverride: (override: string): void => {
+  setOverride: (override: string, sdkKey: string): void => {
     stableIDPromise = Promise.resolve(override);
-    persistToStorage(override);
+    persistToStorage(override, sdkKey);
   },
 };

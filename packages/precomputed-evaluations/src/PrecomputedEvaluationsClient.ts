@@ -53,7 +53,7 @@ export default class PrecomputedEvaluationsClient
     monitorClass(PrecomputedEvaluationsClient, this);
 
     if (options?.overrideStableID) {
-      StableID.setOverride(options?.overrideStableID);
+      StableID.setOverride(options.overrideStableID, sdkKey);
     }
 
     this._sdkKey = sdkKey;

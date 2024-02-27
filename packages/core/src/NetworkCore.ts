@@ -45,7 +45,7 @@ export class NetworkCore {
 
   async post(args: PostRequestArgs): Promise<string | null> {
     const { data } = args;
-    const stableID = await StableID.get();
+    const stableID = await StableID.get(args.sdkKey);
     const body = JSON.stringify({
       ...data,
       statsigMetadata: {
