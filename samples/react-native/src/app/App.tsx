@@ -1,4 +1,3 @@
-/* eslint-disable jsx-a11y/accessible-emoji */
 import React, { useState } from 'react';
 import { Button, SafeAreaView, StatusBar } from 'react-native';
 

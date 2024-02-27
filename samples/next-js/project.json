@@ -1,7 +1,7 @@
 {
   "name": "next-js-sample",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "next-js",
+  "sourceRoot": "samples/next-js",
   "projectType": "application",
   "targets": {
     "build": {
@@ -13,7 +13,7 @@
       },
       "configurations": {
         "development": {
-          "outputPath": "next-js-sample"
+          "outputPath": "samples/next-js"
         },
         "production": {}
       }
@@ -46,22 +46,11 @@
       "executor": "@nx/jest:jest",
       "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
       "options": {
-        "jestConfig": "samples/next-js/jest.config.ts",
-        "passWithNoTests": true
-      },
-      "configurations": {
-        "ci": {
-          "ci": true,
-          "codeCoverage": true
-        }
+        "jestConfig": "samples/next-js/jest.config.ts"
       }
     },
     "lint": {
-      "executor": "@nx/linter:eslint",
-      "outputs": ["{options.outputFile}"],
-      "options": {
-        "lintFilePatterns": ["samples/next-js/**/*.{ts,tsx,js,jsx}"]
-      }
+      "executor": "@nx/eslint:lint"
     }
   },
   "tags": []

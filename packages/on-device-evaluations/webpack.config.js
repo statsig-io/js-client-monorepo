@@ -28,7 +28,7 @@ module.exports = composePlugins(withNx(), withWeb(), () =>
         },
         extensions: ['.js'],
       },
-      externals: ['@react-native-async-storage/async-storage'],
+      externals: [],
       output: {
         filename: 'on-device-evaluations.min.js',
         library: {

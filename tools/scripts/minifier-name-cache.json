@@ -58,7 +58,8 @@
       "$_evaluateNestedGate": "ht",
       "$_evaluateMultiNestedGates": "vt",
       "$_downloadConfigSpecsUrlBase": "dt",
-      "$_getSpecs": "_t"
+      "$_getSpecs": "_t",
+      "$_timeout": "yt"
     }
   }
 }
