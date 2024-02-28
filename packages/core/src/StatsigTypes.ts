@@ -1,6 +1,3 @@
-import { LogLevel } from './Log';
-import { StatsigDataProvider } from './StatsigDataProvider';
-
 const DEFAULT_RULE = 'default';
 
 export type Flatten<T> = {
@@ -9,23 +6,6 @@ export type Flatten<T> = {
   // Intentional: This is a utility type
   // eslint-disable-next-line @typescript-eslint/ban-types
 } & {};
-
-export type StatsigOptionsCommon = {
-  api?: string;
-  localMode?: boolean;
-  environment?: StatsigEnvironment;
-  overrideStableID?: string;
-  logLevel?: LogLevel;
-  dataProviders?: StatsigDataProvider[];
-  networkTimeoutMs?: number;
-  loggingBufferMaxSize?: number;
-  loggingIntervalMs?: number;
-};
-
-export type StatsigEnvironment = {
-  tier?: string;
-  [key: string]: string | undefined;
-};
 
 type EvaluatedSpec = {
   readonly name: string;

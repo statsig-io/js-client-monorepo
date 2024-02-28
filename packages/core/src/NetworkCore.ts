@@ -3,7 +3,7 @@ import { Log } from './Log';
 import { monitorFunction } from './Monitoring';
 import { StableID } from './StableID';
 import { StatsigMetadataProvider } from './StatsigMetadata';
-import { StatsigOptionsCommon } from './StatsigTypes';
+import { StatsigOptionsCommon } from './StatsigOptionsCommon';
 import { getUUID } from './UUID';
 
 const DEFAULT_TIMEOUT_MS = 10_000;

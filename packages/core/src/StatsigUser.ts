@@ -1,5 +1,5 @@
 import { DJB2 } from './Hashing';
-import { StatsigEnvironment } from './StatsigTypes';
+import type { StatsigEnvironment } from './StatsigOptionsCommon';
 
 type StatsigUserPrimitives =
   | string

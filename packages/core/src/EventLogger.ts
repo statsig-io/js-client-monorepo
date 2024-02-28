@@ -2,7 +2,7 @@ import { Log } from './Log';
 import { NetworkCore } from './NetworkCore';
 import { StatsigEventInternal, isExposureEvent } from './StatsigEvent';
 import { StatsigMetadataProvider } from './StatsigMetadata';
-import { StatsigOptionsCommon } from './StatsigTypes';
+import { StatsigOptionsCommon } from './StatsigOptionsCommon';
 
 const DEFAULT_QUEUE_SIZE = 50;
 const DEFAULT_FLUSH_INTERVAL_MS = 10_000;

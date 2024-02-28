@@ -10,8 +10,8 @@ export type SecondaryExposure = {
 
 export type StatsigEvent = {
   eventName: string;
-  value: string | number | null;
-  metadata: { [key: string]: string } | null;
+  value?: string | number | null;
+  metadata?: { [key: string]: string } | null;
 };
 
 export type StatsigEventInternal = StatsigEvent & {

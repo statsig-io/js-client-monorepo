@@ -10,7 +10,7 @@ import {
   StatsigLoadingStatus,
 } from './StatsigClientEventEmitter';
 import { DataSource, StatsigDataProvider } from './StatsigDataProvider';
-import { StatsigOptionsCommon } from './StatsigTypes';
+import { StatsigOptionsCommon } from './StatsigOptionsCommon';
 import { StatsigUser } from './StatsigUser';
 
 type DataProviderResult = { data: string | null; source: DataSource };
