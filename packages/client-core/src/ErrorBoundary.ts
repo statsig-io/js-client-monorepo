@@ -1,5 +1,5 @@
 import { Log } from './Log';
-import { StatsigClientBase } from './StatsigClientBase';
+import { StatsigClientEmitEventFunc } from './StatsigClientBase';
 
 export const EXCEPTION_ENDPOINT = 'https://statsigapi.net/v1/sdk_exception';
 
@@ -18,21 +18,25 @@ export function configureErrorBoundary(config: Config): void {
 export function errorBoundary(
   tag: string,
   task: () => unknown,
-  client?: StatsigClientBase,
+  emitter?: StatsigClientEmitEventFunc,
 ): unknown {
   try {
     const res = task();
     if (res && res instanceof Promise) {
-      return res.catch((err) => _onError(tag, err, client));
+      return res.catch((err) => _onError(tag, err, emitter));
     }
     return res;
   } catch (error) {
-    _onError(tag, error, client);
+    _onError(tag, error, emitter);
     return null;
   }
 }
 
-function _onError(tag: string, error: unknown, client?: StatsigClientBase) {
+function _onError(
+  tag: string,
+  error: unknown,
+  emitter?: StatsigClientEmitEventFunc,
+) {
   try {
     Log.warn(`Caught error in ${tag}`, { error });
 
@@ -68,7 +72,7 @@ function _onError(tag: string, error: unknown, client?: StatsigClientBase) {
         });
       }
 
-      client?.emit({ event: 'error', error });
+      emitter?.({ event: 'error', error });
     };
 
     impl()

@@ -1,5 +1,6 @@
 import { Log } from './Log';
 import { NetworkCore } from './NetworkCore';
+import { StatsigClientEmitEventFunc } from './StatsigClientBase';
 import { StatsigEventInternal, isExposureEvent } from './StatsigEvent';
 import { StatsigMetadataProvider } from './StatsigMetadata';
 import { StatsigOptionsCommon } from './StatsigOptionsCommon';
@@ -9,6 +10,8 @@ const DEFAULT_FLUSH_INTERVAL_MS = 10_000;
 
 const MAX_DEDUPER_KEYS = 1000;
 const DEDUPER_WINDOW_DURATION_MS = 60_000;
+
+const DEFAULT_API = 'https://api.statsig.com/v1';
 
 type SendEventsResponse = {
   success: boolean;
@@ -30,6 +33,7 @@ export class EventLogger {
 
   constructor(
     private _sdkKey: string,
+    private _emitter: StatsigClientEmitEventFunc,
     private _network: NetworkCore,
     private _options: StatsigOptionsCommon | null,
   ) {
@@ -126,7 +130,7 @@ export class EventLogger {
   private async _sendEvents(
     events: StatsigEventInternal[],
   ): Promise<SendEventsResponse> {
-    const api = this._options?.api ?? 'https://api.statsig.com/v1'; // todo: more centralized location for urls/api
+    const api = this._options?.api ?? DEFAULT_API;
     const result = await this._network.post({
       sdkKey: this._sdkKey,
       url: `${api}/rgstr`,
@@ -137,7 +141,12 @@ export class EventLogger {
     });
 
     if (result) {
-      return JSON.parse(result) as SendEventsResponse;
+      const response = JSON.parse(result) as SendEventsResponse;
+      this._emitter({
+        event: 'logs_flushed',
+        events,
+      });
+      return response;
     }
 
     return { success: false };

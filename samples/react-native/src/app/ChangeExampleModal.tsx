@@ -52,6 +52,10 @@ export default function ChangeExampleModal({
             title="Delayed Init Evaluations"
             onPress={() => changeSample('delayed-init')}
           />
+          <Button
+            title="Client Event Stream"
+            onPress={() => changeSample('client-event-stream')}
+          />
         </View>
       </View>
     </Modal>

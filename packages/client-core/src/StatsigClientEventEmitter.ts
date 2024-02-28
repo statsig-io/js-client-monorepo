@@ -4,7 +4,7 @@ export type StatsigLoadingStatus =
   | 'Ready'
   | 'Error';
 
-export type StatsigClientEvent = 'status_change' | 'error';
+export type StatsigClientEvent = 'status_change' | 'error' | 'logs_flushed';
 export type StatsigClientEventData =
   | {
       event: StatsigClientEvent;
@@ -16,6 +16,10 @@ export type StatsigClientEventData =
   | {
       event: 'error';
       error: unknown;
+    }
+  | {
+      event: 'logs_flushed';
+      events: Record<string, unknown>[];
     };
 
 export type StatsigClientEventCallback = (data: StatsigClientEventData) => void;

@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { Button, SafeAreaView, StatusBar } from 'react-native';
+import { Button, SafeAreaView, StatusBar, View } from 'react-native';
 
 import ChangeExampleModal from './ChangeExampleModal';
+import ClientEventStreamExample from './ClientEventStreamExample';
 import DelayedInitExample from './DelayedInitExample';
 import OnDeviceEvaluationsExample from './OnDeviceEvaluationsExample';
 import PrecomputedEvaluationsExample from './PrecomputedEvaluationsExample';
@@ -11,9 +12,18 @@ export default function App(): React.ReactNode {
   const [isModalVisible, setIsModalVisible] = useState(false);
 
   return (
-    <>
+    <View
+      style={{
+        height: '100%',
+      }}
+    >
       <StatusBar barStyle="dark-content" />
-      <SafeAreaView>
+      <SafeAreaView
+        style={{
+          display: 'flex',
+          flex: 1,
+        }}
+      >
         <ChangeExampleModal
           visible={isModalVisible}
           setVisible={setIsModalVisible}
@@ -31,11 +41,13 @@ export default function App(): React.ReactNode {
               return <PrecomputedEvaluationsExample />;
             case 'delayed-init':
               return <DelayedInitExample />;
+            case 'client-event-stream':
+              return <ClientEventStreamExample />;
             default:
               throw new Error('No such sample: ' + sample);
           }
         })()}
       </SafeAreaView>
-    </>
+    </View>
   );
 }

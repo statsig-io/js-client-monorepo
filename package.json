@@ -8,6 +8,7 @@
     "build": "nx run-many --parallel=4 --target=build",
     "format": "nx format:write",
     "sync-version": "nx sync-version",
+    "publish": "nx publish-all",
     "prepare": "husky install"
   },
   "private": true,

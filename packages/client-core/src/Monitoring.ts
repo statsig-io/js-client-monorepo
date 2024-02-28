@@ -31,9 +31,7 @@ export function monitorFunction<T>(
   instance: unknown,
 ): T {
   const client =
-    instance instanceof StatsigClientBase
-      ? (instance as StatsigClientBase)
-      : undefined;
+    instance instanceof StatsigClientBase ? instance['emit'] : undefined;
 
   return errorBoundary(
     tag,

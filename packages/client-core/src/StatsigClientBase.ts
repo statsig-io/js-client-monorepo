@@ -15,6 +15,8 @@ import { StatsigUser } from './StatsigUser';
 
 type DataProviderResult = { data: string | null; source: DataSource };
 
+export type StatsigClientEmitEventFunc = (data: StatsigClientEventData) => void;
+
 export class StatsigClientBase implements StatsigClientEventEmitterInterface {
   loadingStatus: StatsigLoadingStatus = 'Uninitialized';
 
@@ -30,7 +32,12 @@ export class StatsigClientBase implements StatsigClientEventEmitterInterface {
     options: StatsigOptionsCommon | null,
     dataProviders: StatsigDataProvider[],
   ) {
-    this._logger = new EventLogger(sdkKey, network, options);
+    this._logger = new EventLogger(
+      sdkKey,
+      this.emit.bind(this),
+      network,
+      options,
+    );
     this._sdkKey = sdkKey;
 
     __STATSIG__ = __STATSIG__ ?? {};
@@ -42,14 +49,20 @@ export class StatsigClientBase implements StatsigClientEventEmitterInterface {
     this._dataProviders = dataProviders;
   }
 
-  on(event: StatsigClientEvent, listener: StatsigClientEventCallback): void {
+  on(
+    event: StatsigClientEvent | '*',
+    listener: StatsigClientEventCallback,
+  ): void {
     if (!this._listeners[event]) {
       this._listeners[event] = [];
     }
     this._listeners[event].push(listener);
   }
 
-  off(event: StatsigClientEvent, listener: StatsigClientEventCallback): void {
+  off(
+    event: StatsigClientEvent | '*',
+    listener: StatsigClientEventCallback,
+  ): void {
     if (this._listeners[event]) {
       const index = this._listeners[event].indexOf(listener);
       if (index !== -1) {
@@ -58,10 +71,12 @@ export class StatsigClientBase implements StatsigClientEventEmitterInterface {
     }
   }
 
-  emit(data: StatsigClientEventData): void {
+  protected emit(data: StatsigClientEventData): void {
     if (this._listeners[data.event]) {
       this._listeners[data.event].forEach((listener) => listener(data));
     }
+
+    this._listeners['*']?.forEach((listener) => listener(data));
   }
 
   protected _setStatus(newStatus: StatsigLoadingStatus): void {

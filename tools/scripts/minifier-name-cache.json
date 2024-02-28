@@ -59,7 +59,8 @@
       "$_evaluateMultiNestedGates": "vt",
       "$_downloadConfigSpecsUrlBase": "dt",
       "$_getSpecs": "_t",
-      "$_timeout": "yt"
+      "$_timeout": "yt",
+      "$_emitter": "wt"
     }
   }
 }

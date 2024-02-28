@@ -2,14 +2,14 @@ import { NetworkCore, StatsigUser } from '@statsig/client-core';
 
 import { StatsigOptions } from './StatsigOptions';
 
-export default class StatsigNetwork extends NetworkCore {
-  static DefaultApi = 'https://api.statsig.com/v1';
+const DEFAULT_API = 'https://api.statsig.com/v1';
 
+export default class StatsigNetwork extends NetworkCore {
   private _api: string;
 
   constructor(options: StatsigOptions | null) {
     super(options);
-    this._api = options?.api ?? StatsigNetwork.DefaultApi;
+    this._api = options?.api ?? DEFAULT_API;
   }
 
   fetchEvaluations(sdkKey: string, user?: StatsigUser): Promise<string | null> {
