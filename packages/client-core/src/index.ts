@@ -20,6 +20,7 @@ export * from './StatsigOptionsCommon';
 export * from './StatsigTypes';
 export * from './StatsigUser';
 export * from './UUID';
+export * from './VisibilityChangeObserver';
 
 export { EventLogger };
 

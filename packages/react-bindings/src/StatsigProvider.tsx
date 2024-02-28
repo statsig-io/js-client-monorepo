@@ -51,11 +51,11 @@ export default function StatsigProvider(props: Props): JSX.Element {
     };
 
     clients.forEach((client) => {
+      client.on('status_change', onStatusChange);
+
       client.initialize().catch((error) => {
         Log.error('An error occurred during initialization', error);
       });
-
-      client.on('status_change', onStatusChange);
     });
 
     return () => {

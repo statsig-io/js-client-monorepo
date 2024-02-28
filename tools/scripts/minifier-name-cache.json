@@ -60,7 +60,8 @@
       "$_downloadConfigSpecsUrlBase": "dt",
       "$_getSpecs": "_t",
       "$_timeout": "yt",
-      "$_emitter": "wt"
+      "$_emitter": "wt",
+      "$_current": "bt"
     }
   }
 }

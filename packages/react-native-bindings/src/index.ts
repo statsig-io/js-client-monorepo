@@ -1,10 +1,17 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { AppState } from 'react-native';
 
-import { Storage } from '@statsig/client-core';
+import { Storage, VisibilityChangeObserver } from '@statsig/client-core';
 
 import './StatsigMetadataAdditions';
 
 Storage.setProvider(AsyncStorage);
+
+AppState.addEventListener('change', (nextAppState) =>
+  VisibilityChangeObserver.notify(
+    nextAppState === 'active' ? 'foreground' : 'background',
+  ),
+);
 
 export {
   StatsigContext,

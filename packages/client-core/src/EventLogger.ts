@@ -4,6 +4,10 @@ import { StatsigClientEmitEventFunc } from './StatsigClientBase';
 import { StatsigEventInternal, isExposureEvent } from './StatsigEvent';
 import { StatsigMetadataProvider } from './StatsigMetadata';
 import { StatsigOptionsCommon } from './StatsigOptionsCommon';
+import {
+  Visibility,
+  VisibilityChangeObserver,
+} from './VisibilityChangeObserver';
 
 const DEFAULT_QUEUE_SIZE = 50;
 const DEFAULT_FLUSH_INTERVAL_MS = 10_000;
@@ -42,6 +46,8 @@ export class EventLogger {
     const flushInterval =
       _options?.loggingIntervalMs ?? DEFAULT_FLUSH_INTERVAL_MS;
     this._flushTimer = setInterval(() => this._flushAndForget(), flushInterval);
+
+    VisibilityChangeObserver.add(this);
   }
 
   enqueue(event: StatsigEventInternal): void {
@@ -68,6 +74,12 @@ export class EventLogger {
 
   reset(): void {
     this._lastExposureMap = {};
+  }
+
+  onVisibilityChanged(visibility: Visibility): void {
+    if (visibility === 'background') {
+      this._flushAndForget();
+    }
   }
 
   async shutdown(): Promise<void> {
