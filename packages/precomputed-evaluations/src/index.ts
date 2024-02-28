@@ -11,7 +11,7 @@ export type {
   StatsigEnvironment,
   StatsigEvent,
   StatsigUser,
-} from '@sigstat/core';
+} from '@statsig/client-core';
 
 export {
   NetworkEvaluationsDataProvider,

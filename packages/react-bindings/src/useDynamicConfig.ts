@@ -1,6 +1,6 @@
 import { useContext, useMemo } from 'react';
 
-import { DynamicConfig, StatsigUser } from '@sigstat/core';
+import { DynamicConfig, StatsigUser } from '@statsig/client-core';
 
 import StatsigContext from './StatsigContext';
 

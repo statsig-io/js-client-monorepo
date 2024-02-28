@@ -3,7 +3,7 @@ import { createContext } from 'react';
 import {
   OnDeviceEvaluationsInterface,
   PrecomputedEvaluationsInterface,
-} from '@sigstat/core';
+} from '@statsig/client-core';
 
 export interface StatsigContext {
   readonly renderVersion: number;

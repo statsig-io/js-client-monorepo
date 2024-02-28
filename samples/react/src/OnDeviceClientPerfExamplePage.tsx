@@ -1,6 +1,6 @@
 import { ReactNode, useEffect, useState } from 'react';
 
-import { OnDeviceEvaluationsClient } from '@sigstat/on-device-evaluations';
+import { OnDeviceEvaluationsClient } from '@statsig/on-device-evaluations';
 
 import ManyChecksExample from './ManyChecksExample';
 import MeasurementDetails from './MeasurementDetails';

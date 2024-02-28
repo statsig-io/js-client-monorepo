@@ -6,12 +6,12 @@ import {
   LocalStorageCacheEvaluationsDataProvider,
   PrecomputedEvaluationsClient,
   StatsigOptions,
-} from '@sigstat/precomputed-evaluations';
+} from '@statsig/precomputed-evaluations';
 import {
   StatsigProvider,
   useExperiment,
   useGate,
-} from '@sigstat/react-native-bindings';
+} from '@statsig/react-native-bindings';
 
 import { DEMO_CLIENT_KEY } from './Constants';
 

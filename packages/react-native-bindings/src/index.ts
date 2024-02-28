@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-import { Storage } from '@sigstat/core';
+import { Storage } from '@statsig/client-core';
 
 import './StatsigMetadataAdditions';
 
@@ -13,4 +13,4 @@ export {
   useDynamicConfig,
   useExperiment,
   useLayer,
-} from '@sigstat/react-bindings';
+} from '@statsig/react-bindings';

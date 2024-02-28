@@ -1,4 +1,4 @@
-import { StatsigMetadataProvider } from '@sigstat/core';
+import { StatsigMetadataProvider } from '@statsig/client-core';
 
 jest.mock('react-native-device-info', () => ({
   default: {

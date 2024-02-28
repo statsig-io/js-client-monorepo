@@ -4,7 +4,7 @@ import {
   Storage,
   getUserStorageKey,
   setObjectInStorage,
-} from '@sigstat/core';
+} from '@statsig/client-core';
 
 const LAST_MODIFIED_STORAGE_KEY = 'statsig.cache.last_modified_time';
 const CACHE_LIMIT = 10;

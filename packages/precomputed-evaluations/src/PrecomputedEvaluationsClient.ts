@@ -1,4 +1,4 @@
-import type { FeatureGate, StatsigUser } from '@sigstat/core';
+import type { FeatureGate, StatsigUser } from '@statsig/client-core';
 import {
   DJB2,
   DynamicConfig,
@@ -16,7 +16,7 @@ import {
   makeLayer,
   monitorClass,
   normalizeUser,
-} from '@sigstat/core';
+} from '@statsig/client-core';
 
 import EvaluationStore from './EvaluationStore';
 import Network from './Network';

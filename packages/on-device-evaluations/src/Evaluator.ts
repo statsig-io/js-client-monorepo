@@ -2,8 +2,8 @@ import {
   DataSource,
   SecondaryExposure,
   StatsigUserInternal,
-} from '@sigstat/core';
-import { SHA256 } from '@sigstat/sha256';
+} from '@statsig/client-core';
+import { SHA256 } from '@statsig/sha256';
 
 import Compare from './EvaluationComparison';
 import SpecStore, { Spec, SpecCondition, SpecRule } from './SpecStore';

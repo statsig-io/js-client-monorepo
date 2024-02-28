@@ -1,4 +1,4 @@
-import { StatsigDataProvider, getUserStorageKey } from '@sigstat/core';
+import { StatsigDataProvider, getUserStorageKey } from '@statsig/client-core';
 
 export class BootstrapSpecsDataProvider implements StatsigDataProvider {
   readonly isTerminal = true;

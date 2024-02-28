@@ -9,4 +9,4 @@ export {
   useDynamicConfig,
   useExperiment,
   useLayer,
-} from '@sigstat/react-bindings';
+} from '@statsig/react-bindings';

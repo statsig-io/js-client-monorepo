@@ -6,7 +6,7 @@ import { MockRemoteServerEvalClient } from 'statsig-test-helpers';
 import {
   PrecomputedEvaluationsInterface,
   StatsigClientEventCallback,
-} from '@sigstat/core';
+} from '@statsig/client-core';
 
 import StatsigProvider from '../StatsigProvider';
 import useGate from '../useGate';

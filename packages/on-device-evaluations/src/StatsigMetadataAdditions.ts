@@ -1,4 +1,4 @@
-import { StatsigMetadataProvider } from '@sigstat/core';
+import { StatsigMetadataProvider } from '@statsig/client-core';
 
 const SDK_TYPE = 'js-on-device-evaluations-client';
 

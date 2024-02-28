@@ -6,8 +6,8 @@ import { StatsigUser } from 'statsig-node';
 import {
   BootstrapEvaluationsDataProvider,
   PrecomputedEvaluationsClient,
-} from '@sigstat/precomputed-evaluations';
-import { StatsigProvider, useGate } from '@sigstat/react-bindings';
+} from '@statsig/precomputed-evaluations';
+import { StatsigProvider, useGate } from '@statsig/react-bindings';
 
 const DEMO_CLIENT_KEY = 'client-rfLvYGag3eyU0jYW5zcIJTQip7GXxSrhOFN69IGMjvq';
 

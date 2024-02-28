@@ -1,15 +1,15 @@
 import { ClientPrototype, bind } from './LocalOverridesBinding';
 
-declare module '@sigstat/on-device-evaluations' {
+declare module '@statsig/on-device-evaluations' {
   // eslint-disable-next-line @typescript-eslint/no-empty-interface
   interface OnDeviceEvaluationsClient extends ClientPrototype {}
 }
 
-let module: typeof import('@sigstat/on-device-evaluations') | undefined;
+let module: typeof import('@statsig/on-device-evaluations') | undefined;
 
 try {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  module = require('@sigstat/on-device-evaluations');
+  module = require('@statsig/on-device-evaluations');
 } catch {
   module = undefined;
 }

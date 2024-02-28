@@ -50,12 +50,12 @@ export default function BundleSizeExamplePage(): ReactNode {
     <>
       <BundleDetails
         title="Precomputed Evaluations"
-        url="https://cdn.jsdelivr.net/npm/@sigstat/precomputed-evaluations@latest/build/precomputed-evaluations.min.js"
+        url="https://cdn.jsdelivr.net/npm/@statsig/precomputed-evaluations@latest/build/precomputed-evaluations.min.js"
       />
 
       <BundleDetails
         title="On Device Evaluations"
-        url="https://cdn.jsdelivr.net/npm/@sigstat/on-device-evaluations@latest/build/on-device-evaluations.min.js"
+        url="https://cdn.jsdelivr.net/npm/@statsig/on-device-evaluations@latest/build/on-device-evaluations.min.js"
       />
     </>
   );

@@ -1,10 +1,10 @@
-import '@sigstat/client-extensions';
-import { PrecomputedEvaluationsClient } from '@sigstat/precomputed-evaluations';
+import '@statsig/client-extensions';
+import { PrecomputedEvaluationsClient } from '@statsig/precomputed-evaluations';
 import {
   StatsigProvider,
   useExperiment,
   useGate,
-} from '@sigstat/react-bindings';
+} from '@statsig/react-bindings';
 
 const client = new PrecomputedEvaluationsClient('client-key', {
   userID: 'a-user',

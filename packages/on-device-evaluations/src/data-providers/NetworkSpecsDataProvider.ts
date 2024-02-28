@@ -1,4 +1,4 @@
-import { StatsigDataProvider } from '@sigstat/core';
+import { StatsigDataProvider } from '@statsig/client-core';
 
 import StatsigNetwork from '../Network';
 import { StatsigOptions } from '../StatsigOptions';

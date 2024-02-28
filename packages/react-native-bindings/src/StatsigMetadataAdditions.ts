@@ -1,7 +1,7 @@
 import { NativeModules, Platform } from 'react-native';
 import DeviceInfo from 'react-native-device-info';
 
-import { StatsigMetadataProvider } from '@sigstat/core';
+import { StatsigMetadataProvider } from '@statsig/client-core';
 
 type I18nManager = { localIdentifer: string };
 type SettingsManager = {

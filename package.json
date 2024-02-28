@@ -1,6 +1,6 @@
 {
-  "name": "sigstat",
-  "version": "0.0.8",
+  "name": "statsig",
+  "version": "0.0.1-beta.1",
   "license": "MIT",
   "scripts": {
     "lint": "nx run-many --parallel=4 --target=lint",

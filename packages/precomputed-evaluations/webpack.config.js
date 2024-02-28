@@ -20,7 +20,10 @@ module.exports = composePlugins(withNx(), withWeb(), () =>
       target: 'web',
       resolve: {
         alias: {
-          '@sigstat/core': path.resolve(__dirname, '../../dist/packages/core'),
+          '@statsig/client-core': path.resolve(
+            __dirname,
+            '../../dist/packages/client-core',
+          ),
         },
         extensions: ['.js'],
       },

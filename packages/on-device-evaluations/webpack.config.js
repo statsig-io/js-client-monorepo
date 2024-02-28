@@ -20,8 +20,11 @@ module.exports = composePlugins(withNx(), withWeb(), () =>
       target: 'web',
       resolve: {
         alias: {
-          '@sigstat/core': path.resolve(__dirname, '../../dist/packages/core'),
-          '@sigstat/sha256': path.resolve(
+          '@statsig/client-core': path.resolve(
+            __dirname,
+            '../../dist/packages/client-core',
+          ),
+          '@statsig/sha256': path.resolve(
             __dirname,
             '../../dist/packages/sha256',
           ),

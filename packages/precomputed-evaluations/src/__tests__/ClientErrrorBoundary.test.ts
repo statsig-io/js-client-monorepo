@@ -1,6 +1,6 @@
 import fetchMock from 'jest-fetch-mock';
 
-import { LogLevel, configureErrorBoundary } from '@sigstat/core';
+import { LogLevel, configureErrorBoundary } from '@statsig/client-core';
 
 import PrecomputedEvaluationsClient from '../PrecomputedEvaluationsClient';
 import InitializeResponse from './initialize.json';

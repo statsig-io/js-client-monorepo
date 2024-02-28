@@ -4,7 +4,7 @@ const fs = require('fs');
 
 const filepath = path.resolve(
   __dirname,
-  '../../packages/core/src/StatsigMetadata.ts',
+  '../../packages/client-core/src/StatsigMetadata.ts',
 );
 
 const content = fs.readFileSync(filepath).toString();

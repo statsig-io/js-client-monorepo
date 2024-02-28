@@ -1,6 +1,6 @@
 import { useContext, useMemo } from 'react';
 
-import { Layer, StatsigUser } from '@sigstat/core';
+import { Layer, StatsigUser } from '@statsig/client-core';
 
 import StatsigContext from './StatsigContext';
 

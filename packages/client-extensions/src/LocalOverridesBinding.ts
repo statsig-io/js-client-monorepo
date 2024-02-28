@@ -1,7 +1,7 @@
 import {
   OnDeviceEvaluationsInterface,
   PrecomputedEvaluationsInterface,
-} from '@sigstat/core';
+} from '@statsig/client-core';
 
 import { LocalOverrides, makeEmptyOverrides } from './LocalOverrides';
 

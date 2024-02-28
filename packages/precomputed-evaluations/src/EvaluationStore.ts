@@ -5,7 +5,7 @@ import {
   getObjectFromStorage,
   getUserStorageKey,
   setObjectInStorage,
-} from '@sigstat/core';
+} from '@statsig/client-core';
 
 import { EvaluationResponse } from './EvaluationData';
 

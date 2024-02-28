@@ -1,4 +1,4 @@
-import { Experiment, StatsigUser } from '@sigstat/core';
+import { Experiment, StatsigUser } from '@statsig/client-core';
 
 import useDynamicConfig from './useDynamicConfig';
 

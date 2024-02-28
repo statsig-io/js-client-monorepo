@@ -1,11 +1,11 @@
 import { Text, View } from 'react-native';
 
-import { PrecomputedEvaluationsClient } from '@sigstat/precomputed-evaluations';
+import { PrecomputedEvaluationsClient } from '@statsig/precomputed-evaluations';
 import {
   StatsigProvider,
   useExperiment,
   useGate,
-} from '@sigstat/react-native-bindings';
+} from '@statsig/react-native-bindings';
 
 import { DEMO_CLIENT_KEY } from './Constants';
 

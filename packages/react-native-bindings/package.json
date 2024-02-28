@@ -1,9 +1,9 @@
 {
-  "name": "@sigstat/react-native-bindings",
-  "version": "0.0.8",
+  "name": "@statsig/react-native-bindings",
+  "version": "0.0.1-beta.1",
   "dependencies": {
-    "@sigstat/core": "*",
-    "@sigstat/react-bindings": "*"
+    "@statsig/client-core": "*",
+    "@statsig/react-bindings": "*"
   },
   "peerDependencies": {
     "react-native": "0.*",

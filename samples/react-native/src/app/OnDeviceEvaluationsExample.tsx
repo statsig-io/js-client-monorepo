@@ -1,11 +1,11 @@
 import { Text, View } from 'react-native';
 
-import { OnDeviceEvaluationsClient } from '@sigstat/on-device-evaluations';
+import { OnDeviceEvaluationsClient } from '@statsig/on-device-evaluations';
 import {
   StatsigProvider,
   useExperiment,
   useGate,
-} from '@sigstat/react-native-bindings';
+} from '@statsig/react-native-bindings';
 
 import { DEMO_CLIENT_KEY } from './Constants';
 

@@ -16,7 +16,7 @@ import {
   makeLayer,
   monitorClass,
   normalizeUser,
-} from '@sigstat/core';
+} from '@statsig/client-core';
 
 import Evaluator from './Evaluator';
 import Network from './Network';

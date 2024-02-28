@@ -1,4 +1,4 @@
-import { SecondaryExposure } from '@sigstat/core';
+import { SecondaryExposure } from '@statsig/client-core';
 
 type Spec<T> = {
   name: string;

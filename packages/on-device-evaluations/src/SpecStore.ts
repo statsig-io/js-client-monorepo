@@ -1,4 +1,4 @@
-import { DataSource } from '@sigstat/core';
+import { DataSource } from '@statsig/client-core';
 
 type SpecType = 'gate' | 'config' | 'layer';
 

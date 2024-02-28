@@ -2,7 +2,7 @@ import { act, render, screen, waitFor } from '@testing-library/react';
 import * as React from 'react';
 import { MockRemoteServerEvalClient } from 'statsig-test-helpers';
 
-import { StatsigClientEventCallback } from '@sigstat/core';
+import { StatsigClientEventCallback } from '@statsig/client-core';
 
 import StatsigProvider from '../StatsigProvider';
 

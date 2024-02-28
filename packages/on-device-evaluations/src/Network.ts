@@ -1,4 +1,4 @@
-import { NetworkCore } from '@sigstat/core';
+import { NetworkCore } from '@statsig/client-core';
 
 import { StatsigOptions } from './StatsigOptions';
 

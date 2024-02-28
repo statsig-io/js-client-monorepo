@@ -6,7 +6,7 @@ import {
   PrecomputedEvaluationsInterface,
   StatsigClientEventData,
   StatsigClientInterface,
-} from '@sigstat/core';
+} from '@statsig/client-core';
 
 import { NoopEvaluationsClient } from './NoopEvaluationsClient';
 import { isPrecomputedEvaluationsClient } from './OnDeviceVsPrecomputedUtils';

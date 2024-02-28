@@ -1,9 +1,9 @@
 {
-  "name": "@sigstat/on-device-evaluations",
-  "version": "0.0.8",
+  "name": "@statsig/on-device-evaluations",
+  "version": "0.0.1-beta.1",
   "dependencies": {
-    "@sigstat/core": "*",
-    "@sigstat/sha256": "*"
+    "@statsig/client-core": "*",
+    "@statsig/sha256": "*"
   },
   "jsdelivr": "./build/on-device-evaluations.min.js",
   "type": "commonjs",

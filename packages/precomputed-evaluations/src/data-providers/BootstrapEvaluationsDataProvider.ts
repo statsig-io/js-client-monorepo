@@ -2,7 +2,7 @@ import {
   StatsigDataProvider,
   StatsigUser,
   getUserStorageKey,
-} from '@sigstat/core';
+} from '@statsig/client-core';
 
 export class BootstrapEvaluationsDataProvider implements StatsigDataProvider {
   readonly isTerminal = true;

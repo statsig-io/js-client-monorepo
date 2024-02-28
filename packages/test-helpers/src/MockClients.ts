@@ -3,7 +3,7 @@ import { jest } from '@jest/globals';
 import {
   OnDeviceEvaluationsInterface,
   PrecomputedEvaluationsInterface,
-} from '@sigstat/core';
+} from '@statsig/client-core';
 
 function getBaseMock<T>(): T {
   return {

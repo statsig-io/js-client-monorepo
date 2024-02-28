@@ -8,7 +8,7 @@ import {
   makeDynamicConfig,
   makeFeatureGate,
   makeLayer,
-} from '@sigstat/core';
+} from '@statsig/client-core';
 
 const noop = (): void => {
   // noop

@@ -2,7 +2,7 @@ import { nativeApplicationVersion } from 'expo-application';
 import { modelId, modelName, osName, osVersion } from 'expo-device';
 import { NativeModules, Platform } from 'react-native';
 
-import { StatsigMetadataProvider } from '@sigstat/core';
+import { StatsigMetadataProvider } from '@statsig/client-core';
 
 type I18nManager = { localIdentifer: string };
 type SettingsManager = {

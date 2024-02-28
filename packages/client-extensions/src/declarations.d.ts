@@ -1,2 +1,2 @@
-// declare module '@sigstat/on-device-evaluations';
-// declare module '@sigstat/precomputed-evaluations';
+// declare module '@statsig/on-device-evaluations';
+// declare module '@statsig/precomputed-evaluations';

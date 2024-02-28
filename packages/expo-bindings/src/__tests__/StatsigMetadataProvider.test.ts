@@ -1,4 +1,4 @@
-import { StatsigMetadataProvider } from '@sigstat/core';
+import { StatsigMetadataProvider } from '@statsig/client-core';
 
 jest.mock('expo-application', () => ({
   nativeApplicationVersion: 'a-native-app-version',

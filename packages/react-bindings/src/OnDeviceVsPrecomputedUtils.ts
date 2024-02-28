@@ -2,7 +2,7 @@ import {
   Log,
   OnDeviceEvaluationsInterface,
   PrecomputedEvaluationsInterface,
-} from '@sigstat/core';
+} from '@statsig/client-core';
 
 export function isPrecomputedEvaluationsClient(
   client: OnDeviceEvaluationsInterface | PrecomputedEvaluationsInterface,

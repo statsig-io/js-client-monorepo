@@ -1,6 +1,6 @@
 import { useContext, useMemo } from 'react';
 
-import { FeatureGate, StatsigUser } from '@sigstat/core';
+import { FeatureGate, StatsigUser } from '@statsig/client-core';
 
 import StatsigContext from './StatsigContext';
 

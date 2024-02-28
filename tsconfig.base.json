@@ -7,11 +7,7 @@
     "experimentalDecorators": false,
     "forceConsistentCasingInFileNames": true,
     "importHelpers": false,
-    "lib": [
-      "es6",
-      "dom",
-      "esnext"
-    ],
+    "lib": ["es6", "dom", "esnext"],
     "module": "commonjs",
     "moduleResolution": "node",
     "noFallthroughCasesInSwitch": true,
@@ -19,33 +15,21 @@
     "noImplicitReturns": true,
     "noPropertyAccessFromIndexSignature": true,
     "paths": {
-      "@sigstat/client-extensions": [
-        "packages/client-extensions/src/index.ts"
-      ],
-      "@sigstat/core": [
-        "packages/core/src/index.ts"
-      ],
-      "@sigstat/expo-bindings": [
-        "packages/expo-bindings/src/index.ts"
-      ],
-      "@sigstat/on-device-evaluations": [
+      "@statsig/client-core": ["packages/client-core/src/index.ts"],
+      "@statsig/client-extensions": ["packages/client-extensions/src/index.ts"],
+      "@statsig/expo-bindings": ["packages/expo-bindings/src/index.ts"],
+      "@statsig/on-device-evaluations": [
         "packages/on-device-evaluations/src/index.ts"
       ],
-      "@sigstat/precomputed-evaluations": [
+      "@statsig/precomputed-evaluations": [
         "packages/precomputed-evaluations/src/index.ts"
       ],
-      "@sigstat/react-bindings": [
-        "packages/react-bindings/src/index.ts"
-      ],
-      "@sigstat/react-native-bindings": [
+      "@statsig/react-bindings": ["packages/react-bindings/src/index.ts"],
+      "@statsig/react-native-bindings": [
         "packages/react-native-bindings/src/index.ts"
       ],
-      "@sigstat/sha256": [
-        "packages/sha256/src/index.ts"
-      ],
-      "statsig-test-helpers": [
-        "packages/test-helpers/src/index.ts"
-      ]
+      "@statsig/sha256": ["packages/sha256/src/index.ts"],
+      "statsig-test-helpers": ["packages/test-helpers/src/index.ts"]
     },
     "rootDir": ".",
     "skipDefaultLibCheck": true,
@@ -54,9 +38,5 @@
     "strict": true,
     "target": "es5"
   },
-  "exclude": [
-    "node_modules",
-    "tmp",
-    "tools",
-  ]
+  "exclude": ["node_modules", "tmp", "tools"]
 }

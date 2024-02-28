@@ -1,4 +1,4 @@
-import { Flatten, StatsigOptionsCommon } from '@sigstat/core';
+import { Flatten, StatsigOptionsCommon } from '@statsig/client-core';
 
 export type StatsigOptions = Flatten<
   StatsigOptionsCommon & {

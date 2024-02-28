@@ -1,6 +1,6 @@
 import { ReactNode, useEffect, useState } from 'react';
 
-import { PrecomputedEvaluationsClient } from '@sigstat/precomputed-evaluations';
+import { PrecomputedEvaluationsClient } from '@statsig/precomputed-evaluations';
 
 import ManyChecksExample from './ManyChecksExample';
 import MeasurementDetails from './MeasurementDetails';

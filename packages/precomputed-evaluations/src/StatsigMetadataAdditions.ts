@@ -1,4 +1,4 @@
-import { StatsigMetadataProvider } from '@sigstat/core';
+import { StatsigMetadataProvider } from '@statsig/client-core';
 
 export const SDK_TYPE = 'js-precomputed-evaluations-client';
 
