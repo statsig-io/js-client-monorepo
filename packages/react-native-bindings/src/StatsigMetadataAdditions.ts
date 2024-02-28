@@ -8,12 +8,12 @@ type SettingsManager = {
   settings?: { AppLocale?: string; AppleLanguages?: string[] };
 };
 
-let locale = '';
+let locale: string | undefined = undefined;
 
 if (Platform.OS === 'android') {
   const i18nManager = NativeModules['I18nManager'] as I18nManager | undefined;
 
-  locale = i18nManager?.localIdentifer ?? '';
+  locale = i18nManager?.localIdentifer ?? undefined;
 }
 
 if (Platform.OS === 'ios') {
@@ -23,14 +23,14 @@ if (Platform.OS === 'ios') {
 
   const settings = settingsManager?.settings;
 
-  locale = settings?.AppLocale ?? settings?.AppleLanguages?.[0] ?? '';
+  locale = settings?.AppLocale ?? settings?.AppleLanguages?.[0] ?? undefined;
 }
 
 StatsigMetadataProvider.add({
-  appVersion: DeviceInfo.getVersion() ?? '',
-  systemVersion: DeviceInfo.getSystemVersion() ?? '',
-  systemName: DeviceInfo.getSystemName() ?? '',
-  deviceModelName: DeviceInfo.getModel() ?? '',
-  deviceModel: DeviceInfo.getDeviceId() ?? '',
+  appVersion: DeviceInfo.getVersion() ?? undefined,
+  systemVersion: DeviceInfo.getSystemVersion() ?? undefined,
+  systemName: DeviceInfo.getSystemName() ?? undefined,
+  deviceModelName: DeviceInfo.getModel() ?? undefined,
+  deviceModel: DeviceInfo.getDeviceId() ?? undefined,
   locale,
 });
