@@ -21,6 +21,7 @@ export interface OnDeviceEvaluationsInterface
 
 export interface PrecomputedEvaluationsInterface
   extends StatsigClientCommonInterface {
+  getCurrentUser(): StatsigUser;
   updateUser(user: StatsigUser): Promise<void>;
   checkGate(name: string): boolean;
   getFeatureGate(name: string): FeatureGate;

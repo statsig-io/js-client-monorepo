@@ -36,6 +36,7 @@ const client: OnDeviceEvaluationsInterface &
   initialize: () => Promise.resolve(),
   shutdown: () => Promise.resolve(),
   updateUser: () => Promise.resolve(),
+  getCurrentUser: () => ({ userID: '' }),
   checkGate: () => false,
   getFeatureGate: defaultEvaluation<FeatureGate>('gate'),
   getDynamicConfig: defaultEvaluation<DynamicConfig>('config'),

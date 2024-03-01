@@ -67,6 +67,10 @@ export default class PrecomputedEvaluationsClient
     return this.updateUser(this._user);
   }
 
+  getCurrentUser(): StatsigUser {
+    return JSON.parse(JSON.stringify(this._user)) as StatsigUser;
+  }
+
   async updateUser(user: StatsigUser): Promise<void> {
     this._logger.reset();
     this._store.reset();
