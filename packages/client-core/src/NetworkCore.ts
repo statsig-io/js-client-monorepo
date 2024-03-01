@@ -8,18 +8,18 @@ import { getUUID } from './UUID';
 
 const DEFAULT_TIMEOUT_MS = 10_000;
 
-type CommonArgs = {
+type RequestArgs = {
   sdkKey: string;
   url: string;
   timeoutMs?: number;
   retries?: number;
 };
 
-type PostRequestArgs = CommonArgs & {
+type RequestArgsWithData = RequestArgs & {
   data: Record<string, unknown>;
 };
 
-type RequestArgs = CommonArgs & {
+type RequestArgsInternal = RequestArgs & {
   method: 'POST' | 'GET';
   body?: string;
   headers?: Record<string, string>;
@@ -43,7 +43,7 @@ export class NetworkCore {
     this._sessionID = getUUID();
   }
 
-  async post(args: PostRequestArgs): Promise<string | null> {
+  async post(args: RequestArgsWithData): Promise<string | null> {
     const { data } = args;
     const stableID = await StableID.get(args.sdkKey);
     const body = JSON.stringify({
@@ -58,11 +58,19 @@ export class NetworkCore {
     return this._sendRequest({ method: 'POST', body, ...args });
   }
 
-  async get(args: CommonArgs): Promise<string | null> {
+  async get(args: RequestArgs): Promise<string | null> {
     return this._sendRequest({ method: 'GET', ...args });
   }
 
-  protected async _sendRequest(args: RequestArgs): Promise<string | null> {
+  beacon(args: RequestArgsWithData): boolean {
+    const url = new URL(args.url);
+    url.searchParams.append('k', args.sdkKey);
+    return navigator.sendBeacon(url, JSON.stringify(args.data));
+  }
+
+  protected async _sendRequest(
+    args: RequestArgsInternal,
+  ): Promise<string | null> {
     return monitorFunction(
       '_sendRequest',
       () => this._sendRequestImpl(args),
@@ -70,7 +78,9 @@ export class NetworkCore {
     );
   }
 
-  private async _sendRequestImpl(args: RequestArgs): Promise<string | null> {
+  private async _sendRequestImpl(
+    args: RequestArgsInternal,
+  ): Promise<string | null> {
     const { method, url, body, retries } = args;
 
     const controller = new AbortController();
@@ -117,7 +127,7 @@ export class NetworkCore {
     }
   }
 
-  private _getPopulatedHeaders(args: RequestArgs) {
+  private _getPopulatedHeaders(args: RequestArgsInternal) {
     const statsigMetadata = StatsigMetadataProvider.get();
     return {
       ...args.headers,

@@ -61,7 +61,9 @@
       "$_getSpecs": "_t",
       "$_timeout": "yt",
       "$_emitter": "wt",
-      "$_current": "bt"
+      "$_current": "bt",
+      "$_sendEventsViaPost": "gt",
+      "$_sendEventsViaBeacon": "St"
     }
   }
 }

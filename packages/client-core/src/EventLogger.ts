@@ -142,25 +142,63 @@ export class EventLogger {
   private async _sendEvents(
     events: StatsigEventInternal[],
   ): Promise<SendEventsResponse> {
+    const isInForeground = VisibilityChangeObserver.isCurrentlyVisible();
     const api = this._options?.api ?? DEFAULT_API;
-    const result = await this._network.post({
-      sdkKey: this._sdkKey,
-      url: `${api}/rgstr`,
-      data: {
-        events,
-      },
-      retries: 3,
-    });
 
-    if (result) {
-      const response = JSON.parse(result) as SendEventsResponse;
+    const response =
+      !isInForeground && this._isBeaconSupported()
+        ? this._sendEventsViaBeacon(api, events)
+        : await this._sendEventsViaPost(api, events);
+
+    if (response.success) {
       this._emitter({
         event: 'logs_flushed',
         events,
       });
-      return response;
     }
 
     return { success: false };
+  }
+
+  private async _sendEventsViaPost(
+    api: string,
+    events: StatsigEventInternal[],
+  ): Promise<SendEventsResponse> {
+    const result = await this._network.post({
+      sdkKey: this._sdkKey,
+      data: {
+        events,
+      },
+      url: `${api}/rgstr`,
+      retries: 3,
+    });
+
+    if (result) {
+      return JSON.parse(result) as SendEventsResponse;
+    }
+
+    return { success: false };
+  }
+
+  private _sendEventsViaBeacon(
+    api: string,
+    events: StatsigEventInternal[],
+  ): SendEventsResponse {
+    return {
+      success: this._network.beacon({
+        sdkKey: this._sdkKey,
+        data: {
+          events,
+        },
+        url: `${api}/log_event_beacon`,
+      }),
+    };
+  }
+
+  private _isBeaconSupported(): boolean {
+    return (
+      typeof navigator !== 'undefined' &&
+      typeof navigator?.sendBeacon === 'function'
+    );
   }
 }

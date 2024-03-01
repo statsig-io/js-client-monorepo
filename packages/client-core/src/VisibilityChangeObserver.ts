@@ -8,6 +8,10 @@ export class VisibilityChangeObserver {
   private static _listeners: VisibilityChangeListener[] = [];
   private static _current: Visibility | null = null;
 
+  static isCurrentlyVisible(): boolean {
+    return this._current === 'foreground';
+  }
+
   static add(listener: VisibilityChangeListener): void {
     this._listeners.push(listener);
   }
