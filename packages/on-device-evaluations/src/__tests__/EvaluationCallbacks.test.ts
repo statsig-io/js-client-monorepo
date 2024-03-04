@@ -28,7 +28,7 @@ describe('Client Evaluations Callback', () => {
   });
 
   it('fires the gate_evaluation event', () => {
-    client.checkGate(user, 'a_gate');
+    client.checkGate('a_gate', user);
     expect(events).toEqual([
       {
         event: 'gate_evaluation',
@@ -43,7 +43,7 @@ describe('Client Evaluations Callback', () => {
   });
 
   it('fires the dynamic_config_evaluation event', () => {
-    client.getDynamicConfig(user, 'a_dynamic_config');
+    client.getDynamicConfig('a_dynamic_config', user);
     expect(events).toEqual([
       {
         event: 'dynamic_config_evaluation',
@@ -62,7 +62,7 @@ describe('Client Evaluations Callback', () => {
   });
 
   it('fires the experiment_evaluation event', () => {
-    client.getExperiment(user, 'an_experiment');
+    client.getExperiment('an_experiment', user);
     expect(events).toEqual([
       {
         event: 'experiment_evaluation',
@@ -79,7 +79,7 @@ describe('Client Evaluations Callback', () => {
   });
 
   it('fires the layer_evaluation event', () => {
-    client.getLayer(user, 'a_layer');
+    client.getLayer('a_layer', user);
     expect(events).toEqual([
       {
         event: 'layer_evaluation',

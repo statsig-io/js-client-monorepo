@@ -45,7 +45,7 @@ export default function OnDeviceClientPerfExamplePage(): ReactNode {
       {initMeasurement && (
         <ManyChecksExample
           action={(i) =>
-            client.checkGate({ userID: `user_${i}` }, 'partial_gate')
+            client.checkGate('partial_gate', { userID: `user_${i}` })
           }
           title="Gate Checks"
           marker="on-device-many-gates"
@@ -55,7 +55,7 @@ export default function OnDeviceClientPerfExamplePage(): ReactNode {
       {initMeasurement && (
         <ManyChecksExample
           action={(i) =>
-            client.getDynamicConfig(user, `dynamic_config_num_${i}`)
+            client.getDynamicConfig(`dynamic_config_num_${i}`, user)
           }
           title="Dynamic Config Gets"
           marker="on-device-many-dynamic-configs"
@@ -65,7 +65,7 @@ export default function OnDeviceClientPerfExamplePage(): ReactNode {
       {initMeasurement && (
         <ManyChecksExample
           action={(i) =>
-            client.getExperiment({ userID: `user_${i}` }, 'an_experiment')
+            client.getExperiment('an_experiment', { userID: `user_${i}` })
           }
           title="Experiment Gets"
           marker="on-device-many-experiments"
@@ -74,7 +74,7 @@ export default function OnDeviceClientPerfExamplePage(): ReactNode {
 
       {initMeasurement && (
         <ManyChecksExample
-          action={(i) => client.getLayer(user, `layer_num_${i}`)}
+          action={(i) => client.getLayer(`layer_num_${i}`, user)}
           title="Layer Gets"
           marker="on-device-many-layers"
         />

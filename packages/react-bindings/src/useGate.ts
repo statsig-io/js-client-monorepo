@@ -20,7 +20,7 @@ export default function (
       return precomputedClient.getFeatureGate(gateName);
     }
 
-    return onDeviceClient.getFeatureGate(options.user, gateName);
+    return onDeviceClient.getFeatureGate(gateName, options.user);
   }, [precomputedClient.loadingStatus, onDeviceClient.loadingStatus, options]);
 
   return gate;

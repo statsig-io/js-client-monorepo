@@ -11,12 +11,12 @@ export interface StatsigClientCommonInterface
 
 export interface OnDeviceEvaluationsInterface
   extends StatsigClientCommonInterface {
-  checkGate(user: StatsigUser, name: string): boolean;
-  getFeatureGate(user: StatsigUser, name: string): FeatureGate;
-  getDynamicConfig(user: StatsigUser, name: string): DynamicConfig;
-  getExperiment(user: StatsigUser, name: string): Experiment;
-  getLayer(user: StatsigUser, name: string): Layer;
-  logEvent(user: StatsigUser, event: StatsigEvent): void;
+  checkGate(name: string, user: StatsigUser): boolean;
+  getFeatureGate(name: string, user: StatsigUser): FeatureGate;
+  getDynamicConfig(name: string, user: StatsigUser): DynamicConfig;
+  getExperiment(name: string, user: StatsigUser): Experiment;
+  getLayer(name: string, user: StatsigUser): Layer;
+  logEvent(event: StatsigEvent, user: StatsigUser): void;
 }
 
 export interface PrecomputedEvaluationsInterface

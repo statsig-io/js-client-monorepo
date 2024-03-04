@@ -82,11 +82,11 @@ export default class OnDeviceEvaluationsClient
     await this._logger.shutdown();
   }
 
-  checkGate(user: StatsigUser, name: string): boolean {
-    return this.getFeatureGate(user, name).value;
+  checkGate(name: string, user: StatsigUser): boolean {
+    return this.getFeatureGate(name, user).value;
   }
 
-  getFeatureGate(user: StatsigUser, name: string): FeatureGate {
+  getFeatureGate(name: string, user: StatsigUser): FeatureGate {
     user = normalizeUser(user, this._options.environment);
     const { details, result } = this._evaluator.evaluateGate(name, user);
 
@@ -106,19 +106,19 @@ export default class OnDeviceEvaluationsClient
     return gate;
   }
 
-  getDynamicConfig(user: StatsigUser, name: string): DynamicConfig {
+  getDynamicConfig(name: string, user: StatsigUser): DynamicConfig {
     const dynamicConfig = this._getConfigImpl(user, name);
     this.emit({ event: 'dynamic_config_evaluation', dynamicConfig });
     return dynamicConfig;
   }
 
-  getExperiment(user: StatsigUser, name: string): Experiment {
+  getExperiment(name: string, user: StatsigUser): Experiment {
     const experiment = this._getConfigImpl(user, name);
     this.emit({ event: 'experiment_evaluation', experiment });
     return experiment;
   }
 
-  getLayer(user: StatsigUser, name: string): Layer {
+  getLayer(name: string, user: StatsigUser): Layer {
     user = normalizeUser(user, this._options.environment);
     const { details, result } = this._evaluator.evaluateLayer(name, user);
 
@@ -159,7 +159,7 @@ export default class OnDeviceEvaluationsClient
     return layer;
   }
 
-  logEvent(user: StatsigUser, event: StatsigEvent): void {
+  logEvent(event: StatsigEvent, user: StatsigUser): void {
     this._logger.enqueue({ ...event, user, time: Date.now() });
   }
 

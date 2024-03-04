@@ -20,7 +20,7 @@ export default function (
       return precomputedClient.getDynamicConfig(configName);
     }
 
-    return onDeviceClient.getDynamicConfig(options.user, configName);
+    return onDeviceClient.getDynamicConfig(configName, options.user);
   }, [precomputedClient.loadingStatus, onDeviceClient.loadingStatus, options]);
 
   return config;

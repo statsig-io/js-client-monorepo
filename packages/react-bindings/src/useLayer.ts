@@ -20,7 +20,7 @@ export default function (
       return precomputedClient.getLayer(layerName);
     }
 
-    return onDeviceClient.getLayer(options.user, layerName);
+    return onDeviceClient.getLayer(layerName, options.user);
   }, [precomputedClient.loadingStatus, onDeviceClient.loadingStatus, options]);
 
   return layer;
