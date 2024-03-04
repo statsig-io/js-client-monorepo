@@ -1,4 +1,5 @@
 {
+  "__note": "Sample Response using the SDK Demo project",
   "dynamic_configs": [
     {
       "name": "a_dynamic_config",

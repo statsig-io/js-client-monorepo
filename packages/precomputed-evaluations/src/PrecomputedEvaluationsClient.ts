@@ -118,28 +118,21 @@ export default class PrecomputedEvaluationsClient
       createGateExposure(this._user, gate, res?.secondary_exposures),
     );
 
+    this.emit({ event: 'gate_evaluation', gate });
+
     return gate;
   }
 
   getDynamicConfig(name: string): DynamicConfig {
-    const hash = DJB2(name);
-    const res = this._store.values?.dynamic_configs[hash];
-    const config = makeDynamicConfig(
-      name,
-      this._store.source,
-      res?.rule_id,
-      res?.value,
-    );
-
-    this._logger.enqueue(
-      createConfigExposure(this._user, config, res?.secondary_exposures),
-    );
-
-    return config;
+    const dynamicConfig = this._getConfigImpl(name);
+    this.emit({ event: 'dynamic_config_evaluation', dynamicConfig });
+    return dynamicConfig;
   }
 
   getExperiment(name: string): Experiment {
-    return this.getDynamicConfig(name);
+    const experiment = this._getConfigImpl(name);
+    this.emit({ event: 'experiment_evaluation', experiment });
+    return experiment;
   }
 
   getLayer(name: string): Layer {
@@ -166,10 +159,29 @@ export default class PrecomputedEvaluationsClient
       return res.value[param];
     });
 
+    this.emit({ event: 'layer_evaluation', layer });
+
     return layer;
   }
 
   logEvent(event: StatsigEvent): void {
     this._logger.enqueue({ ...event, user: this._user, time: Date.now() });
+  }
+
+  private _getConfigImpl(name: string): DynamicConfig {
+    const hash = DJB2(name);
+    const res = this._store.values?.dynamic_configs[hash];
+    const config = makeDynamicConfig(
+      name,
+      this._store.source,
+      res?.rule_id,
+      res?.value,
+    );
+
+    this._logger.enqueue(
+      createConfigExposure(this._user, config, res?.secondary_exposures),
+    );
+
+    return config;
   }
 }
