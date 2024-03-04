@@ -64,7 +64,8 @@
       "$_current": "bt",
       "$_sendEventsViaPost": "gt",
       "$_sendEventsViaBeacon": "St",
-      "$_isBeaconSupported": "xt"
+      "$_isBeaconSupported": "xt",
+      "$_getConfigImpl": "Ot"
     }
   }
 }

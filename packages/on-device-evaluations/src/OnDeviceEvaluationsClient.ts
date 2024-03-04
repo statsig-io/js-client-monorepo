@@ -101,28 +101,21 @@ export default class OnDeviceEvaluationsClient
       createGateExposure(user, gate, result?.secondary_exposures),
     );
 
+    this.emit({ event: 'gate_evaluation', gate });
+
     return gate;
   }
 
   getDynamicConfig(user: StatsigUser, name: string): DynamicConfig {
-    user = normalizeUser(user, this._options.environment);
-    const { details, result } = this._evaluator.evaluateConfig(name, user);
-    const config = makeDynamicConfig(
-      name,
-      details.source,
-      result?.rule_id,
-      result?.json_value,
-    );
-
-    this._logger.enqueue(
-      createConfigExposure(user, config, result?.secondary_exposures),
-    );
-
-    return config;
+    const dynamicConfig = this._getConfigImpl(user, name);
+    this.emit({ event: 'dynamic_config_evaluation', dynamicConfig });
+    return dynamicConfig;
   }
 
   getExperiment(user: StatsigUser, name: string): Experiment {
-    return this.getDynamicConfig(user, name);
+    const experiment = this._getConfigImpl(user, name);
+    this.emit({ event: 'experiment_evaluation', experiment });
+    return experiment;
   }
 
   getLayer(user: StatsigUser, name: string): Layer {
@@ -161,10 +154,29 @@ export default class OnDeviceEvaluationsClient
       },
     );
 
+    this.emit({ event: 'layer_evaluation', layer });
+
     return layer;
   }
 
   logEvent(user: StatsigUser, event: StatsigEvent): void {
     this._logger.enqueue({ ...event, user, time: Date.now() });
+  }
+
+  private _getConfigImpl(user: StatsigUser, name: string): DynamicConfig {
+    user = normalizeUser(user, this._options.environment);
+    const { details, result } = this._evaluator.evaluateConfig(name, user);
+    const config = makeDynamicConfig(
+      name,
+      details.source,
+      result?.rule_id,
+      result?.json_value,
+    );
+
+    this._logger.enqueue(
+      createConfigExposure(user, config, result?.secondary_exposures),
+    );
+
+    return config;
   }
 }
