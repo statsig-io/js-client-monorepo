@@ -63,7 +63,8 @@
       "$_emitter": "wt",
       "$_current": "bt",
       "$_sendEventsViaPost": "gt",
-      "$_sendEventsViaBeacon": "St"
+      "$_sendEventsViaBeacon": "St",
+      "$_isBeaconSupported": "xt"
     }
   }
 }
