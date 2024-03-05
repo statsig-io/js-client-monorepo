@@ -57,7 +57,8 @@
       "$_data": "ft",
       "$_lastModifiedTimeMap": "lt",
       "$_runCacheEviction": "ht",
-      "$_getOutputs": "vt"
+      "$_getOutputs": "vt",
+      "$_getPopulatedURL": "dt"
     }
   }
 }

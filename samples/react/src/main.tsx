@@ -29,6 +29,7 @@ const routes: RouteMap = [
       ['/prefetch-users', 'Prefetching Users', () => import('./PrefetchUsersExamplePage')],
       ['/delayed-init', 'Delayed Network Init', () => import('./DelayedNetworkInitExamplePage')],
       ['/client-event-stream', 'Client Event Stream', () => import('./ClientEventStreamExamplePage')],
+      ['/samples', 'Samples', () => import('./SamplesPage')]
     ],
   ],
 ];
