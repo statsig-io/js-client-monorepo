@@ -1,8 +1,9 @@
 import { captureDiagnostics } from './Diagnostics';
-import { errorBoundary } from './ErrorBoundary';
+import { ErrorBoundary } from './ErrorBoundary';
 import { StatsigClientBase } from './StatsigClientBase';
 
 export function monitorClass<T extends new (...args: any[]) => any>(
+  errorBoundary: ErrorBoundary,
   target: T,
   instance: unknown,
 ): void {
@@ -17,6 +18,7 @@ export function monitorClass<T extends new (...args: any[]) => any>(
     const original = obj[method] as (...args: unknown[]) => unknown;
     obj[method] = function (...args: unknown[]) {
       return monitorFunction(
+        errorBoundary,
         method,
         () => original.apply(this, args) as unknown,
         instance,
@@ -26,6 +28,7 @@ export function monitorClass<T extends new (...args: any[]) => any>(
 }
 
 export function monitorFunction<T>(
+  errorBoundary: ErrorBoundary,
   tag: string,
   func: () => T,
   instance: unknown,
@@ -33,7 +36,7 @@ export function monitorFunction<T>(
   const client =
     instance instanceof StatsigClientBase ? instance['emit'] : undefined;
 
-  return errorBoundary(
+  return errorBoundary.capture(
     tag,
     () => captureDiagnostics(tag, () => func.apply(instance)),
     client,

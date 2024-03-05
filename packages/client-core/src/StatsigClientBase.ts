@@ -1,4 +1,5 @@
 import './$_StatsigGlobal';
+import { ErrorBoundary } from './ErrorBoundary';
 import { EventLogger } from './EventLogger';
 import { Log, LogLevel } from './Log';
 import { NetworkCore } from './NetworkCore';
@@ -29,6 +30,7 @@ export type StatsigClientEmitEventFunc = (data: StatsigClientEventData) => void;
 export class StatsigClientBase implements StatsigClientEventEmitterInterface {
   loadingStatus: StatsigLoadingStatus = 'Uninitialized';
 
+  protected _errorBoundary: ErrorBoundary;
   protected _logger: EventLogger;
   protected _sdkKey: string;
   protected _dataProviders: StatsigDataProvider[];
@@ -48,6 +50,7 @@ export class StatsigClientBase implements StatsigClientEventEmitterInterface {
       options,
     );
     this._sdkKey = sdkKey;
+    this._errorBoundary = new ErrorBoundary(sdkKey);
 
     __STATSIG__ = __STATSIG__ ?? {};
     const instances = __STATSIG__.instances ?? new Set();

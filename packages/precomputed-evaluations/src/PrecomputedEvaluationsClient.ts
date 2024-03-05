@@ -55,7 +55,9 @@ export default class PrecomputedEvaluationsClient
         new NetworkEvaluationsDataProvider(network),
       ],
     );
-    monitorClass(PrecomputedEvaluationsClient, this);
+
+    monitorClass(this._errorBoundary, PrecomputedEvaluationsClient, this);
+    monitorClass(this._errorBoundary, Network, network);
 
     if (options?.overrideStableID) {
       StableID.setOverride(options.overrideStableID, sdkKey);

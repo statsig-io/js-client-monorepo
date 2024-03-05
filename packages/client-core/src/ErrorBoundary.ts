@@ -1,89 +1,84 @@
 import { Log } from './Log';
 import { StatsigClientEmitEventFunc } from './StatsigClientBase';
+import { StatsigMetadataProvider } from './StatsigMetadata';
 
 export const EXCEPTION_ENDPOINT = 'https://statsigapi.net/v1/sdk_exception';
 
-type Config = {
-  sdkKey: string;
-  metadata: Record<string, unknown>;
-};
+export class ErrorBoundary {
+  private _seen = new Set<string>();
 
-const _seen = new Set<string>();
-let _config: Config | null = null;
+  constructor(private _sdkKey: string) {}
 
-export function configureErrorBoundary(config: Config): void {
-  _config = config;
-}
-
-export function errorBoundary(
-  tag: string,
-  task: () => unknown,
-  emitter?: StatsigClientEmitEventFunc,
-): unknown {
-  try {
-    const res = task();
-    if (res && res instanceof Promise) {
-      return res.catch((err) => _onError(tag, err, emitter));
-    }
-    return res;
-  } catch (error) {
-    _onError(tag, error, emitter);
-    return null;
-  }
-}
-
-function _onError(
-  tag: string,
-  error: unknown,
-  emitter?: StatsigClientEmitEventFunc,
-) {
-  try {
-    Log.warn(`Caught error in ${tag}`, { error });
-
-    const impl = async () => {
-      const unwrapped = (error ??
-        Error('[Statsig] Error was empty')) as unknown;
-      const isError = unwrapped instanceof Error;
-      const name = isError ? unwrapped.name : 'No Name';
-
-      if (_seen.has(name)) {
-        return;
+  capture(
+    tag: string,
+    task: () => unknown,
+    emitter?: StatsigClientEmitEventFunc,
+  ): unknown {
+    try {
+      const res = task();
+      if (res && res instanceof Promise) {
+        return res.catch((err) => this._onError(tag, err, emitter));
       }
-      _seen.add(name);
+      return res;
+    } catch (error) {
+      this._onError(tag, error, emitter);
+      return null;
+    }
+  }
 
-      if (_config?.sdkKey) {
+  private _onError(
+    tag: string,
+    error: unknown,
+    emitter?: StatsigClientEmitEventFunc,
+  ) {
+    try {
+      Log.warn(`Caught error in ${tag}`, { error });
+
+      const impl = async () => {
+        const unwrapped = (error ??
+          Error('[Statsig] Error was empty')) as unknown;
+        const isError = unwrapped instanceof Error;
+        const name = isError ? unwrapped.name : 'No Name';
+
+        if (this._seen.has(name)) {
+          return;
+        }
+
+        this._seen.add(name);
+
+        const statsigMetadata = StatsigMetadataProvider.get();
         const info = isError ? unwrapped.stack : _getDescription(unwrapped);
         const body = JSON.stringify({
           tag,
           exception: name,
           info,
-          ..._config.metadata,
+          ...statsigMetadata,
         });
 
         await fetch(EXCEPTION_ENDPOINT, {
           method: 'POST',
           headers: {
-            'STATSIG-API-KEY': _config.sdkKey,
-            'STATSIG-SDK-TYPE': String(_config.metadata?.['sdkType']),
-            'STATSIG-SDK-VERSION': String(_config.metadata?.['sdkVersion']),
+            'STATSIG-API-KEY': this._sdkKey,
+            'STATSIG-SDK-TYPE': String(statsigMetadata.sdkType),
+            'STATSIG-SDK-VERSION': String(statsigMetadata.sdkVersion),
             'Content-Type': 'application/json',
           },
           body,
         });
-      }
 
-      emitter?.({ event: 'error', error });
-    };
+        emitter?.({ event: 'error', error });
+      };
 
-    impl()
-      .then(() => {
-        /* noop */
-      })
-      .catch(() => {
-        /* noop */
-      });
-  } catch (_error) {
-    /* noop */
+      impl()
+        .then(() => {
+          /* noop */
+        })
+        .catch(() => {
+          /* noop */
+        });
+    } catch (_error) {
+      /* noop */
+    }
   }
 }
 

@@ -1,6 +1,6 @@
 import fetchMock from 'jest-fetch-mock';
 
-import { LogLevel, configureErrorBoundary } from '@statsig/client-core';
+import { LogLevel } from '@statsig/client-core';
 
 import PrecomputedEvaluationsClient from '../PrecomputedEvaluationsClient';
 import InitializeResponse from './initialize.json';
@@ -14,10 +14,6 @@ describe('Client Error Boundary', () => {
       { userID: '' },
       { logLevel: LogLevel.None },
     );
-    configureErrorBoundary({
-      metadata: {},
-      sdkKey: 'client-key',
-    });
 
     fetchMock.enableMocks();
     fetchMock.mockResponse(JSON.stringify(InitializeResponse));

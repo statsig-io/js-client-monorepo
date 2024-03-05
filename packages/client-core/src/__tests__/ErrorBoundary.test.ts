@@ -1,23 +1,22 @@
-import { configureErrorBoundary, errorBoundary } from '../ErrorBoundary';
+import fetchMock from 'jest-fetch-mock';
+
+import { ErrorBoundary } from '../ErrorBoundary';
 import { Log, LogLevel } from '../Log';
 
 describe('Error Boundary', () => {
-  const requests: { url: string; params: unknown }[] = [];
+  let eb: ErrorBoundary;
 
-  (global as any).fetch = jest.fn((url: string, params: unknown) => {
-    requests.push({ url, params });
-  });
+  function throwing() {
+    eb.capture('test', () => {
+      throw new Error('Test Error');
+    });
+  }
 
   beforeAll(() => {
-    Log.level = LogLevel.None;
+    fetchMock.enableMocks();
+    eb = new ErrorBoundary('client-key');
 
-    configureErrorBoundary({
-      sdkKey: 'client-key',
-      metadata: {
-        sdkType: 'test-type',
-        sdkVersion: 'test-version',
-      },
-    });
+    Log.level = LogLevel.None;
   });
 
   it('catches errors', () => {
@@ -27,12 +26,9 @@ describe('Error Boundary', () => {
   it('logs errors to sdk_exception', () => {
     throwing();
 
-    expect(requests[0]?.url).toBe('https://statsigapi.net/v1/sdk_exception');
+    expect(fetchMock.mock.calls).toHaveLength(1);
+    expect(fetchMock.mock.calls[0][0]).toBe(
+      'https://statsigapi.net/v1/sdk_exception',
+    );
   });
 });
-
-function throwing() {
-  errorBoundary('test', () => {
-    throw new Error('Test Error');
-  });
-}

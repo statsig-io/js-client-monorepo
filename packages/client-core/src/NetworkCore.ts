@@ -1,6 +1,5 @@
 import { Diagnostics } from './Diagnostics';
 import { Log } from './Log';
-import { monitorFunction } from './Monitoring';
 import { StableID } from './StableID';
 import { StatsigMetadataProvider } from './StatsigMetadata';
 import { StatsigOptionsCommon } from './StatsigOptionsCommon';
@@ -69,16 +68,6 @@ export class NetworkCore {
   }
 
   protected async _sendRequest(
-    args: RequestArgsInternal,
-  ): Promise<string | null> {
-    return monitorFunction(
-      '_sendRequest',
-      () => this._sendRequestImpl(args),
-      this,
-    );
-  }
-
-  private async _sendRequestImpl(
     args: RequestArgsInternal,
   ): Promise<string | null> {
     const { method, url, body, retries } = args;

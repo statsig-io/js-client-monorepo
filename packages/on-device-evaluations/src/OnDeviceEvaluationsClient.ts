@@ -53,7 +53,9 @@ export default class OnDeviceEvaluationsClient
         new NetworkSpecsDataProvider(network),
       ],
     );
-    monitorClass(OnDeviceEvaluationsClient, this);
+
+    monitorClass(this._errorBoundary, OnDeviceEvaluationsClient, this);
+    monitorClass(this._errorBoundary, Network, network);
 
     this._options = options ?? {};
     this._network = network;

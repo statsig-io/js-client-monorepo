@@ -1,10 +1,12 @@
+import fetchMock from 'jest-fetch-mock';
+
 import * as Diagnostics from '../Diagnostics';
-import * as ErrorBoundary from '../ErrorBoundary';
+import { ErrorBoundary } from '../ErrorBoundary';
 import { monitorClass } from '../Monitoring';
 
 class TestClass {
-  constructor() {
-    monitorClass(TestClass, this);
+  constructor(eb: ErrorBoundary) {
+    monitorClass(eb, TestClass, this);
   }
 
   instanceMethod() {
@@ -22,10 +24,13 @@ describe('Monitoring', () => {
   let diagSpy: jest.SpyInstance;
 
   beforeAll(() => {
-    ebSpy = jest.spyOn(ErrorBoundary, 'errorBoundary');
+    fetchMock.enableMocks();
+
+    const eb = new ErrorBoundary('client-key');
+    ebSpy = jest.spyOn(eb, 'capture');
     diagSpy = jest.spyOn(Diagnostics, 'captureDiagnostics');
 
-    klass = new TestClass();
+    klass = new TestClass(eb);
   });
 
   describe.each([
