@@ -10,7 +10,6 @@ import {
   Experiment,
   Layer,
   PrecomputedEvaluationsInterface,
-  StableID,
   StatsigClientBase,
   StatsigEvent,
   createConfigExposure,
@@ -58,10 +57,6 @@ export default class PrecomputedEvaluationsClient
 
     monitorClass(this._errorBoundary, PrecomputedEvaluationsClient, this);
     monitorClass(this._errorBoundary, Network, network);
-
-    if (options?.overrideStableID) {
-      StableID.setOverride(options.overrideStableID, sdkKey);
-    }
 
     this._sdkKey = sdkKey;
     this._options = options ?? {};

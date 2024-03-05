@@ -1,8 +1,5 @@
 import { StableID } from '../StableID';
 
-export const UUID_V4_REGEX =
-  /^[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-4[0-9A-Fa-f]{3}-[89ABab][0-9A-Fa-f]{3}-[0-9A-Fa-f]{12}/;
-
 const SDK_KEY = 'client-sdk-key';
 
 let alreadyCalled = false;

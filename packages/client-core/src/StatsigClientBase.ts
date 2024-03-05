@@ -3,6 +3,7 @@ import { ErrorBoundary } from './ErrorBoundary';
 import { EventLogger } from './EventLogger';
 import { Log, LogLevel } from './Log';
 import { NetworkCore } from './NetworkCore';
+import { StableID } from './StableID';
 import {
   StatsigClientEvent,
   StatsigClientEventCallback,
@@ -51,6 +52,10 @@ export class StatsigClientBase implements StatsigClientEventEmitterInterface {
     );
     this._sdkKey = sdkKey;
     this._errorBoundary = new ErrorBoundary(sdkKey);
+
+    if (options?.overrideStableID) {
+      StableID.setOverride(options.overrideStableID, sdkKey);
+    }
 
     __STATSIG__ = __STATSIG__ ?? {};
     const instances = __STATSIG__.instances ?? new Set();

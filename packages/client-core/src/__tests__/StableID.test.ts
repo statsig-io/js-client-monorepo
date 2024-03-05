@@ -1,7 +1,8 @@
-import { StableID, getStorageKey } from '../StableID';
+import { DJB2 } from '../Hashing';
+import { StableID } from '../StableID';
 import { MockLocalStorage } from './MockLocalStorage';
 
-export const UUID_V4_REGEX =
+const UUID_V4_REGEX =
   /^[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-4[0-9A-Fa-f]{3}-[89ABab][0-9A-Fa-f]{3}-[0-9A-Fa-f]{12}/;
 
 async function getStableIDFromIsolatedModule(sdkKey: string): Promise<string> {
@@ -14,7 +15,7 @@ async function getStableIDFromIsolatedModule(sdkKey: string): Promise<string> {
   return result ?? 'error';
 }
 const SDK_KEY = 'client-sdk-key';
-const STORAGE_KEY = getStorageKey(SDK_KEY);
+const STORAGE_KEY = `STATSIG_STABLE_ID:${DJB2(SDK_KEY)}`;
 
 describe('StableID', () => {
   let storageMock: MockLocalStorage;

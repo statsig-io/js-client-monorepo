@@ -3,44 +3,44 @@ import { Log } from './Log';
 import { getObjectFromStorage, setObjectInStorage } from './StorageProvider';
 import { getUUID } from './UUID';
 
-let stableIDPromise: Promise<string> | null = null;
+const PROMISE_MAP: Record<string, Promise<string>> = {};
 
-function persistToStorage(stableID: string, sdkKey: string) {
-  const storageKey = getStorageKey(sdkKey);
+export const StableID = {
+  get: async (sdkKey: string): Promise<string> => {
+    if (PROMISE_MAP[sdkKey] == null) {
+      PROMISE_MAP[sdkKey] = _loadFromStorage(sdkKey).then((stableID) => {
+        if (stableID != null) {
+          return stableID;
+        }
+
+        const newStableID = getUUID();
+        _persistToStorage(newStableID, sdkKey);
+        return newStableID;
+      });
+    }
+
+    return PROMISE_MAP[sdkKey];
+  },
+
+  setOverride: (override: string, sdkKey: string): void => {
+    PROMISE_MAP[sdkKey] = Promise.resolve(override);
+    _persistToStorage(override, sdkKey);
+  },
+};
+
+function _getStableIDStorageKey(sdkKey: string): string {
+  return `STATSIG_STABLE_ID:${DJB2(sdkKey)}`;
+}
+
+function _persistToStorage(stableID: string, sdkKey: string) {
+  const storageKey = _getStableIDStorageKey(sdkKey);
 
   setObjectInStorage(storageKey, stableID).catch(() => {
     Log.warn('Failed to save StableID');
   });
 }
 
-function loadFromStorage(sdkKey: string) {
-  const storageKey = getStorageKey(sdkKey);
+function _loadFromStorage(sdkKey: string) {
+  const storageKey = _getStableIDStorageKey(sdkKey);
   return getObjectFromStorage<string>(storageKey);
 }
-
-export function getStorageKey(sdkKey: string): string {
-  return `STATSIG_STABLE_ID:${DJB2(sdkKey)}`;
-}
-
-export const StableID = {
-  get: async (sdkKey: string): Promise<string> => {
-    if (stableIDPromise == null) {
-      stableIDPromise = loadFromStorage(sdkKey).then((stableID) => {
-        if (stableID != null) {
-          return stableID;
-        }
-
-        const newStableID = getUUID();
-        persistToStorage(newStableID, sdkKey);
-        return newStableID;
-      });
-    }
-
-    return stableIDPromise;
-  },
-
-  setOverride: (override: string, sdkKey: string): void => {
-    stableIDPromise = Promise.resolve(override);
-    persistToStorage(override, sdkKey);
-  },
-};
