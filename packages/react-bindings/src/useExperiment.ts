@@ -1,15 +1,12 @@
-import { Experiment, StatsigUser } from '@statsig/client-core';
+import { DEFAULT_EVAL_OPTIONS, Experiment } from '@statsig/client-core';
 
-import useDynamicConfig from './useDynamicConfig';
+import useDynamicConfig, { UseDynamicConfigOptions } from './useDynamicConfig';
 
-type GetExperimentOptions = {
-  logExposure?: boolean;
-  user: StatsigUser | null;
-};
+export type UseExperimentOptions = UseDynamicConfigOptions;
 
 export default function (
   experimentName: string,
-  options: GetExperimentOptions = { logExposure: true, user: null },
+  options: UseExperimentOptions = { ...DEFAULT_EVAL_OPTIONS, user: null },
 ): Experiment {
   const config = useDynamicConfig(experimentName, options);
   return config;

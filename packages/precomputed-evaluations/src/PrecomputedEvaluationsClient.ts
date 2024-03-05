@@ -1,5 +1,10 @@
-import type { FeatureGate, StatsigUser } from '@statsig/client-core';
+import type {
+  EvaluationOptions,
+  FeatureGate,
+  StatsigUser,
+} from '@statsig/client-core';
 import {
+  DEFAULT_EVAL_OPTIONS,
   DJB2,
   DynamicConfig,
   Experiment,
@@ -99,11 +104,17 @@ export default class PrecomputedEvaluationsClient
     await this._logger.shutdown();
   }
 
-  checkGate(name: string): boolean {
-    return this.getFeatureGate(name).value;
+  checkGate(
+    name: string,
+    options: EvaluationOptions = DEFAULT_EVAL_OPTIONS,
+  ): boolean {
+    return this.getFeatureGate(name, options).value;
   }
 
-  getFeatureGate(name: string): FeatureGate {
+  getFeatureGate(
+    name: string,
+    options: EvaluationOptions = DEFAULT_EVAL_OPTIONS,
+  ): FeatureGate {
     const hash = DJB2(name);
     const res = this._store.values?.feature_gates[hash];
 
@@ -114,7 +125,8 @@ export default class PrecomputedEvaluationsClient
       res?.value,
     );
 
-    this._logger.enqueue(
+    this._enqueueExposure(
+      options,
       createGateExposure(this._user, gate, res?.secondary_exposures),
     );
 
@@ -123,19 +135,28 @@ export default class PrecomputedEvaluationsClient
     return gate;
   }
 
-  getDynamicConfig(name: string): DynamicConfig {
-    const dynamicConfig = this._getConfigImpl(name);
+  getDynamicConfig(
+    name: string,
+    options: EvaluationOptions = DEFAULT_EVAL_OPTIONS,
+  ): DynamicConfig {
+    const dynamicConfig = this._getConfigImpl(name, options);
     this.emit({ event: 'dynamic_config_evaluation', dynamicConfig });
     return dynamicConfig;
   }
 
-  getExperiment(name: string): Experiment {
-    const experiment = this._getConfigImpl(name);
+  getExperiment(
+    name: string,
+    options: EvaluationOptions = DEFAULT_EVAL_OPTIONS,
+  ): Experiment {
+    const experiment = this._getConfigImpl(name, options);
     this.emit({ event: 'experiment_evaluation', experiment });
     return experiment;
   }
 
-  getLayer(name: string): Layer {
+  getLayer(
+    name: string,
+    options: EvaluationOptions = DEFAULT_EVAL_OPTIONS,
+  ): Layer {
     const hash = DJB2(name);
     const res = this._store.values?.layer_configs[hash];
 
@@ -149,7 +170,8 @@ export default class PrecomputedEvaluationsClient
         return undefined;
       }
 
-      this._logger.enqueue(
+      this._enqueueExposure(
+        options,
         createLayerParameterExposure(this._user, name, param, {
           ...res,
           source: this._store.source,
@@ -168,7 +190,10 @@ export default class PrecomputedEvaluationsClient
     this._logger.enqueue({ ...event, user: this._user, time: Date.now() });
   }
 
-  private _getConfigImpl(name: string): DynamicConfig {
+  private _getConfigImpl(
+    name: string,
+    options: EvaluationOptions,
+  ): DynamicConfig {
     const hash = DJB2(name);
     const res = this._store.values?.dynamic_configs[hash];
     const config = makeDynamicConfig(
@@ -178,7 +203,8 @@ export default class PrecomputedEvaluationsClient
       res?.value,
     );
 
-    this._logger.enqueue(
+    this._enqueueExposure(
+      options,
       createConfigExposure(this._user, config, res?.secondary_exposures),
     );
 

@@ -1,5 +1,7 @@
 import {
+  DEFAULT_EVAL_OPTIONS,
   DynamicConfig,
+  EvaluationOptions,
   Experiment,
   FeatureGate,
   Layer,
@@ -82,11 +84,19 @@ export default class OnDeviceEvaluationsClient
     await this._logger.shutdown();
   }
 
-  checkGate(name: string, user: StatsigUser): boolean {
-    return this.getFeatureGate(name, user).value;
+  checkGate(
+    name: string,
+    user: StatsigUser,
+    options: EvaluationOptions = DEFAULT_EVAL_OPTIONS,
+  ): boolean {
+    return this.getFeatureGate(name, user, options).value;
   }
 
-  getFeatureGate(name: string, user: StatsigUser): FeatureGate {
+  getFeatureGate(
+    name: string,
+    user: StatsigUser,
+    options: EvaluationOptions = DEFAULT_EVAL_OPTIONS,
+  ): FeatureGate {
     user = normalizeUser(user, this._options.environment);
     const { details, result } = this._evaluator.evaluateGate(name, user);
 
@@ -97,7 +107,8 @@ export default class OnDeviceEvaluationsClient
       result?.bool_value,
     );
 
-    this._logger.enqueue(
+    this._enqueueExposure(
+      options,
       createGateExposure(user, gate, result?.secondary_exposures),
     );
 
@@ -106,19 +117,31 @@ export default class OnDeviceEvaluationsClient
     return gate;
   }
 
-  getDynamicConfig(name: string, user: StatsigUser): DynamicConfig {
-    const dynamicConfig = this._getConfigImpl(user, name);
+  getDynamicConfig(
+    name: string,
+    user: StatsigUser,
+    options: EvaluationOptions = DEFAULT_EVAL_OPTIONS,
+  ): DynamicConfig {
+    const dynamicConfig = this._getConfigImpl(name, user, options);
     this.emit({ event: 'dynamic_config_evaluation', dynamicConfig });
     return dynamicConfig;
   }
 
-  getExperiment(name: string, user: StatsigUser): Experiment {
-    const experiment = this._getConfigImpl(user, name);
+  getExperiment(
+    name: string,
+    user: StatsigUser,
+    options: EvaluationOptions = DEFAULT_EVAL_OPTIONS,
+  ): Experiment {
+    const experiment = this._getConfigImpl(name, user, options);
     this.emit({ event: 'experiment_evaluation', experiment });
     return experiment;
   }
 
-  getLayer(name: string, user: StatsigUser): Layer {
+  getLayer(
+    name: string,
+    user: StatsigUser,
+    options: EvaluationOptions = DEFAULT_EVAL_OPTIONS,
+  ): Layer {
     user = normalizeUser(user, this._options.environment);
     const { details, result } = this._evaluator.evaluateLayer(name, user);
 
@@ -139,7 +162,8 @@ export default class OnDeviceEvaluationsClient
           config_delegate,
         } = result;
 
-        this._logger.enqueue(
+        this._enqueueExposure(
+          options,
           createLayerParameterExposure(user, name, param, {
             rule_id,
             explicit_parameters: explicit_parameters ?? [],
@@ -163,7 +187,11 @@ export default class OnDeviceEvaluationsClient
     this._logger.enqueue({ ...event, user, time: Date.now() });
   }
 
-  private _getConfigImpl(user: StatsigUser, name: string): DynamicConfig {
+  private _getConfigImpl(
+    name: string,
+    user: StatsigUser,
+    options: EvaluationOptions,
+  ): DynamicConfig {
     user = normalizeUser(user, this._options.environment);
     const { details, result } = this._evaluator.evaluateConfig(name, user);
     const config = makeDynamicConfig(
@@ -173,7 +201,8 @@ export default class OnDeviceEvaluationsClient
       result?.json_value,
     );
 
-    this._logger.enqueue(
+    this._enqueueExposure(
+      options,
       createConfigExposure(user, config, result?.secondary_exposures),
     );
 

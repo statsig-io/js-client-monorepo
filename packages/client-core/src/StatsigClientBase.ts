@@ -10,10 +10,19 @@ import {
   StatsigLoadingStatus,
 } from './StatsigClientEventEmitter';
 import { DataSource, StatsigDataProvider } from './StatsigDataProvider';
+import { StatsigEventInternal } from './StatsigEvent';
 import { StatsigOptionsCommon } from './StatsigOptionsCommon';
 import { StatsigUser } from './StatsigUser';
 
 type DataProviderResult = { data: string | null; source: DataSource };
+
+export type EvaluationOptions = {
+  disableExposureLog?: boolean;
+};
+
+export const DEFAULT_EVAL_OPTIONS: EvaluationOptions = {
+  disableExposureLog: false,
+};
 
 export type StatsigClientEmitEventFunc = (data: StatsigClientEventData) => void;
 
@@ -133,5 +142,16 @@ export class StatsigClientBase implements StatsigClientEventEmitterInterface {
     })().catch((error: unknown) => {
       this.emit({ event: 'error', error });
     });
+  }
+
+  protected _enqueueExposure(
+    options: EvaluationOptions,
+    exposure: StatsigEventInternal,
+  ): void {
+    if (options.disableExposureLog === true) {
+      return;
+    }
+
+    this._logger.enqueue(exposure);
   }
 }

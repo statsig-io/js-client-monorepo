@@ -1,26 +1,30 @@
 import { useContext, useMemo } from 'react';
 
-import { DynamicConfig, StatsigUser } from '@statsig/client-core';
+import {
+  DEFAULT_EVAL_OPTIONS,
+  DynamicConfig,
+  EvaluationOptions,
+  StatsigUser,
+} from '@statsig/client-core';
 
 import StatsigContext from './StatsigContext';
 
-type GetDynamicConfigOptions = {
-  logExposure?: boolean;
+export type UseDynamicConfigOptions = EvaluationOptions & {
   user: StatsigUser | null;
 };
 
 export default function (
   configName: string,
-  options: GetDynamicConfigOptions = { logExposure: true, user: null },
+  options: UseDynamicConfigOptions = { ...DEFAULT_EVAL_OPTIONS, user: null },
 ): DynamicConfig {
   const { precomputedClient, onDeviceClient } = useContext(StatsigContext);
 
   const config = useMemo(() => {
     if (options.user == null) {
-      return precomputedClient.getDynamicConfig(configName);
+      return precomputedClient.getDynamicConfig(configName, options);
     }
 
-    return onDeviceClient.getDynamicConfig(configName, options.user);
+    return onDeviceClient.getDynamicConfig(configName, options.user, options);
   }, [precomputedClient.loadingStatus, onDeviceClient.loadingStatus, options]);
 
   return config;

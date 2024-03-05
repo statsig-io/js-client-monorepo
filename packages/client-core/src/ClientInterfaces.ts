@@ -1,3 +1,4 @@
+import { EvaluationOptions } from './StatsigClientBase';
 import { StatsigClientEventEmitterInterface } from './StatsigClientEventEmitter';
 import { StatsigEvent } from './StatsigEvent';
 import { DynamicConfig, Experiment, FeatureGate, Layer } from './StatsigTypes';
@@ -11,11 +12,27 @@ export interface StatsigClientCommonInterface
 
 export interface OnDeviceEvaluationsInterface
   extends StatsigClientCommonInterface {
-  checkGate(name: string, user: StatsigUser): boolean;
-  getFeatureGate(name: string, user: StatsigUser): FeatureGate;
-  getDynamicConfig(name: string, user: StatsigUser): DynamicConfig;
-  getExperiment(name: string, user: StatsigUser): Experiment;
-  getLayer(name: string, user: StatsigUser): Layer;
+  checkGate(
+    name: string,
+    user: StatsigUser,
+    options: EvaluationOptions,
+  ): boolean;
+  getFeatureGate(
+    name: string,
+    user: StatsigUser,
+    options: EvaluationOptions,
+  ): FeatureGate;
+  getDynamicConfig(
+    name: string,
+    user: StatsigUser,
+    options: EvaluationOptions,
+  ): DynamicConfig;
+  getExperiment(
+    name: string,
+    user: StatsigUser,
+    options: EvaluationOptions,
+  ): Experiment;
+  getLayer(name: string, user: StatsigUser, options: EvaluationOptions): Layer;
   logEvent(event: StatsigEvent, user: StatsigUser): void;
 }
 
@@ -23,11 +40,11 @@ export interface PrecomputedEvaluationsInterface
   extends StatsigClientCommonInterface {
   getCurrentUser(): StatsigUser;
   updateUser(user: StatsigUser): Promise<void>;
-  checkGate(name: string): boolean;
-  getFeatureGate(name: string): FeatureGate;
-  getDynamicConfig(name: string): DynamicConfig;
-  getExperiment(name: string): Experiment;
-  getLayer(name: string): Layer;
+  checkGate(name: string, options: EvaluationOptions): boolean;
+  getFeatureGate(name: string, options: EvaluationOptions): FeatureGate;
+  getDynamicConfig(name: string, options: EvaluationOptions): DynamicConfig;
+  getExperiment(name: string, options: EvaluationOptions): Experiment;
+  getLayer(name: string, options: EvaluationOptions): Layer;
   logEvent(event: StatsigEvent): void;
 }
 

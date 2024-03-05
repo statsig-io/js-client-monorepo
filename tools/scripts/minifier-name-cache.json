@@ -65,7 +65,8 @@
       "$_sendEventsViaPost": "gt",
       "$_sendEventsViaBeacon": "St",
       "$_isBeaconSupported": "xt",
-      "$_getConfigImpl": "Ot"
+      "$_getConfigImpl": "Ot",
+      "$_enqueueExposure": "jt"
     }
   }
 }
