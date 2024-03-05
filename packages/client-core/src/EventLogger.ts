@@ -178,6 +178,9 @@ export class EventLogger {
       },
       url: `${api}/rgstr`,
       retries: 3,
+      headers: {
+        'Content-Type': 'application/json',
+      },
     });
 
     if (result) {

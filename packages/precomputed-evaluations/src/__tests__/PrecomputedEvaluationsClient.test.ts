@@ -18,7 +18,7 @@ describe('PrecomputedEvaluationsClient', () => {
   it('calls /initialize', () => {
     expect(fetchMock).toHaveBeenCalledTimes(1);
     expect(fetchMock).toHaveBeenCalledWith(
-      'https://api.statsig.com/v1/initialize',
+      expect.stringContaining('https://api.statsig.com/v1/initialize?k=client-key&st=js-precomputed-evaluations-client'),
       expect.any(Object),
     );
   });

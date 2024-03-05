@@ -12,6 +12,7 @@ type RequestArgs = {
   url: string;
   timeoutMs?: number;
   retries?: number;
+  headers?: Record<string, string>;
 };
 
 type RequestArgsWithData = RequestArgs & {
@@ -21,7 +22,6 @@ type RequestArgsWithData = RequestArgs & {
 type RequestArgsInternal = RequestArgs & {
   method: 'POST' | 'GET';
   body?: string;
-  headers?: Record<string, string>;
 };
 
 class NetworkError extends Error {
@@ -67,10 +67,10 @@ export class NetworkCore {
     return navigator.sendBeacon(url, JSON.stringify(args.data));
   }
 
-  protected async _sendRequest(
+  private async _sendRequest(
     args: RequestArgsInternal,
   ): Promise<string | null> {
-    const { method, url, body, retries } = args;
+    const { method, body, retries } = args;
 
     const controller = new AbortController();
     const handle = setTimeout(
@@ -80,10 +80,16 @@ export class NetworkCore {
 
     let response: Response | null = null;
     try {
-      response = await fetch(url, {
+      const fullUrl = this._getPopulatedURL(args);
+      response = await fetch(fullUrl, {
         method,
         body,
-        headers: this._getPopulatedHeaders(args),
+        headers: {
+          // Must set this content type to bypass cors
+          // can override via headers if necessary (recommended for logevent)
+          'Content-Type': 'text/plain',
+          ...args.headers
+        },
         signal: controller.signal,
       });
       clearTimeout(handle);
@@ -116,17 +122,16 @@ export class NetworkCore {
     }
   }
 
-  private _getPopulatedHeaders(args: RequestArgsInternal) {
+  private _getPopulatedURL(args: RequestArgs): string {
     const statsigMetadata = StatsigMetadataProvider.get();
-    return {
-      ...args.headers,
-      'Content-Type': 'application/json',
-      'STATSIG-API-KEY': args.sdkKey,
-      'STATSIG-SDK-TYPE': statsigMetadata.sdkType,
-      'STATSIG-SDK-VERSION': statsigMetadata.sdkVersion,
-      'STATSIG-CLIENT-TIME': String(Date.now()),
-      'STATSIG-SESSION-ID': this._sessionID,
-    };
+    const fullUrl = new URL(args.url);
+    fullUrl.searchParams.append('k', args.sdkKey);
+    fullUrl.searchParams.append('st', statsigMetadata.sdkType);
+    fullUrl.searchParams.append('sv', statsigMetadata.sdkVersion);
+    fullUrl.searchParams.append('t', String(Date.now()));
+    fullUrl.searchParams.append('sid', this._sessionID);
+
+    return fullUrl.toString();
   }
 }
 
