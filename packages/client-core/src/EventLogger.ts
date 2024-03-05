@@ -1,9 +1,11 @@
+import { DJB2 } from './Hashing';
 import { Log } from './Log';
 import { NetworkCore } from './NetworkCore';
 import { StatsigClientEmitEventFunc } from './StatsigClientBase';
 import { StatsigEventInternal, isExposureEvent } from './StatsigEvent';
 import { StatsigMetadataProvider } from './StatsigMetadata';
 import { StatsigOptionsCommon } from './StatsigOptionsCommon';
+import { getObjectFromStorage, setObjectInStorage } from './StorageProvider';
 import {
   Visibility,
   VisibilityChangeObserver,
@@ -14,6 +16,7 @@ const DEFAULT_FLUSH_INTERVAL_MS = 10_000;
 
 const MAX_DEDUPER_KEYS = 1000;
 const DEDUPER_WINDOW_DURATION_MS = 60_000;
+const MAX_FAILED_LOGS = 500;
 
 const DEFAULT_API = 'https://api.statsig.com/v1';
 
@@ -28,12 +31,15 @@ type StatsigEventExtras = {
   };
 };
 
+type EventQueue = (StatsigEventInternal & StatsigEventExtras)[];
+
 export class EventLogger {
-  private _queue: (StatsigEventInternal & StatsigEventExtras)[] = [];
+  private _queue: EventQueue = [];
   private _flushTimer: ReturnType<typeof setInterval> | null;
   private _lastExposureMap: Record<string, number> = {};
 
   private _maxQueueSize: number;
+  private _failedLogs: EventQueue;
 
   constructor(
     private _sdkKey: string,
@@ -48,6 +54,9 @@ export class EventLogger {
     this._flushTimer = setInterval(() => this._flushAndForget(), flushInterval);
 
     VisibilityChangeObserver.add(this);
+
+    this._failedLogs = [];
+    this._retryFailedLogs();
   }
 
   enqueue(event: StatsigEventInternal): void {
@@ -132,32 +141,30 @@ export class EventLogger {
     const events = this._queue;
     this._queue = [];
 
+    await this._sendEvents(events);
+  }
+
+  private async _sendEvents(events: EventQueue): Promise<void> {
     try {
-      await this._sendEvents(events);
+      const isInForeground = VisibilityChangeObserver.isCurrentlyVisible();
+      const api = this._options?.api ?? DEFAULT_API;
+
+      const response =
+        !isInForeground && this._isBeaconSupported()
+          ? this._sendEventsViaBeacon(api, events)
+          : await this._sendEventsViaPost(api, events);
+
+      if (response.success) {
+        this._emitter({
+          event: 'logs_flushed',
+          events,
+        });
+      } else {
+        this._saveFailedLogsToStorage(events);
+      }
     } catch {
       Log.warn('Failed to flush events.');
     }
-  }
-
-  private async _sendEvents(
-    events: StatsigEventInternal[],
-  ): Promise<SendEventsResponse> {
-    const isInForeground = VisibilityChangeObserver.isCurrentlyVisible();
-    const api = this._options?.api ?? DEFAULT_API;
-
-    const response =
-      !isInForeground && this._isBeaconSupported()
-        ? this._sendEventsViaBeacon(api, events)
-        : await this._sendEventsViaPost(api, events);
-
-    if (response.success) {
-      this._emitter({
-        event: 'logs_flushed',
-        events,
-      });
-    }
-
-    return { success: false };
   }
 
   private async _sendEventsViaPost(
@@ -200,5 +207,36 @@ export class EventLogger {
       typeof navigator !== 'undefined' &&
       typeof navigator?.sendBeacon === 'function'
     );
+  }
+
+  private _saveFailedLogsToStorage(events: EventQueue) {
+    this._failedLogs.push(...events);
+    while (this._failedLogs.length > MAX_FAILED_LOGS) {
+      this._failedLogs.shift();
+    }
+
+    const storageKey = this._getStorageKey();
+
+    setObjectInStorage(storageKey, this._failedLogs).catch(() => {
+      Log.warn('Unable to save failed logs to storage');
+    });
+  }
+
+  private _retryFailedLogs() {
+    const storageKey = this._getStorageKey();
+    (async () => {
+      const events = await getObjectFromStorage<EventQueue>(storageKey);
+      if (!events) {
+        return;
+      }
+
+      await this._sendEvents(events);
+    })().catch(() => {
+      Log.warn('Unable to flush stored logs');
+    });
+  }
+
+  private _getStorageKey() {
+    return `STATSIG_FAILED_LOG:${DJB2(this._sdkKey)}`;
   }
 }
