@@ -180,6 +180,7 @@ export class EventLogger {
       retries: 3,
       headers: {
         'Content-Type': 'application/json',
+        'STATSIG-EVENT-COUNT': String(events.length),
       },
     });
 
