@@ -46,14 +46,24 @@ export function normalizeUser(
 }
 
 export function getUserStorageKey(sdkKey: string, user?: StatsigUser): string {
-  const parts = [
-    `uid:${user?.userID ?? ''}`,
-    `cids:${Object.entries(user?.customIDs ?? {})
-      .sort(([leftKey], [rightKey]) => leftKey.localeCompare(rightKey))
-      .map(([key, value]) => `${key}-${value}`)
-      .join(',')}`,
-    `k:${sdkKey}`,
-  ];
+  return DJB2(JSON.stringify(_getSortedObject({ sdkKey, user })));
+}
 
-  return DJB2(parts.join('|'));
+function _getSortedObject(
+  object: Record<string, unknown> | null,
+): Record<string, unknown> | null {
+  if (object == null) {
+    return null;
+  }
+  const keys = Object.keys(object).sort();
+  const sortedObject: Record<string, unknown> = {};
+  keys.forEach((key) => {
+    let value = object[key];
+    if (value instanceof Object) {
+      value = _getSortedObject(value as Record<string, unknown>);
+    }
+
+    sortedObject[key] = value;
+  });
+  return sortedObject;
 }
