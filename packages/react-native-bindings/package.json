@@ -1,6 +1,6 @@
 {
   "name": "@statsig/react-native-bindings",
-  "version": "0.0.1-beta.2",
+  "version": "0.0.1-beta.3",
   "dependencies": {
     "@statsig/client-core": "*",
     "@statsig/react-bindings": "*"

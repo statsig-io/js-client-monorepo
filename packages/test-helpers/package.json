@@ -1,6 +1,6 @@
 {
   "name": "statsig-test-helpers",
-  "version": "0.0.1-beta.2",
+  "version": "0.0.1-beta.3",
   "dependencies": {
     "@statsig/client-core": "*",
     "@jest/globals": "29.7.0"
