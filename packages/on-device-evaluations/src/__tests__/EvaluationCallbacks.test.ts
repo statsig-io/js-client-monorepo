@@ -1,8 +1,9 @@
 import fetchMock from 'jest-fetch-mock';
 
-import { LogLevel, StatsigClientEventData } from '@statsig/client-core';
+import { StatsigClientEventData } from '@statsig/client-core';
 
 import OnDeviceEvaluationsClient from '../OnDeviceEvaluationsClient';
+import { NetworkSpecsDataProvider } from '../data-providers/NetworkSpecsDataProvider';
 import DcsResponse from './dcs_response.json';
 
 describe('Client Evaluations Callback', () => {
@@ -13,7 +14,7 @@ describe('Client Evaluations Callback', () => {
   beforeEach(async () => {
     events = [];
     client = new OnDeviceEvaluationsClient('client-key', {
-      logLevel: LogLevel.None,
+      dataProviders: [NetworkSpecsDataProvider.create()],
     });
 
     fetchMock.enableMocks();

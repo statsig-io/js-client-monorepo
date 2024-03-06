@@ -9,22 +9,30 @@ const LAST_MODIFIED_STORAGE_KEY = 'statsig.cache.last_modified_time';
 const CACHE_LIMIT = 10;
 
 export class LocalStorageCacheSpecsDataProvider implements StatsigDataProvider {
-  readonly isTerminal = false;
   readonly source = 'Cache';
 
   private _lastModifiedTimeMap: Record<string, number> = {};
 
-  async getData(sdkKey: string): Promise<string | null> {
+  getData(sdkKey: string): string | null {
+    if (typeof window === 'undefined' || !window.localStorage) {
+      return null;
+    }
+
     const cacheKey = getUserStorageKey(sdkKey);
-    const result = await Storage.getItem(cacheKey);
-    return Promise.resolve(result);
+    const result = window.localStorage.getItem(cacheKey);
+    return result;
   }
 
-  async setData(sdkKey: string, data: string): Promise<void> {
+  async getDataAsync(sdkKey: string): Promise<string | null> {
+    const cacheKey = getUserStorageKey(sdkKey);
+    const result = await Storage.getItem(cacheKey);
+    return result;
+  }
+
+  async setDataPostInit(sdkKey: string, data: string): Promise<void> {
     const cacheKey = getUserStorageKey(sdkKey);
     await Storage.setItem(cacheKey, data);
     await this._runCacheEviction(cacheKey);
-    return Promise.resolve();
   }
 
   private async _runCacheEviction(cacheKey: string): Promise<void> {

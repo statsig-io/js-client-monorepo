@@ -12,18 +12,30 @@ const CACHE_LIMIT = 10;
 export class LocalStorageCacheEvaluationsDataProvider
   implements StatsigDataProvider
 {
-  readonly isTerminal = false;
   readonly source = 'Cache';
 
   private _lastModifiedTimeMap: Record<string, number> = {};
 
-  async getData(sdkKey: string, user?: StatsigUser): Promise<string | null> {
+  getData(sdkKey: string, user?: StatsigUser): string | null {
+    if (typeof window === 'undefined' || !window.localStorage) {
+      return null;
+    }
+
     const cacheKey = getUserStorageKey(sdkKey, user);
-    const result = await Storage.getItem(cacheKey);
-    return Promise.resolve(result);
+    const result = window.localStorage.getItem(cacheKey);
+    return result;
   }
 
-  async setData(
+  async getDataAsync(
+    sdkKey: string,
+    user?: StatsigUser,
+  ): Promise<string | null> {
+    const cacheKey = getUserStorageKey(sdkKey, user);
+    const result = await Storage.getItem(cacheKey);
+    return result;
+  }
+
+  async setDataPostInit(
     sdkKey: string,
     data: string,
     user?: StatsigUser,
@@ -31,7 +43,6 @@ export class LocalStorageCacheEvaluationsDataProvider
     const cacheKey = getUserStorageKey(sdkKey, user);
     await Storage.setItem(cacheKey, data);
     await this._runCacheEviction(cacheKey);
-    return Promise.resolve();
   }
 
   private async _runCacheEviction(cacheKey: string): Promise<void> {

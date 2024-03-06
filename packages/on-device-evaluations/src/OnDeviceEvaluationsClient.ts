@@ -24,7 +24,7 @@ import Network from './Network';
 import SpecStore, { DownloadConfigSpecsResponse } from './SpecStore';
 import { StatsigOptions } from './StatsigOptions';
 import { LocalStorageCacheSpecsDataProvider } from './data-providers/LocalStorageCacheSpecsDataProvider';
-import { NetworkSpecsDataProvider } from './data-providers/NetworkSpecsDataProvider';
+import { DelayedNetworkSpecsDataProvider } from './data-providers/NetworkSpecsDataProvider';
 
 declare global {
   interface Window {
@@ -50,7 +50,7 @@ export default class OnDeviceEvaluationsClient
       options,
       options?.dataProviders ?? [
         new LocalStorageCacheSpecsDataProvider(),
-        new NetworkSpecsDataProvider(network),
+        new DelayedNetworkSpecsDataProvider(network),
       ],
     );
 
@@ -69,7 +69,10 @@ export default class OnDeviceEvaluationsClient
 
     this._setStatus('Loading');
 
-    const result = await this._getResultFromDataProviders('during-init');
+    let result = this._getDataFromProviders();
+    if (result.data == null) {
+      result = await this._getDataFromProvidersAsync();
+    }
 
     if (result.data) {
       this._store.setValuesFromData(result.data, result.source);
@@ -79,7 +82,7 @@ export default class OnDeviceEvaluationsClient
 
     this._setStatus('Ready');
 
-    this._runPostInitDataProviders(result.data);
+    this._saveToDataProviders(result.data);
   }
 
   async shutdown(): Promise<void> {

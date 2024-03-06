@@ -101,43 +101,49 @@ export class StatsigClientBase implements StatsigClientEventEmitterInterface {
     this.emit({ event: 'status_change', loadingStatus: newStatus });
   }
 
-  protected async _getResultFromDataProviders(
-    mode: 'during-init' | 'post-init',
-    user?: StatsigUser,
-  ): Promise<DataProviderResult> {
-    let result: DataProviderResult = { data: null, source: 'NoValues' };
-
-    for await (const provider of this._dataProviders) {
-      const func =
-        mode === 'during-init'
-          ? provider.getData?.(this._sdkKey, user)
-          : provider.getDataPostInit?.(this._sdkKey, user);
-
-      const data = (await func) ?? null;
-
-      if (!data) {
-        continue;
-      }
-
-      result = { data, source: provider.source };
-
-      if (provider.isTerminal) {
-        break;
+  protected _getDataFromProviders(user?: StatsigUser): DataProviderResult {
+    for (const provider of this._dataProviders) {
+      const data = provider.getData?.(this._sdkKey, user);
+      if (data) {
+        return { data, source: provider.source };
       }
     }
 
-    return result;
+    return { data: null, source: 'NoValues' };
   }
 
-  protected _runPostInitDataProviders(
+  protected async _getDataFromProvidersAsync(
+    user?: StatsigUser,
+  ): Promise<DataProviderResult> {
+    for await (const provider of this._dataProviders) {
+      const data = await provider.getDataAsync?.(this._sdkKey, user);
+      if (data) {
+        return { data, source: provider.source };
+      }
+    }
+
+    return { data: null, source: 'NoValues' };
+  }
+
+  protected async _getDataPostInitFromProviders(
+    user?: StatsigUser,
+  ): Promise<DataProviderResult> {
+    for await (const provider of this._dataProviders) {
+      const data = await provider.getDataPostInit?.(this._sdkKey, user);
+      if (data) {
+        return { data, source: provider.source };
+      }
+    }
+
+    return { data: null, source: 'NoValues' };
+  }
+
+  protected _saveToDataProviders(
     data: string | null,
     user?: StatsigUser,
   ): void {
     (async () => {
-      const localResult = await this._getResultFromDataProviders(
-        'post-init',
-        user,
-      );
+      const localResult = await this._getDataPostInitFromProviders(user);
       data = localResult.data ?? data;
 
       if (!data) {
@@ -145,7 +151,7 @@ export class StatsigClientBase implements StatsigClientEventEmitterInterface {
       }
 
       for await (const provider of this._dataProviders) {
-        await provider.setData?.(this._sdkKey, data, user);
+        await provider.setDataPostInit?.(this._sdkKey, data, user);
       }
     })().catch((error: unknown) => {
       this.emit({ event: 'error', error });

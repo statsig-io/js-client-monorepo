@@ -1,12 +1,21 @@
 import { ReactNode } from 'react';
 
-import { PrecomputedEvaluationsClient } from '@statsig/precomputed-evaluations';
+import {
+  NetworkEvaluationsDataProvider,
+  PrecomputedEvaluationsClient,
+} from '@statsig/precomputed-evaluations';
 import { StatsigProvider, useGate } from '@statsig/react-bindings';
 
 const DEMO_CLIENT_KEY = 'client-rfLvYGag3eyU0jYW5zcIJTQip7GXxSrhOFN69IGMjvq';
-const client = new PrecomputedEvaluationsClient(DEMO_CLIENT_KEY, {
-  userID: 'a-user',
-});
+const client = new PrecomputedEvaluationsClient(
+  DEMO_CLIENT_KEY,
+  {
+    userID: 'a-user',
+  },
+  {
+    dataProviders: [NetworkEvaluationsDataProvider.create()],
+  },
+);
 
 function Content() {
   const { value } = useGate('a_gate');

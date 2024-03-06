@@ -10,7 +10,8 @@ export type DataSource =
   | 'Prefetch';
 
 export type StatsigDataProvider = {
-  readonly getData?: (
+  readonly getData?: (sdkKey: string, user?: StatsigUser) => string | null;
+  readonly getDataAsync?: (
     sdkKey: string,
     user?: StatsigUser,
   ) => Promise<string | null>;
@@ -20,12 +21,11 @@ export type StatsigDataProvider = {
     user?: StatsigUser,
   ) => Promise<string | null>;
 
-  readonly setData?: (
+  readonly setDataPostInit?: (
     sdkKey: string,
     data: string,
     user?: StatsigUser,
   ) => Promise<void>;
 
   readonly source: DataSource;
-  readonly isTerminal: boolean;
 };

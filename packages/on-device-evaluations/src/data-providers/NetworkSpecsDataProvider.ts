@@ -3,20 +3,35 @@ import { StatsigDataProvider } from '@statsig/client-core';
 import StatsigNetwork from '../Network';
 import { StatsigOptions } from '../StatsigOptions';
 
-export class NetworkSpecsDataProvider implements StatsigDataProvider {
-  readonly isTerminal = false;
+class NetworkSpecsDataProviderImpl implements StatsigDataProvider {
   readonly source = 'Network';
 
+  constructor(private _network: StatsigNetwork) {}
+
+  protected readonly fetchLatestValues = (sdkKey: string) =>
+    this._network.fetchConfigSpecs(sdkKey);
+}
+
+export class NetworkSpecsDataProvider extends NetworkSpecsDataProviderImpl {
   static create(
     options: StatsigOptions | null = null,
   ): NetworkSpecsDataProvider {
     return new NetworkSpecsDataProvider(new StatsigNetwork(options));
   }
 
-  constructor(private _network: StatsigNetwork) {}
+  async getDataAsync(sdkKey: string): Promise<string | null> {
+    return await this.fetchLatestValues(sdkKey);
+  }
+}
 
-  async getData(sdkKey: string): Promise<string | null> {
-    const response = await this._network.fetchConfigSpecs(sdkKey);
-    return response;
+export class DelayedNetworkSpecsDataProvider extends NetworkSpecsDataProviderImpl {
+  static create(
+    options: StatsigOptions | null = null,
+  ): DelayedNetworkSpecsDataProvider {
+    return new DelayedNetworkSpecsDataProvider(new StatsigNetwork(options));
+  }
+
+  async getDataPostInit(sdkKey: string): Promise<string | null> {
+    return await this.fetchLatestValues(sdkKey);
   }
 }

@@ -1,8 +1,9 @@
 import fetchMock from 'jest-fetch-mock';
 
-import { LogLevel, StatsigClientEventData } from '@statsig/client-core';
+import { StatsigClientEventData } from '@statsig/client-core';
 
 import PrecomputedEvaluationsClient from '../PrecomputedEvaluationsClient';
+import { NetworkEvaluationsDataProvider } from '../data-providers/NetworkEvaluationsDataProvider';
 import InitializeResponse from './initialize.json';
 
 describe('Client Evaluations Callback', () => {
@@ -13,13 +14,14 @@ describe('Client Evaluations Callback', () => {
   beforeEach(async () => {
     events = [];
     client = new PrecomputedEvaluationsClient('client-key', user, {
-      logLevel: LogLevel.None,
+      dataProviders: [NetworkEvaluationsDataProvider.create()],
     });
 
     fetchMock.enableMocks();
     fetchMock.mockResponse(JSON.stringify(InitializeResponse));
 
     await client.initialize();
+
     client.on('*', (data) => {
       if (data.event.endsWith('_evaluation')) {
         events.push(data);

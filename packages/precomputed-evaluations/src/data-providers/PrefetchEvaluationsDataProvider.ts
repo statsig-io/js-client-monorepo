@@ -8,7 +8,6 @@ import StatsigNetwork from '../Network';
 import { StatsigOptions } from '../StatsigOptions';
 
 export class PrefetchEvaluationDataProvider implements StatsigDataProvider {
-  readonly isTerminal = true;
   readonly source = 'Prefetch';
 
   private _network: StatsigNetwork;
@@ -18,9 +17,9 @@ export class PrefetchEvaluationDataProvider implements StatsigDataProvider {
     this._network = new StatsigNetwork(options);
   }
 
-  getData(sdkKey: string, user?: StatsigUser): Promise<string | null> {
+  getData(sdkKey: string, user?: StatsigUser): string | null {
     const key = getUserStorageKey(sdkKey, user);
-    return Promise.resolve(this._data[key]);
+    return this._data[key];
   }
 
   async prefetchEvaluationsForUser(

@@ -3,20 +3,43 @@ import { StatsigDataProvider, StatsigUser } from '@statsig/client-core';
 import StatsigNetwork from '../Network';
 import { StatsigOptions } from '../StatsigOptions';
 
-export class NetworkEvaluationsDataProvider implements StatsigDataProvider {
-  readonly isTerminal = false;
+class NetworkEvaluationsDataProviderImpl implements StatsigDataProvider {
   readonly source = 'Network';
 
+  constructor(private _network: StatsigNetwork) {}
+
+  protected readonly fetchLatestValues = (sdkKey: string, user?: StatsigUser) =>
+    this._network.fetchEvaluations(sdkKey, user);
+}
+
+export class NetworkEvaluationsDataProvider extends NetworkEvaluationsDataProviderImpl {
   static create(
     options: StatsigOptions | null = null,
   ): NetworkEvaluationsDataProvider {
     return new NetworkEvaluationsDataProvider(new StatsigNetwork(options));
   }
 
-  constructor(private _network: StatsigNetwork) {}
+  async getDataAsync(
+    sdkKey: string,
+    user?: StatsigUser,
+  ): Promise<string | null> {
+    return await this.fetchLatestValues(sdkKey, user);
+  }
+}
 
-  async getData(sdkKey: string, user?: StatsigUser): Promise<string | null> {
-    const response = await this._network.fetchEvaluations(sdkKey, user);
-    return response;
+export class DelayedNetworkEvaluationsDataProvider extends NetworkEvaluationsDataProviderImpl {
+  static create(
+    options: StatsigOptions | null = null,
+  ): DelayedNetworkEvaluationsDataProvider {
+    return new DelayedNetworkEvaluationsDataProvider(
+      new StatsigNetwork(options),
+    );
+  }
+
+  async getDataPostInit(
+    sdkKey: string,
+    user?: StatsigUser,
+  ): Promise<string | null> {
+    return await this.fetchLatestValues(sdkKey, user);
   }
 }

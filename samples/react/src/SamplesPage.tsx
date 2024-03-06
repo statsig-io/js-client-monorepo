@@ -3,6 +3,7 @@ import { ReactNode, useEffect } from 'react';
 const SAMPLES = [
   import('./samples/PrecomputedClientBasic'),
   import('./samples/OnDeviceClientBasic'),
+  import('./samples/SynchronousInitialize'),
 ];
 
 export default function SamplesPage(): ReactNode {

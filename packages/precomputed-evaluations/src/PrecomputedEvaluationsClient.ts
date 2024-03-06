@@ -27,7 +27,7 @@ import Network from './Network';
 import './StatsigMetadataAdditions';
 import type { StatsigOptions } from './StatsigOptions';
 import { LocalStorageCacheEvaluationsDataProvider } from './data-providers/LocalStorageCacheEvaluationsDataProvider';
-import { NetworkEvaluationsDataProvider } from './data-providers/NetworkEvaluationsDataProvider';
+import { DelayedNetworkEvaluationsDataProvider } from './data-providers/NetworkEvaluationsDataProvider';
 
 export default class PrecomputedEvaluationsClient
   extends StatsigClientBase
@@ -51,7 +51,7 @@ export default class PrecomputedEvaluationsClient
       options,
       options?.dataProviders ?? [
         new LocalStorageCacheEvaluationsDataProvider(),
-        new NetworkEvaluationsDataProvider(network),
+        new DelayedNetworkEvaluationsDataProvider(network),
       ],
     );
 
@@ -81,10 +81,10 @@ export default class PrecomputedEvaluationsClient
 
     this._setStatus('Loading');
 
-    const result = await this._getResultFromDataProviders(
-      'during-init',
-      this._user,
-    );
+    let result = this._getDataFromProviders(this._user);
+    if (result.data == null) {
+      result = await this._getDataFromProvidersAsync(this._user);
+    }
 
     if (result.data) {
       this._store.setValuesFromData(result.data, result.source);
@@ -94,7 +94,7 @@ export default class PrecomputedEvaluationsClient
 
     this._setStatus('Ready');
 
-    this._runPostInitDataProviders(result.data, this._user);
+    this._saveToDataProviders(result.data, this._user);
   }
 
   async shutdown(): Promise<void> {

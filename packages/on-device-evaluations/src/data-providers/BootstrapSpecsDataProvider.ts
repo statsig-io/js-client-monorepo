@@ -1,15 +1,14 @@
 import { StatsigDataProvider, getUserStorageKey } from '@statsig/client-core';
 
 export class BootstrapSpecsDataProvider implements StatsigDataProvider {
-  readonly isTerminal = true;
   readonly source = 'Bootstrap';
 
   private _data: Record<string, string> = {};
 
-  async getData(sdkKey: string): Promise<string | null> {
+  getData(sdkKey: string): string | null {
     const cacheKey = getUserStorageKey(sdkKey);
     const result = this._data[cacheKey] ?? null;
-    return Promise.resolve(result);
+    return result;
   }
 
   addData(sdkKey: string, data: string): void {

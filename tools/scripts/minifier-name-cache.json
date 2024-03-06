@@ -58,7 +58,13 @@
       "$_lastModifiedTimeMap": "lt",
       "$_runCacheEviction": "ht",
       "$_getOutputs": "vt",
-      "$_getPopulatedURL": "dt"
+      "$_getPopulatedURL": "dt",
+      "$_getFromDataProvidersSync": "_t",
+      "$_getFromDataProvidersAsync": "yt",
+      "$_saveToDataProviders": "bt",
+      "$_getDataFromProviders": "wt",
+      "$_getDataFromProvidersAsync": "gt",
+      "$_getDataPostInitFromProviders": "St"
     }
   }
 }
