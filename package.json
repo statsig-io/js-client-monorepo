@@ -1,6 +1,6 @@
 {
   "name": "statsig",
-  "version": "0.0.1-beta.1",
+  "version": "0.0.1-beta.2",
   "license": "MIT",
   "scripts": {
     "lint": "nx run-many --parallel=4 --target=lint",
@@ -8,7 +8,7 @@
     "build": "nx run-many --parallel=4 --target=build",
     "format": "nx format:write",
     "sync-version": "nx sync-version",
-    "publish": "nx publish-all",
+    "publish-all": "nx publish-all",
     "prepare": "husky install"
   },
   "private": true,
