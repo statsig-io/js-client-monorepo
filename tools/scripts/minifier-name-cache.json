@@ -64,7 +64,12 @@
       "$_saveToDataProviders": "bt",
       "$_getDataFromProviders": "wt",
       "$_getDataFromProvidersAsync": "gt",
-      "$_getDataPostInitFromProviders": "St"
+      "$_getDataPostInitFromProviders": "St",
+      "$_manifest": "Ot",
+      "$_isReady": "jt",
+      "$_enforceStorageLimit": "xt",
+      "$_api": "Tt",
+      "$_user": "It"
     }
   }
 }

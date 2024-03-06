@@ -11,6 +11,7 @@ export type DataSource =
 
 export type StatsigDataProvider = {
   readonly getData?: (sdkKey: string, user?: StatsigUser) => string | null;
+
   readonly getDataAsync?: (
     sdkKey: string,
     user?: StatsigUser,
@@ -18,6 +19,7 @@ export type StatsigDataProvider = {
 
   readonly getDataPostInit?: (
     sdkKey: string,
+    currentData: string | null,
     user?: StatsigUser,
   ) => Promise<string | null>;
 

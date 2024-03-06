@@ -126,10 +126,15 @@ export class StatsigClientBase implements StatsigClientEventEmitterInterface {
   }
 
   protected async _getDataPostInitFromProviders(
+    currentData: string | null,
     user?: StatsigUser,
   ): Promise<DataProviderResult> {
     for await (const provider of this._dataProviders) {
-      const data = await provider.getDataPostInit?.(this._sdkKey, user);
+      const data = await provider.getDataPostInit?.(
+        this._sdkKey,
+        currentData,
+        user,
+      );
       if (data) {
         return { data, source: provider.source };
       }
@@ -139,12 +144,15 @@ export class StatsigClientBase implements StatsigClientEventEmitterInterface {
   }
 
   protected _saveToDataProviders(
-    data: string | null,
+    currentData: string | null,
     user?: StatsigUser,
   ): void {
     (async () => {
-      const localResult = await this._getDataPostInitFromProviders(user);
-      data = localResult.data ?? data;
+      const latest = await this._getDataPostInitFromProviders(
+        currentData,
+        user,
+      );
+      const data = latest.data ?? currentData;
 
       if (!data) {
         return;

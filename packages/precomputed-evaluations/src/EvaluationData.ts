@@ -35,5 +35,6 @@ export type EvaluationResponse =
       time: number;
       has_updates: true;
       hash_used: 'none' | 'sha256' | 'djb2';
+      derived_fields?: Record<string, unknown>;
     }
   | { has_updates: false };

@@ -26,7 +26,7 @@ export class PrefetchEvaluationDataProvider implements StatsigDataProvider {
     sdkKey: string,
     user: StatsigUser,
   ): Promise<void> {
-    const response = await this._network.fetchEvaluations(sdkKey, user);
+    const response = await this._network.fetchEvaluations(sdkKey, null, user);
     if (response) {
       const key = getUserStorageKey(sdkKey, user);
       this._data[key] = response;

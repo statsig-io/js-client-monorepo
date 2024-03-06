@@ -31,7 +31,10 @@ export class DelayedNetworkSpecsDataProvider extends NetworkSpecsDataProviderImp
     return new DelayedNetworkSpecsDataProvider(new StatsigNetwork(options));
   }
 
-  async getDataPostInit(sdkKey: string): Promise<string | null> {
+  async getDataPostInit(
+    sdkKey: string,
+    _currentData: string | null,
+  ): Promise<string | null> {
     return await this.fetchLatestValues(sdkKey);
   }
 }
