@@ -22,7 +22,6 @@ const routes: RouteMap = [
   [
     '/examples', '',
     [
-      ['/multiple-clients', 'Multiple Clients', () => import('./MultiClientExamplePage')],
       ['/precomputed-eval-performance', 'Precomputed Client Perf', () => import('./PrecomputedClientPerfExamplePage')],
       ['/on-device-eval-performance', 'On Device Client Perf', () => import('./OnDeviceClientPerfExamplePage')],
       ['/bundle-size', 'Bundle Size', () => import('./BundleSizeExamplePage')],

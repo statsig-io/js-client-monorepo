@@ -62,7 +62,7 @@ export class StatsigClientBase implements StatsigClientEventEmitterInterface {
     instances.add(this);
     __STATSIG__.instances = instances;
 
-    Log.level = options?.logLevel ?? LogLevel.Error;
+    Log.level = options?.logLevel ?? LogLevel.Warn;
     this._dataProviders = dataProviders;
   }
 

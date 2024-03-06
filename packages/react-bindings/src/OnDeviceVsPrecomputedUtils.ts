@@ -5,8 +5,15 @@ import {
 } from '@statsig/client-core';
 
 export function isPrecomputedEvaluationsClient(
-  client: OnDeviceEvaluationsInterface | PrecomputedEvaluationsInterface,
+  client:
+    | OnDeviceEvaluationsInterface
+    | PrecomputedEvaluationsInterface
+    | { isNoop: true },
 ): client is PrecomputedEvaluationsInterface {
+  if ('isNoop' in client) {
+    return false;
+  }
+
   return 'updateUser' in client;
 }
 

@@ -22,7 +22,7 @@ export type StatsigOptionsCommon = {
 
   /**
    * How much information is allowed to be printed to the console.
-   * Default: LogLevel.Error
+   * Default: LogLevel.Warn
    */
   logLevel?: LogLevel;
 

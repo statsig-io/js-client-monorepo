@@ -1,18 +1,13 @@
 import { createContext } from 'react';
 
-import {
-  OnDeviceEvaluationsInterface,
-  PrecomputedEvaluationsInterface,
-} from '@statsig/client-core';
+import { StatsigClientInterface } from '@statsig/client-core';
 
 export interface StatsigContext {
   readonly renderVersion: number;
-  readonly precomputedClient: PrecomputedEvaluationsInterface;
-  readonly onDeviceClient: OnDeviceEvaluationsInterface;
+  readonly client: StatsigClientInterface;
 }
 
 export default createContext<StatsigContext>({
   renderVersion: 0,
-  precomputedClient: {} as unknown as PrecomputedEvaluationsInterface,
-  onDeviceClient: {} as unknown as OnDeviceEvaluationsInterface,
+  client: {} as unknown as StatsigClientInterface,
 });

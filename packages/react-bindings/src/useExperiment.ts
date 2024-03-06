@@ -1,13 +1,12 @@
 import { DEFAULT_EVAL_OPTIONS, Experiment } from '@statsig/client-core';
 
-import useDynamicConfig, { UseDynamicConfigOptions } from './useDynamicConfig';
+import { UseConfigOptions, useConfigImpl } from './useConfigImpl';
 
-export type UseExperimentOptions = UseDynamicConfigOptions;
+export type UseExperimentOptions = UseConfigOptions;
 
 export default function (
   experimentName: string,
   options: UseExperimentOptions = { ...DEFAULT_EVAL_OPTIONS, user: null },
 ): Experiment {
-  const config = useDynamicConfig(experimentName, options);
-  return config;
+  return useConfigImpl('useExperiment', experimentName, options);
 }
