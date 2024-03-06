@@ -45,7 +45,7 @@ jobs:
       - run: pnpm run test
 
   deploy:
-    if: github.event_name == 'push'
+    if: github.event_name == 'push' && github.event.repository.private
     needs: [lint, test, build]
     runs-on: ubuntu-latest
     environment:
