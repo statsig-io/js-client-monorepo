@@ -6,7 +6,9 @@ import { PrecomputedEvaluationsClient } from '@statsig/precomputed-evaluations';
 import { StatsigProvider } from '@statsig/react-bindings';
 
 const DEMO_CLIENT_KEY = 'client-rfLvYGag3eyU0jYW5zcIJTQip7GXxSrhOFN69IGMjvq';
-const client = new PrecomputedEvaluationsClient(DEMO_CLIENT_KEY);
+const client = new PrecomputedEvaluationsClient(DEMO_CLIENT_KEY, {
+  userID: 'a-user',
+});
 
 function Content({ events }: { events: StatsigClientEventData[] }) {
   return (
@@ -74,12 +76,7 @@ export default function ClientEventStreamExample(): ReactNode {
   }, []);
 
   return (
-    <StatsigProvider
-      client={client}
-      user={{
-        userID: 'a-user',
-      }}
-    >
+    <StatsigProvider client={client}>
       <Content events={events} />
     </StatsigProvider>
   );

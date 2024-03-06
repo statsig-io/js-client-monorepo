@@ -6,7 +6,9 @@ import {
   useGate,
 } from '@statsig/react-bindings';
 
-const client = new PrecomputedEvaluationsClient('client-key');
+const client = new PrecomputedEvaluationsClient('client-key', {
+  userID: 'a-user',
+});
 
 client.overrideGate('overridden_gate', true);
 client.overrideExperiment('overridden_experiment', {
@@ -43,12 +45,7 @@ function GetExperiment() {
 
 export default function LocalOverridesExample(): React.ReactNode {
   return (
-    <StatsigProvider
-      client={client}
-      user={{
-        userID: 'a-user',
-      }}
-    >
+    <StatsigProvider client={client}>
       <CheckGate />
       <GetExperiment />
     </StatsigProvider>

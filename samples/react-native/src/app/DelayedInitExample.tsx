@@ -23,7 +23,7 @@ const options: StatsigOptions = {
 };
 
 const user = { userID: 'a-user' };
-const client = new PrecomputedEvaluationsClient(DEMO_CLIENT_KEY, options);
+const client = new PrecomputedEvaluationsClient(DEMO_CLIENT_KEY, user, options);
 
 function Content() {
   const gate = useGate('a_gate');
@@ -51,7 +51,7 @@ function Content() {
 
 export default function DelayedInitExample(): JSX.Element {
   return (
-    <StatsigProvider client={client} user={user}>
+    <StatsigProvider client={client}>
       <Content />
     </StatsigProvider>
   );

@@ -38,7 +38,11 @@ export default class PrecomputedEvaluationsClient
   private _store: EvaluationStore;
   private _user: StatsigUser;
 
-  constructor(sdkKey: string, options: StatsigOptions | null = null) {
+  constructor(
+    sdkKey: string,
+    user: StatsigUser,
+    options: StatsigOptions | null = null,
+  ) {
     const network = new Network(options);
 
     super(
@@ -58,11 +62,11 @@ export default class PrecomputedEvaluationsClient
     this._options = options ?? {};
     this._store = new EvaluationStore(sdkKey);
     this._network = network;
-    this._user = { userID: '' };
+    this._user = user;
   }
 
-  async initialize(user: StatsigUser): Promise<void> {
-    return this.updateUser(user);
+  async initialize(): Promise<void> {
+    return this.updateUser(this._user);
   }
 
   getCurrentUser(): StatsigUser {
@@ -75,10 +79,9 @@ export default class PrecomputedEvaluationsClient
 
     this._user = normalizeUser(user, this._options.environment);
 
-    this._setStatus('Loading');
-
     let result = this._getDataFromProviders(this._user);
     if (result.data == null) {
+      this._setStatus('Loading');
       result = await this._getDataFromProvidersAsync(this._user);
     }
 

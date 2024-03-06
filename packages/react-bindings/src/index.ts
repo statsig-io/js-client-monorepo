@@ -6,6 +6,7 @@ import useGate from './useGate';
 import useLayer from './useLayer';
 import useStatsigOnDeviceEvaluationsClient from './useStatsigOnDeviceEvaluationsClient';
 import useStatsigPrecomputedEvaluationsClient from './useStatsigPrecomputedEvaluationsClient';
+import useStatsigUser from './useStatsigUser';
 
 export {
   StatsigContext,
@@ -14,6 +15,9 @@ export {
   useDynamicConfig,
   useExperiment,
   useLayer,
+  useStatsigUser,
+  useStatsigOnDeviceEvaluationsClient,
+  useStatsigPrecomputedEvaluationsClient,
 };
 
 __STATSIG__ = {

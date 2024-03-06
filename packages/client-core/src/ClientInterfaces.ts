@@ -6,12 +6,12 @@ import { StatsigUser } from './StatsigUser';
 
 export interface StatsigClientCommonInterface
   extends StatsigClientEventEmitterInterface {
+  initialize(): Promise<void>;
   shutdown(): Promise<void>;
 }
 
 export interface OnDeviceEvaluationsInterface
   extends StatsigClientCommonInterface {
-  initialize(): Promise<void>;
   checkGate(
     name: string,
     user: StatsigUser,
@@ -39,7 +39,6 @@ export interface OnDeviceEvaluationsInterface
 export interface PrecomputedEvaluationsInterface
   extends StatsigClientCommonInterface {
   getCurrentUser(): StatsigUser;
-  initialize(user: StatsigUser): Promise<void>;
   updateUser(user: StatsigUser): Promise<void>;
   checkGate(name: string, options: EvaluationOptions): boolean;
   getFeatureGate(name: string, options: EvaluationOptions): FeatureGate;

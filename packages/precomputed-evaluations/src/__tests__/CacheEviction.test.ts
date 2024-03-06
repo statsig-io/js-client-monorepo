@@ -18,8 +18,8 @@ describe('Cache Eviction', () => {
     fetchMock.enableMocks();
     fetchMock.mockResponse(JSON.stringify(InitializeResponse));
 
-    client = new PrecomputedEvaluationsClient(sdkKey);
-    await client.initialize(user);
+    client = new PrecomputedEvaluationsClient(sdkKey, user);
+    await client.initialize();
 
     for (let i = 0; i < 20; i++) {
       // eslint-disable-next-line no-await-in-loop

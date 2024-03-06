@@ -9,14 +9,18 @@ describe('Client Error Boundary', () => {
   let client: PrecomputedEvaluationsClient;
 
   beforeAll(async () => {
-    client = new PrecomputedEvaluationsClient('client-key', {
-      logLevel: LogLevel.None,
-    });
+    client = new PrecomputedEvaluationsClient(
+      'client-key',
+      { userID: '' },
+      {
+        logLevel: LogLevel.None,
+      },
+    );
 
     fetchMock.enableMocks();
     fetchMock.mockResponse(JSON.stringify(InitializeResponse));
 
-    await client.initialize({ userID: '' });
+    await client.initialize();
   });
 
   it('catches errors', () => {

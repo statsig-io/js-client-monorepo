@@ -14,7 +14,7 @@ const user = { userID: 'a-user' };
 
 const prefetchProvider = new PrefetchEvaluationDataProvider();
 
-const client = new PrecomputedEvaluationsClient(DEMO_CLIENT_KEY, {
+const client = new PrecomputedEvaluationsClient(DEMO_CLIENT_KEY, user, {
   dataProviders: [prefetchProvider, NetworkEvaluationsDataProvider.create()],
 });
 
@@ -77,7 +77,7 @@ export default function PrefetchUsersExample(): ReactNode {
   const [userID, setUserID] = useState('user-c');
 
   return (
-    <StatsigProvider client={client} user={user}>
+    <StatsigProvider client={client}>
       <Content userID={userID} setUserID={setUserID} />
     </StatsigProvider>
   );

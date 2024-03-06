@@ -23,9 +23,9 @@ bootstrapper.addDataForUser(YOUR_CLIENT_KEY, getStatsigJson(), user)
 const options = {
   dataProviders: [bootstrapper]
 };
-const client = new PrecomputedEvaluationsClient(YOUR_CLIENT_KEY, options);
+const client = new PrecomputedEvaluationsClient(YOUR_CLIENT_KEY, user, options);
 
-client.initialize(user);
+client.initialize();
 
 console.log("Statsig Status: ", client.loadingStatus); // prints: "Statsig Status: Ready"
 

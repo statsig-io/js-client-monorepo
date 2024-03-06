@@ -4,12 +4,12 @@ import { version } from '../../package.json';
 import PrecomputedEvaluationsClient from '../PrecomputedEvaluationsClient';
 
 describe('StatsigMetadata', () => {
-  const client = new PrecomputedEvaluationsClient('client-key');
+  const client = new PrecomputedEvaluationsClient('client-key', { userID: '' });
   let body: Record<string, unknown>;
 
   beforeAll(async () => {
     fetchMock.mockResponse('{}');
-    await client.initialize({ userID: '' });
+    await client.initialize();
 
     body = JSON.parse(
       fetchMock.mock.calls[0][1]?.body?.toString() ?? '{}',
