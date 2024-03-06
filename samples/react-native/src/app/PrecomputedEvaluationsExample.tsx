@@ -10,7 +10,7 @@ import {
 import { DEMO_CLIENT_KEY } from './Constants';
 
 const user = { userID: 'a-user' };
-const client = new PrecomputedEvaluationsClient(DEMO_CLIENT_KEY, user);
+const client = new PrecomputedEvaluationsClient(DEMO_CLIENT_KEY);
 
 function Content() {
   const gate = useGate('a_gate');
@@ -30,7 +30,7 @@ function Content() {
 
 export default function PrecomputedEvaluationsExample(): JSX.Element {
   return (
-    <StatsigProvider client={client}>
+    <StatsigProvider client={client} user={user}>
       <Content />
     </StatsigProvider>
   );

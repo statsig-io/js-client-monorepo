@@ -8,7 +8,7 @@ import { StatsigProvider } from '@statsig/react-native-bindings';
 import { DEMO_CLIENT_KEY } from './Constants';
 
 const user = { userID: 'a-user' };
-const client = new PrecomputedEvaluationsClient(DEMO_CLIENT_KEY, user, {
+const client = new PrecomputedEvaluationsClient(DEMO_CLIENT_KEY, {
   logLevel: LogLevel.Debug,
 });
 
@@ -59,7 +59,7 @@ export default function ClientEventStreamExample(): JSX.Element {
   }, []);
 
   return (
-    <StatsigProvider client={client}>
+    <StatsigProvider client={client} user={user}>
       <Content events={events} />
     </StatsigProvider>
   );

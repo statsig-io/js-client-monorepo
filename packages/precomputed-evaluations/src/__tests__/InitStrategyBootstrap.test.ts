@@ -35,11 +35,11 @@ describe('Init Strategy - Bootstrap', () => {
     fetchMock.enableMocks();
     fetchMock.mockResponse(JSON.stringify(InitializeResponse));
 
-    client = new PrecomputedEvaluationsClient(sdkKey, user, options);
+    client = new PrecomputedEvaluationsClient(sdkKey, options);
 
     // Purposely not awaiting
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    client.initialize();
+    client.initialize(user);
   });
 
   afterAll(() => {
@@ -63,11 +63,11 @@ describe('Init Strategy - Bootstrap', () => {
     beforeAll(async () => {
       fetchMock.mockClear();
 
-      client = new PrecomputedEvaluationsClient(sdkKey, user, options);
+      client = new PrecomputedEvaluationsClient(sdkKey, options);
 
       // Purposely not awaiting
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      client.initialize();
+      client.initialize(user);
     });
 
     it('is ready after initialize', () => {

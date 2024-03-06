@@ -6,7 +6,7 @@ type VisibilityChangeListener = {
 
 export class VisibilityChangeObserver {
   private static _listeners: VisibilityChangeListener[] = [];
-  private static _current: Visibility | null = null;
+  private static _current: Visibility = 'foreground';
 
   static isCurrentlyVisible(): boolean {
     return this._current === 'foreground';
@@ -38,6 +38,10 @@ if (
   typeof window !== 'undefined' &&
   typeof window.addEventListener === 'function'
 ) {
+  window.addEventListener('focus', () =>
+    VisibilityChangeObserver.notify('foreground'),
+  );
+
   window.addEventListener('blur', () =>
     VisibilityChangeObserver.notify('background'),
   );

@@ -1,23 +1,29 @@
-import { ReactNode, useLayoutEffect, useState } from 'react';
+import { ReactNode, useEffect, useState } from 'react';
 
 import {
   Log,
+  OnDeviceEvaluationsInterface,
+  PrecomputedEvaluationsInterface,
   StatsigClientEventData,
   StatsigClientInterface,
+  StatsigUser,
 } from '@statsig/client-core';
 
 import StatsigContext from './StatsigContext';
 
 type Props = {
   children: ReactNode | ReactNode[];
-  client: StatsigClientInterface;
-};
+} & (
+  | { client: PrecomputedEvaluationsInterface; user: StatsigUser }
+  | { client: OnDeviceEvaluationsInterface }
+);
 
 export default function StatsigProvider(props: Props): JSX.Element {
   const [renderVersion, setRenderVersion] = useState(0);
-  const client = props.client;
+  const { client, children } = props;
+  const user = 'user' in props ? props.user : null;
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     const onStatusChange = (data: StatsigClientEventData) => {
       if (data.event === 'status_change') {
         setRenderVersion((v) => v + 1);
@@ -26,7 +32,7 @@ export default function StatsigProvider(props: Props): JSX.Element {
 
     client.on('status_change', onStatusChange);
 
-    client.initialize().catch((error) => {
+    _initialize(props).catch((error) => {
       Log.error('An error occurred during initialization', error);
     });
 
@@ -37,16 +43,24 @@ export default function StatsigProvider(props: Props): JSX.Element {
 
       client.off('status_change', onStatusChange);
     };
-  }, [client]);
+  }, [client, user]);
 
   return (
     <StatsigContext.Provider value={{ renderVersion, client }}>
-      {shouldRender(client) ? props.children : null}
+      {_shouldRender(client) ? children : null}
     </StatsigContext.Provider>
   );
 }
 
-function shouldRender(client: StatsigClientInterface): boolean {
+function _initialize(props: Props) {
+  if ('user' in props) {
+    return props.client.initialize(props.user);
+  }
+
+  return props.client.initialize();
+}
+
+function _shouldRender(client: StatsigClientInterface): boolean {
   if ('isNoop' in client) {
     return true;
   }

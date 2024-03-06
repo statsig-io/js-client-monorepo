@@ -7,15 +7,9 @@ import {
 import { StatsigProvider, useGate } from '@statsig/react-bindings';
 
 const DEMO_CLIENT_KEY = 'client-rfLvYGag3eyU0jYW5zcIJTQip7GXxSrhOFN69IGMjvq';
-const client = new PrecomputedEvaluationsClient(
-  DEMO_CLIENT_KEY,
-  {
-    userID: 'a-user',
-  },
-  {
-    dataProviders: [NetworkEvaluationsDataProvider.create()],
-  },
-);
+const client = new PrecomputedEvaluationsClient(DEMO_CLIENT_KEY, {
+  dataProviders: [NetworkEvaluationsDataProvider.create()],
+});
 
 function Content() {
   const { value } = useGate('a_gate');
@@ -34,7 +28,12 @@ function Content() {
 
 export default function HomePage(): ReactNode {
   return (
-    <StatsigProvider client={client}>
+    <StatsigProvider
+      client={client}
+      user={{
+        userID: 'a-user',
+      }}
+    >
       <Content />
     </StatsigProvider>
   );

@@ -22,9 +22,9 @@ describe('Init Strategy - Awaited', () => {
     fetchMock.enableMocks();
     fetchMock.mockResponse(JSON.stringify(InitializeResponse));
 
-    client = new PrecomputedEvaluationsClient(sdkKey, user, options);
+    client = new PrecomputedEvaluationsClient(sdkKey, options);
 
-    await client.initialize();
+    await client.initialize(user);
   });
 
   afterAll(() => {

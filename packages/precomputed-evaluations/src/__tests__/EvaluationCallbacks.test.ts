@@ -13,14 +13,14 @@ describe('Client Evaluations Callback', () => {
 
   beforeEach(async () => {
     events = [];
-    client = new PrecomputedEvaluationsClient('client-key', user, {
+    client = new PrecomputedEvaluationsClient('client-key', {
       dataProviders: [NetworkEvaluationsDataProvider.create()],
     });
 
     fetchMock.enableMocks();
     fetchMock.mockResponse(JSON.stringify(InitializeResponse));
 
-    await client.initialize();
+    await client.initialize(user);
 
     client.on('*', (data) => {
       if (data.event.endsWith('_evaluation')) {

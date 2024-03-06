@@ -13,7 +13,7 @@ const DEMO_CLIENT_KEY = 'client-rfLvYGag3eyU0jYW5zcIJTQip7GXxSrhOFN69IGMjvq';
 
 const user = { userID: 'a-user' };
 
-const client = new PrecomputedEvaluationsClient(DEMO_CLIENT_KEY, user, {
+const client = new PrecomputedEvaluationsClient(DEMO_CLIENT_KEY, {
   logLevel: LogLevel.Info,
   dataProviders: [
     new LocalStorageCacheEvaluationsDataProvider(),
@@ -35,7 +35,7 @@ function Content() {
 
 export default function DelayedNetworkInitExamplePage(): ReactNode {
   return (
-    <StatsigProvider client={client}>
+    <StatsigProvider client={client} user={user}>
       <Content />
     </StatsigProvider>
   );

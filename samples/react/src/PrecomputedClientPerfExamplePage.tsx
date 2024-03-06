@@ -9,7 +9,7 @@ const DEMO_CLIENT_KEY = 'client-rfLvYGag3eyU0jYW5zcIJTQip7GXxSrhOFN69IGMjvq';
 
 const user = { userID: 'a-user' };
 
-const client = new PrecomputedEvaluationsClient(DEMO_CLIENT_KEY, user);
+const client = new PrecomputedEvaluationsClient(DEMO_CLIENT_KEY);
 
 export default function PrecomputedClientPerfExamplePage(): ReactNode {
   const [initMeasurement, setInitMeasurement] =
@@ -18,7 +18,7 @@ export default function PrecomputedClientPerfExamplePage(): ReactNode {
   useEffect(() => {
     performance.mark('precomputed-initialize-start');
     client
-      .initialize()
+      .initialize(user)
       .then(() => {
         performance.mark('precomputed-initialize-end');
         setInitMeasurement(

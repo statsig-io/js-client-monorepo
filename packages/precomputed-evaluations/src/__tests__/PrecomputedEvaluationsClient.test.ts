@@ -9,8 +9,8 @@ describe('PrecomputedEvaluationsClient', () => {
     fetchMock.enableMocks();
     fetchMock.mockResponse('{}');
 
-    client = new PrecomputedEvaluationsClient('client-key', { userID: '' });
-    await client.initialize();
+    client = new PrecomputedEvaluationsClient('client-key');
+    await client.initialize({ userID: '' });
 
     client.getExperiment('');
   });
@@ -18,7 +18,9 @@ describe('PrecomputedEvaluationsClient', () => {
   it('calls /initialize', () => {
     expect(fetchMock).toHaveBeenCalledTimes(1);
     expect(fetchMock).toHaveBeenCalledWith(
-      expect.stringContaining('https://api.statsig.com/v1/initialize?k=client-key&st=js-precomputed-evaluations-client'),
+      expect.stringContaining(
+        'https://api.statsig.com/v1/initialize?k=client-key&st=js-precomputed-evaluations-client',
+      ),
       expect.any(Object),
     );
   });

@@ -29,13 +29,13 @@ export default function ClientApp({
   bootstrapProvider.addDataForUser(DEMO_CLIENT_KEY, values, user);
 
   const [client] = useState(
-    new PrecomputedEvaluationsClient(DEMO_CLIENT_KEY, user, {
+    new PrecomputedEvaluationsClient(DEMO_CLIENT_KEY, {
       dataProviders: [bootstrapProvider],
     }),
   );
 
   return (
-    <StatsigProvider client={client}>
+    <StatsigProvider client={client} user={user}>
       <Content />
     </StatsigProvider>
   );
