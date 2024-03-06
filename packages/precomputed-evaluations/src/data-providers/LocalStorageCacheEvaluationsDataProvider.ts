@@ -2,19 +2,18 @@ import {
   StatsigDataProvider,
   StatsigUser,
   Storage,
+  getObjectFromStorage,
   getUserStorageKey,
   setObjectInStorage,
 } from '@statsig/client-core';
 
-const LAST_MODIFIED_STORAGE_KEY = 'statsig.cache.last_modified_time';
+const LAST_MODIFIED_STORAGE_KEY = 'statsig.last_modified_time';
 const CACHE_LIMIT = 10;
 
 export class LocalStorageCacheEvaluationsDataProvider
   implements StatsigDataProvider
 {
   readonly source = 'Cache';
-
-  private _lastModifiedTimeMap: Record<string, number> = {};
 
   getData(sdkKey: string, user?: StatsigUser): string | null {
     if (typeof window === 'undefined' || !window.localStorage) {
@@ -46,14 +45,15 @@ export class LocalStorageCacheEvaluationsDataProvider
   }
 
   private async _runCacheEviction(cacheKey: string): Promise<void> {
-    this._lastModifiedTimeMap[cacheKey] = Date.now();
-
-    const entries = Object.entries(this._lastModifiedTimeMap);
-    if (entries.length < CACHE_LIMIT) {
-      await setObjectInStorage(
+    const lastModifiedTimeMap =
+      (await getObjectFromStorage<Record<string, number>>(
         LAST_MODIFIED_STORAGE_KEY,
-        this._lastModifiedTimeMap,
-      );
+      )) ?? {};
+    lastModifiedTimeMap[cacheKey] = Date.now();
+
+    const entries = Object.entries(lastModifiedTimeMap);
+    if (entries.length < CACHE_LIMIT) {
+      await setObjectInStorage(LAST_MODIFIED_STORAGE_KEY, lastModifiedTimeMap);
       return;
     }
 
@@ -62,10 +62,7 @@ export class LocalStorageCacheEvaluationsDataProvider
     });
 
     await Storage.removeItem(oldest[0]);
-    delete this._lastModifiedTimeMap[oldest[0]];
-    await setObjectInStorage(
-      LAST_MODIFIED_STORAGE_KEY,
-      this._lastModifiedTimeMap,
-    );
+    delete lastModifiedTimeMap[oldest[0]];
+    await setObjectInStorage(LAST_MODIFIED_STORAGE_KEY, lastModifiedTimeMap);
   }
 }

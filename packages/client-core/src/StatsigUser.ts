@@ -46,7 +46,8 @@ export function normalizeUser(
 }
 
 export function getUserStorageKey(sdkKey: string, user?: StatsigUser): string {
-  return DJB2(JSON.stringify(_getSortedObject({ sdkKey, user })));
+  const key = DJB2(JSON.stringify(_getSortedObject({ sdkKey, user })));
+  return `statsig.user_cache.${key}`;
 }
 
 function _getSortedObject(
