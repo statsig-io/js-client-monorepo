@@ -1,9 +1,9 @@
 import { Diagnostics } from './Diagnostics';
 import { Log } from './Log';
+import { SessionID } from './SessionID';
 import { StableID } from './StableID';
 import { StatsigMetadataProvider } from './StatsigMetadata';
 import { StatsigOptionsCommon } from './StatsigOptionsCommon';
-import { getUUID } from './UUID';
 
 const DEFAULT_TIMEOUT_MS = 10_000;
 
@@ -34,23 +34,22 @@ class NetworkError extends Error {
 }
 
 export class NetworkCore {
-  private readonly _sessionID: string;
   private readonly _timeout: number;
 
   constructor(private _options: StatsigOptionsCommon | null) {
     this._timeout = _options?.networkTimeoutMs ?? DEFAULT_TIMEOUT_MS;
-    this._sessionID = getUUID();
   }
 
   async post(args: RequestArgsWithData): Promise<string | null> {
     const { data } = args;
     const stableID = await StableID.get(args.sdkKey);
+    const sessionID = SessionID.get(args.sdkKey);
     const body = JSON.stringify({
       ...data,
       statsigMetadata: {
         ...StatsigMetadataProvider.get(),
         stableID,
-        sessionID: this._sessionID,
+        sessionID,
       },
     });
 
@@ -88,7 +87,7 @@ export class NetworkCore {
           // Must set this content type to bypass cors
           // can override via headers if necessary (recommended for logevent)
           'Content-Type': 'text/plain',
-          ...args.headers
+          ...args.headers,
         },
         signal: controller.signal,
       });
@@ -129,7 +128,7 @@ export class NetworkCore {
     fullUrl.searchParams.append('st', statsigMetadata.sdkType);
     fullUrl.searchParams.append('sv', statsigMetadata.sdkVersion);
     fullUrl.searchParams.append('t', String(Date.now()));
-    fullUrl.searchParams.append('sid', this._sessionID);
+    fullUrl.searchParams.append('sid', SessionID.get(args.sdkKey));
 
     return fullUrl.toString();
   }
