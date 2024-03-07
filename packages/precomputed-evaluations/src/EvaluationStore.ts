@@ -1,45 +1,40 @@
+import { DataSource, EvaluationDetails } from '@statsig/client-core';
+
 import {
-  DataSource,
-  StatsigUser,
-  Storage,
-  getObjectFromStorage,
-  getUserStorageKey,
-  setObjectInStorage,
-} from '@statsig/client-core';
-
-import { EvaluationResponse } from './EvaluationData';
-
-const MANIFEST_KEY = 'statsig.manifest';
-const CACHE_LIMIT = 10;
+  ConfigEvaluation,
+  EvaluationResponse,
+  GateEvaluation,
+  LayerEvaluation,
+} from './EvaluationData';
 
 type EvaluationStoreValues = EvaluationResponse & { has_updates: true };
 
+type DetailedEvaluation<T> = {
+  evaluation: T | null;
+  details: EvaluationDetails;
+};
+
 export default class EvaluationStore {
-  values: EvaluationStoreValues | null = null;
-  source: DataSource = 'Loading';
+  private _values: EvaluationStoreValues | null = null;
+  private _source: DataSource = 'Loading';
+  private _lcut = 0;
+  private _receivedAt = 0;
 
-  private _manifest: Record<string, number> = {};
-  private _isReady: Promise<void>;
-
-  constructor(private _sdkKey: string) {
-    this._isReady = getObjectFromStorage<Record<string, number>>(
-      MANIFEST_KEY,
-    ).then((value) => {
-      this._manifest = value ?? {};
-    });
-  }
+  constructor(private _sdkKey: string) {}
 
   reset(): void {
-    this.values = null;
-    this.source = 'Loading';
+    this._values = null;
+    this._source = 'Loading';
+    this._lcut = 0;
+    this._receivedAt = 0;
   }
 
   finalize(): void {
-    if (this.values) {
+    if (this._values) {
       return;
     }
 
-    this.source = 'NoValues';
+    this._source = 'NoValues';
   }
 
   setValuesFromData(data: string, source: DataSource): void {
@@ -48,54 +43,48 @@ export default class EvaluationStore {
       return;
     }
 
-    this.source = source;
-    this.values = values;
+    this._lcut = values.time;
+    this._receivedAt = Date.now();
+    this._source = source;
+    this._values = values;
   }
 
-  async setValues(
-    user: StatsigUser,
-    values: EvaluationResponse,
-  ): Promise<void> {
-    if (!values.has_updates) {
-      return;
-    }
-
-    await this._isReady;
-
-    this.values = values;
-    const cacheKey = getUserStorageKey(this._sdkKey, user);
-    await setObjectInStorage(cacheKey, values);
-    await this._enforceStorageLimit(cacheKey);
+  getGate(name: string): DetailedEvaluation<GateEvaluation> {
+    const evaluation = this._values?.feature_gates[name] ?? null;
+    return this._makeDetailedEvaluation(evaluation);
   }
 
-  async switchToUser(user: StatsigUser): Promise<boolean> {
-    this.values = null;
-    const cacheKey = getUserStorageKey(this._sdkKey, user);
-    const json = await getObjectFromStorage<EvaluationStoreValues>(cacheKey);
-
-    if (json) {
-      this.values = json;
-      return true;
-    }
-
-    return false;
+  getConfig(name: string): DetailedEvaluation<ConfigEvaluation> {
+    const evaluation = this._values?.dynamic_configs[name] ?? null;
+    return this._makeDetailedEvaluation(evaluation);
   }
 
-  private async _enforceStorageLimit(cacheKey: string): Promise<void> {
-    this._manifest[cacheKey] = Date.now();
+  getLayer(name: string): DetailedEvaluation<LayerEvaluation> {
+    const evaluation = this._values?.layer_configs[name] ?? null;
+    return this._makeDetailedEvaluation(evaluation);
+  }
 
-    const entries = Object.entries(this._manifest);
-    if (entries.length < CACHE_LIMIT) {
-      await setObjectInStorage(MANIFEST_KEY, this._manifest);
-      return;
+  private _makeDetailedEvaluation<T>(
+    evaluation: T | null,
+  ): DetailedEvaluation<T> {
+    return {
+      evaluation,
+      details: this._getDetails(evaluation == null),
+    };
+  }
+
+  private _getDetails(isUnrecognized: boolean): EvaluationDetails {
+    if (this._source === 'Uninitialized' || this._source === 'NoValues') {
+      return { reason: this._source };
     }
 
-    const oldest = entries.reduce((acc, current) => {
-      return current[1] < acc[1] ? current : acc;
-    });
+    const subreason = isUnrecognized ? 'Unrecognized' : 'Recognized';
+    const reason = `${this._source}:${subreason}`;
 
-    await Storage.removeItem(oldest[0]);
-    delete this._manifest[oldest[0]];
-    await setObjectInStorage(MANIFEST_KEY, this._manifest);
+    return {
+      reason,
+      lcut: this._lcut,
+      receivedAt: this._receivedAt,
+    };
   }
 }

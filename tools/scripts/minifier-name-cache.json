@@ -69,7 +69,12 @@
       "$_isReady": "jt",
       "$_enforceStorageLimit": "xt",
       "$_api": "Tt",
-      "$_user": "It"
+      "$_user": "It",
+      "$_makeDetailedEvaluation": "Nt",
+      "$_getDetails": "kt",
+      "$_values": "Mt",
+      "$_lcut": "Et",
+      "$_receivedAt": "Dt"
     }
   }
 }

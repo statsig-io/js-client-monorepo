@@ -46,7 +46,7 @@ describe('Init Strategy - Delayed', () => {
 
   it('reports source as "NoValues"', () => {
     const gate = client.getFeatureGate('a_gate', user);
-    expect(gate.source).toBe('NoValues');
+    expect(gate.details.reason).toBe('NoValues');
   });
 
   it('writes the updated values to cache', () => {
@@ -70,7 +70,7 @@ describe('Init Strategy - Delayed', () => {
 
     it('reports source as "Cache"', () => {
       const gate = client.getFeatureGate('a_gate', user);
-      expect(gate.source).toBe('Cache');
+      expect(gate.details.reason).toBe('Cache:Recognized');
     });
   });
 });

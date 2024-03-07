@@ -21,7 +21,11 @@
         "@nx/dependency-checks": [
           "error",
           {
-            "ignoredDependencies": ["jest-fetch-mock", "@nx/webpack"]
+            "ignoredDependencies": [
+              "jest-fetch-mock",
+              "@nx/webpack",
+              "statsig-test-helpers"
+            ]
           }
         ]
       }

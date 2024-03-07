@@ -1,5 +1,4 @@
-import { DataSource } from './StatsigDataProvider';
-import { DynamicConfig, FeatureGate } from './StatsigTypes';
+import { DynamicConfig, EvaluationDetails, FeatureGate } from './StatsigTypes';
 import { StatsigUser } from './StatsigUser';
 
 export type SecondaryExposure = {
@@ -27,6 +26,7 @@ const LAYER_EXPOSURE_NAME = 'statsig::layer_exposure';
 function createExposure(
   eventName: string,
   user: StatsigUser,
+  details: EvaluationDetails,
   metadata: Record<string, string>,
   secondaryExposures: SecondaryExposure[],
 ) {
@@ -34,7 +34,7 @@ function createExposure(
     eventName,
     user,
     value: null,
-    metadata,
+    metadata: _addEvaluationDetailsToMetadata(details, metadata),
     secondaryExposures,
     time: Date.now(),
   };
@@ -52,11 +52,11 @@ export function createGateExposure(
   return createExposure(
     GATE_EXPOSURE_NAME,
     user,
+    gate.details,
     {
       gate: gate.name,
       gateValue: String(gate.value),
       ruleID: gate.ruleID,
-      reason: gate.source,
     },
     secondaryExposures ?? [],
   );
@@ -70,10 +70,10 @@ export function createConfigExposure(
   return createExposure(
     CONFIG_EXPOSURE_NAME,
     user,
+    config.details,
     {
       config: config.name,
       ruleID: config.ruleID,
-      reason: config.source,
     },
     secondaryExposures ?? [],
   );
@@ -89,7 +89,7 @@ export function createLayerParameterExposure(
     undelegated_secondary_exposures?: SecondaryExposure[];
     secondary_exposures: SecondaryExposure[];
     allocated_experiment_name: string;
-    source: DataSource;
+    details: EvaluationDetails;
   },
 ): StatsigEventInternal {
   const isExplicit = spec.explicit_parameters.includes(parameterName);
@@ -104,14 +104,31 @@ export function createLayerParameterExposure(
   return createExposure(
     LAYER_EXPOSURE_NAME,
     user,
+    spec.details,
     {
       config: layerName,
       parameterName,
       ruleID: spec.rule_id,
       allocatedExperiment,
       isExplicitParameter: String(isExplicit),
-      reason: spec.source,
     },
     secondaryExposures,
   );
+}
+
+function _addEvaluationDetailsToMetadata(
+  details: EvaluationDetails,
+  metadata: Record<string, string>,
+): Record<string, string> {
+  metadata['reason'] = details.reason;
+
+  if (details.lcut) {
+    metadata['lcut'] = String(details.lcut);
+  }
+
+  if (details.receivedAt) {
+    metadata['receivedAt'] = String(details.receivedAt);
+  }
+
+  return metadata;
 }

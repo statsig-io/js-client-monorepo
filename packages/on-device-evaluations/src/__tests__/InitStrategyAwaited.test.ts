@@ -37,13 +37,15 @@ describe('Init Strategy - Awaited', () => {
 
   it('reports source as "Network"', () => {
     const gate = client.getFeatureGate('a_gate', user);
-    expect(gate.source).toBe('Network');
+    expect(gate.details.reason).toBe('Network:Recognized');
   });
 
-  // it('calls /initialize from network', () => {
-  //   expect(fetchMock.mock.calls).toHaveLength(1);
-  //   expect(fetchMock.mock.calls[0][0]).toBe('1');
-  // });
+  it('calls /initialize from network', () => {
+    expect(fetchMock.mock.calls).toHaveLength(1);
+    expect(fetchMock.mock.calls[0][0]).toContain(
+      'https://api.statsigcdn.com/v1/download_config_specs/client-key.json',
+    );
+  });
 
   it('writes nothing to storage', () => {
     expect(storageMock.data).toMatchObject({});

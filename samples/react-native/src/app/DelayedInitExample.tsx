@@ -34,7 +34,7 @@ function Content() {
       <Text style={{ fontWeight: 'bold' }}>Delayed Init Example</Text>
       <Text>PrecomputedEvaluationsClient status: {client.loadingStatus}</Text>
       <Text>
-        a_gate: {gate.value ? 'Pass' : 'Fail'} ({gate.source})
+        a_gate: {gate.value ? 'Pass' : 'Fail'} ({gate.details.reason})
       </Text>
       <Text>an_experiment: {JSON.stringify(experiment.value)}</Text>
       <Button

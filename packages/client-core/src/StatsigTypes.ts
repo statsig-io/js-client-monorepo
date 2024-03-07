@@ -7,10 +7,16 @@ export type Flatten<T> = {
   // eslint-disable-next-line @typescript-eslint/ban-types
 } & {};
 
+export type EvaluationDetails = {
+  reason: string;
+  lcut?: number;
+  receivedAt?: number;
+};
+
 type EvaluatedSpec = {
   readonly name: string;
   readonly ruleID: string;
-  readonly source: string;
+  readonly details: EvaluationDetails;
 };
 
 export type FeatureGate = EvaluatedSpec & {
@@ -28,13 +34,13 @@ export type Layer = EvaluatedSpec & {
 
 export function makeFeatureGate(
   name: string,
-  source: string,
+  details: EvaluationDetails,
   ruleID?: string,
   value?: boolean,
 ): FeatureGate {
   return {
     name,
-    source,
+    details,
     ruleID: ruleID ?? DEFAULT_RULE,
     value: value === true,
   };
@@ -42,13 +48,13 @@ export function makeFeatureGate(
 
 export function makeDynamicConfig(
   name: string,
-  source: string,
+  details: EvaluationDetails,
   ruleID?: string,
   value?: Record<string, unknown>,
 ): DynamicConfig {
   return {
     name,
-    source,
+    details,
     ruleID: ruleID ?? DEFAULT_RULE,
     value: value ?? {},
   };
@@ -56,13 +62,13 @@ export function makeDynamicConfig(
 
 export function makeLayer(
   name: string,
-  source: string,
+  details: EvaluationDetails,
   ruleID?: string,
   getValue?: (param: string) => unknown,
 ): Layer {
   return {
     name,
-    source,
+    details,
     getValue: getValue ?? ((): unknown => undefined),
     ruleID: ruleID ?? DEFAULT_RULE,
   };

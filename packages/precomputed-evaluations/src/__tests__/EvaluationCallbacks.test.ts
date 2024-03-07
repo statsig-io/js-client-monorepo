@@ -1,4 +1,5 @@
 import fetchMock from 'jest-fetch-mock';
+import { anyFunction, anyNumber } from 'statsig-test-helpers';
 
 import { StatsigClientEventData } from '@statsig/client-core';
 
@@ -16,6 +17,8 @@ describe('Client Evaluations Callback', () => {
     client = new PrecomputedEvaluationsClient('client-key', user, {
       dataProviders: [NetworkEvaluationsDataProvider.create()],
     });
+
+    InitializeResponse['time'] = 123456;
 
     fetchMock.enableMocks();
     fetchMock.mockResponse(JSON.stringify(InitializeResponse));
@@ -37,7 +40,11 @@ describe('Client Evaluations Callback', () => {
         gate: {
           name: 'a_gate',
           ruleID: '2QWhVkWdUEXR6Q3KYgV73O',
-          source: 'Network',
+          details: {
+            lcut: 123456,
+            reason: 'Network:Recognized',
+            receivedAt: anyNumber(),
+          },
           value: true,
         },
       },
@@ -52,7 +59,11 @@ describe('Client Evaluations Callback', () => {
         dynamicConfig: {
           name: 'a_dynamic_config',
           ruleID: 'default',
-          source: 'Network',
+          details: {
+            lcut: 123456,
+            reason: 'Network:Recognized',
+            receivedAt: anyNumber(),
+          },
           value: {
             blue: '#00FF00',
             green: '#0000FF',
@@ -71,7 +82,11 @@ describe('Client Evaluations Callback', () => {
         experiment: {
           name: 'an_experiment',
           ruleID: '49CGlTB7z97PEdqJapQplA',
-          source: 'Network',
+          details: {
+            lcut: 123456,
+            reason: 'Network:Recognized',
+            receivedAt: anyNumber(),
+          },
           value: {
             a_string: 'Experiment Test Value',
           },
@@ -88,8 +103,12 @@ describe('Client Evaluations Callback', () => {
         layer: {
           name: 'a_layer',
           ruleID: '49CGlTB7z97PEdqJapQplA',
-          source: 'Network',
-          getValue: expect.any(Function) as unknown,
+          details: {
+            lcut: 123456,
+            reason: 'Network:Recognized',
+            receivedAt: anyNumber(),
+          },
+          getValue: anyFunction(),
         },
       },
     ]);

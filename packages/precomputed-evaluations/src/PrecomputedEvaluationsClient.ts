@@ -114,18 +114,19 @@ export default class PrecomputedEvaluationsClient
     options: EvaluationOptions = DEFAULT_EVAL_OPTIONS,
   ): FeatureGate {
     const hash = DJB2(name);
-    const res = this._store.values?.feature_gates[hash];
+
+    const { evaluation, details } = this._store.getGate(hash);
 
     const gate = makeFeatureGate(
       name,
-      this._store.source,
-      res?.rule_id,
-      res?.value,
+      details,
+      evaluation?.rule_id,
+      evaluation?.value,
     );
 
     this._enqueueExposure(
       options,
-      createGateExposure(this._user, gate, res?.secondary_exposures),
+      createGateExposure(this._user, gate, evaluation?.secondary_exposures),
     );
 
     this.emit({ event: 'gate_evaluation', gate });
@@ -156,27 +157,28 @@ export default class PrecomputedEvaluationsClient
     options: EvaluationOptions = DEFAULT_EVAL_OPTIONS,
   ): Layer {
     const hash = DJB2(name);
-    const res = this._store.values?.layer_configs[hash];
+
+    const { evaluation, details } = this._store.getLayer(hash);
 
     // todo: un-ugly
-    const layer = makeLayer(name, this._store.source, res?.rule_id, (param) => {
-      if (!res) {
+    const layer = makeLayer(name, details, evaluation?.rule_id, (param) => {
+      if (!evaluation) {
         return;
       }
 
-      if (!(param in res.value)) {
+      if (!(param in evaluation.value)) {
         return undefined;
       }
 
       this._enqueueExposure(
         options,
         createLayerParameterExposure(this._user, name, param, {
-          ...res,
-          source: this._store.source,
+          ...evaluation,
+          details,
         }),
       );
 
-      return res.value[param];
+      return evaluation.value[param];
     });
 
     this.emit({ event: 'layer_evaluation', layer });
@@ -193,17 +195,18 @@ export default class PrecomputedEvaluationsClient
     options: EvaluationOptions,
   ): DynamicConfig {
     const hash = DJB2(name);
-    const res = this._store.values?.dynamic_configs[hash];
+    const { evaluation, details } = this._store.getConfig(hash);
+
     const config = makeDynamicConfig(
       name,
-      this._store.source,
-      res?.rule_id,
-      res?.value,
+      details,
+      evaluation?.rule_id,
+      evaluation?.value,
     );
 
     this._enqueueExposure(
       options,
-      createConfigExposure(this._user, config, res?.secondary_exposures),
+      createConfigExposure(this._user, config, evaluation?.secondary_exposures),
     );
 
     return config;

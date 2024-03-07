@@ -26,9 +26,9 @@ function Form() {
 
   return (
     <>
-      <Typography> - Result: {gate.value ? 'Pass' : 'Fail'}</Typography>
-      <Typography> - Render Count: {renderCount}</Typography>
-      <Typography> - Source: {gate.source}</Typography>
+      <Typography>Result: {gate.value ? 'Pass' : 'Fail'}</Typography>
+      <Typography>Render Count: {renderCount}</Typography>
+      <Typography>Reason: {gate.details.reason}</Typography>
 
       <TextField
         label="UserID"

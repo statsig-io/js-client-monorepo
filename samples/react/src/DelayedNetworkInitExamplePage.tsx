@@ -27,8 +27,8 @@ function Content() {
   return (
     <Box display="flex" flexDirection="column">
       <Typography>partial_gate</Typography>
-      <Typography> - Result: {gate.value ? 'Pass' : 'Fail'}</Typography>
-      <Typography> - Source: {gate.source}</Typography>
+      <Typography>Result: {gate.value ? 'Pass' : 'Fail'}</Typography>
+      <Typography>Reason: {gate.details.reason}</Typography>
     </Box>
   );
 }

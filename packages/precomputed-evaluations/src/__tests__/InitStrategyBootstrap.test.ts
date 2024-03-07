@@ -52,7 +52,7 @@ describe('Init Strategy - Bootstrap', () => {
 
   it('reports source as "Bootstrap"', () => {
     const gate = client.getFeatureGate('a_gate');
-    expect(gate.source).toBe('Bootstrap');
+    expect(gate.details.reason).toBe('Bootstrap:Recognized');
   });
 
   it('writes the updated values to cache', () => {
@@ -76,7 +76,7 @@ describe('Init Strategy - Bootstrap', () => {
 
     it('reports source as "Cache"', () => {
       const gate = client.getFeatureGate('a_gate');
-      expect(gate.source).toBe('Cache');
+      expect(gate.details.reason).toBe('Cache:Recognized');
     });
   });
 });

@@ -30,7 +30,7 @@ client.initialize();
 console.log("Statsig Status: ", client.loadingStatus); // prints: "Statsig Status: Ready"
 
 const gate = client.getFeatureGate('a_gate');
-console.log("a_gate source:", gate.source) // prints: "a_gate source: Bootstrap"
+console.log("a_gate source:", gate.details.reason) // prints: "a_gate source: Bootstrap"
 
 // </snippet>
 }

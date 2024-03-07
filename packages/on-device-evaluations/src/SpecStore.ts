@@ -47,9 +47,18 @@ export type DownloadConfigSpecsResponse = {
   has_updates: boolean;
 };
 
+export type SpecAndSourceInfo = {
+  spec: Spec | null;
+  source: DataSource;
+  lcut: number;
+  receivedAt: number;
+};
+
 export default class SpecStore {
-  values: DownloadConfigSpecsResponse | null = null;
-  source: DataSource = 'Loading';
+  private _values: DownloadConfigSpecsResponse | null = null;
+  private _source: DataSource = 'Loading';
+  private _lcut = 0;
+  private _receivedAt = 0;
 
   setValuesFromData(data: string, source: DataSource): void {
     const values = JSON.parse(data) as DownloadConfigSpecsResponse;
@@ -57,37 +66,45 @@ export default class SpecStore {
       return;
     }
 
-    this.source = source;
-    this.values = values;
+    this._lcut = values.time;
+    this._receivedAt = Date.now();
+    this._source = source;
+    this._values = values;
   }
 
   reset(): void {
-    this.values = null;
-    this.source = 'Loading';
+    this._values = null;
+    this._source = 'Loading';
   }
 
   finalize(): void {
-    if (this.values) {
+    if (this._values) {
       return;
     }
 
-    this.source = 'NoValues';
+    this._source = 'NoValues';
   }
 
-  getSpec(type: SpecType, name: string): Spec | null {
+  getSpec(type: SpecType, name: string): SpecAndSourceInfo {
     // todo: use Object instead of Array
     const specs = this._getSpecs(type);
-    return specs?.find((spec) => spec.name === name) ?? null;
+
+    return {
+      spec: specs?.find((spec) => spec.name === name) ?? null,
+      source: this._source,
+      lcut: this._lcut,
+      receivedAt: this._receivedAt,
+    };
   }
 
   private _getSpecs(type: SpecType) {
     switch (type) {
       case 'gate':
-        return this.values?.feature_gates;
+        return this._values?.feature_gates;
       case 'config':
-        return this.values?.dynamic_configs;
+        return this._values?.dynamic_configs;
       case 'layer':
-        return this.values?.layer_configs;
+        return this._values?.layer_configs;
     }
   }
 }

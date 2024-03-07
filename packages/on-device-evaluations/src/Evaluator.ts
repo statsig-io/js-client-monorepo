@@ -1,12 +1,17 @@
 import {
-  DataSource,
+  EvaluationDetails,
   SecondaryExposure,
   StatsigUserInternal,
 } from '@statsig/client-core';
 import { SHA256 } from '@statsig/sha256';
 
 import Compare from './EvaluationComparison';
-import SpecStore, { Spec, SpecCondition, SpecRule } from './SpecStore';
+import SpecStore, {
+  Spec,
+  SpecAndSourceInfo,
+  SpecCondition,
+  SpecRule,
+} from './SpecStore';
 
 const CONDITION_SEGMENT_COUNT = 10 * 1000;
 const USER_BUCKET_COUNT = 1000;
@@ -20,24 +25,6 @@ export type EvaluationReason =
   | 'DataAdapter'
   | 'Unsupported';
 
-export type EvaluationDetails = {
-  readonly time: number;
-  readonly reason: EvaluationReason;
-};
-
-export type ConfigEvaluation = {
-  readonly value: boolean;
-  readonly rule_id: string;
-  readonly secondary_exposures: SecondaryExposure[];
-  readonly json_value: Record<string, unknown>;
-  readonly explicit_parameters: string[] | null;
-  readonly config_delegate: string | null;
-  readonly undelegated_secondary_exposures: SecondaryExposure[] | undefined;
-  readonly is_experiment_group: boolean;
-  readonly group_name: string | null;
-  readonly evaluation_details: EvaluationDetails | undefined;
-};
-
 type EvaluationResult = {
   readonly unsupported: boolean;
   readonly bool_value: boolean;
@@ -49,7 +36,6 @@ type EvaluationResult = {
   readonly undelegated_secondary_exposures: SecondaryExposure[] | undefined;
   readonly is_experiment_group: boolean;
   readonly group_name: string | null;
-  readonly evaluation_details: EvaluationDetails | undefined;
 };
 
 function makeEvalResult(
@@ -66,56 +52,57 @@ function makeEvalResult(
     is_experiment_group: false,
     group_name: null,
     undelegated_secondary_exposures: undefined,
-    evaluation_details: undefined,
   };
 
   return { ...base, ...overrides };
 }
 
-type EvalDetail = {
-  source: DataSource;
-  // lcut: number;
-  // receivedAt: number;
-};
-
 type DetailedEvaluation = {
   result: EvaluationResult | null;
-  details: EvalDetail;
+  details: EvaluationDetails;
 };
 
 export default class Evaluator {
   constructor(private _store: SpecStore) {}
 
   evaluateGate(name: string, user: StatsigUserInternal): DetailedEvaluation {
-    const spec = this._store.getSpec('gate', name);
-    return this._getDetailedEvaluation(spec, user);
+    const specAndSourceInfo = this._store.getSpec('gate', name);
+    return this._makeDetailedEvaluation(specAndSourceInfo, user);
   }
 
   evaluateConfig(name: string, user: StatsigUserInternal): DetailedEvaluation {
-    const spec = this._store.getSpec('config', name);
-    return this._getDetailedEvaluation(spec, user);
+    const specAndSourceInfo = this._store.getSpec('config', name);
+    return this._makeDetailedEvaluation(specAndSourceInfo, user);
   }
 
   evaluateLayer(name: string, user: StatsigUserInternal): DetailedEvaluation {
-    const spec = this._store.getSpec('layer', name);
-    return this._getDetailedEvaluation(spec, user);
+    const specAndSourceInfo = this._store.getSpec('layer', name);
+    return this._makeDetailedEvaluation(specAndSourceInfo, user);
   }
 
-  private _getDetailedEvaluation(spec: Spec | null, user: StatsigUserInternal) {
-    if (!spec) {
-      return {
-        result: null,
-        details: {
-          source: this._store.source,
-        },
-      };
+  private _makeDetailedEvaluation(
+    info: SpecAndSourceInfo,
+    user: StatsigUserInternal,
+  ) {
+    return {
+      result: info.spec ? this._evaluateSpec(info.spec, user) : null,
+      details: this._getDetails(info),
+    };
+  }
+
+  private _getDetails(info: SpecAndSourceInfo): EvaluationDetails {
+    const { source, spec, lcut, receivedAt } = info;
+    if (source === 'Uninitialized' || source === 'NoValues') {
+      return { reason: source };
     }
 
+    const subreason = spec == null ? 'Unrecognized' : 'Recognized';
+    const reason = `${source}:${subreason}`;
+
     return {
-      result: this._evaluateSpec(spec, user),
-      details: {
-        source: this._store.source,
-      },
+      reason,
+      lcut,
+      receivedAt,
     };
   }
 
@@ -338,7 +325,7 @@ export default class Evaluator {
       return null;
     }
 
-    const spec = this._store.getSpec('config', configDelegate);
+    const { spec } = this._store.getSpec('config', configDelegate);
     if (!spec) {
       return null;
     }
@@ -360,7 +347,7 @@ export default class Evaluator {
     const exposures: SecondaryExposure[] = [];
     let pass = false;
 
-    const spec = this._store.getSpec('gate', name);
+    const { spec } = this._store.getSpec('gate', name);
     if (spec) {
       const result = this._evaluateSpec(spec, user);
 

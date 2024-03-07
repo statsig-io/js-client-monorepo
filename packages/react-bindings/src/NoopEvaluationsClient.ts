@@ -14,17 +14,19 @@ const noop = (): void => {
   // noop
 };
 
+const NOOP_DETAILS = { reason: 'Error' };
+
 const defaultEvaluation = <T>(type: 'gate' | 'config' | 'layer') => {
   return (...args: unknown[]): T => {
     const name = typeof args[0] === 'string' ? args[0] : (args[1] as string);
 
     switch (type) {
       case 'gate':
-        return makeFeatureGate(name, 'Error') as T;
+        return makeFeatureGate(name, NOOP_DETAILS) as T;
       case 'config':
-        return makeDynamicConfig(name, 'Error') as T;
+        return makeDynamicConfig(name, NOOP_DETAILS) as T;
       case 'layer':
-        return makeLayer(name, 'Error') as T;
+        return makeLayer(name, NOOP_DETAILS) as T;
     }
   };
 };

@@ -37,8 +37,8 @@ function Content({
     >
       <Typography>Compare Prefetching Before Switching</Typography>
       <Typography>partial_gate</Typography>
-      <Typography> - Result: {gate.value ? 'Pass' : 'Fail'}</Typography>
-      <Typography> - Source: {gate.source}</Typography>
+      <Typography>Result: {gate.value ? 'Pass' : 'Fail'}</Typography>
+      <Typography>Reason: {gate.details.reason}</Typography>
 
       <TextField
         variant="filled"

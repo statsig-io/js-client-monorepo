@@ -103,11 +103,11 @@ export default class OnDeviceEvaluationsClient
     options: EvaluationOptions = DEFAULT_EVAL_OPTIONS,
   ): FeatureGate {
     user = normalizeUser(user, this._options.environment);
-    const { details, result } = this._evaluator.evaluateGate(name, user);
+    const { result, details } = this._evaluator.evaluateGate(name, user);
 
     const gate = makeFeatureGate(
       name,
-      details.source,
+      details,
       result?.rule_id,
       result?.bool_value,
     );
@@ -148,40 +148,35 @@ export default class OnDeviceEvaluationsClient
     options: EvaluationOptions = DEFAULT_EVAL_OPTIONS,
   ): Layer {
     user = normalizeUser(user, this._options.environment);
-    const { details, result } = this._evaluator.evaluateLayer(name, user);
+    const { result, details } = this._evaluator.evaluateLayer(name, user);
 
-    const layer = makeLayer(
-      name,
-      details.source,
-      result?.rule_id,
-      (param: string) => {
-        if (!result) {
-          return null;
-        }
+    const layer = makeLayer(name, details, result?.rule_id, (param: string) => {
+      if (!result) {
+        return null;
+      }
 
-        const {
+      const {
+        rule_id,
+        undelegated_secondary_exposures,
+        secondary_exposures,
+        explicit_parameters,
+        config_delegate,
+      } = result;
+
+      this._enqueueExposure(
+        options,
+        createLayerParameterExposure(user, name, param, {
           rule_id,
+          explicit_parameters: explicit_parameters ?? [],
           undelegated_secondary_exposures,
           secondary_exposures,
-          explicit_parameters,
-          config_delegate,
-        } = result;
+          allocated_experiment_name: config_delegate ?? '',
+          details,
+        }),
+      );
 
-        this._enqueueExposure(
-          options,
-          createLayerParameterExposure(user, name, param, {
-            rule_id,
-            explicit_parameters: explicit_parameters ?? [],
-            undelegated_secondary_exposures,
-            secondary_exposures,
-            allocated_experiment_name: config_delegate ?? '',
-            source: details.source,
-          }),
-        );
-
-        return result?.json_value?.[param] ?? null;
-      },
-    );
+      return result?.json_value?.[param] ?? null;
+    });
 
     this.emit({ event: 'layer_evaluation', layer });
 
@@ -198,10 +193,10 @@ export default class OnDeviceEvaluationsClient
     options: EvaluationOptions,
   ): DynamicConfig {
     user = normalizeUser(user, this._options.environment);
-    const { details, result } = this._evaluator.evaluateConfig(name, user);
+    const { result, details } = this._evaluator.evaluateConfig(name, user);
     const config = makeDynamicConfig(
       name,
-      details.source,
+      details,
       result?.rule_id,
       result?.json_value,
     );
