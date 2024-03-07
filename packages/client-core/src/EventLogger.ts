@@ -40,6 +40,7 @@ export class EventLogger {
 
   private _maxQueueSize: number;
   private _failedLogs: EventQueue;
+  private _hasFiredQuickFlush = false;
 
   constructor(
     private _sdkKey: string,
@@ -76,6 +77,8 @@ export class EventLogger {
       ...{ statsigMetadata: { sdkType, sdkVersion } },
     });
 
+    this._quickFlushIfNeeded();
+
     if (this._queue.length > this._maxQueueSize) {
       this._flushAndForget();
     }
@@ -98,6 +101,18 @@ export class EventLogger {
     }
 
     await this._flush();
+  }
+
+  /**
+   * We 'Quick Flush' following the very first enqueued event
+   */
+  private _quickFlushIfNeeded() {
+    if (this._hasFiredQuickFlush) {
+      return;
+    }
+
+    this._hasFiredQuickFlush = true;
+    setTimeout(() => this._flushAndForget(), 200);
   }
 
   private _shouldLogEvent(event: StatsigEventInternal): boolean {
