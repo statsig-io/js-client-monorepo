@@ -2,7 +2,7 @@
 import { PrecomputedEvaluationsClient } from '@statsig/precomputed-evaluations';
 
 // </snippet>
-import { STATSIG_CLIENT_KEY as YOUR_CLIENT_KEY } from '../Contants';
+import { STATSIG_CLIENT_KEY as YOUR_CLIENT_KEY } from '../../Contants';
 
 // prettier-ignore
 export default async function Sample(): Promise<void> {

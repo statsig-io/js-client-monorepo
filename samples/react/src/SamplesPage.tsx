@@ -1,7 +1,15 @@
 import { ReactNode, useEffect } from 'react';
 
 const SAMPLES = [
-  import('./samples/PrecomputedClientBasic'),
+  // Precomputed Evaluations Client
+  import('./samples/precomputed-client/PrecomputedInitialize'),
+  import('./samples/precomputed-client/PrecomputedClientBasic'),
+  import('./samples/precomputed-client/PrecomputedClientCheckGate'),
+  import('./samples/precomputed-client/PrecomputedClientGetDynamicConfig'),
+  import('./samples/precomputed-client/PrecomputedClientGetLayer'),
+  import('./samples/precomputed-client/PrecomputedClientGetLogEvent'),
+  import('./samples/precomputed-client/PrecomputedClientShutdown'),
+
   import('./samples/OnDeviceClientBasic'),
   import('./samples/BootstrapInit'),
 ];
