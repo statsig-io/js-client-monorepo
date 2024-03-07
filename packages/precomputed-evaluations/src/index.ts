@@ -28,4 +28,9 @@ export type { EvaluationResponse } from './EvaluationData';
 __STATSIG__ = {
   ...(__STATSIG__ ?? {}),
   PrecomputedEvaluationsClient,
+  NetworkEvaluationsDataProvider,
+  LocalStorageCacheEvaluationsDataProvider,
+  BootstrapEvaluationsDataProvider,
+  PrefetchEvaluationDataProvider,
+  DelayedNetworkEvaluationsDataProvider,
 };
