@@ -1,8 +1,8 @@
 {
   "name": "@statsig/precomputed-evaluations",
-  "version": "0.0.1-beta.4",
+  "version": "0.0.1-beta.5",
   "dependencies": {
-    "@statsig/client-core": "0.0.1-beta.4"
+    "@statsig/client-core": "0.0.1-beta.5"
   },
   "jsdelivr": "./build/precomputed-evaluations.min.js",
   "type": "commonjs",
