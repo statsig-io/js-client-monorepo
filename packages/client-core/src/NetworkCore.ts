@@ -13,7 +13,11 @@ type RequestArgs = {
   url: string;
   timeoutMs?: number;
   retries?: number;
-  headers?: Record<string, string>;
+  params?: Record<string, string>;
+  headers?: /* Warn: Using headers leads to preflight requests */ Record<
+    string,
+    string
+  >;
 };
 
 type RequestArgsWithData = RequestArgs & {
@@ -88,9 +92,6 @@ export class NetworkCore {
         method,
         body,
         headers: {
-          // Must set this content type to bypass cors
-          // can override via headers if necessary (recommended for logevent)
-          'Content-Type': 'text/plain',
           ...args.headers,
         },
         signal: controller.signal,
@@ -127,15 +128,22 @@ export class NetworkCore {
   }
 
   private _getPopulatedURL(args: RequestArgs): string {
-    const statsigMetadata = StatsigMetadataProvider.get();
-    const fullUrl = new URL(args.url);
-    fullUrl.searchParams.append('k', args.sdkKey);
-    fullUrl.searchParams.append('st', statsigMetadata.sdkType);
-    fullUrl.searchParams.append('sv', statsigMetadata.sdkVersion);
-    fullUrl.searchParams.append('t', String(Date.now()));
-    fullUrl.searchParams.append('sid', SessionID.get(args.sdkKey));
+    const metadata = StatsigMetadataProvider.get();
+    const url = new URL(args.url);
 
-    return fullUrl.toString();
+    url.searchParams.append('k', args.sdkKey);
+    url.searchParams.append('st', metadata.sdkType);
+    url.searchParams.append('sv', metadata.sdkVersion);
+    url.searchParams.append('t', String(Date.now()));
+    url.searchParams.append('sid', SessionID.get(args.sdkKey));
+
+    if (args.params) {
+      Object.entries(args.params).forEach(([k, v]) => {
+        url.searchParams.append(k, v);
+      });
+    }
+
+    return url.toString();
   }
 }
 

@@ -178,9 +178,9 @@ export class EventLogger {
       },
       url: `${api}/rgstr`,
       retries: 3,
-      headers: {
-        'Content-Type': 'application/json',
-        'STATSIG-EVENT-COUNT': String(events.length),
+      params: {
+        // ec = Event Count
+        ec: String(events.length),
       },
     });
 
