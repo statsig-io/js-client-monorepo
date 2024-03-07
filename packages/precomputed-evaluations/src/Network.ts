@@ -1,4 +1,8 @@
-import { NetworkCore, StatsigUser } from '@statsig/client-core';
+import {
+  NetworkCore,
+  StatsigClientEmitEventFunc,
+  StatsigUser,
+} from '@statsig/client-core';
 
 import { EvaluationResponse } from './EvaluationData';
 import { StatsigOptions } from './StatsigOptions';
@@ -8,8 +12,11 @@ const DEFAULT_API = 'https://api.statsig.com/v1';
 export default class StatsigNetwork extends NetworkCore {
   private _api: string;
 
-  constructor(options: StatsigOptions | null) {
-    super(options);
+  constructor(
+    options: StatsigOptions | null,
+    emitter?: StatsigClientEmitEventFunc,
+  ) {
+    super(options, emitter);
     this._api = options?.api ?? DEFAULT_API;
   }
 

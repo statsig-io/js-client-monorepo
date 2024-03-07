@@ -2,6 +2,7 @@ import { Diagnostics } from './Diagnostics';
 import { Log } from './Log';
 import { SessionID } from './SessionID';
 import { StableID } from './StableID';
+import { StatsigClientEmitEventFunc } from './StatsigClientBase';
 import { StatsigMetadataProvider } from './StatsigMetadata';
 import { StatsigOptionsCommon } from './StatsigOptionsCommon';
 
@@ -36,7 +37,10 @@ class NetworkError extends Error {
 export class NetworkCore {
   private readonly _timeout: number;
 
-  constructor(private _options: StatsigOptionsCommon | null) {
+  constructor(
+    private _options: StatsigOptionsCommon | null,
+    private _emitter?: StatsigClientEmitEventFunc,
+  ) {
     this._timeout = _options?.networkTimeoutMs ?? DEFAULT_TIMEOUT_MS;
   }
 
@@ -113,6 +117,7 @@ export class NetworkCore {
       });
 
       if (!retries || retries <= 0) {
+        this._emitter?.({ event: 'error', error });
         Log.error('A networking error occured.', errorMessage);
         return null;
       }
