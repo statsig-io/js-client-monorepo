@@ -74,7 +74,9 @@
       "$_getDetails": "kt",
       "$_values": "Mt",
       "$_lcut": "Et",
-      "$_receivedAt": "Dt"
+      "$_receivedAt": "Dt",
+      "$_hasFiredQuickFlush": "Pt",
+      "$_quickFlushIfNeeded": "At"
     }
   }
 }
