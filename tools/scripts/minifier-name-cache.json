@@ -76,7 +76,9 @@
       "$_lcut": "Et",
       "$_receivedAt": "Dt",
       "$_hasFiredQuickFlush": "Pt",
-      "$_quickFlushIfNeeded": "At"
+      "$_quickFlushIfNeeded": "At",
+      "$_hasRunQuickFlush": "Gt",
+      "$_creationTime": "Vt"
     }
   }
 }

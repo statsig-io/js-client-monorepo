@@ -7,7 +7,7 @@
     "test": "nx run-many --parallel=4 --target=test",
     "build": "nx run-many --parallel=4 --target=build",
     "format": "nx format:write",
-    "sync-version": "nx sync-version && pnpm run format",
+    "sync-version": "nx sync-version",
     "publish-all": "nx publish-all",
     "prepare": "husky install"
   },

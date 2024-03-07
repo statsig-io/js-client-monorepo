@@ -7,7 +7,7 @@
       "dependsOn": ["sync-version"]
     },
     "sync-version": {
-      "command": "echo 'Version Sync Complete.'",
+      "command": "pnpm format && pnpm install && echo 'Version Sync Complete.'",
       "dependsOn": [
         "sync-version-statsig-metadata",
         "sync-version-package-json",
