@@ -16,7 +16,7 @@ type DetailedEvaluation<T> = {
 
 export default class EvaluationStore {
   private _values: EvaluationStoreValues | null = null;
-  private _source: DataSource = 'Loading';
+  private _source: DataSource = 'Uninitialized';
   private _lcut = 0;
   private _receivedAt = 0;
 

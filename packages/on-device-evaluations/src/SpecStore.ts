@@ -56,7 +56,7 @@ export type SpecAndSourceInfo = {
 
 export default class SpecStore {
   private _values: DownloadConfigSpecsResponse | null = null;
-  private _source: DataSource = 'Loading';
+  private _source: DataSource = 'Uninitialized';
   private _lcut = 0;
   private _receivedAt = 0;
 
