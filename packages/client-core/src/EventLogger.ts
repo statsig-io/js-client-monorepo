@@ -19,6 +19,7 @@ const DEDUPER_WINDOW_DURATION_MS = 60_000;
 const MAX_FAILED_LOGS = 500;
 
 const DEFAULT_API = 'https://api.statsig.com/v1';
+const QUICK_FLUSH_WINDOW_MS = 200;
 
 type SendEventsResponse = {
   success: boolean;
@@ -40,7 +41,8 @@ export class EventLogger {
 
   private _maxQueueSize: number;
   private _failedLogs: EventQueue;
-  private _hasFiredQuickFlush = false;
+  private _hasRunQuickFlush = false;
+  private _creationTime = Date.now();
 
   constructor(
     private _sdkKey: string,
@@ -104,15 +106,20 @@ export class EventLogger {
   }
 
   /**
-   * We 'Quick Flush' following the very first enqueued event
+   * We 'Quick Flush' following the very first event enqueued
+   * within the quick flush window
    */
   private _quickFlushIfNeeded() {
-    if (this._hasFiredQuickFlush) {
+    if (this._hasRunQuickFlush) {
+      return;
+    }
+    this._hasRunQuickFlush = true;
+
+    if (Date.now() - this._creationTime > QUICK_FLUSH_WINDOW_MS) {
       return;
     }
 
-    this._hasFiredQuickFlush = true;
-    setTimeout(() => this._flushAndForget(), 200);
+    setTimeout(() => this._flushAndForget(), QUICK_FLUSH_WINDOW_MS);
   }
 
   private _shouldLogEvent(event: StatsigEventInternal): boolean {
