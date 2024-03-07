@@ -2,9 +2,9 @@
   "name": "@statsig/client-extensions",
   "version": "0.0.1-beta.3",
   "dependencies": {
-    "@statsig/client-core": "*",
-    "@statsig/precomputed-evaluations": "*",
-    "@statsig/on-device-evaluations": "*"
+    "@statsig/client-core": "0.0.1-beta.3",
+    "@statsig/precomputed-evaluations": "0.0.1-beta.3",
+    "@statsig/on-device-evaluations": "0.0.1-beta.3"
   },
   "type": "commonjs",
   "main": "./src/index.js",

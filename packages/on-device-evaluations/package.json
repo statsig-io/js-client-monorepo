@@ -2,8 +2,8 @@
   "name": "@statsig/on-device-evaluations",
   "version": "0.0.1-beta.3",
   "dependencies": {
-    "@statsig/client-core": "*",
-    "@statsig/sha256": "*"
+    "@statsig/client-core": "0.0.1-beta.3",
+    "@statsig/sha256": "0.0.1-beta.3"
   },
   "jsdelivr": "./build/on-device-evaluations.min.js",
   "type": "commonjs",
