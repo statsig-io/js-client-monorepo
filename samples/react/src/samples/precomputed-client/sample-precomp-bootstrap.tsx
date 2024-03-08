@@ -1,35 +1,43 @@
 /* eslint-disable no-console */
-import { DJB2 } from '@statsig/client-core';
 // <snippet>
+import { DJB2 } from '@statsig/client-core';
 import {
   EvaluationsDataAdapter,
   PrecomputedEvaluationsClient,
 } from '@statsig/precomputed-evaluations';
 
 // </snippet>
-import { STATSIG_CLIENT_KEY as YOUR_CLIENT_KEY } from '../Contants';
+import { STATSIG_CLIENT_KEY as YOUR_CLIENT_KEY } from '../../Contants';
 
 // prettier-ignore
 export default async function Sample(): Promise<void> {
 // <snippet>
-const user = { userID: 'a-user' };
-const client = new PrecomputedEvaluationsClient(YOUR_CLIENT_KEY, user);
+const user = { userID: 'a-user' }
 
-// Setup some Bootstrapped values
-const adapter = client.getDataAdapter() as EvaluationsDataAdapter;
-adapter.setDataForUser(user, getStatsigJson());
+const dataAdapter = new EvaluationsDataAdapter();
 
-// Intialize will now use the Boostrapped values
-client.initializeSync();
+const myStatsigClient = new PrecomputedEvaluationsClient(
+  YOUR_CLIENT_KEY, 
+  user,
+  { dataAdapter } // <- Pass the data adapter via StatsigOptions
+);
 
-console.log("Statsig Status: ", client.loadingStatus); // prints: "Statsig Status: Ready"
+// Pass the bootstrap values to the data adapter
+dataAdapter.setDataForUser(user, getStatsigBootstrapJson());
 
-const gate = client.getFeatureGate('a_gate');
+// Then finally call initializeSync
+myStatsigClient.initializeSync();
+
+const gate = myStatsigClient.getFeatureGate('a_gate');
 console.log("a_gate source:", gate.details.reason) // prints: "a_gate source: Bootstrap"
 // </snippet>
 }
 
-function getStatsigJson(): string {
+// <snippet>
+// Returns a JSON string from a local file or Statsig Server SDK.
+function getStatsigBootstrapJson(): string {
+  // </snippet>
+
   const hash = DJB2('a_gate');
 
   return JSON.stringify({
@@ -49,4 +57,6 @@ function getStatsigJson(): string {
     time: 1705543730484,
     hash_used: 'djb2',
   });
+  // <snippet>
 }
+// </snippet>

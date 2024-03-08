@@ -27,7 +27,7 @@ export type StatsigOptionsCommon = {
   logLevel?: LogLevel;
 
   /**
-   * StatsigDataAdapter implementor used to customize the initialization flow.
+   * StatsigDataAdapter implementor used to customize the initialization/update flow.
    * Default: EvaluationsDataAdapter (Precomputed) or SpecsDataAdapter (OnDevice)
    */
   dataAdapter?: StatsigDataAdapter;
