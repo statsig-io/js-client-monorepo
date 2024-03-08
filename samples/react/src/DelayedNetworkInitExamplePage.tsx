@@ -5,16 +5,12 @@ import { LogLevel } from '@statsig/client-core';
 import { PrecomputedEvaluationsClient } from '@statsig/precomputed-evaluations';
 import { StatsigProvider, useGate } from '@statsig/react-bindings';
 
-const DEMO_CLIENT_KEY = 'client-rfLvYGag3eyU0jYW5zcIJTQip7GXxSrhOFN69IGMjvq';
+import { STATSIG_CLIENT_KEY } from './Contants';
 
 const user = { userID: 'a-user' };
 
-const client = new PrecomputedEvaluationsClient(DEMO_CLIENT_KEY, user, {
+const client = new PrecomputedEvaluationsClient(STATSIG_CLIENT_KEY, user, {
   logLevel: LogLevel.Info,
-  // dataProviders: [
-  //   new LocalStorageCacheEvaluationsDataProvider(),
-  //   DelayedNetworkEvaluationsDataProvider.create(),
-  // ],
 });
 
 function Content() {

@@ -5,7 +5,6 @@ import { MockLocalStorage } from './MockLocalStorage';
 import InitializeResponse from './initialize.json';
 
 describe('Cache Eviction', () => {
-  const sdkKey = 'client-key';
   let storageMock: MockLocalStorage;
 
   beforeAll(async () => {
@@ -15,7 +14,8 @@ describe('Cache Eviction', () => {
     fetchMock.enableMocks();
     fetchMock.mockResponse(JSON.stringify(InitializeResponse));
 
-    const adapter = new EvaluationsDataAdapter(sdkKey);
+    const adapter = new EvaluationsDataAdapter();
+    adapter.attach('client-key', null);
 
     for (let i = 0; i < 20; i++) {
       // eslint-disable-next-line no-await-in-loop

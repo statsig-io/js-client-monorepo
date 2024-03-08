@@ -10,7 +10,7 @@ export default async function Sample(): Promise<void> {
 const user = { userID: 'a-user' };
 const client = new PrecomputedEvaluationsClient(YOUR_CLIENT_KEY, user);
 
-await client.initialize();
+client.initialize();
 
 if (client.checkGate('a_gate')) {
   // show new  feature

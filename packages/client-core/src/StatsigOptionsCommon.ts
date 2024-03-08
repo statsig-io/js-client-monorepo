@@ -1,5 +1,5 @@
 import { LogLevel } from './Log';
-import { StatsigDataAdapter } from './StatsigDataProvider';
+import { StatsigDataAdapter } from './StatsigDataAdapter';
 
 /** Common options for configuring the Statsig SDK. */
 export type StatsigOptionsCommon = {
@@ -27,8 +27,8 @@ export type StatsigOptionsCommon = {
   logLevel?: LogLevel;
 
   /**
-   * StatsigDataProvider implementor used to customize the initialization flow.
-   * Default: LocalStorageCache then Network
+   * StatsigDataAdapter implementor used to customize the initialization flow.
+   * Default: EvaluationsDataAdapter (Precomputed) or SpecsDataAdapter (OnDevice)
    */
   dataAdapter?: StatsigDataAdapter;
 

@@ -2,6 +2,7 @@ import {
   Log,
   StatsigDataAdapter,
   StatsigDataAdapterResult,
+  StatsigOptionsCommon,
   StatsigUser,
   Storage,
   getObjectFromStorage,
@@ -11,26 +12,21 @@ import {
 
 import { EvaluationResponse } from './EvaluationData';
 import Network from './Network';
-import { StatsigOptions } from './StatsigOptions';
 
 const LAST_MODIFIED_STORAGE_KEY = 'statsig.last_modified_time.precomputed_eval';
 const CACHE_LIMIT = 10;
 
 export class EvaluationsDataAdapter implements StatsigDataAdapter {
-  private _network: Network;
+  private _sdkKey: string | null = null;
+  private _network: Network | null = null;
   private _inMemoryCache: Record<string, StatsigDataAdapterResult> = {};
 
-  constructor(
-    private _sdkKey: string,
-    private _options?: StatsigOptions | null,
-  ) {
-    this._network = new Network(_options ?? {});
+  attach(sdkKey: string, options: StatsigOptionsCommon | null): void {
+    this._sdkKey = sdkKey;
+    this._network = new Network(options ?? {});
   }
 
-  getData(
-    _sdkKey: string,
-    user?: StatsigUser | undefined,
-  ): StatsigDataAdapterResult | null {
+  getData(user?: StatsigUser | undefined): StatsigDataAdapterResult | null {
     const cacheKey = this._getCacheKey(user);
     const result = this._inMemoryCache[cacheKey];
     if (result) {
@@ -47,7 +43,6 @@ export class EvaluationsDataAdapter implements StatsigDataAdapter {
   }
 
   async handlePostUpdate(
-    sdkKey: string,
     result: StatsigDataAdapterResult | null,
     user?: StatsigUser,
   ): Promise<void> {
@@ -55,12 +50,12 @@ export class EvaluationsDataAdapter implements StatsigDataAdapter {
       return;
     }
 
-    return this._sync(sdkKey, result?.data ?? null, user);
+    return this._sync(result?.data ?? null, user);
   }
 
   async fetchLatestDataForUser(user: StatsigUser): Promise<void> {
-    const result = this.getData(this._sdkKey, user);
-    return this._sync(this._sdkKey, result?.data ?? null, user);
+    const result = this.getData(user);
+    return this._sync(result?.data ?? null, user);
   }
 
   setDataForUser(user: StatsigUser, data: string): void {
@@ -68,17 +63,26 @@ export class EvaluationsDataAdapter implements StatsigDataAdapter {
     this._inMemoryCache[cacheKey] = { source: 'Bootstrap', data };
   }
 
+  private _getSdkKey(): string {
+    if (this._sdkKey) {
+      return this._sdkKey;
+    }
+
+    Log.error('EvaluationsDataAdapter is not attached to a Client');
+    return '';
+  }
+
   private _getCacheKey(user: StatsigUser | undefined): string {
-    const key = getUserStorageKey(this._sdkKey, user);
+    const key = getUserStorageKey(this._getSdkKey(), user);
     return `statsig.user_cache.precomputed_eval.${key}`;
   }
 
-  private async _sync(
-    sdkKey: string,
-    current: string | null,
-    user?: StatsigUser,
-  ) {
-    const latest = await this._network.fetchEvaluations(sdkKey, current, user);
+  private async _sync(current: string | null, user?: StatsigUser) {
+    const latest = await this._network?.fetchEvaluations(
+      this._getSdkKey(),
+      current,
+      user,
+    );
     if (!latest) {
       return;
     }

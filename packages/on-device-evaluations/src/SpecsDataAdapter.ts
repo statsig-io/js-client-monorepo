@@ -1,9 +1,7 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import {
   Log,
   StatsigDataAdapter,
   StatsigDataAdapterResult,
-  StatsigUser,
   Storage,
   getObjectFromStorage,
   getUserStorageKey,
@@ -18,20 +16,16 @@ const LAST_MODIFIED_STORAGE_KEY = 'statsig.last_modified_time.on_device_eval';
 const CACHE_LIMIT = 10;
 
 export class SpecsDataAdapter implements StatsigDataAdapter {
-  private _network: Network;
+  private _sdkKey: string | null = null;
+  private _network: Network | null = null;
   private _inMemoryCache: Record<string, StatsigDataAdapterResult> = {};
 
-  constructor(
-    private _sdkKey: string,
-    private _options?: StatsigOptions,
-  ) {
-    this._network = new Network(_options ?? {});
+  attach(sdkKey: string, options: StatsigOptions | null): void {
+    this._sdkKey = sdkKey;
+    this._network = new Network(options ?? {});
   }
 
-  getData(
-    sdkKey: string,
-    user?: StatsigUser | undefined,
-  ): StatsigDataAdapterResult | null {
+  getData(): StatsigDataAdapterResult | null {
     const cacheKey = this._getCacheKey();
     const result = this._inMemoryCache[cacheKey];
     if (result) {
@@ -48,19 +42,17 @@ export class SpecsDataAdapter implements StatsigDataAdapter {
   }
 
   async handlePostUpdate(
-    sdkKey: string,
     result: StatsigDataAdapterResult | null,
-    user?: StatsigUser | undefined,
   ): Promise<void> {
     if (result?.source === 'Network') {
       return;
     }
 
-    return this._sync(this._sdkKey);
+    return this._sync();
   }
 
   async fetchLatestData(): Promise<void> {
-    return this._sync(this._sdkKey);
+    return this._sync();
   }
 
   setData(data: string): void {
@@ -68,13 +60,22 @@ export class SpecsDataAdapter implements StatsigDataAdapter {
     this._inMemoryCache[cacheKey] = { source: 'Bootstrap', data };
   }
 
+  private _getSdkKey(): string {
+    if (this._sdkKey) {
+      return this._sdkKey;
+    }
+
+    Log.error('SpecsDataAdapter is not attached to a Client');
+    return '';
+  }
+
   private _getCacheKey(): string {
-    const key = getUserStorageKey(this._sdkKey);
+    const key = getUserStorageKey(this._getSdkKey());
     return `statsig.user_cache.on_device_eval.${key}`;
   }
 
-  private async _sync(sdkKey: string) {
-    const latest = await this._network.fetchConfigSpecs(sdkKey);
+  private async _sync() {
+    const latest = await this._network?.fetchConfigSpecs(this._getSdkKey());
     if (!latest) {
       return;
     }

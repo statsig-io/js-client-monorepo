@@ -48,7 +48,7 @@ export default class PrecomputedEvaluationsClient
 
     super(
       sdkKey,
-      options?.dataAdapter ?? new EvaluationsDataAdapter(sdkKey, options),
+      options?.dataAdapter ?? new EvaluationsDataAdapter(),
       network,
       options,
     );
@@ -76,7 +76,7 @@ export default class PrecomputedEvaluationsClient
 
     this._user = normalizeUser(user, this._options.environment);
 
-    const result = this._adapter.getData?.(this._sdkKey, this._user);
+    const result = this._adapter.getData?.(this._user);
     if (result) {
       this._store.setValuesFromData(result.data, result.source);
     }

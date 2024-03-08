@@ -11,10 +11,12 @@ import { STATSIG_CLIENT_KEY } from './Contants';
 const user = {
   userID: 'a-user',
 };
-const client = new PrecomputedEvaluationsClient(STATSIG_CLIENT_KEY, user);
+const adapter = new EvaluationsDataAdapter();
+const client = new PrecomputedEvaluationsClient(STATSIG_CLIENT_KEY, user, {
+  dataAdapter: adapter,
+});
 
-const adapter = client.getDataAdapter() as EvaluationsDataAdapter;
-const fetchLatest = adapter.getData(STATSIG_CLIENT_KEY, user)
+const fetchLatest = adapter.getData(user)
   ? null
   : adapter.fetchLatestDataForUser(user);
 

@@ -10,7 +10,7 @@ describe('PrecomputedEvaluationsClient', () => {
     fetchMock.mockResponse('{}');
 
     client = new PrecomputedEvaluationsClient('client-key', { userID: '' });
-    await client.initialize();
+    client.initialize();
 
     client.getExperiment('');
   });

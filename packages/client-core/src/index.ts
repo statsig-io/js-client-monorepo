@@ -13,7 +13,7 @@ export * from './NetworkCore';
 export * from './StableID';
 export * from './StatsigClientBase';
 export * from './StatsigClientEventEmitter';
-export * from './StatsigDataProvider';
+export * from './StatsigDataAdapter';
 export * from './StatsigEvent';
 export * from './StatsigMetadata';
 export * from './StatsigOptionsCommon';

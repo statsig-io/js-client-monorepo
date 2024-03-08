@@ -45,7 +45,7 @@ export default class OnDeviceEvaluationsClient
     const network = new Network(options);
     super(
       sdkKey,
-      options?.dataAdapter ?? new SpecsDataAdapter(sdkKey),
+      options?.dataAdapter ?? new SpecsDataAdapter(),
       network,
       options,
     );
@@ -65,7 +65,7 @@ export default class OnDeviceEvaluationsClient
 
     this._setStatus('Loading');
 
-    const result = this._adapter.getData?.(this._sdkKey);
+    const result = this._adapter.getData?.();
     if (result) {
       this._store.setValuesFromData(result.data, result.source);
     }

@@ -12,7 +12,7 @@ const DEMO_CLIENT_KEY = 'client-rfLvYGag3eyU0jYW5zcIJTQip7GXxSrhOFN69IGMjvq';
 
 const user = { userID: 'a-user' };
 
-const adapter = new EvaluationsDataAdapter(DEMO_CLIENT_KEY);
+const adapter = new EvaluationsDataAdapter();
 const client = new PrecomputedEvaluationsClient(DEMO_CLIENT_KEY, user, {
   dataAdapter: adapter,
 });

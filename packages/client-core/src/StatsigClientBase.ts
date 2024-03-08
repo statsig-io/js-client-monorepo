@@ -14,7 +14,7 @@ import {
 import {
   StatsigDataAdapter,
   StatsigDataAdapterResult,
-} from './StatsigDataProvider';
+} from './StatsigDataAdapter';
 import { StatsigEventInternal } from './StatsigEvent';
 import { StatsigOptionsCommon } from './StatsigOptionsCommon';
 import { StatsigUser } from './StatsigUser';
@@ -46,6 +46,8 @@ export abstract class StatsigClientBase
     network: NetworkCore,
     options: StatsigOptionsCommon | null,
   ) {
+    Log.level = options?.logLevel ?? LogLevel.Warn;
+
     this._logger = new EventLogger(
       _sdkKey,
       this.emit.bind(this),
@@ -63,7 +65,7 @@ export abstract class StatsigClientBase
     instances.add(this);
     __STATSIG__.instances = instances;
 
-    Log.level = options?.logLevel ?? LogLevel.Warn;
+    this._adapter.attach(_sdkKey, options);
   }
 
   on(
@@ -120,10 +122,8 @@ export abstract class StatsigClientBase
     current: StatsigDataAdapterResult | null,
     user?: StatsigUser,
   ): void {
-    this._adapter
-      .handlePostUpdate?.(this._sdkKey, current, user)
-      .catch((err) => {
-        Log.error('An error occurred after update.', err);
-      });
+    this._adapter.handlePostUpdate?.(current, user).catch((err) => {
+      Log.error('An error occurred after update.', err);
+    });
   }
 }
