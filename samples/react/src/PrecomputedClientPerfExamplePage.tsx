@@ -17,7 +17,7 @@ export default function PrecomputedClientPerfExamplePage(): ReactNode {
 
   useEffect(() => {
     performance.mark('precomputed-initialize-start');
-    client.initialize();
+    client.initializeSync();
 
     performance.mark('precomputed-initialize-end');
     setInitMeasurement(

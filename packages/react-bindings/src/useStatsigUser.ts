@@ -4,7 +4,10 @@ import useStatsigPrecomputedEvaluationsClient from './useStatsigPrecomputedEvalu
 
 export type UseStatsigUserResult = {
   user: StatsigUser;
-  updateUser: (fn: (prevState: StatsigUser) => StatsigUser) => void;
+  updateUserSync: (fn: (prevState: StatsigUser) => StatsigUser) => void;
+  updateUserAsync: (
+    fn: (prevState: StatsigUser) => StatsigUser,
+  ) => Promise<void>;
 };
 
 export default function (): UseStatsigUserResult {
@@ -12,9 +15,13 @@ export default function (): UseStatsigUserResult {
 
   return {
     user: client.getCurrentUser(),
-    updateUser: (fn: (prevState: StatsigUser) => StatsigUser) => {
+    updateUserSync: (fn: (prevState: StatsigUser) => StatsigUser) => {
       const user = fn(client.getCurrentUser());
-      client.updateUser(user);
+      client.updateUserSync(user);
+    },
+    updateUserAsync: (fn: (prevState: StatsigUser) => StatsigUser) => {
+      const user = fn(client.getCurrentUser());
+      return client.updateUserAsync(user);
     },
   };
 }

@@ -25,7 +25,7 @@ export default function StatsigProvider(props: Props): JSX.Element {
     };
 
     client.on('status_change', onStatusChange);
-    client.initialize();
+    client.initializeSync();
 
     return () => {
       client.shutdown().catch((error) => {

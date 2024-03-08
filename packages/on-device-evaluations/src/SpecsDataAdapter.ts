@@ -25,7 +25,7 @@ export class SpecsDataAdapter implements StatsigDataAdapter {
     this._network = new Network(options ?? {});
   }
 
-  getData(): StatsigDataAdapterResult | null {
+  getDataSync(): StatsigDataAdapterResult | null {
     const cacheKey = this._getCacheKey();
     const result = this._inMemoryCache[cacheKey];
     if (result) {
@@ -41,18 +41,24 @@ export class SpecsDataAdapter implements StatsigDataAdapter {
     return null;
   }
 
-  async handlePostUpdate(
-    result: StatsigDataAdapterResult | null,
-  ): Promise<void> {
-    if (result?.source === 'Network') {
-      return;
+  async getDataAsync(
+    current: StatsigDataAdapterResult | null,
+  ): Promise<StatsigDataAdapterResult | null> {
+    const cache = current ?? this.getDataSync();
+    const latest = await this._fetchLatest(cache?.data ?? null);
+
+    const cacheKey = this._getCacheKey();
+    if (latest) {
+      this._inMemoryCache[cacheKey] = latest;
     }
 
-    return this._sync();
-  }
+    if (!latest || latest?.source !== 'Network') {
+      return latest;
+    }
 
-  async fetchLatestData(): Promise<void> {
-    return this._sync();
+    await this._writeToCache(cacheKey, latest.data);
+
+    return latest;
   }
 
   setData(data: string): void {
@@ -74,29 +80,33 @@ export class SpecsDataAdapter implements StatsigDataAdapter {
     return `statsig.user_cache.on_device_eval.${key}`;
   }
 
-  private async _sync() {
+  private async _fetchLatest(
+    current: string | null,
+  ): Promise<StatsigDataAdapterResult | null> {
     const latest = await this._network?.fetchConfigSpecs(this._getSdkKey());
+
     if (!latest) {
-      return;
+      Log.debug('No response returned for latest value');
+      return null;
     }
 
     try {
-      const cacheKey = this._getCacheKey();
       const response = JSON.parse(latest) as DownloadConfigSpecsResponse;
 
-      if (response.has_updates === false) {
-        this._setNetworkNotModified(cacheKey);
+      if (current && response.has_updates === false) {
+        return { source: 'NetworkNotModified', data: current };
       }
 
       if (response.has_updates !== true) {
-        return;
+        return null;
       }
 
-      this._inMemoryCache[cacheKey] = { source: 'Network', data: latest };
-      await this._writeToCache(cacheKey, latest);
+      return { source: 'Network', data: latest };
     } catch {
       Log.debug('Failure while attempting to persist latest value');
     }
+
+    return null;
   }
 
   private _loadFromCache(cacheKey: string): string | null {
@@ -132,17 +142,5 @@ export class SpecsDataAdapter implements StatsigDataAdapter {
     await Storage.removeItem(oldest[0]);
     delete lastModifiedTimeMap[oldest[0]];
     await setObjectInStorage(LAST_MODIFIED_STORAGE_KEY, lastModifiedTimeMap);
-  }
-
-  private _setNetworkNotModified(key: string) {
-    const current = this._inMemoryCache[key];
-    if (!current) {
-      return;
-    }
-
-    this._inMemoryCache[key] = {
-      ...current,
-      source: 'NetworkNotModified',
-    };
   }
 }

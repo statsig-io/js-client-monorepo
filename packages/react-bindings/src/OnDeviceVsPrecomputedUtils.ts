@@ -14,7 +14,7 @@ export function isPrecomputedEvaluationsClient(
     return false;
   }
 
-  return 'updateUser' in client;
+  return 'updateUserSync' in client;
 }
 
 export function logMissingStatsigUserWarning(): void {

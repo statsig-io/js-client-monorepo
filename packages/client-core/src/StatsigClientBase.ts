@@ -122,7 +122,7 @@ export abstract class StatsigClientBase
     current: StatsigDataAdapterResult | null,
     user?: StatsigUser,
   ): void {
-    this._adapter.handlePostUpdate?.(current, user).catch((err) => {
+    this._adapter.getDataAsync(current, user).catch((err) => {
       Log.error('An error occurred after update.', err);
     });
   }

@@ -67,7 +67,8 @@
       "$_setNetworkNotModified": "St",
       "$_writeToCache": "Ot",
       "$_runCacheEviction": "jt",
-      "$_getOutputs": "xt"
+      "$_getOutputs": "xt",
+      "$_fetchLatest": "Tt"
     }
   }
 }

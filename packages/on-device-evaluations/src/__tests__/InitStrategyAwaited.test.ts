@@ -1,7 +1,6 @@
 import fetchMock from 'jest-fetch-mock';
 
 import OnDeviceEvaluationsClient from '../OnDeviceEvaluationsClient';
-import { SpecsDataAdapter } from '../SpecsDataAdapter';
 import { MockLocalStorage } from './MockLocalStorage';
 import DcsResponse from './dcs_response.json';
 
@@ -20,10 +19,8 @@ describe('Init Strategy - Awaited', () => {
     fetchMock.mockResponse(JSON.stringify(DcsResponse));
 
     client = new OnDeviceEvaluationsClient(sdkKey);
-    const adapter = client.getDataAdapter() as SpecsDataAdapter;
-    await adapter.fetchLatestData();
 
-    client.initialize();
+    await client.initializeAsync();
   });
 
   afterAll(() => {

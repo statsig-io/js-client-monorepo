@@ -22,7 +22,7 @@ describe('Init Strategy - Delayed', () => {
     fetchMock.mockResponse(JSON.stringify(InitializeResponse));
 
     client = new PrecomputedEvaluationsClient(sdkKey, user);
-    client.initialize();
+    client.initializeSync();
   });
 
   afterAll(() => {
@@ -47,7 +47,7 @@ describe('Init Strategy - Delayed', () => {
       fetchMock.mockClear();
 
       client = new PrecomputedEvaluationsClient(sdkKey, user);
-      client.initialize();
+      client.initializeSync();
     });
 
     it('is ready after initialize', () => {

@@ -26,7 +26,7 @@ export class EvaluationsDataAdapter implements StatsigDataAdapter {
     this._network = new Network(options ?? {});
   }
 
-  getData(user?: StatsigUser | undefined): StatsigDataAdapterResult | null {
+  getDataSync(user?: StatsigUser | undefined): StatsigDataAdapterResult | null {
     const cacheKey = this._getCacheKey(user);
     const result = this._inMemoryCache[cacheKey];
     if (result) {
@@ -42,20 +42,25 @@ export class EvaluationsDataAdapter implements StatsigDataAdapter {
     return null;
   }
 
-  async handlePostUpdate(
-    result: StatsigDataAdapterResult | null,
+  async getDataAsync(
+    current: StatsigDataAdapterResult | null,
     user?: StatsigUser,
-  ): Promise<void> {
-    if (result?.source === 'Network') {
-      return;
+  ): Promise<StatsigDataAdapterResult | null> {
+    const cache = current ?? this.getDataSync(user);
+    const latest = await this._fetchLatest(cache?.data ?? null, user);
+
+    const cacheKey = this._getCacheKey(user);
+    if (latest) {
+      this._inMemoryCache[cacheKey] = latest;
     }
 
-    return this._sync(result?.data ?? null, user);
-  }
+    if (!latest || latest?.source !== 'Network') {
+      return latest;
+    }
 
-  async fetchLatestDataForUser(user: StatsigUser): Promise<void> {
-    const result = this.getData(user);
-    return this._sync(result?.data ?? null, user);
+    await this._writeToCache(cacheKey, latest.data);
+
+    return latest;
   }
 
   setDataForUser(user: StatsigUser, data: string): void {
@@ -77,33 +82,38 @@ export class EvaluationsDataAdapter implements StatsigDataAdapter {
     return `statsig.user_cache.precomputed_eval.${key}`;
   }
 
-  private async _sync(current: string | null, user?: StatsigUser) {
+  private async _fetchLatest(
+    current: string | null,
+    user?: StatsigUser,
+  ): Promise<StatsigDataAdapterResult | null> {
     const latest = await this._network?.fetchEvaluations(
       this._getSdkKey(),
       current,
       user,
     );
+
     if (!latest) {
-      return;
+      Log.debug('No response returned for latest value');
+      return null;
     }
 
     try {
-      const cacheKey = this._getCacheKey(user);
       const response = JSON.parse(latest) as EvaluationResponse;
 
-      if (response.has_updates === false) {
-        this._setNetworkNotModified(cacheKey);
+      if (current && response.has_updates === false) {
+        return { source: 'NetworkNotModified', data: current };
       }
 
       if (response.has_updates !== true) {
-        return;
+        return null;
       }
 
-      this._inMemoryCache[cacheKey] = { source: 'Network', data: latest };
-      await this._writeToCache(cacheKey, latest);
+      return { source: 'Network', data: latest };
     } catch {
       Log.debug('Failure while attempting to persist latest value');
     }
+
+    return null;
   }
 
   private _loadFromCache(cacheKey: string): string | null {
@@ -139,17 +149,5 @@ export class EvaluationsDataAdapter implements StatsigDataAdapter {
     await Storage.removeItem(oldest[0]);
     delete lastModifiedTimeMap[oldest[0]];
     await setObjectInStorage(LAST_MODIFIED_STORAGE_KEY, lastModifiedTimeMap);
-  }
-
-  private _setNetworkNotModified(key: string) {
-    const current = this._inMemoryCache[key];
-    if (!current) {
-      return;
-    }
-
-    this._inMemoryCache[key] = {
-      ...current,
-      source: 'NetworkNotModified',
-    };
   }
 }

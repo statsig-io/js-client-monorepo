@@ -19,8 +19,7 @@ describe('Client Error Boundary', () => {
 
     fetchMock.enableMocks();
     fetchMock.mockResponse(JSON.stringify(InitializeResponse));
-
-    client.initialize();
+    client.initializeSync();
   });
 
   it('catches errors', () => {

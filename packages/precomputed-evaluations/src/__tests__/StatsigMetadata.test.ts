@@ -1,7 +1,6 @@
 import fetchMock from 'jest-fetch-mock';
 
 import { version } from '../../package.json';
-import { EvaluationsDataAdapter } from '../EvaluationsDataAdapter';
 import PrecomputedEvaluationsClient from '../PrecomputedEvaluationsClient';
 
 describe('StatsigMetadata', () => {
@@ -11,8 +10,7 @@ describe('StatsigMetadata', () => {
     fetchMock.mockResponse('{}');
 
     const client = new PrecomputedEvaluationsClient('', { userID: '' });
-    const adapter = client.getDataAdapter() as EvaluationsDataAdapter;
-    await adapter.fetchLatestDataForUser({ userID: '' });
+    await client.initializeAsync();
 
     const data = fetchMock.mock.calls?.[0]?.[1]?.body?.toString() ?? '{}';
     body = JSON.parse(data) as Record<string, unknown>;

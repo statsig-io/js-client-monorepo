@@ -60,12 +60,10 @@ export default class OnDeviceEvaluationsClient
     this._source = 'NoValues';
   }
 
-  initialize(): void {
+  initializeSync(): void {
     this._store.reset();
 
-    this._setStatus('Loading');
-
-    const result = this._adapter.getData?.();
+    const result = this._adapter.getDataSync();
     if (result) {
       this._store.setValuesFromData(result.data, result.source);
     }
@@ -75,6 +73,25 @@ export default class OnDeviceEvaluationsClient
     this._setStatus('Ready');
 
     this._runPostUpdate(result);
+  }
+
+  async initializeAsync(): Promise<void> {
+    this._store.reset();
+
+    this._setStatus('Loading');
+
+    let result = this._adapter.getDataSync();
+    if (result) {
+      this._store.setValuesFromData(result.data, result.source);
+    }
+
+    result = await this._adapter.getDataAsync(result);
+    if (result) {
+      this._store.setValuesFromData(result.data, result.source);
+    }
+
+    this._store.finalize();
+    this._setStatus('Ready');
   }
 
   async shutdown(): Promise<void> {

@@ -1,9 +1,6 @@
 import { ReactNode, useEffect, useState } from 'react';
 
-import {
-  EvaluationsDataAdapter,
-  PrecomputedEvaluationsClient,
-} from '@statsig/precomputed-evaluations';
+import { PrecomputedEvaluationsClient } from '@statsig/precomputed-evaluations';
 import { StatsigProvider, useGate } from '@statsig/react-bindings';
 
 import { STATSIG_CLIENT_KEY } from './Contants';
@@ -11,14 +8,7 @@ import { STATSIG_CLIENT_KEY } from './Contants';
 const user = {
   userID: 'a-user',
 };
-const adapter = new EvaluationsDataAdapter();
-const client = new PrecomputedEvaluationsClient(STATSIG_CLIENT_KEY, user, {
-  dataAdapter: adapter,
-});
-
-const fetchLatest = adapter.getData(user)
-  ? null
-  : adapter.fetchLatestDataForUser(user);
+const client = new PrecomputedEvaluationsClient(STATSIG_CLIENT_KEY, user);
 
 function Content() {
   const { value } = useGate('a_gate');
@@ -36,16 +26,17 @@ function Content() {
 }
 
 export default function HomePage(): ReactNode {
-  const [isLoading, setIsLoading] = useState(fetchLatest != null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    fetchLatest
-      ?.then(() => {
-        client.updateUser(user);
-        setIsLoading(false);
-      })
+    // Todo: add ability to block render via StatsigProvider
+    client
+      .updateUserAsync(user)
       .catch((e) => {
         throw e;
+      })
+      .finally(() => {
+        setIsLoading(false);
       });
   }, []);
 

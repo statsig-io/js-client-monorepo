@@ -1,6 +1,5 @@
 import fetchMock from 'jest-fetch-mock';
 
-import { EvaluationsDataAdapter } from '../EvaluationsDataAdapter';
 import PrecomputedEvaluationsClient from '../PrecomputedEvaluationsClient';
 import { MockLocalStorage } from './MockLocalStorage';
 import InitializeResponse from './initialize.json';
@@ -20,10 +19,7 @@ describe('Init Strategy - Awaited', () => {
     fetchMock.mockResponse(JSON.stringify(InitializeResponse));
 
     client = new PrecomputedEvaluationsClient(sdkKey, user);
-    const adapter = client.getDataAdapter() as EvaluationsDataAdapter;
-    await adapter.fetchLatestDataForUser(user);
-
-    client.initialize();
+    await client.initializeAsync();
   });
 
   afterAll(() => {

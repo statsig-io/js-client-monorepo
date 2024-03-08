@@ -17,7 +17,7 @@ export default function OnDeviceClientPerfExamplePage(): ReactNode {
 
   useEffect(() => {
     performance.mark('on-device-initialize-start');
-    client.initialize();
+    client.initializeSync();
     performance.mark('on-device-initialize-end');
     setInitMeasurement(
       performance.measure(

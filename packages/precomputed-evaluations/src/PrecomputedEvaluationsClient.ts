@@ -62,30 +62,50 @@ export default class PrecomputedEvaluationsClient
     this._user = user;
   }
 
-  initialize(): void {
-    this.updateUser(this._user);
+  initializeSync(): void {
+    this.updateUserSync(this._user);
+  }
+
+  initializeAsync(): Promise<void> {
+    return this.updateUserAsync(this._user);
   }
 
   getCurrentUser(): StatsigUser {
     return JSON.parse(JSON.stringify(this._user)) as StatsigUser;
   }
 
-  updateUser(user: StatsigUser): void {
-    this._logger.reset();
-    this._store.reset();
+  updateUserSync(user: StatsigUser): void {
+    this._resetForUser(user);
 
-    this._user = normalizeUser(user, this._options.environment);
-
-    const result = this._adapter.getData?.(this._user);
+    const result = this._adapter.getDataSync(this._user);
     if (result) {
       this._store.setValuesFromData(result.data, result.source);
     }
 
     this._store.finalize();
-
     this._setStatus('Ready');
 
     this._runPostUpdate(result ?? null, this._user);
+  }
+
+  async updateUserAsync(user: StatsigUser): Promise<void> {
+    this._resetForUser(user);
+
+    this._setStatus('Loading');
+
+    let result = this._adapter.getDataSync(this._user);
+    if (result) {
+      this._store.setValuesFromData(result.data, result.source);
+    }
+
+    result = await this._adapter.getDataAsync(result, this._user);
+
+    if (result) {
+      this._store.setValuesFromData(result.data, result.source);
+    }
+
+    this._store.finalize();
+    this._setStatus('Ready');
   }
 
   async shutdown(): Promise<void> {
@@ -178,6 +198,13 @@ export default class PrecomputedEvaluationsClient
 
   logEvent(event: StatsigEvent): void {
     this._logger.enqueue({ ...event, user: this._user, time: Date.now() });
+  }
+
+  private _resetForUser(user: StatsigUser) {
+    this._logger.reset();
+    this._store.reset();
+
+    this._user = normalizeUser(user, this._options.environment);
   }
 
   private _getConfigImpl(

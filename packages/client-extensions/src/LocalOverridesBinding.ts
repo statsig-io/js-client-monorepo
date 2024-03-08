@@ -54,7 +54,7 @@ export function bind(
     };
   };
 
-  if ('updateUser' in client) {
+  if ('updateUserSync' in client) {
     client.getFeatureGate = wrap(client.getFeatureGate, 'gates');
     client.getDynamicConfig = wrap(client.getDynamicConfig, 'configs');
     client.getExperiment = wrap(client.getExperiment, 'configs');

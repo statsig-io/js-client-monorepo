@@ -8,7 +8,8 @@ import {
 function getBaseMock<T>(): T {
   return {
     loadingStatus: 'Uninitialized',
-    initialize: jest.fn(),
+    initializeSync: jest.fn(),
+    initializeAsync: jest.fn(),
     shutdown: jest.fn(),
     checkGate: jest.fn(),
     getFeatureGate: jest.fn(),
@@ -25,7 +26,8 @@ export abstract class MockRemoteServerEvalClient {
   static create(): jest.Mocked<PrecomputedEvaluationsInterface> {
     return {
       ...getBaseMock(),
-      updateUser: jest.fn(),
+      updateUserSync: jest.fn(),
+      updateUserAsync: jest.fn(),
     };
   }
 }

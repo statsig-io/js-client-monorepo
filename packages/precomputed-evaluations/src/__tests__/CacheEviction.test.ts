@@ -19,7 +19,7 @@ describe('Cache Eviction', () => {
 
     for (let i = 0; i < 20; i++) {
       // eslint-disable-next-line no-await-in-loop
-      await adapter.fetchLatestDataForUser({ userID: `user-${i}` });
+      await adapter.getDataAsync(null, { userID: `user-${i}` });
     }
   });
 

@@ -22,8 +22,7 @@ describe('Init Strategy - Delayed', () => {
     fetchMock.mockResponse(JSON.stringify(DcsResponse));
 
     client = new OnDeviceEvaluationsClient(sdkKey);
-
-    client.initialize();
+    client.initializeSync();
   });
 
   afterAll(() => {
@@ -48,8 +47,7 @@ describe('Init Strategy - Delayed', () => {
       fetchMock.mockClear();
 
       client = new OnDeviceEvaluationsClient(sdkKey);
-
-      client.initialize();
+      client.initializeSync();
     });
 
     it('is ready after initialize', () => {

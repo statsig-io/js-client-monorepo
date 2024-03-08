@@ -11,7 +11,6 @@ describe('StatsigProvider', () => {
 
   it('renders children', async () => {
     const client = MockRemoteServerEvalClient.create();
-    client.initialize.mockReturnValue(Promise.resolve());
     client.shutdown.mockReturnValue(Promise.resolve());
 
     client.on.mockImplementation((event, callback) => {

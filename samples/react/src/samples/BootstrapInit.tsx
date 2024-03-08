@@ -20,7 +20,7 @@ const adapter = client.getDataAdapter() as EvaluationsDataAdapter;
 adapter.setDataForUser(user, getStatsigJson());
 
 // Intialize will now use the Boostrapped values
-client.initialize();
+client.initializeSync();
 
 console.log("Statsig Status: ", client.loadingStatus); // prints: "Statsig Status: Ready"
 

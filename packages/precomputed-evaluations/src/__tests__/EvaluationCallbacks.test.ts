@@ -3,7 +3,6 @@ import { anyFunction, anyNumber } from 'statsig-test-helpers';
 
 import { StatsigClientEventData } from '@statsig/client-core';
 
-import { EvaluationsDataAdapter } from '../EvaluationsDataAdapter';
 import PrecomputedEvaluationsClient from '../PrecomputedEvaluationsClient';
 import InitializeResponse from './initialize.json';
 
@@ -21,10 +20,7 @@ describe('Client Evaluations Callback', () => {
     fetchMock.enableMocks();
     fetchMock.mockResponse(JSON.stringify(InitializeResponse));
 
-    const adapter = client.getDataAdapter() as EvaluationsDataAdapter;
-    await adapter.fetchLatestDataForUser(user);
-
-    client.initialize();
+    await client.initializeAsync();
 
     client.on('*', (data) => {
       if (data.event.endsWith('_evaluation')) {

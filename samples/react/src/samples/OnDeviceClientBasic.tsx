@@ -10,7 +10,7 @@ export default async function Sample(): Promise<void> {
 const user = { userID: 'a-user' };
 const client = new OnDeviceEvaluationsClient(YOUR_CLIENT_KEY);
 
-client.initialize();
+client.initializeSync();
 
 if (client.checkGate('a_gate', user)) {
   // show new  feature

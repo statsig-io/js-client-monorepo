@@ -26,7 +26,7 @@ describe('Init Strategy - Bootstrap', () => {
     const adapter = client.getDataAdapter() as EvaluationsDataAdapter;
     adapter.setDataForUser(user, JSON.stringify(InitializeResponse));
 
-    client.initialize();
+    client.initializeSync();
   });
 
   afterAll(() => {
@@ -51,7 +51,7 @@ describe('Init Strategy - Bootstrap', () => {
       fetchMock.mockClear();
 
       client = new PrecomputedEvaluationsClient(sdkKey, user);
-      client.initialize();
+      client.initializeSync();
     });
 
     it('is ready after initialize', () => {

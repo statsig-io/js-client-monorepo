@@ -22,7 +22,6 @@ describe('useGate', () => {
 
   beforeEach(() => {
     client = MockRemoteServerEvalClient.create();
-    client.initialize.mockReturnValue(Promise.resolve());
     client.shutdown.mockReturnValue(Promise.resolve());
     client.getFeatureGate.mockReturnValue({ value: true } as any);
     client.on.mockImplementation((event, callback) => {

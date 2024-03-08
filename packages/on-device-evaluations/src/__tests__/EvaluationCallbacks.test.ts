@@ -4,7 +4,6 @@ import { anyFunction, anyNumber } from 'statsig-test-helpers';
 import { StatsigClientEventData } from '@statsig/client-core';
 
 import OnDeviceEvaluationsClient from '../OnDeviceEvaluationsClient';
-import { SpecsDataAdapter } from '../SpecsDataAdapter';
 import DcsResponse from './dcs_response.json';
 
 describe('Client Evaluations Callback', () => {
@@ -21,10 +20,8 @@ describe('Client Evaluations Callback', () => {
     fetchMock.enableMocks();
     fetchMock.mockResponse(JSON.stringify(DcsResponse));
 
-    const adapter = client.getDataAdapter() as SpecsDataAdapter;
-    await adapter.fetchLatestData();
+    await client.initializeAsync();
 
-    client.initialize();
     client.on('*', (data) => {
       if (data.event.endsWith('_evaluation')) {
         events.push(data);

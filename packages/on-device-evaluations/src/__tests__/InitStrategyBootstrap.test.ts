@@ -26,7 +26,7 @@ describe('Init Strategy - Bootstrap', () => {
     const adapter = client.getDataAdapter() as SpecsDataAdapter;
     adapter.setData(JSON.stringify(DcsResponse));
 
-    client.initialize();
+    client.initializeSync();
   });
 
   afterAll(() => {
@@ -51,8 +51,7 @@ describe('Init Strategy - Bootstrap', () => {
       fetchMock.mockClear();
 
       client = new OnDeviceEvaluationsClient(sdkKey);
-
-      client.initialize();
+      client.initializeSync();
     });
 
     it('is ready after initialize', () => {

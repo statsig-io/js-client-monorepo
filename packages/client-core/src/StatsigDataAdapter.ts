@@ -32,15 +32,10 @@ export type StatsigDataAdapter = {
    * @param {StatsigUser | undefined} user The StatsigUser to get data for.
    * @returns {StatsigDataAdapterResult | null} The data that was found for the given StatsigUser.
    */
-  readonly getData: (user?: StatsigUser) => StatsigDataAdapterResult | null;
+  readonly getDataSync: (user?: StatsigUser) => StatsigDataAdapterResult | null;
 
-  /**
-   *
-   * @param {StatsigDataAdapterResult | null} result The values that were found and applied during initialization or update.
-   * @param {StatsigUser | undefined} user The StatsigUser object that was used.
-   */
-  readonly handlePostUpdate: (
-    result: StatsigDataAdapterResult | null,
+  readonly getDataAsync: (
+    current: StatsigDataAdapterResult | null,
     user?: StatsigUser,
-  ) => Promise<void>;
+  ) => Promise<StatsigDataAdapterResult | null>;
 };

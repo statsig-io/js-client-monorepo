@@ -13,6 +13,6 @@ const myStatsigClient = new PrecomputedEvaluationsClient(
   { environment: { tier: 'development' } } // (optional) Configure SDK via StatsigOptions here
 );
 
-myStatsigClient.initialize();
+myStatsigClient.initializeSync();
 // </snippet>
 }

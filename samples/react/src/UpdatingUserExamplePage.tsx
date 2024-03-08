@@ -1,10 +1,7 @@
 import { Box, Button, TextField, Typography } from '@mui/material';
 import { ReactNode, useState } from 'react';
 
-import {
-  EvaluationsDataAdapter,
-  PrecomputedEvaluationsClient,
-} from '@statsig/precomputed-evaluations';
+import { PrecomputedEvaluationsClient } from '@statsig/precomputed-evaluations';
 import {
   StatsigProvider,
   useGate,
@@ -17,8 +14,6 @@ const client = new PrecomputedEvaluationsClient(STATSIG_CLIENT_KEY, {
   userID: 'a-user',
 });
 
-const adapter = client.getDataAdapter() as EvaluationsDataAdapter;
-
 // eslint-disable-next-line no-console
 client.on('status_change', (data) => console.log(data));
 
@@ -27,7 +22,8 @@ let renderCount = 0;
 function Form() {
   renderCount++;
 
-  const { user, updateUser } = useStatsigUser();
+  const [isLoading, setIsLoading] = useState(false);
+  const { user, updateUserSync, updateUserAsync } = useStatsigUser();
   const [editedUser, setEditedUser] = useState(user);
   const gate = useGate('third_gate');
 
@@ -36,6 +32,7 @@ function Form() {
       <Typography>Result: {gate.value ? 'Pass' : 'Fail'}</Typography>
       <Typography>Render Count: {renderCount}</Typography>
       <Typography>Reason: {gate.details.reason}</Typography>
+      <Typography>IsLoading: {String(isLoading)}</Typography>
 
       <TextField
         label="UserID"
@@ -58,13 +55,15 @@ function Form() {
       <Button
         variant="contained"
         onClick={() => {
-          adapter
-            .fetchLatestDataForUser(editedUser)
-            .then(() => {
-              updateUser((_user) => editedUser);
+          setIsLoading(true);
+          updateUserAsync((_user) => editedUser)
+            .catch((err) => {
+              // Todo: Add error UI
+              // eslint-disable-next-line no-console
+              console.error(err);
             })
-            .catch((e) => {
-              throw e;
+            .finally(() => {
+              setIsLoading(false);
             });
         }}
       >
@@ -74,7 +73,7 @@ function Form() {
       <Button
         variant="contained"
         onClick={() => {
-          updateUser((_user) => editedUser);
+          updateUserSync((_user) => editedUser);
         }}
       >
         Apply Changes

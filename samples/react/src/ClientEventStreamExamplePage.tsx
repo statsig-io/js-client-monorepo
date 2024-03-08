@@ -17,15 +17,6 @@ const client = new PrecomputedEvaluationsClient(DEMO_CLIENT_KEY, user, {
   dataAdapter: adapter,
 });
 
-adapter
-  .fetchLatestDataForUser(user)
-  .then(() => {
-    client.updateUser(user);
-  })
-  .catch((err) => {
-    throw err;
-  });
-
 function Content({ events }: { events: StatsigClientEventData[] }) {
   return (
     <Box
