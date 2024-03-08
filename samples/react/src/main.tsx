@@ -28,6 +28,7 @@ const routes: RouteMap = [
       ['/updating-user', 'UpdatingUser', () => import('./UpdatingUserExamplePage')],
       ['/delayed-init', 'Delayed Network Init', () => import('./DelayedNetworkInitExamplePage')],
       ['/client-event-stream', 'Client Event Stream', () => import('./ClientEventStreamExamplePage')],
+      ['/transition-to-logged-in', 'Transition To Logged In', () => import('./TransitionToLoggedInExamplePage')],
       ['/samples', 'Samples', () => import('./SamplesPage')]
     ],
   ],
