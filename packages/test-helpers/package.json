@@ -1,8 +1,8 @@
 {
   "name": "statsig-test-helpers",
-  "version": "0.0.1-beta.7",
+  "version": "0.0.1-beta.8",
   "dependencies": {
-    "@statsig/client-core": "0.0.1-beta.7",
+    "@statsig/client-core": "0.0.1-beta.8",
     "@jest/globals": "29.7.0"
   },
   "type": "commonjs",

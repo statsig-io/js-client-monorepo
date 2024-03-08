@@ -1,10 +1,10 @@
 {
   "name": "@statsig/client-extensions",
-  "version": "0.0.1-beta.7",
+  "version": "0.0.1-beta.8",
   "dependencies": {
-    "@statsig/client-core": "0.0.1-beta.7",
-    "@statsig/precomputed-evaluations": "0.0.1-beta.7",
-    "@statsig/on-device-evaluations": "0.0.1-beta.7"
+    "@statsig/client-core": "0.0.1-beta.8",
+    "@statsig/precomputed-evaluations": "0.0.1-beta.8",
+    "@statsig/on-device-evaluations": "0.0.1-beta.8"
   },
   "type": "commonjs",
   "main": "./src/index.js",
