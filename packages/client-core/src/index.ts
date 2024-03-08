@@ -1,6 +1,7 @@
 /** Statsig Global should go first */
 import './$_StatsigGlobal';
 import { EventLogger } from './EventLogger';
+import { Log } from './Log';
 
 export * from './$_StatsigGlobal';
 export * from './ClientInterfaces';
@@ -27,4 +28,5 @@ export { EventLogger };
 __STATSIG__ = {
   ...(__STATSIG__ ?? {}),
   EventLogger,
+  Log,
 };
