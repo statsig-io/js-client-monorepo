@@ -13,6 +13,10 @@ const myStatsigClient = new PrecomputedEvaluationsClient(
   { environment: { tier: 'development' } } // (optional) Configure SDK via StatsigOptions here
 );
 
+// initialize immediately from cache values
 myStatsigClient.initializeSync();
+
+// or, initialize and wait for the latest values
+await myStatsigClient.initializeAsync();
 // </snippet>
 }
