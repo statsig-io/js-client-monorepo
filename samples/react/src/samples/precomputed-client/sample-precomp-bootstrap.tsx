@@ -1,41 +1,13 @@
 /* eslint-disable no-console */
-// <snippet>
 import { DJB2 } from '@statsig/client-core';
-import {
-  EvaluationsDataAdapter,
-  PrecomputedEvaluationsClient,
-} from '@statsig/precomputed-evaluations';
+import { EvaluationsDataAdapter } from '@statsig/precomputed-evaluations';
 
-// </snippet>
-import { STATSIG_CLIENT_KEY as YOUR_CLIENT_KEY } from '../../Contants';
-
-// prettier-ignore
-export default async function Sample(): Promise<void> {
-// <snippet>
-const user = { userID: 'a-user' }
-
-const dataAdapter = new EvaluationsDataAdapter();
-
-const myStatsigClient = new PrecomputedEvaluationsClient(
-  YOUR_CLIENT_KEY, 
-  user,
-  { dataAdapter } // <- Pass the data adapter via StatsigOptions
-);
-
-// Pass the bootstrap values to the data adapter
-dataAdapter.setDataForUser(user, getStatsigBootstrapJson());
-
-// Then finally call initializeSync
-myStatsigClient.initializeSync();
-
-const gate = myStatsigClient.getFeatureGate('a_gate');
-console.log("a_gate source:", gate.details.reason) // prints: "a_gate source: Bootstrap"
-// </snippet>
-}
+import { myStatsigClient } from './sample-precomp-instance';
 
 // <snippet>
 // Returns a JSON string from a local file or Statsig Server SDK.
 function getStatsigBootstrapJson(): string {
+  // •••
   // </snippet>
 
   const hash = DJB2('a_gate');
@@ -60,3 +32,22 @@ function getStatsigBootstrapJson(): string {
   // <snippet>
 }
 // </snippet>
+
+// prettier-ignore
+export default async function Sample(): Promise<void> {
+const dataAdapter = new EvaluationsDataAdapter();
+
+// <snippet>
+
+const user = { userID: 'a-user' };
+
+// Pass the bootstrap values to the data adapter
+dataAdapter.setDataForUser(user, getStatsigBootstrapJson());
+
+// Then finally call initializeSync
+myStatsigClient.initializeSync();
+
+const gate = myStatsigClient.getFeatureGate('a_gate');
+console.log("a_gate source:", gate.details.reason) // prints: "a_gate source: Bootstrap"
+// </snippet>
+}
