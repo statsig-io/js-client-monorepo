@@ -9,4 +9,4 @@ Statsig helps you move faster with feature gates (feature flags), and/or dynamic
 
 ## Getting Started
 
-Check out our [SDK docs](https://docs.statsig.com/client/jsClientSDK) to get started.
+Check out our [SDK docs](https://docs.statsig.com/client/javascript-sdk) to get started.
