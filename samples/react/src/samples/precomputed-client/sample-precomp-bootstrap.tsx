@@ -1,8 +1,11 @@
 /* eslint-disable no-console */
 import { DJB2 } from '@statsig/client-core';
-import { EvaluationsDataAdapter } from '@statsig/precomputed-evaluations';
+import {
+  EvaluationsDataAdapter,
+  PrecomputedEvaluationsClient,
+} from '@statsig/precomputed-evaluations';
 
-import { myStatsigClient } from './sample-precomp-instance';
+import { STATSIG_CLIENT_KEY } from '../../Contants';
 
 // <snippet>
 // Returns a JSON string from a local file or Statsig Server SDK.
@@ -35,11 +38,16 @@ function getStatsigBootstrapJson(): string {
 
 // prettier-ignore
 export default async function Sample(): Promise<void> {
-const dataAdapter = new EvaluationsDataAdapter();
-
 // <snippet>
-
 const user = { userID: 'a-user' };
+// </snippet>
+
+const myStatsigClient = new PrecomputedEvaluationsClient(
+  STATSIG_CLIENT_KEY, 
+  user,
+);
+const dataAdapter = myStatsigClient.getDataAdapter() as EvaluationsDataAdapter;
+// <snippet>
 
 // Pass the bootstrap values to the data adapter
 dataAdapter.setDataForUser(user, getStatsigBootstrapJson());
