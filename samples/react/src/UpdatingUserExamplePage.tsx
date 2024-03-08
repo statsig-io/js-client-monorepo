@@ -1,7 +1,10 @@
 import { Box, Button, TextField, Typography } from '@mui/material';
 import { ReactNode, useState } from 'react';
 
-import { PrecomputedEvaluationsClient } from '@statsig/precomputed-evaluations';
+import {
+  EvaluationsDataAdapter,
+  PrecomputedEvaluationsClient,
+} from '@statsig/precomputed-evaluations';
 import {
   StatsigProvider,
   useGate,
@@ -14,12 +17,16 @@ const client = new PrecomputedEvaluationsClient(STATSIG_CLIENT_KEY, {
   userID: 'a-user',
 });
 
+const adapter = client.getDataAdapter() as EvaluationsDataAdapter;
+
 // eslint-disable-next-line no-console
 client.on('status_change', (data) => console.log(data));
 
 let renderCount = 0;
 
 function Form() {
+  renderCount++;
+
   const { user, updateUser } = useStatsigUser();
   const [editedUser, setEditedUser] = useState(user);
   const gate = useGate('third_gate');
@@ -51,8 +58,23 @@ function Form() {
       <Button
         variant="contained"
         onClick={() => {
-          // eslint-disable-next-line no-console
-          updateUser((_user) => editedUser).catch((e) => console.error(e));
+          adapter
+            .fetchLatestDataForUser(editedUser)
+            .then(() => {
+              updateUser((_user) => editedUser);
+            })
+            .catch((e) => {
+              throw e;
+            });
+        }}
+      >
+        Fetch and Apply Changes
+      </Button>
+
+      <Button
+        variant="contained"
+        onClick={() => {
+          updateUser((_user) => editedUser);
         }}
       >
         Apply Changes
@@ -62,8 +84,6 @@ function Form() {
 }
 
 function Content() {
-  renderCount++;
-
   return (
     <Box
       display="flex"

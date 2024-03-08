@@ -35,9 +35,9 @@ const client: OnDeviceEvaluationsInterface &
   PrecomputedEvaluationsInterface & { isNoop: true } = {
   isNoop: true,
   loadingStatus: 'Uninitialized',
-  initialize: () => Promise.resolve(),
+  initialize: noop,
   shutdown: () => Promise.resolve(),
-  updateUser: () => Promise.resolve(),
+  updateUser: noop,
   getCurrentUser: () => ({ userID: '' }),
   checkGate: () => false,
   getFeatureGate: defaultEvaluation<FeatureGate>('gate'),

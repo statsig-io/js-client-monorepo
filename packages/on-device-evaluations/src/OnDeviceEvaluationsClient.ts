@@ -7,6 +7,7 @@ import {
   Layer,
   OnDeviceEvaluationsInterface,
   StatsigClientBase,
+  StatsigDataAdapter,
   StatsigEvent,
   StatsigUser,
   createConfigExposure,
@@ -22,9 +23,8 @@ import {
 import Evaluator from './Evaluator';
 import Network from './Network';
 import SpecStore, { DownloadConfigSpecsResponse } from './SpecStore';
+import { SpecsDataAdapter } from './SpecsDataAdapter';
 import { StatsigOptions } from './StatsigOptions';
-import { LocalStorageCacheSpecsDataProvider } from './data-providers/LocalStorageCacheSpecsDataProvider';
-import { DelayedNetworkSpecsDataProvider } from './data-providers/NetworkSpecsDataProvider';
 
 declare global {
   interface Window {
@@ -44,15 +44,7 @@ export default class OnDeviceEvaluationsClient
 
   constructor(sdkKey: string, options: StatsigOptions | null = null) {
     const network = new Network(options);
-    super(
-      sdkKey,
-      network,
-      options,
-      options?.dataProviders ?? [
-        new LocalStorageCacheSpecsDataProvider(),
-        new DelayedNetworkSpecsDataProvider(network),
-      ],
-    );
+    super(sdkKey, network, options);
 
     monitorClass(this._errorBoundary, OnDeviceEvaluationsClient, this);
     monitorClass(this._errorBoundary, Network, network);
@@ -64,17 +56,13 @@ export default class OnDeviceEvaluationsClient
     this._source = 'NoValues';
   }
 
-  async initialize(): Promise<void> {
+  initialize(): void {
     this._store.reset();
 
     this._setStatus('Loading');
 
-    let result = this._getDataFromProviders();
-    if (result.data == null) {
-      result = await this._getDataFromProvidersAsync();
-    }
-
-    if (result.data) {
+    const result = this._adapter.getData?.(this._sdkKey);
+    if (result) {
       this._store.setValuesFromData(result.data, result.source);
     }
 
@@ -82,7 +70,7 @@ export default class OnDeviceEvaluationsClient
 
     this._setStatus('Ready');
 
-    this._saveToDataProviders(result.data);
+    this._runPostUpdate(result);
   }
 
   async shutdown(): Promise<void> {
@@ -185,6 +173,10 @@ export default class OnDeviceEvaluationsClient
 
   logEvent(event: StatsigEvent, user: StatsigUser): void {
     this._logger.enqueue({ ...event, user, time: Date.now() });
+  }
+
+  protected override _getDefaultDataAdapter(): StatsigDataAdapter {
+    return new SpecsDataAdapter(this._sdkKey);
   }
 
   private _getConfigImpl(

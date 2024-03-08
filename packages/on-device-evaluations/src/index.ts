@@ -1,17 +1,10 @@
 import OnDeviceEvaluationsClient from './OnDeviceEvaluationsClient';
+import { SpecsDataAdapter } from './SpecsDataAdapter';
 import './StatsigMetadataAdditions';
 import type { StatsigOptions } from './StatsigOptions';
-import { BootstrapSpecsDataProvider } from './data-providers/BootstrapSpecsDataProvider';
-import { LocalStorageCacheSpecsDataProvider } from './data-providers/LocalStorageCacheSpecsDataProvider';
-import { NetworkSpecsDataProvider } from './data-providers/NetworkSpecsDataProvider';
 
 export type { StatsigOptions };
-export {
-  BootstrapSpecsDataProvider,
-  LocalStorageCacheSpecsDataProvider,
-  NetworkSpecsDataProvider,
-  OnDeviceEvaluationsClient,
-};
+export { OnDeviceEvaluationsClient, SpecsDataAdapter };
 
 export type {
   StatsigEnvironment,
@@ -21,8 +14,6 @@ export type {
 
 __STATSIG__ = {
   ...__STATSIG__,
+  SpecsDataAdapter,
   OnDeviceEvaluationsClient,
-  BootstrapSpecsDataProvider,
-  LocalStorageCacheSpecsDataProvider,
-  NetworkSpecsDataProvider,
 };

@@ -1,16 +1,13 @@
 import fetchMock from 'jest-fetch-mock';
 
 import OnDeviceEvaluationsClient from '../OnDeviceEvaluationsClient';
-import { NetworkSpecsDataProvider } from '../data-providers/NetworkSpecsDataProvider';
+import { SpecsDataAdapter } from '../SpecsDataAdapter';
 import { MockLocalStorage } from './MockLocalStorage';
 import DcsResponse from './dcs_response.json';
 
 describe('Init Strategy - Awaited', () => {
   const sdkKey = 'client-key';
   const user = { userID: 'a-user' };
-  const options = {
-    dataProviders: [NetworkSpecsDataProvider.create()],
-  };
 
   let client: OnDeviceEvaluationsClient;
   let storageMock: MockLocalStorage;
@@ -22,9 +19,11 @@ describe('Init Strategy - Awaited', () => {
     fetchMock.enableMocks();
     fetchMock.mockResponse(JSON.stringify(DcsResponse));
 
-    client = new OnDeviceEvaluationsClient(sdkKey, options);
+    client = new OnDeviceEvaluationsClient(sdkKey);
+    const adapter = client.getDataAdapter() as SpecsDataAdapter;
+    await adapter.fetchLatestData();
 
-    await client.initialize();
+    client.initialize();
   });
 
   afterAll(() => {

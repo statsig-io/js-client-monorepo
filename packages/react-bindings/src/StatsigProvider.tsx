@@ -25,10 +25,7 @@ export default function StatsigProvider(props: Props): JSX.Element {
     };
 
     client.on('status_change', onStatusChange);
-
-    client.initialize().catch((error) => {
-      Log.error('An error occurred during initialization', error);
-    });
+    client.initialize();
 
     return () => {
       client.shutdown().catch((error) => {

@@ -15,10 +15,12 @@ export default class StatsigNetwork extends NetworkCore {
   }
 
   async fetchConfigSpecs(sdkKey: string): Promise<string | null> {
-    return this.get({
+    const response = await this.get({
       sdkKey: sdkKey,
       url: `${this._downloadConfigSpecsUrlBase}/${sdkKey}.json`,
       timeoutMs: 2000,
     });
+
+    return response?.body ?? null;
   }
 }

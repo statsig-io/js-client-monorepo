@@ -78,7 +78,16 @@
       "$_hasFiredQuickFlush": "Pt",
       "$_quickFlushIfNeeded": "At",
       "$_hasRunQuickFlush": "Gt",
-      "$_creationTime": "Vt"
+      "$_creationTime": "Vt",
+      "$_adapter": "Jt",
+      "$_runPostUpdate": "Lt",
+      "$_getDefaultDataAdapter": "Ct",
+      "$_inMemoryCache": "Ft",
+      "$_loadFromCache": "Ut",
+      "$_sync": "Rt",
+      "$_setNetworkNotModified": "zt",
+      "$_writeToCache": "Kt",
+      "$_getCacheKey": "qt"
     }
   }
 }

@@ -1,12 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Button, Text, View } from 'react-native';
 
-import {
-  DelayedNetworkEvaluationsDataProvider,
-  LocalStorageCacheEvaluationsDataProvider,
-  PrecomputedEvaluationsClient,
-  StatsigOptions,
-} from '@statsig/precomputed-evaluations';
+import { PrecomputedEvaluationsClient } from '@statsig/precomputed-evaluations';
 import {
   StatsigProvider,
   useExperiment,
@@ -15,15 +10,8 @@ import {
 
 import { DEMO_CLIENT_KEY } from './Constants';
 
-const options: StatsigOptions = {
-  dataProviders: [
-    new LocalStorageCacheEvaluationsDataProvider(),
-    DelayedNetworkEvaluationsDataProvider.create(),
-  ],
-};
-
 const user = { userID: 'a-user' };
-const client = new PrecomputedEvaluationsClient(DEMO_CLIENT_KEY, user, options);
+const client = new PrecomputedEvaluationsClient(DEMO_CLIENT_KEY, user);
 
 function Content() {
   const gate = useGate('a_gate');

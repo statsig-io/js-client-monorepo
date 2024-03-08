@@ -1,4 +1,5 @@
 import {
+  Log,
   NetworkCore,
   StatsigClientEmitEventFunc,
   StatsigUser,
@@ -20,9 +21,9 @@ export default class StatsigNetwork extends NetworkCore {
     this._api = options?.api ?? DEFAULT_API;
   }
 
-  fetchEvaluations(
+  async fetchEvaluations(
     sdkKey: string,
-    current: EvaluationResponse | null,
+    current: string | null,
     user?: StatsigUser,
   ): Promise<string | null> {
     let data: Record<string, unknown> = {
@@ -30,21 +31,34 @@ export default class StatsigNetwork extends NetworkCore {
       hash: 'djb2',
     };
 
-    if (current?.has_updates) {
+    let cache: EvaluationResponse | null = null;
+    try {
+      cache = current ? (JSON.parse(current) as EvaluationResponse) : null;
+    } catch {
+      Log.debug('Failed to parse cached EvaluationResponse');
+    }
+
+    if (cache?.has_updates) {
       data = {
         ...data,
-        sinceTime: current.time,
+        sinceTime: cache.time,
         previousDerivedFields:
-          'derived_fields' in current ? current.derived_fields : {},
+          'derived_fields' in cache ? cache.derived_fields : {},
       };
     }
 
-    return this.post({
+    const response = await this.post({
       sdkKey,
       url: `${this._api}/initialize`,
       data,
       timeoutMs: 2000,
       retries: 2,
     });
+
+    if (response?.code === 204) {
+      return '{"has_updates": false}';
+    }
+
+    return response?.body ?? null;
   }
 }

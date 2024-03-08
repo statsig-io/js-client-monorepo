@@ -1,6 +1,7 @@
 import type {
   EvaluationOptions,
   FeatureGate,
+  StatsigDataAdapter,
   StatsigUser,
 } from '@statsig/client-core';
 import {
@@ -23,11 +24,10 @@ import {
 } from '@statsig/client-core';
 
 import EvaluationStore from './EvaluationStore';
+import { EvaluationsDataAdapter } from './EvaluationsDataAdapter';
 import Network from './Network';
 import './StatsigMetadataAdditions';
 import type { StatsigOptions } from './StatsigOptions';
-import { LocalStorageCacheEvaluationsDataProvider } from './data-providers/LocalStorageCacheEvaluationsDataProvider';
-import { DelayedNetworkEvaluationsDataProvider } from './data-providers/NetworkEvaluationsDataProvider';
 
 export default class PrecomputedEvaluationsClient
   extends StatsigClientBase
@@ -47,15 +47,7 @@ export default class PrecomputedEvaluationsClient
       this.emit(e);
     });
 
-    super(
-      sdkKey,
-      network,
-      options,
-      options?.dataProviders ?? [
-        new LocalStorageCacheEvaluationsDataProvider(),
-        new DelayedNetworkEvaluationsDataProvider(network),
-      ],
-    );
+    super(sdkKey, network, options);
 
     monitorClass(this._errorBoundary, PrecomputedEvaluationsClient, this);
     monitorClass(this._errorBoundary, Network, network);
@@ -67,27 +59,22 @@ export default class PrecomputedEvaluationsClient
     this._user = user;
   }
 
-  async initialize(): Promise<void> {
-    return this.updateUser(this._user);
+  initialize(): void {
+    this.updateUser(this._user);
   }
 
   getCurrentUser(): StatsigUser {
     return JSON.parse(JSON.stringify(this._user)) as StatsigUser;
   }
 
-  async updateUser(user: StatsigUser): Promise<void> {
+  updateUser(user: StatsigUser): void {
     this._logger.reset();
     this._store.reset();
 
     this._user = normalizeUser(user, this._options.environment);
 
-    let result = this._getDataFromProviders(this._user);
-    if (result.data == null) {
-      this._setStatus('Loading');
-      result = await this._getDataFromProvidersAsync(this._user);
-    }
-
-    if (result.data) {
+    const result = this._adapter.getData?.(this._sdkKey, this._user);
+    if (result) {
       this._store.setValuesFromData(result.data, result.source);
     }
 
@@ -95,7 +82,7 @@ export default class PrecomputedEvaluationsClient
 
     this._setStatus('Ready');
 
-    this._saveToDataProviders(result.data, this._user);
+    this._runPostUpdate(result ?? null, this._user);
   }
 
   async shutdown(): Promise<void> {
@@ -188,6 +175,10 @@ export default class PrecomputedEvaluationsClient
 
   logEvent(event: StatsigEvent): void {
     this._logger.enqueue({ ...event, user: this._user, time: Date.now() });
+  }
+
+  protected override _getDefaultDataAdapter(): StatsigDataAdapter {
+    return new EvaluationsDataAdapter(this._sdkKey, this._options);
   }
 
   private _getConfigImpl(

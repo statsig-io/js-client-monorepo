@@ -17,20 +17,16 @@ export default function PrecomputedClientPerfExamplePage(): ReactNode {
 
   useEffect(() => {
     performance.mark('precomputed-initialize-start');
-    client
-      .initialize()
-      .then(() => {
-        performance.mark('precomputed-initialize-end');
-        setInitMeasurement(
-          performance.measure(
-            'precomputed-initialize-duration',
-            'precomputed-initialize-start',
-            'precomputed-initialize-end',
-          ),
-        );
-      })
-      // eslint-disable-next-line no-console
-      .catch((reason) => console.error(reason));
+    client.initialize();
+
+    performance.mark('precomputed-initialize-end');
+    setInitMeasurement(
+      performance.measure(
+        'precomputed-initialize-duration',
+        'precomputed-initialize-start',
+        'precomputed-initialize-end',
+      ),
+    );
   }, []);
 
   return (

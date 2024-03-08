@@ -1,5 +1,5 @@
 import { LogLevel } from './Log';
-import { StatsigDataProvider } from './StatsigDataProvider';
+import { StatsigDataAdapter } from './StatsigDataProvider';
 
 /** Common options for configuring the Statsig SDK. */
 export type StatsigOptionsCommon = {
@@ -27,10 +27,10 @@ export type StatsigOptionsCommon = {
   logLevel?: LogLevel;
 
   /**
-   * StatsigDataProvider implementors used to customize the initialization flow.
+   * StatsigDataProvider implementor used to customize the initialization flow.
    * Default: LocalStorageCache then Network
    */
-  dataProviders?: StatsigDataProvider[];
+  dataAdapter?: StatsigDataAdapter;
 
   /**
    * The maximum amount of time (in milliseconds) that any network request can take

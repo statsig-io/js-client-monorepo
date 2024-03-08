@@ -1,16 +1,13 @@
 import fetchMock from 'jest-fetch-mock';
 
+import { EvaluationsDataAdapter } from '../EvaluationsDataAdapter';
 import PrecomputedEvaluationsClient from '../PrecomputedEvaluationsClient';
-import { NetworkEvaluationsDataProvider } from '../data-providers/NetworkEvaluationsDataProvider';
 import { MockLocalStorage } from './MockLocalStorage';
 import InitializeResponse from './initialize.json';
 
 describe('Init Strategy - Awaited', () => {
   const sdkKey = 'client-key';
   const user = { userID: 'a-user' };
-  const options = {
-    dataProviders: [NetworkEvaluationsDataProvider.create()],
-  };
 
   let client: PrecomputedEvaluationsClient;
   let storageMock: MockLocalStorage;
@@ -22,9 +19,11 @@ describe('Init Strategy - Awaited', () => {
     fetchMock.enableMocks();
     fetchMock.mockResponse(JSON.stringify(InitializeResponse));
 
-    client = new PrecomputedEvaluationsClient(sdkKey, user, options);
+    client = new PrecomputedEvaluationsClient(sdkKey, user);
+    const adapter = client.getDataAdapter() as EvaluationsDataAdapter;
+    await adapter.fetchLatestDataForUser(user);
 
-    await client.initialize();
+    client.initialize();
   });
 
   afterAll(() => {

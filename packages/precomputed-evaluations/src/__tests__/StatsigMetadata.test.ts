@@ -1,19 +1,21 @@
 import fetchMock from 'jest-fetch-mock';
 
 import { version } from '../../package.json';
+import { EvaluationsDataAdapter } from '../EvaluationsDataAdapter';
 import PrecomputedEvaluationsClient from '../PrecomputedEvaluationsClient';
 
 describe('StatsigMetadata', () => {
-  const client = new PrecomputedEvaluationsClient('client-key', { userID: '' });
   let body: Record<string, unknown>;
 
   beforeAll(async () => {
     fetchMock.mockResponse('{}');
-    await client.initialize();
 
-    body = JSON.parse(
-      fetchMock.mock.calls[0][1]?.body?.toString() ?? '{}',
-    ) as typeof body;
+    const client = new PrecomputedEvaluationsClient('', { userID: '' });
+    const adapter = client.getDataAdapter() as EvaluationsDataAdapter;
+    await adapter.fetchLatestDataForUser({ userID: '' });
+
+    const data = fetchMock.mock.calls?.[0]?.[1]?.body?.toString() ?? '{}';
+    body = JSON.parse(data) as Record<string, unknown>;
   });
 
   it('has the correct sdkType', () => {

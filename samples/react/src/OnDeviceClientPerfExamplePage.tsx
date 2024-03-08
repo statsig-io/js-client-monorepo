@@ -17,20 +17,15 @@ export default function OnDeviceClientPerfExamplePage(): ReactNode {
 
   useEffect(() => {
     performance.mark('on-device-initialize-start');
-    client
-      .initialize()
-      .then(() => {
-        performance.mark('on-device-initialize-end');
-        setInitMeasurement(
-          performance.measure(
-            'on-device-initialize-duration',
-            'on-device-initialize-start',
-            'on-device-initialize-end',
-          ),
-        );
-      })
-      // eslint-disable-next-line no-console
-      .catch((reason) => console.error(reason));
+    client.initialize();
+    performance.mark('on-device-initialize-end');
+    setInitMeasurement(
+      performance.measure(
+        'on-device-initialize-duration',
+        'on-device-initialize-start',
+        'on-device-initialize-end',
+      ),
+    );
   }, []);
 
   return (

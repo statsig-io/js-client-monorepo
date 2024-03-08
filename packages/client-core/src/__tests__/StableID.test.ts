@@ -15,7 +15,7 @@ async function getStableIDFromIsolatedModule(sdkKey: string): Promise<string> {
   return result ?? 'error';
 }
 const SDK_KEY = 'client-sdk-key';
-const STORAGE_KEY = `statsig.stable_id:${DJB2(SDK_KEY)}`;
+const STORAGE_KEY = `statsig.stable_id.${DJB2(SDK_KEY)}`;
 
 describe('StableID', () => {
   let storageMock: MockLocalStorage;

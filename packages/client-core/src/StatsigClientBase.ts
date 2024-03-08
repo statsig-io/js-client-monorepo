@@ -11,12 +11,13 @@ import {
   StatsigClientEventEmitterInterface,
   StatsigLoadingStatus,
 } from './StatsigClientEventEmitter';
-import { DataSource, StatsigDataProvider } from './StatsigDataProvider';
+import {
+  StatsigDataAdapter,
+  StatsigDataAdapterResult,
+} from './StatsigDataProvider';
 import { StatsigEventInternal } from './StatsigEvent';
 import { StatsigOptionsCommon } from './StatsigOptionsCommon';
 import { StatsigUser } from './StatsigUser';
-
-type DataProviderResult = { data: string | null; source: DataSource };
 
 export type EvaluationOptions = {
   disableExposureLog?: boolean;
@@ -28,13 +29,15 @@ export const DEFAULT_EVAL_OPTIONS: EvaluationOptions = {
 
 export type StatsigClientEmitEventFunc = (data: StatsigClientEventData) => void;
 
-export class StatsigClientBase implements StatsigClientEventEmitterInterface {
+export abstract class StatsigClientBase
+  implements StatsigClientEventEmitterInterface
+{
   loadingStatus: StatsigLoadingStatus = 'Uninitialized';
 
   protected _errorBoundary: ErrorBoundary;
   protected _logger: EventLogger;
   protected _sdkKey: string;
-  protected _dataProviders: StatsigDataProvider[];
+  protected _adapter: StatsigDataAdapter;
 
   private _listeners: Record<string, StatsigClientEventCallback[]> = {};
 
@@ -42,7 +45,6 @@ export class StatsigClientBase implements StatsigClientEventEmitterInterface {
     sdkKey: string,
     network: NetworkCore,
     options: StatsigOptionsCommon | null,
-    dataProviders: StatsigDataProvider[],
   ) {
     this._logger = new EventLogger(
       sdkKey,
@@ -63,7 +65,11 @@ export class StatsigClientBase implements StatsigClientEventEmitterInterface {
     __STATSIG__.instances = instances;
 
     Log.level = options?.logLevel ?? LogLevel.Warn;
-    this._dataProviders = dataProviders;
+    this._adapter = options?.dataAdapter ?? this._getDefaultDataAdapter();
+  }
+
+  getDataAdapter(): StatsigDataAdapter {
+    return this._adapter;
   }
 
   on(
@@ -101,71 +107,6 @@ export class StatsigClientBase implements StatsigClientEventEmitterInterface {
     this.emit({ event: 'status_change', loadingStatus: newStatus });
   }
 
-  protected _getDataFromProviders(user?: StatsigUser): DataProviderResult {
-    for (const provider of this._dataProviders) {
-      const data = provider.getData?.(this._sdkKey, user);
-      if (data) {
-        return { data, source: provider.source };
-      }
-    }
-
-    return { data: null, source: 'NoValues' };
-  }
-
-  protected async _getDataFromProvidersAsync(
-    user?: StatsigUser,
-  ): Promise<DataProviderResult> {
-    for await (const provider of this._dataProviders) {
-      const data = await provider.getDataAsync?.(this._sdkKey, user);
-      if (data) {
-        return { data, source: provider.source };
-      }
-    }
-
-    return { data: null, source: 'NoValues' };
-  }
-
-  protected async _getDataPostInitFromProviders(
-    currentData: string | null,
-    user?: StatsigUser,
-  ): Promise<DataProviderResult> {
-    for await (const provider of this._dataProviders) {
-      const data = await provider.getDataPostInit?.(
-        this._sdkKey,
-        currentData,
-        user,
-      );
-      if (data) {
-        return { data, source: provider.source };
-      }
-    }
-
-    return { data: null, source: 'NoValues' };
-  }
-
-  protected _saveToDataProviders(
-    currentData: string | null,
-    user?: StatsigUser,
-  ): void {
-    (async () => {
-      const latest = await this._getDataPostInitFromProviders(
-        currentData,
-        user,
-      );
-      const data = latest.data ?? currentData;
-
-      if (!data) {
-        return;
-      }
-
-      for await (const provider of this._dataProviders) {
-        await provider.setDataPostInit?.(this._sdkKey, data, user);
-      }
-    })().catch((error: unknown) => {
-      this.emit({ event: 'error', error });
-    });
-  }
-
   protected _enqueueExposure(
     options: EvaluationOptions,
     exposure: StatsigEventInternal,
@@ -175,5 +116,18 @@ export class StatsigClientBase implements StatsigClientEventEmitterInterface {
     }
 
     this._logger.enqueue(exposure);
+  }
+
+  protected abstract _getDefaultDataAdapter(): StatsigDataAdapter;
+
+  protected _runPostUpdate(
+    current: StatsigDataAdapterResult | null,
+    user?: StatsigUser,
+  ): void {
+    this._adapter
+      .handlePostUpdate?.(this._sdkKey, current, user)
+      .catch((err) => {
+        Log.error('An error occurred after update.', err);
+      });
   }
 }

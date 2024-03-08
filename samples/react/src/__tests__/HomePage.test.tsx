@@ -1,4 +1,4 @@
-import { render } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
 import fetchMock from 'jest-fetch-mock';
 import { InitResponse } from 'statsig-test-helpers';
 
@@ -10,8 +10,9 @@ describe('App', () => {
   });
 
   it('renders the Passing value', async () => {
-    const { findByText } = render(<HomePage />);
-    const result = await findByText('Passing');
+    const { getByText } = render(<HomePage />);
+
+    const result = await waitFor(() => getByText('Passing'));
     expect(result).toBeDefined();
   });
 });

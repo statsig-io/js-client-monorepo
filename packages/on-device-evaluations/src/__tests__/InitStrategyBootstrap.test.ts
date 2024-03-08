@@ -3,27 +3,14 @@ import fetchMock from 'jest-fetch-mock';
 import { getUserStorageKey } from '@statsig/client-core';
 
 import OnDeviceEvaluationsClient from '../OnDeviceEvaluationsClient';
-import { BootstrapSpecsDataProvider } from '../data-providers/BootstrapSpecsDataProvider';
-import { LocalStorageCacheSpecsDataProvider } from '../data-providers/LocalStorageCacheSpecsDataProvider';
-import { DelayedNetworkSpecsDataProvider } from '../data-providers/NetworkSpecsDataProvider';
+import { SpecsDataAdapter } from '../SpecsDataAdapter';
 import { MockLocalStorage } from './MockLocalStorage';
 import DcsResponse from './dcs_response.json';
 
 describe('Init Strategy - Bootstrap', () => {
   const sdkKey = 'client-key';
   const user = { userID: 'a-user' };
-  const cacheKey = getUserStorageKey(sdkKey);
-
-  const bootstrap = new BootstrapSpecsDataProvider();
-  bootstrap.addData(sdkKey, JSON.stringify(DcsResponse));
-
-  const options = {
-    dataProviders: [
-      new LocalStorageCacheSpecsDataProvider(),
-      bootstrap,
-      DelayedNetworkSpecsDataProvider.create(),
-    ],
-  };
+  const cacheKey = `statsig.user_cache.on_device_eval.${getUserStorageKey(sdkKey)}`;
 
   let client: OnDeviceEvaluationsClient;
   let storageMock: MockLocalStorage;
@@ -35,10 +22,10 @@ describe('Init Strategy - Bootstrap', () => {
     fetchMock.enableMocks();
     fetchMock.mockResponse(JSON.stringify(DcsResponse));
 
-    client = new OnDeviceEvaluationsClient(sdkKey, options);
+    client = new OnDeviceEvaluationsClient(sdkKey);
+    const adapter = client.getDataAdapter() as SpecsDataAdapter;
+    adapter.setData(JSON.stringify(DcsResponse));
 
-    // Purposely not awaiting
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     client.initialize();
   });
 
@@ -63,10 +50,8 @@ describe('Init Strategy - Bootstrap', () => {
     beforeAll(async () => {
       fetchMock.mockClear();
 
-      client = new OnDeviceEvaluationsClient(sdkKey, options);
+      client = new OnDeviceEvaluationsClient(sdkKey);
 
-      // Purposely not awaiting
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       client.initialize();
     });
 

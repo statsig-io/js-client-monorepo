@@ -2,28 +2,15 @@ import fetchMock from 'jest-fetch-mock';
 
 import { getUserStorageKey } from '@statsig/client-core';
 
+import { EvaluationsDataAdapter } from '../EvaluationsDataAdapter';
 import PrecomputedEvaluationsClient from '../PrecomputedEvaluationsClient';
-import { BootstrapEvaluationsDataProvider } from '../data-providers/BootstrapEvaluationsDataProvider';
-import { LocalStorageCacheEvaluationsDataProvider } from '../data-providers/LocalStorageCacheEvaluationsDataProvider';
-import { DelayedNetworkEvaluationsDataProvider } from '../data-providers/NetworkEvaluationsDataProvider';
 import { MockLocalStorage } from './MockLocalStorage';
 import InitializeResponse from './initialize.json';
 
 describe('Init Strategy - Bootstrap', () => {
   const sdkKey = 'client-key';
   const user = { userID: 'a-user' };
-  const cacheKey = getUserStorageKey(sdkKey, user);
-
-  const bootstrap = new BootstrapEvaluationsDataProvider();
-  bootstrap.addDataForUser(sdkKey, JSON.stringify(InitializeResponse), user);
-
-  const options = {
-    dataProviders: [
-      new LocalStorageCacheEvaluationsDataProvider(),
-      bootstrap,
-      DelayedNetworkEvaluationsDataProvider.create(),
-    ],
-  };
+  const cacheKey = `statsig.user_cache.precomputed_eval.${getUserStorageKey(sdkKey, user)}`;
 
   let client: PrecomputedEvaluationsClient;
   let storageMock: MockLocalStorage;
@@ -35,10 +22,10 @@ describe('Init Strategy - Bootstrap', () => {
     fetchMock.enableMocks();
     fetchMock.mockResponse(JSON.stringify(InitializeResponse));
 
-    client = new PrecomputedEvaluationsClient(sdkKey, user, options);
+    client = new PrecomputedEvaluationsClient(sdkKey, user);
+    const adapter = client.getDataAdapter() as EvaluationsDataAdapter;
+    adapter.setDataForUser(user, JSON.stringify(InitializeResponse));
 
-    // Purposely not awaiting
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     client.initialize();
   });
 
@@ -63,10 +50,7 @@ describe('Init Strategy - Bootstrap', () => {
     beforeAll(async () => {
       fetchMock.mockClear();
 
-      client = new PrecomputedEvaluationsClient(sdkKey, user, options);
-
-      // Purposely not awaiting
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      client = new PrecomputedEvaluationsClient(sdkKey, user);
       client.initialize();
     });
 

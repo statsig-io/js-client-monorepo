@@ -4,7 +4,7 @@ import { anyFunction, anyNumber } from 'statsig-test-helpers';
 import { StatsigClientEventData } from '@statsig/client-core';
 
 import OnDeviceEvaluationsClient from '../OnDeviceEvaluationsClient';
-import { NetworkSpecsDataProvider } from '../data-providers/NetworkSpecsDataProvider';
+import { SpecsDataAdapter } from '../SpecsDataAdapter';
 import DcsResponse from './dcs_response.json';
 
 describe('Client Evaluations Callback', () => {
@@ -14,16 +14,17 @@ describe('Client Evaluations Callback', () => {
 
   beforeEach(async () => {
     events = [];
-    client = new OnDeviceEvaluationsClient('client-key', {
-      dataProviders: [NetworkSpecsDataProvider.create()],
-    });
+    client = new OnDeviceEvaluationsClient('client-key');
 
     DcsResponse['time'] = 123456;
 
     fetchMock.enableMocks();
     fetchMock.mockResponse(JSON.stringify(DcsResponse));
 
-    await client.initialize();
+    const adapter = client.getDataAdapter() as SpecsDataAdapter;
+    await adapter.fetchLatestData();
+
+    client.initialize();
     client.on('*', (data) => {
       if (data.event.endsWith('_evaluation')) {
         events.push(data);

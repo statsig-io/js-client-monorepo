@@ -1,10 +1,8 @@
 /* eslint-disable no-console */
-
-/* eslint-disable @typescript-eslint/no-floating-promises */
 import { DJB2 } from '@statsig/client-core';
 // <snippet>
 import {
-  BootstrapEvaluationsDataProvider,
+  EvaluationsDataAdapter,
   PrecomputedEvaluationsClient,
 } from '@statsig/precomputed-evaluations';
 
@@ -15,23 +13,19 @@ import { STATSIG_CLIENT_KEY as YOUR_CLIENT_KEY } from '../Contants';
 export default async function Sample(): Promise<void> {
 // <snippet>
 const user = { userID: 'a-user' };
+const client = new PrecomputedEvaluationsClient(YOUR_CLIENT_KEY, user);
 
 // Setup some Bootstrapped values
-const bootstrapper = new BootstrapEvaluationsDataProvider();
-bootstrapper.addDataForUser(YOUR_CLIENT_KEY, getStatsigJson(), user)
+const adapter = client.getDataAdapter() as EvaluationsDataAdapter;
+adapter.setDataForUser(user, getStatsigJson());
 
-const options = {
-  dataProviders: [bootstrapper]
-};
-const client = new PrecomputedEvaluationsClient(YOUR_CLIENT_KEY, user, options);
-
+// Intialize will now use the Boostrapped values
 client.initialize();
 
 console.log("Statsig Status: ", client.loadingStatus); // prints: "Statsig Status: Ready"
 
 const gate = client.getFeatureGate('a_gate');
 console.log("a_gate source:", gate.details.reason) // prints: "a_gate source: Bootstrap"
-
 // </snippet>
 }
 

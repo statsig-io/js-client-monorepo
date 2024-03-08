@@ -29,7 +29,7 @@ export const StableID = {
 };
 
 function _getStableIDStorageKey(sdkKey: string): string {
-  return `statsig.stable_id:${DJB2(sdkKey)}`;
+  return `statsig.stable_id.${DJB2(sdkKey)}`;
 }
 
 function _persistToStorage(stableID: string, sdkKey: string) {

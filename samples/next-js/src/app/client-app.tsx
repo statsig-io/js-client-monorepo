@@ -1,10 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { StatsigUser } from 'statsig-node';
 
 import {
-  BootstrapEvaluationsDataProvider,
+  EvaluationsDataAdapter,
   PrecomputedEvaluationsClient,
 } from '@statsig/precomputed-evaluations';
 import { StatsigProvider, useGate } from '@statsig/react-bindings';
@@ -25,14 +25,14 @@ export default function ClientApp({
   user: StatsigUser;
   values: string;
 }): JSX.Element {
-  const bootstrapProvider = new BootstrapEvaluationsDataProvider();
-  bootstrapProvider.addDataForUser(DEMO_CLIENT_KEY, values, user);
-
   const [client] = useState(
-    new PrecomputedEvaluationsClient(DEMO_CLIENT_KEY, user, {
-      dataProviders: [bootstrapProvider],
-    }),
+    new PrecomputedEvaluationsClient(DEMO_CLIENT_KEY, user),
   );
+
+  useEffect(() => {
+    const adapter = client.getDataAdapter() as EvaluationsDataAdapter;
+    adapter.setDataForUser(user, values);
+  }, [client, user, values]);
 
   return (
     <StatsigProvider client={client}>

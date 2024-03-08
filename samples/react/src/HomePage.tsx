@@ -1,21 +1,22 @@
-import { ReactNode } from 'react';
+import { ReactNode, useEffect, useState } from 'react';
 
 import {
-  NetworkEvaluationsDataProvider,
+  EvaluationsDataAdapter,
   PrecomputedEvaluationsClient,
 } from '@statsig/precomputed-evaluations';
 import { StatsigProvider, useGate } from '@statsig/react-bindings';
 
-const DEMO_CLIENT_KEY = 'client-rfLvYGag3eyU0jYW5zcIJTQip7GXxSrhOFN69IGMjvq';
-const client = new PrecomputedEvaluationsClient(
-  DEMO_CLIENT_KEY,
-  {
-    userID: 'a-user',
-  },
-  {
-    dataProviders: [NetworkEvaluationsDataProvider.create()],
-  },
-);
+import { STATSIG_CLIENT_KEY } from './Contants';
+
+const user = {
+  userID: 'a-user',
+};
+const client = new PrecomputedEvaluationsClient(STATSIG_CLIENT_KEY, user);
+
+const adapter = client.getDataAdapter() as EvaluationsDataAdapter;
+const fetchLatest = adapter.getData(STATSIG_CLIENT_KEY, user)
+  ? null
+  : adapter.fetchLatestDataForUser(user);
 
 function Content() {
   const { value } = useGate('a_gate');
@@ -33,6 +34,23 @@ function Content() {
 }
 
 export default function HomePage(): ReactNode {
+  const [isLoading, setIsLoading] = useState(fetchLatest != null);
+
+  useEffect(() => {
+    fetchLatest
+      ?.then(() => {
+        client.updateUser(user);
+        setIsLoading(false);
+      })
+      .catch((e) => {
+        throw e;
+      });
+  }, []);
+
+  if (isLoading) {
+    return <>...</>;
+  }
+
   return (
     <StatsigProvider client={client}>
       <Content />

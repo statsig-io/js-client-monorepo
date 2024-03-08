@@ -3,8 +3,8 @@ import { anyFunction, anyNumber } from 'statsig-test-helpers';
 
 import { StatsigClientEventData } from '@statsig/client-core';
 
+import { EvaluationsDataAdapter } from '../EvaluationsDataAdapter';
 import PrecomputedEvaluationsClient from '../PrecomputedEvaluationsClient';
-import { NetworkEvaluationsDataProvider } from '../data-providers/NetworkEvaluationsDataProvider';
 import InitializeResponse from './initialize.json';
 
 describe('Client Evaluations Callback', () => {
@@ -14,16 +14,17 @@ describe('Client Evaluations Callback', () => {
 
   beforeEach(async () => {
     events = [];
-    client = new PrecomputedEvaluationsClient('client-key', user, {
-      dataProviders: [NetworkEvaluationsDataProvider.create()],
-    });
+    client = new PrecomputedEvaluationsClient('client-key', user);
 
     InitializeResponse['time'] = 123456;
 
     fetchMock.enableMocks();
     fetchMock.mockResponse(JSON.stringify(InitializeResponse));
 
-    await client.initialize();
+    const adapter = client.getDataAdapter() as EvaluationsDataAdapter;
+    await adapter.fetchLatestDataForUser(user);
+
+    client.initialize();
 
     client.on('*', (data) => {
       if (data.event.endsWith('_evaluation')) {

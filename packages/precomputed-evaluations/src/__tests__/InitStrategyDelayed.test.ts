@@ -3,21 +3,13 @@ import fetchMock from 'jest-fetch-mock';
 import { getUserStorageKey } from '@statsig/client-core';
 
 import PrecomputedEvaluationsClient from '../PrecomputedEvaluationsClient';
-import { LocalStorageCacheEvaluationsDataProvider } from '../data-providers/LocalStorageCacheEvaluationsDataProvider';
-import { DelayedNetworkEvaluationsDataProvider } from '../data-providers/NetworkEvaluationsDataProvider';
 import { MockLocalStorage } from './MockLocalStorage';
 import InitializeResponse from './initialize.json';
 
 describe('Init Strategy - Delayed', () => {
   const sdkKey = 'client-key';
   const user = { userID: 'a-user' };
-  const cacheKey = getUserStorageKey(sdkKey, user);
-  const options = {
-    dataProviders: [
-      new LocalStorageCacheEvaluationsDataProvider(),
-      DelayedNetworkEvaluationsDataProvider.create(),
-    ],
-  };
+  const cacheKey = `statsig.user_cache.precomputed_eval.${getUserStorageKey(sdkKey, user)}`;
 
   let client: PrecomputedEvaluationsClient;
   let storageMock: MockLocalStorage;
@@ -29,10 +21,7 @@ describe('Init Strategy - Delayed', () => {
     fetchMock.enableMocks();
     fetchMock.mockResponse(JSON.stringify(InitializeResponse));
 
-    client = new PrecomputedEvaluationsClient(sdkKey, user, options);
-
-    // Purposely not awaiting
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    client = new PrecomputedEvaluationsClient(sdkKey, user);
     client.initialize();
   });
 
@@ -57,10 +46,7 @@ describe('Init Strategy - Delayed', () => {
     beforeAll(async () => {
       fetchMock.mockClear();
 
-      client = new PrecomputedEvaluationsClient(sdkKey, user, options);
-
-      // Purposely not awaiting
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      client = new PrecomputedEvaluationsClient(sdkKey, user);
       client.initialize();
     });
 

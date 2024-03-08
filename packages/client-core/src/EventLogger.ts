@@ -206,8 +206,8 @@ export class EventLogger {
       },
     });
 
-    if (result) {
-      return JSON.parse(result) as SendEventsResponse;
+    if (result?.body) {
+      return JSON.parse(result.body) as SendEventsResponse;
     }
 
     return { success: false };

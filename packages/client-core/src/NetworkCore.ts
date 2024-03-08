@@ -29,6 +29,11 @@ type RequestArgsInternal = RequestArgs & {
   body?: string;
 };
 
+type NetworkResponse = {
+  body: string | null;
+  code: number;
+};
+
 class NetworkError extends Error {
   constructor(
     message: string,
@@ -48,7 +53,7 @@ export class NetworkCore {
     this._timeout = _options?.networkTimeoutMs ?? DEFAULT_TIMEOUT_MS;
   }
 
-  async post(args: RequestArgsWithData): Promise<string | null> {
+  async post(args: RequestArgsWithData): Promise<NetworkResponse | null> {
     const { data } = args;
     const stableID = await StableID.get(args.sdkKey);
     const sessionID = SessionID.get(args.sdkKey);
@@ -64,7 +69,7 @@ export class NetworkCore {
     return this._sendRequest({ method: 'POST', body, ...args });
   }
 
-  async get(args: RequestArgs): Promise<string | null> {
+  async get(args: RequestArgs): Promise<NetworkResponse | null> {
     return this._sendRequest({ method: 'GET', ...args });
   }
 
@@ -76,7 +81,7 @@ export class NetworkCore {
 
   private async _sendRequest(
     args: RequestArgsInternal,
-  ): Promise<string | null> {
+  ): Promise<NetworkResponse | null> {
     const { method, body, retries } = args;
 
     const controller = new AbortController();
@@ -108,7 +113,10 @@ export class NetworkCore {
         contentLength: response.headers.get('content-length'),
       });
 
-      return text;
+      return {
+        body: text,
+        code: response.status,
+      };
     } catch (error) {
       const errorMessage = _getErrorMessage(controller, error);
       Diagnostics.mark('_sendRequest:error', {
