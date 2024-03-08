@@ -269,52 +269,52 @@ importers:
   packages/client-extensions:
     dependencies:
       '@statsig/client-core':
-        specifier: 0.0.1-beta.6
+        specifier: 0.0.1-beta.7
         version: link:../client-core
       '@statsig/on-device-evaluations':
-        specifier: 0.0.1-beta.6
+        specifier: 0.0.1-beta.7
         version: link:../on-device-evaluations
       '@statsig/precomputed-evaluations':
-        specifier: 0.0.1-beta.6
+        specifier: 0.0.1-beta.7
         version: link:../precomputed-evaluations
 
   packages/expo-bindings:
     dependencies:
       '@statsig/client-core':
-        specifier: 0.0.1-beta.6
+        specifier: 0.0.1-beta.7
         version: link:../client-core
       '@statsig/react-bindings':
-        specifier: 0.0.1-beta.6
+        specifier: 0.0.1-beta.7
         version: link:../react-bindings
 
   packages/on-device-evaluations:
     dependencies:
       '@statsig/client-core':
-        specifier: 0.0.1-beta.6
+        specifier: 0.0.1-beta.7
         version: link:../client-core
       '@statsig/sha256':
-        specifier: 0.0.1-beta.6
+        specifier: 0.0.1-beta.7
         version: link:../sha256
 
   packages/precomputed-evaluations:
     dependencies:
       '@statsig/client-core':
-        specifier: 0.0.1-beta.6
+        specifier: 0.0.1-beta.7
         version: link:../client-core
 
   packages/react-bindings:
     dependencies:
       '@statsig/client-core':
-        specifier: 0.0.1-beta.6
+        specifier: 0.0.1-beta.7
         version: link:../client-core
 
   packages/react-native-bindings:
     dependencies:
       '@statsig/client-core':
-        specifier: 0.0.1-beta.6
+        specifier: 0.0.1-beta.7
         version: link:../client-core
       '@statsig/react-bindings':
-        specifier: 0.0.1-beta.6
+        specifier: 0.0.1-beta.7
         version: link:../react-bindings
 
   packages/sha256:
@@ -329,7 +329,7 @@ importers:
         specifier: 29.7.0
         version: 29.7.0
       '@statsig/client-core':
-        specifier: 0.0.1-beta.6
+        specifier: 0.0.1-beta.7
         version: link:../client-core
 
 packages:

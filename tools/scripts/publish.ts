@@ -24,7 +24,7 @@ if (!existsSync(configPath)) {
 
 try {
   execSync(
-    `npm publish --registry=https://registry.npmjs.org/ --userconfig=${root}/.npmrc --access public --tag beta`,
+    `npm publish --registry=https://registry.npmjs.org/ --userconfig=${root}/.npmrc --access public`,
     { cwd: dir },
   );
 } catch {
