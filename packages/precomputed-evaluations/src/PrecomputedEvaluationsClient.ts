@@ -1,7 +1,6 @@
 import type {
   EvaluationOptions,
   FeatureGate,
-  StatsigDataAdapter,
   StatsigUser,
 } from '@statsig/client-core';
 import {
@@ -47,12 +46,16 @@ export default class PrecomputedEvaluationsClient
       this.emit(e);
     });
 
-    super(sdkKey, network, options);
+    super(
+      sdkKey,
+      options?.dataAdapter ?? new EvaluationsDataAdapter(sdkKey, options),
+      network,
+      options,
+    );
 
     monitorClass(this._errorBoundary, PrecomputedEvaluationsClient, this);
     monitorClass(this._errorBoundary, Network, network);
 
-    this._sdkKey = sdkKey;
     this._options = options ?? {};
     this._store = new EvaluationStore(sdkKey);
     this._network = network;
@@ -175,10 +178,6 @@ export default class PrecomputedEvaluationsClient
 
   logEvent(event: StatsigEvent): void {
     this._logger.enqueue({ ...event, user: this._user, time: Date.now() });
-  }
-
-  protected override _getDefaultDataAdapter(): StatsigDataAdapter {
-    return new EvaluationsDataAdapter(this._sdkKey, this._options);
   }
 
   private _getConfigImpl(

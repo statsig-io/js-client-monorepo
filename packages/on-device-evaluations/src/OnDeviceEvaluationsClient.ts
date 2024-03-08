@@ -7,7 +7,6 @@ import {
   Layer,
   OnDeviceEvaluationsInterface,
   StatsigClientBase,
-  StatsigDataAdapter,
   StatsigEvent,
   StatsigUser,
   createConfigExposure,
@@ -44,7 +43,12 @@ export default class OnDeviceEvaluationsClient
 
   constructor(sdkKey: string, options: StatsigOptions | null = null) {
     const network = new Network(options);
-    super(sdkKey, network, options);
+    super(
+      sdkKey,
+      options?.dataAdapter ?? new SpecsDataAdapter(sdkKey),
+      network,
+      options,
+    );
 
     monitorClass(this._errorBoundary, OnDeviceEvaluationsClient, this);
     monitorClass(this._errorBoundary, Network, network);
@@ -173,10 +177,6 @@ export default class OnDeviceEvaluationsClient
 
   logEvent(event: StatsigEvent, user: StatsigUser): void {
     this._logger.enqueue({ ...event, user, time: Date.now() });
-  }
-
-  protected override _getDefaultDataAdapter(): StatsigDataAdapter {
-    return new SpecsDataAdapter(this._sdkKey);
   }
 
   private _getConfigImpl(

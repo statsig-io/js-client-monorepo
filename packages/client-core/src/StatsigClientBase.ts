@@ -34,29 +34,28 @@ export abstract class StatsigClientBase
 {
   loadingStatus: StatsigLoadingStatus = 'Uninitialized';
 
-  protected _errorBoundary: ErrorBoundary;
-  protected _logger: EventLogger;
-  protected _sdkKey: string;
-  protected _adapter: StatsigDataAdapter;
+  protected readonly _errorBoundary: ErrorBoundary;
+  protected readonly _logger: EventLogger;
 
   private _listeners: Record<string, StatsigClientEventCallback[]> = {};
 
   constructor(
-    sdkKey: string,
+    protected readonly _sdkKey: string,
+    protected readonly _adapter: StatsigDataAdapter,
+
     network: NetworkCore,
     options: StatsigOptionsCommon | null,
   ) {
     this._logger = new EventLogger(
-      sdkKey,
+      _sdkKey,
       this.emit.bind(this),
       network,
       options,
     );
-    this._sdkKey = sdkKey;
-    this._errorBoundary = new ErrorBoundary(sdkKey);
+    this._errorBoundary = new ErrorBoundary(_sdkKey);
 
     if (options?.overrideStableID) {
-      StableID.setOverride(options.overrideStableID, sdkKey);
+      StableID.setOverride(options.overrideStableID, _sdkKey);
     }
 
     __STATSIG__ = __STATSIG__ ?? {};
@@ -65,11 +64,6 @@ export abstract class StatsigClientBase
     __STATSIG__.instances = instances;
 
     Log.level = options?.logLevel ?? LogLevel.Warn;
-    this._adapter = options?.dataAdapter ?? this._getDefaultDataAdapter();
-  }
-
-  getDataAdapter(): StatsigDataAdapter {
-    return this._adapter;
   }
 
   on(
@@ -92,6 +86,10 @@ export abstract class StatsigClientBase
         this._listeners[event].splice(index, 1);
       }
     }
+  }
+
+  getDataAdapter(): StatsigDataAdapter {
+    return this._adapter;
   }
 
   protected emit(data: StatsigClientEventData): void {
@@ -117,8 +115,6 @@ export abstract class StatsigClientBase
 
     this._logger.enqueue(exposure);
   }
-
-  protected abstract _getDefaultDataAdapter(): StatsigDataAdapter;
 
   protected _runPostUpdate(
     current: StatsigDataAdapterResult | null,

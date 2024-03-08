@@ -22,7 +22,7 @@ export class EvaluationsDataAdapter implements StatsigDataAdapter {
 
   constructor(
     private _sdkKey: string,
-    private _options?: StatsigOptions,
+    private _options?: StatsigOptions | null,
   ) {
     this._network = new Network(_options ?? {});
   }
