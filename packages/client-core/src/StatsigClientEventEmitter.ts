@@ -1,11 +1,24 @@
 import { DynamicConfig, Experiment, FeatureGate, Layer } from './StatsigTypes';
 
-export type StatsigLoadingStatus =
-  | 'Uninitialized'
-  | 'Loading'
-  | 'Ready'
-  | 'Error';
+export type StatsigLoadingStatus = 'Uninitialized' | 'Loading' | 'Ready';
 
+/**
+ * All the possible events emitted from a Statsig client.
+ *
+ * `status_change` - When the Statsig clients internal values change as the result of an initialize/update operation.
+ *
+ * `error` - When an unexpected error occurs within the Statsig client.
+ *
+ * `logs_flushed` - When queued StatsigEvents are flushed to Statsig servers.
+ *
+ * `gate_evaluation` - Fired when any gate is checked from the Statsig client.
+ *
+ * `dynamic_config_evaluation` - Fired when any dyanamic config is checked from the Statsig client.
+ *
+ * `experiment_evaluation` - Fired when any experiment is checked from the Statsig client.
+ *
+ * `layer_evaluation` - Fired when any layer is checked from the Statsig client.
+ */
 export type StatsigClientEvent =
   | 'status_change'
   | 'error'
@@ -15,6 +28,9 @@ export type StatsigClientEvent =
   | 'experiment_evaluation'
   | 'layer_evaluation';
 
+/**
+ * Type representing various events emitted by a Statsig client.
+ */
 export type StatsigClientEventData =
   | {
       event: StatsigClientEvent;

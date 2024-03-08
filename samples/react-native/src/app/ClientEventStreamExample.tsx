@@ -47,14 +47,14 @@ function Content({ events }: { events: StatsigClientEventData[] }) {
 export default function ClientEventStreamExample(): JSX.Element {
   const [events, setEvents] = useState<StatsigClientEventData[]>([]);
   useEffect(() => {
-    const onFlush = (data: StatsigClientEventData) => {
+    const onClientEvent = (data: StatsigClientEventData) => {
       setEvents((old) => [...old, data]);
     };
 
-    client.on('*', onFlush);
+    client.on('*', onClientEvent);
 
     return () => {
-      client.off('*', onFlush);
+      client.off('*', onClientEvent);
     };
   }, []);
 
