@@ -54,18 +54,7 @@ export class NetworkCore {
   }
 
   async post(args: RequestArgsWithData): Promise<NetworkResponse | null> {
-    const { data } = args;
-    const stableID = await StableID.get(args.sdkKey);
-    const sessionID = SessionID.get(args.sdkKey);
-    const body = JSON.stringify({
-      ...data,
-      statsigMetadata: {
-        ...StatsigMetadataProvider.get(),
-        stableID,
-        sessionID,
-      },
-    });
-
+    const body = await this._getPopulatedBody(args);
     return this._sendRequest({ method: 'POST', body, ...args });
   }
 
@@ -73,10 +62,10 @@ export class NetworkCore {
     return this._sendRequest({ method: 'GET', ...args });
   }
 
-  beacon(args: RequestArgsWithData): boolean {
-    const url = new URL(args.url);
-    url.searchParams.append('k', args.sdkKey);
-    return navigator.sendBeacon(url, JSON.stringify(args.data));
+  async beacon(args: RequestArgsWithData): Promise<boolean> {
+    const url = this._getPopulatedURL(args);
+    const body = await this._getPopulatedBody(args);
+    return navigator.sendBeacon(url, body);
   }
 
   private async _sendRequest(
@@ -92,8 +81,8 @@ export class NetworkCore {
 
     let response: Response | null = null;
     try {
-      const fullUrl = this._getPopulatedURL(args);
-      response = await fetch(fullUrl, {
+      const url = this._getPopulatedURL(args);
+      response = await fetch(url, {
         method,
         body,
         headers: {
@@ -152,6 +141,20 @@ export class NetworkCore {
     }
 
     return url.toString();
+  }
+
+  private async _getPopulatedBody(args: RequestArgsWithData): Promise<string> {
+    const { data } = args;
+    const stableID = await StableID.get(args.sdkKey);
+    const sessionID = SessionID.get(args.sdkKey);
+    return JSON.stringify({
+      ...data,
+      statsigMetadata: {
+        ...StatsigMetadataProvider.get(),
+        stableID,
+        sessionID,
+      },
+    });
   }
 }
 

@@ -6,19 +6,47 @@ import { NetworkCore } from '../NetworkCore';
 Log.level = LogLevel.None;
 
 describe('Network Core', () => {
+  const data = { foo: 'bar' };
   const url = 'http://localhost';
   const network = new NetworkCore(null);
 
-  describe('Success', () => {
+  describe('POST Success', () => {
+    let body: unknown;
+
     beforeAll(async () => {
       fetchMock.mockClear();
-      fetchMock.mockResponseOnce(JSON.stringify({ data: '12345' }));
-      await network.post({ sdkKey: '', url, data: {} });
+      fetchMock.mockResponseOnce(JSON.stringify({ result: '12345' }));
+
+      await network.post({ sdkKey: '', url, data });
+      body = JSON.parse(fetchMock.mock.calls[0]?.[1]?.body?.toString() ?? '{}');
     });
 
-    it('makes requests', () => {
-      fetchMock.mockReject(new Error('Network Error'));
-      expect(fetchMock).toHaveBeenCalled();
+    it('makes request with data', () => {
+      expect(body).toMatchObject(data);
+    });
+
+    it('includes statsig metadata', () => {
+      expect(Object.keys(body as object)).toContain('statsigMetadata');
+    });
+  });
+
+  describe('Beacon Success', () => {
+    let body: unknown;
+
+    beforeAll(async () => {
+      const spy = jest.fn();
+      navigator.sendBeacon = spy;
+
+      await network.beacon({ sdkKey: '', url, data });
+      body = JSON.parse(spy.mock.calls[0]?.[1] ?? '{}');
+    });
+
+    it('makes request with data', () => {
+      expect(body).toMatchObject(data);
+    });
+
+    it('includes statsig metadata', () => {
+      expect(Object.keys(body as object)).toContain('statsigMetadata');
     });
   });
 
@@ -26,6 +54,7 @@ describe('Network Core', () => {
     beforeAll(async () => {
       fetchMock.mockClear();
       fetchMock.mockReject(new Error('Lost Connection'));
+
       await network.post({ sdkKey: '', url, data: {}, retries: 2 });
     });
 
@@ -38,6 +67,7 @@ describe('Network Core', () => {
     beforeAll(async () => {
       fetchMock.mockClear();
       fetchMock.mockResponse('', { status: 500 });
+
       await network.post({ sdkKey: '', url, data: {}, retries: 2 });
     });
 

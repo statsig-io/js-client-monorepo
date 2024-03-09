@@ -173,7 +173,7 @@ export class EventLogger {
 
       const response =
         !isInForeground && this._isBeaconSupported()
-          ? this._sendEventsViaBeacon(api, events)
+          ? await this._sendEventsViaBeacon(api, events)
           : await this._sendEventsViaPost(api, events);
 
       if (response.success) {
@@ -213,12 +213,12 @@ export class EventLogger {
     return { success: false };
   }
 
-  private _sendEventsViaBeacon(
+  private async _sendEventsViaBeacon(
     api: string,
     events: StatsigEventInternal[],
-  ): SendEventsResponse {
+  ): Promise<SendEventsResponse> {
     return {
-      success: this._network.beacon({
+      success: await this._network.beacon({
         sdkKey: this._sdkKey,
         data: {
           events,
