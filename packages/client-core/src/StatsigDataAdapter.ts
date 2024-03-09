@@ -8,7 +8,8 @@ export type DataSource =
   | 'Cache'
   | 'Network'
   | 'NetworkNotModified'
-  | 'Bootstrap';
+  | 'Bootstrap'
+  | 'Prefetch';
 
 export type StatsigDataAdapterResult = {
   readonly source: DataSource;

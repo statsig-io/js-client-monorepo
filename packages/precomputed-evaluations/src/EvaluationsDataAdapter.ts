@@ -59,13 +59,20 @@ export class EvaluationsDataAdapter implements StatsigDataAdapter {
     }
 
     await this._writeToCache(cacheKey, latest.data);
-
     return latest;
   }
 
   setDataForUser(user: StatsigUser, data: string): void {
     const cacheKey = this._getCacheKey(user);
     this._inMemoryCache[cacheKey] = { source: 'Bootstrap', data };
+  }
+
+  async prefetchDataForUser(user: StatsigUser): Promise<void> {
+    const cacheKey = this._getCacheKey(user);
+    const result = await this.getDataAsync(null, user);
+    if (result) {
+      this._inMemoryCache[cacheKey] = { ...result, source: 'Prefetch' };
+    }
   }
 
   private _getSdkKey(): string {

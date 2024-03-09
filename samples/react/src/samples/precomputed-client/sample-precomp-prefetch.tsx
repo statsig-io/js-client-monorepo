@@ -11,7 +11,7 @@ const dataAdapter = new EvaluationsDataAdapter();
 const user = { userID: 'a-user' };
 
 // Fetch the latest values for a given StatsigUser
-await dataAdapter.getDataAsync(null, user);
+await dataAdapter.prefetchDataForUser(user);
 
 // Then, after the fetch completes, we can synchronously switch users
 myStatsigClient.updateUserSync(user);
