@@ -14,7 +14,7 @@ describe('StatsigProvider', () => {
     client.shutdown.mockReturnValue(Promise.resolve());
 
     client.on.mockImplementation((event, callback) => {
-      if (event === 'status_change') {
+      if (event === 'values_updated') {
         onStatusChange = callback;
       }
     });
@@ -27,7 +27,7 @@ describe('StatsigProvider', () => {
 
     act(() => {
       (client.loadingStatus as any) = 'Ready';
-      onStatusChange({ event: 'status_change', loadingStatus: 'Ready' });
+      onStatusChange({ event: 'values_updated', status: 'Ready' });
     });
     await waitFor(() => screen.getByTestId('first-child'));
   });

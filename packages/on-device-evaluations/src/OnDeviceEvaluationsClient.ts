@@ -39,7 +39,6 @@ export default class OnDeviceEvaluationsClient
   private _options: StatsigOptions;
   private _store: SpecStore;
   private _evaluator: Evaluator;
-  private _source: string;
 
   constructor(sdkKey: string, options: StatsigOptions | null = null) {
     const network = new Network(options);
@@ -57,7 +56,6 @@ export default class OnDeviceEvaluationsClient
     this._network = network;
     this._store = new SpecStore();
     this._evaluator = new Evaluator(this._store);
-    this._source = 'NoValues';
   }
 
   initializeSync(): void {
@@ -70,7 +68,7 @@ export default class OnDeviceEvaluationsClient
 
     this._store.finalize();
 
-    this._setStatus('Ready');
+    this._setStatus('Ready', result);
 
     this._runPostUpdate(result);
   }
@@ -78,7 +76,7 @@ export default class OnDeviceEvaluationsClient
   async initializeAsync(): Promise<void> {
     this._store.reset();
 
-    this._setStatus('Loading');
+    this._setStatus('Loading', null);
 
     let result = this._adapter.getDataSync();
     if (result) {
@@ -91,7 +89,7 @@ export default class OnDeviceEvaluationsClient
     }
 
     this._store.finalize();
-    this._setStatus('Ready');
+    this._setStatus('Ready', result);
   }
 
   async shutdown(): Promise<void> {

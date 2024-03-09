@@ -1,3 +1,4 @@
+import { StatsigDataAdapterResult } from './StatsigDataAdapter';
 import { DynamicConfig, Experiment, FeatureGate, Layer } from './StatsigTypes';
 
 export type StatsigLoadingStatus = 'Uninitialized' | 'Loading' | 'Ready';
@@ -5,7 +6,7 @@ export type StatsigLoadingStatus = 'Uninitialized' | 'Loading' | 'Ready';
 /**
  * All the possible events emitted from a Statsig client.
  *
- * `status_change` - When the Statsig clients internal values change as the result of an initialize/update operation.
+ * `values_updated` - When the Statsig clients internal values change as the result of an initialize/update operation.
  *
  * `error` - When an unexpected error occurs within the Statsig client.
  *
@@ -20,7 +21,7 @@ export type StatsigLoadingStatus = 'Uninitialized' | 'Loading' | 'Ready';
  * `layer_evaluation` - Fired when any layer is checked from the Statsig client.
  */
 export type StatsigClientEvent =
-  | 'status_change'
+  | 'values_updated'
   | 'error'
   | 'logs_flushed'
   | 'gate_evaluation'
@@ -36,8 +37,9 @@ export type StatsigClientEventData =
       event: StatsigClientEvent;
     }
   | {
-      event: 'status_change';
-      loadingStatus: StatsigLoadingStatus;
+      event: 'values_updated';
+      status: StatsigLoadingStatus;
+      values: StatsigDataAdapterResult | null;
     }
   | {
       event: 'error';

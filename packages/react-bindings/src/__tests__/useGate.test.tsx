@@ -25,7 +25,7 @@ describe('useGate', () => {
     client.shutdown.mockReturnValue(Promise.resolve());
     client.getFeatureGate.mockReturnValue({ value: true } as any);
     client.on.mockImplementation((event, callback) => {
-      if (event === 'status_change') {
+      if (event === 'values_updated') {
         onStatusChange = callback;
       }
     });
@@ -44,7 +44,7 @@ describe('useGate', () => {
   it('renders the gate value', async () => {
     act(() => {
       (client.loadingStatus as any) = 'Ready';
-      onStatusChange({ event: 'status_change', loadingStatus: 'Ready' });
+      onStatusChange({ event: 'values_updated', status: 'Ready' });
     });
 
     await waitFor(() => {

@@ -83,7 +83,7 @@ export default class PrecomputedEvaluationsClient
     }
 
     this._store.finalize();
-    this._setStatus('Ready');
+    this._setStatus('Ready', result);
 
     this._runPostUpdate(result ?? null, this._user);
   }
@@ -91,7 +91,7 @@ export default class PrecomputedEvaluationsClient
   async updateUserAsync(user: StatsigUser): Promise<void> {
     this._resetForUser(user);
 
-    this._setStatus('Loading');
+    this._setStatus('Loading', null);
 
     let result = this._adapter.getDataSync(this._user);
     if (result) {
@@ -105,7 +105,7 @@ export default class PrecomputedEvaluationsClient
     }
 
     this._store.finalize();
-    this._setStatus('Ready');
+    this._setStatus('Ready', result);
   }
 
   async shutdown(): Promise<void> {

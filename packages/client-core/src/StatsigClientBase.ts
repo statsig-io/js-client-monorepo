@@ -102,9 +102,12 @@ export abstract class StatsigClientBase
     this._listeners['*']?.forEach((listener) => listener(data));
   }
 
-  protected _setStatus(newStatus: StatsigLoadingStatus): void {
+  protected _setStatus(
+    newStatus: StatsigLoadingStatus,
+    values: StatsigDataAdapterResult | null,
+  ): void {
     this.loadingStatus = newStatus;
-    this.emit({ event: 'status_change', loadingStatus: newStatus });
+    this.emit({ event: 'values_updated', status: newStatus, values });
   }
 
   protected _enqueueExposure(

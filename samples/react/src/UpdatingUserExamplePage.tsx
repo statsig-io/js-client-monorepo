@@ -15,7 +15,7 @@ const client = new PrecomputedEvaluationsClient(STATSIG_CLIENT_KEY, {
 });
 
 // eslint-disable-next-line no-console
-client.on('status_change', (data) => console.log(data));
+client.on('values_updated', (data) => console.log(data));
 
 let renderCount = 0;
 

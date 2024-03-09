@@ -1,10 +1,6 @@
 import { ReactNode, useEffect, useState } from 'react';
 
-import {
-  Log,
-  StatsigClientEventData,
-  StatsigClientInterface,
-} from '@statsig/client-core';
+import { Log, StatsigClientInterface } from '@statsig/client-core';
 
 import StatsigContext from './StatsigContext';
 
@@ -18,21 +14,18 @@ export default function StatsigProvider(props: Props): JSX.Element {
   const { client, children } = props;
 
   useEffect(() => {
-    const onStatusChange = (data: StatsigClientEventData) => {
-      if (data.event === 'status_change') {
-        setRenderVersion((v) => v + 1);
-      }
+    const onValuesUpdated = () => {
+      setRenderVersion((v) => v + 1);
     };
 
-    client.on('status_change', onStatusChange);
-    client.initializeSync();
+    client.on('values_updated', onValuesUpdated);
 
     return () => {
       client.shutdown().catch((error) => {
         Log.error('An error occured during shutdown', error);
       });
 
-      client.off('status_change', onStatusChange);
+      client.off('values_updated', onValuesUpdated);
     };
   }, [client]);
 
