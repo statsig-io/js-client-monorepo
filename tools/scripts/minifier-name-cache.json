@@ -68,7 +68,8 @@
       "$_writeToCache": "Ot",
       "$_runCacheEviction": "jt",
       "$_getOutputs": "xt",
-      "$_fetchLatest": "Tt"
+      "$_fetchLatest": "Tt",
+      "$_getPopulatedBody": "Nt"
     }
   }
 }
