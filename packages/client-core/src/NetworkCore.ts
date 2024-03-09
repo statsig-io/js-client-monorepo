@@ -34,15 +34,6 @@ type NetworkResponse = {
   code: number;
 };
 
-class NetworkError extends Error {
-  constructor(
-    message: string,
-    public errorDescription: string,
-  ) {
-    super(message);
-  }
-}
-
 export class NetworkCore {
   private readonly _timeout: number;
 
@@ -60,6 +51,13 @@ export class NetworkCore {
 
   async get(args: RequestArgs): Promise<NetworkResponse | null> {
     return this._sendRequest({ method: 'GET', ...args });
+  }
+
+  isBeaconSupported(): boolean {
+    return (
+      typeof navigator !== 'undefined' &&
+      typeof navigator?.sendBeacon === 'function'
+    );
   }
 
   async beacon(args: RequestArgsWithData): Promise<boolean> {
@@ -82,6 +80,7 @@ export class NetworkCore {
     let response: Response | null = null;
     try {
       const url = this._getPopulatedURL(args);
+
       response = await fetch(url, {
         method,
         body,
@@ -94,7 +93,9 @@ export class NetworkCore {
 
       const text = await response.text();
       if (!response.ok) {
-        throw new NetworkError('Fetch Failure', text);
+        const err = new Error(`Failed to fetch: ${url} ${text}`);
+        err.name = 'NetworkError';
+        throw err;
       }
 
       Diagnostics.mark('_sendRequest:response-received', {
@@ -116,7 +117,7 @@ export class NetworkCore {
 
       if (!retries || retries <= 0) {
         this._emitter?.({ event: 'error', error });
-        Log.error('A networking error occured.', errorMessage);
+        Log.error('A networking error occured.', errorMessage, error);
         return null;
       }
 
@@ -126,21 +127,23 @@ export class NetworkCore {
 
   private _getPopulatedURL(args: RequestArgs): string {
     const metadata = StatsigMetadataProvider.get();
-    const url = new URL(args.url);
 
-    url.searchParams.append('k', args.sdkKey);
-    url.searchParams.append('st', metadata.sdkType);
-    url.searchParams.append('sv', metadata.sdkVersion);
-    url.searchParams.append('t', String(Date.now()));
-    url.searchParams.append('sid', SessionID.get(args.sdkKey));
+    const params = {
+      ...args.params,
+      k: args.sdkKey,
+      st: metadata.sdkType,
+      sv: metadata.sdkVersion,
+      t: String(Date.now()),
+      sid: SessionID.get(args.sdkKey),
+    };
 
-    if (args.params) {
-      Object.entries(args.params).forEach(([k, v]) => {
-        url.searchParams.append(k, v);
-      });
-    }
+    const query = Object.entries(params)
+      .map(([key, value]) => {
+        return `${encodeURIComponent(key)}=${encodeURIComponent(value)}`;
+      })
+      .join('&');
 
-    return url.toString();
+    return `${args.url}${query ? `?${query}` : ''}`;
   }
 
   private async _getPopulatedBody(args: RequestArgsWithData): Promise<string> {

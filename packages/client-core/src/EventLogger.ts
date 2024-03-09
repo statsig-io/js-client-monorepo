@@ -172,7 +172,7 @@ export class EventLogger {
       const api = this._options?.api ?? DEFAULT_API;
 
       const response =
-        !isInForeground && this._isBeaconSupported()
+        !isInForeground && this._network.isBeaconSupported()
           ? await this._sendEventsViaBeacon(api, events)
           : await this._sendEventsViaPost(api, events);
 
@@ -226,13 +226,6 @@ export class EventLogger {
         url: `${api}/log_event_beacon`,
       }),
     };
-  }
-
-  private _isBeaconSupported(): boolean {
-    return (
-      typeof navigator !== 'undefined' &&
-      typeof navigator?.sendBeacon === 'function'
-    );
   }
 
   private _saveFailedLogsToStorage(events: EventQueue) {

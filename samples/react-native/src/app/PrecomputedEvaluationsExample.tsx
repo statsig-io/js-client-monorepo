@@ -1,6 +1,10 @@
+import { useEffect, useState } from 'react';
 import { Text, View } from 'react-native';
 
-import { PrecomputedEvaluationsClient } from '@statsig/precomputed-evaluations';
+import {
+  EvaluationsDataAdapter,
+  PrecomputedEvaluationsClient,
+} from '@statsig/precomputed-evaluations';
 import {
   StatsigProvider,
   useExperiment,
@@ -10,7 +14,11 @@ import {
 import { DEMO_CLIENT_KEY } from './Constants';
 
 const user = { userID: 'a-user' };
-const client = new PrecomputedEvaluationsClient(DEMO_CLIENT_KEY, user);
+
+const adapter = new EvaluationsDataAdapter();
+const client = new PrecomputedEvaluationsClient(DEMO_CLIENT_KEY, user, {
+  dataAdapter: adapter,
+});
 
 function Content() {
   const gate = useGate('a_gate');
@@ -29,6 +37,24 @@ function Content() {
 }
 
 export default function PrecomputedEvaluationsExample(): JSX.Element {
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    adapter
+      .prefetchDataForUser(user)
+      .catch((e) => {
+        // eslint-disable-next-line no-console
+        console.error(e);
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
+  }, []);
+
+  if (isLoading) {
+    return <Text>...</Text>;
+  }
+
   return (
     <StatsigProvider client={client}>
       <Content />

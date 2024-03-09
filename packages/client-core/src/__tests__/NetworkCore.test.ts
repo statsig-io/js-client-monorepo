@@ -5,10 +5,21 @@ import { NetworkCore } from '../NetworkCore';
 
 Log.level = LogLevel.None;
 
+const urlActual = URL;
+const urlSpy = jest.fn();
+
 describe('Network Core', () => {
   const data = { foo: 'bar' };
   const url = 'http://localhost';
   const network = new NetworkCore(null);
+
+  beforeAll(() => {
+    (global as any).URL = urlSpy;
+  });
+
+  afterAll(() => {
+    (global as any).URL = urlActual;
+  });
 
   describe('POST Success', () => {
     let body: unknown;
@@ -27,6 +38,12 @@ describe('Network Core', () => {
 
     it('includes statsig metadata', () => {
       expect(Object.keys(body as object)).toContain('statsigMetadata');
+    });
+
+    it('does not use URL', () => {
+      // Due to issue with RN. Usage of URL is problematic.
+      // See https://github.com/facebook/react-native/issues/24428
+      expect(urlSpy).not.toHaveBeenCalled();
     });
   });
 
