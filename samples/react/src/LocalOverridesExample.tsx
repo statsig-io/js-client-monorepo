@@ -9,6 +9,7 @@ import {
 const client = new PrecomputedEvaluationsClient('client-key', {
   userID: 'a-user',
 });
+client.initializeSync();
 
 client.overrideGate('overridden_gate', true);
 client.overrideExperiment('overridden_experiment', {

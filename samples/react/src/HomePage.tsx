@@ -9,6 +9,7 @@ const user = {
   userID: 'a-user',
 };
 const client = new PrecomputedEvaluationsClient(STATSIG_CLIENT_KEY, user);
+client.initializeSync();
 
 function Content() {
   const { value } = useGate('a_gate');
