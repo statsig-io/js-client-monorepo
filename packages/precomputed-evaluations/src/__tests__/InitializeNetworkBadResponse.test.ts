@@ -58,8 +58,12 @@ describe('Initialize Network Bad Response', () => {
       fetchMock.mock.calls = [];
 
       storageMock.setItem(
-        'statsig.user_cache.precomputed_eval.2442570830',
-        JSON.stringify(InitializeResponse),
+        'statsig.cached.evaluations.2442570830',
+        JSON.stringify({
+          source: 'Network',
+          data: JSON.stringify(InitializeResponse),
+          receivedAt: Date.now(),
+        }),
       );
 
       await initialize();

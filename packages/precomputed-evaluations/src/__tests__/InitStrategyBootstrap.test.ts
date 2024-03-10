@@ -10,7 +10,7 @@ import InitializeResponse from './initialize.json';
 describe('Init Strategy - Bootstrap', () => {
   const sdkKey = 'client-key';
   const user = { userID: 'a-user' };
-  const cacheKey = `statsig.user_cache.precomputed_eval.${getUserStorageKey(sdkKey, user)}`;
+  const cacheKey = `statsig.cached.evaluations.${getUserStorageKey(sdkKey, user)}`;
 
   let client: PrecomputedEvaluationsClient;
   let storageMock: MockLocalStorage;

@@ -14,6 +14,7 @@ export type DataSource =
 export type StatsigDataAdapterResult = {
   readonly source: DataSource;
   readonly data: string;
+  readonly receivedAt: number;
 };
 
 /**

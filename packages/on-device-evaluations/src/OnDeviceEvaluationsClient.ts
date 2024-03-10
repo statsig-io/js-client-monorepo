@@ -62,9 +62,7 @@ export default class OnDeviceEvaluationsClient
     this._store.reset();
 
     const result = this._adapter.getDataSync();
-    if (result) {
-      this._store.setValuesFromData(result.data, result.source);
-    }
+    this._store.setValuesFromDataAdapter(result);
 
     this._store.finalize();
 
@@ -79,14 +77,10 @@ export default class OnDeviceEvaluationsClient
     this._setStatus('Loading', null);
 
     let result = this._adapter.getDataSync();
-    if (result) {
-      this._store.setValuesFromData(result.data, result.source);
-    }
+    this._store.setValuesFromDataAdapter(result);
 
     result = await this._adapter.getDataAsync(result);
-    if (result) {
-      this._store.setValuesFromData(result.data, result.source);
-    }
+    this._store.setValuesFromDataAdapter(result);
 
     this._store.finalize();
     this._setStatus('Ready', result);

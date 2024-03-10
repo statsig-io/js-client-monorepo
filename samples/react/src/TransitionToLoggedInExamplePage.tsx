@@ -46,7 +46,7 @@ const client = new PrecomputedEvaluationsClient(
 client.initializeSync();
 
 // eslint-disable-next-line no-console
-client.on('values_updated', (data) => console.log(data));
+client.on('*', (data) => console.log(data));
 
 let renderCount = 0;
 

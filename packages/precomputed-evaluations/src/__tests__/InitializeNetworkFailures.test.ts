@@ -13,7 +13,7 @@ describe('Initialize Network Failure', () => {
   let client: PrecomputedEvaluationsClient;
   let storageMock: MockLocalStorage;
 
-  async function initialize() {
+  async function runInitAsync() {
     client = new PrecomputedEvaluationsClient(sdkKey, user, {
       logLevel: LogLevel.None,
     });
@@ -36,7 +36,7 @@ describe('Initialize Network Failure', () => {
     beforeAll(async () => {
       fetchMock.mock.calls = [];
 
-      await initialize();
+      await runInitAsync();
     });
 
     it('is ready after initialize', () => {
@@ -65,11 +65,15 @@ describe('Initialize Network Failure', () => {
       fetchMock.mock.calls = [];
 
       storageMock.setItem(
-        'statsig.user_cache.precomputed_eval.2442570830',
-        JSON.stringify(InitializeResponse),
+        'statsig.cached.evaluations.2442570830',
+        JSON.stringify({
+          source: 'Network',
+          data: JSON.stringify(InitializeResponse),
+          receivedAt: Date.now(),
+        }),
       );
 
-      await initialize();
+      await runInitAsync();
     });
 
     it('reports source as "Cache"', () => {

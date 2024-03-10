@@ -10,7 +10,7 @@ import DcsResponse from './dcs_response.json';
 describe('Init Strategy - Bootstrap', () => {
   const sdkKey = 'client-key';
   const user = { userID: 'a-user' };
-  const cacheKey = `statsig.user_cache.on_device_eval.${getUserStorageKey(sdkKey)}`;
+  const cacheKey = `statsig.cached.specs.${getUserStorageKey(sdkKey)}`;
 
   let client: OnDeviceEvaluationsClient;
   let storageMock: MockLocalStorage;

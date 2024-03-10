@@ -78,9 +78,7 @@ export default class PrecomputedEvaluationsClient
     this._resetForUser(user);
 
     const result = this._adapter.getDataSync(this._user);
-    if (result) {
-      this._store.setValuesFromData(result.data, result.source);
-    }
+    this._store.setValuesFromDataAdapter(result);
 
     this._store.finalize();
     this._setStatus('Ready', result);
@@ -94,15 +92,10 @@ export default class PrecomputedEvaluationsClient
     this._setStatus('Loading', null);
 
     let result = this._adapter.getDataSync(this._user);
-    if (result) {
-      this._store.setValuesFromData(result.data, result.source);
-    }
+    this._store.setValuesFromDataAdapter(result);
 
     result = await this._adapter.getDataAsync(result, this._user);
-
-    if (result) {
-      this._store.setValuesFromData(result.data, result.source);
-    }
+    this._store.setValuesFromDataAdapter(result);
 
     this._store.finalize();
     this._setStatus('Ready', result);

@@ -1,4 +1,4 @@
-import { DataSource } from '@statsig/client-core';
+import { DataSource, StatsigDataAdapterResult } from '@statsig/client-core';
 
 type SpecType = 'gate' | 'config' | 'layer';
 
@@ -60,15 +60,19 @@ export default class SpecStore {
   private _lcut = 0;
   private _receivedAt = 0;
 
-  setValuesFromData(data: string, source: DataSource): void {
-    const values = JSON.parse(data) as DownloadConfigSpecsResponse;
+  setValuesFromDataAdapter(result: StatsigDataAdapterResult | null): void {
+    if (!result) {
+      return;
+    }
+
+    const values = JSON.parse(result.data) as DownloadConfigSpecsResponse;
     if (!values.has_updates) {
       return;
     }
 
     this._lcut = values.time;
-    this._receivedAt = Date.now();
-    this._source = source;
+    this._receivedAt = result.receivedAt;
+    this._source = result.source;
     this._values = values;
   }
 

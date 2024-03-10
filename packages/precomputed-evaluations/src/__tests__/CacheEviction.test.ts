@@ -6,6 +6,7 @@ import InitializeResponse from './initialize.json';
 
 describe('Cache Eviction', () => {
   let storageMock: MockLocalStorage;
+  let adapter: EvaluationsDataAdapter;
 
   beforeAll(async () => {
     storageMock = MockLocalStorage.enabledMockStorage();
@@ -14,7 +15,7 @@ describe('Cache Eviction', () => {
     fetchMock.enableMocks();
     fetchMock.mockResponse(JSON.stringify(InitializeResponse));
 
-    const adapter = new EvaluationsDataAdapter();
+    adapter = new EvaluationsDataAdapter();
     adapter.attach('client-key', null);
 
     for (let i = 0; i < 20; i++) {
@@ -27,9 +28,14 @@ describe('Cache Eviction', () => {
     MockLocalStorage.disableMockStorage();
   });
 
+  it('should only have 10 entries in _inMemoryCache', () => {
+    const entries = Object.entries((adapter as any)._inMemoryCache);
+    expect(entries.length).toBe(10);
+  });
+
   it('should only have 10 user cache entries', () => {
     const entries = Object.entries(storageMock.data).filter((e) =>
-      e[0].startsWith('statsig.user_cache'),
+      e[0].startsWith('statsig.cached'),
     );
     expect(entries.length).toBe(10);
   });
@@ -41,7 +47,7 @@ describe('Cache Eviction', () => {
     expect(Array.from(new Set(keys))).toEqual([
       'statsig.stable_id',
       'statsig.last_modified_time',
-      'statsig.user_cache',
+      'statsig.cached',
     ]);
   });
 });

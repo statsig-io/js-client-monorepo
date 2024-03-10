@@ -1,4 +1,8 @@
-import { DataSource, EvaluationDetails } from '@statsig/client-core';
+import {
+  DataSource,
+  EvaluationDetails,
+  StatsigDataAdapterResult,
+} from '@statsig/client-core';
 
 import {
   ConfigEvaluation,
@@ -37,15 +41,19 @@ export default class EvaluationStore {
     this._source = 'NoValues';
   }
 
-  setValuesFromData(data: string, source: DataSource): void {
-    const values = JSON.parse(data) as EvaluationResponse;
+  setValuesFromDataAdapter(result: StatsigDataAdapterResult | null): void {
+    if (!result) {
+      return;
+    }
+
+    const values = JSON.parse(result.data) as EvaluationResponse;
     if (!values.has_updates) {
       return;
     }
 
     this._lcut = values.time;
-    this._receivedAt = Date.now();
-    this._source = source;
+    this._receivedAt = result.receivedAt;
+    this._source = result.source;
     this._values = values;
   }
 

@@ -5,9 +5,9 @@ import { Log } from './Log';
 
 export * from './$_StatsigGlobal';
 export * from './ClientInterfaces';
+export * from './DataAdapterCore';
 export * from './ErrorBoundary';
 export * from './Hashing';
-export * from './StorageProvider';
 export * from './Log';
 export * from './Monitoring';
 export * from './NetworkCore';
@@ -20,6 +20,7 @@ export * from './StatsigMetadata';
 export * from './StatsigOptionsCommon';
 export * from './StatsigTypes';
 export * from './StatsigUser';
+export * from './StorageProvider';
 export * from './UUID';
 export * from './VisibilityChangeObserver';
 
