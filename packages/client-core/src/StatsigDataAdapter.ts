@@ -17,11 +17,13 @@ export type StatsigDataAdapterResult = {
   readonly receivedAt: number;
 };
 
+export const DataAdapterCachePrefix = 'statsig.cached';
+
 /**
  * Describes a type that is used during intialize/update operations of a Statsig client.
  *
  * See below to find the default adapters, but know that it is possible to create your
- * own StatsigDataAdapter and provide it via {@link StatsigOptions.dataAdapter}.
+ * own StatsigDataAdapter and provide it via {@link StatsigOptionsCommon.dataAdapter}.
  *
  * Defaults:
  *
@@ -30,6 +32,10 @@ export type StatsigDataAdapterResult = {
  * - {@link OnDeviceEvaluationsClient} uses {@link SpecsDataAdapter}
  */
 export type StatsigDataAdapter = {
+  readonly _setInMemoryCache: (
+    cache: Record<string, StatsigDataAdapterResult>,
+  ) => void;
+
   /**
    * Called when the StatsigDataAdapter is attached to the Statsig client instance during construction.
    * @param {string} sdkKey The SDK key being used by the Statsig client.

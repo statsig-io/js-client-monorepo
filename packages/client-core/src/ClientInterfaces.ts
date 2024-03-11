@@ -1,5 +1,6 @@
 import { EvaluationOptions } from './StatsigClientBase';
 import { StatsigClientEventEmitterInterface } from './StatsigClientEventEmitter';
+import { StatsigDataAdapter } from './StatsigDataAdapter';
 import { StatsigEvent } from './StatsigEvent';
 import { DynamicConfig, Experiment, FeatureGate, Layer } from './StatsigTypes';
 import { StatsigUser } from './StatsigUser';
@@ -9,6 +10,7 @@ export interface StatsigClientCommonInterface
   initializeSync(): void;
   initializeAsync(): Promise<void>;
   shutdown(): Promise<void>;
+  getDataAdapter(): StatsigDataAdapter;
 }
 
 export interface OnDeviceEvaluationsInterface

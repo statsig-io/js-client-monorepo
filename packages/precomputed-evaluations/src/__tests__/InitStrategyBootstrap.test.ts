@@ -1,6 +1,9 @@
 import fetchMock from 'jest-fetch-mock';
 
-import { getUserStorageKey } from '@statsig/client-core';
+import {
+  DataAdapterCachePrefix,
+  getUserStorageKey,
+} from '@statsig/client-core';
 
 import { EvaluationsDataAdapter } from '../EvaluationsDataAdapter';
 import PrecomputedEvaluationsClient from '../PrecomputedEvaluationsClient';
@@ -10,7 +13,7 @@ import InitializeResponse from './initialize.json';
 describe('Init Strategy - Bootstrap', () => {
   const sdkKey = 'client-key';
   const user = { userID: 'a-user' };
-  const cacheKey = `statsig.cached.evaluations.${getUserStorageKey(sdkKey, user)}`;
+  const cacheKey = `${DataAdapterCachePrefix}.evaluations.${getUserStorageKey(sdkKey, user)}`;
 
   let client: PrecomputedEvaluationsClient;
   let storageMock: MockLocalStorage;

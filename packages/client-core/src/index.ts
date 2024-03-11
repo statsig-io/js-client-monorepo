@@ -2,6 +2,7 @@
 import './$_StatsigGlobal';
 import { EventLogger } from './EventLogger';
 import { Log } from './Log';
+import { Storage } from './StorageProvider';
 
 export * from './$_StatsigGlobal';
 export * from './ClientInterfaces';
@@ -24,10 +25,11 @@ export * from './StorageProvider';
 export * from './UUID';
 export * from './VisibilityChangeObserver';
 
-export { EventLogger };
+export { EventLogger, Storage, Log };
 
 __STATSIG__ = {
   ...(__STATSIG__ ?? {}),
   EventLogger,
   Log,
+  Storage,
 };

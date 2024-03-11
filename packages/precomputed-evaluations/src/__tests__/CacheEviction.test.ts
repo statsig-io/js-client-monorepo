@@ -1,5 +1,7 @@
 import fetchMock from 'jest-fetch-mock';
 
+import { DataAdapterCachePrefix } from '@statsig/client-core';
+
 import { EvaluationsDataAdapter } from '../EvaluationsDataAdapter';
 import { MockLocalStorage } from './MockLocalStorage';
 import InitializeResponse from './initialize.json';
@@ -35,7 +37,7 @@ describe('Cache Eviction', () => {
 
   it('should only have 10 user cache entries', () => {
     const entries = Object.entries(storageMock.data).filter((e) =>
-      e[0].startsWith('statsig.cached'),
+      e[0].startsWith(DataAdapterCachePrefix),
     );
     expect(entries.length).toBe(10);
   });
@@ -47,7 +49,7 @@ describe('Cache Eviction', () => {
     expect(Array.from(new Set(keys))).toEqual([
       'statsig.stable_id',
       'statsig.last_modified_time',
-      'statsig.cached',
+      DataAdapterCachePrefix,
     ]);
   });
 });

@@ -75,7 +75,8 @@
       "$_lastModifiedStoreKey": "Mt",
       "$_addToInMemoryCache": "At",
       "$_fetchFromNetwork": "Dt",
-      "$_runLocalStorageCacheEviction": "Et"
+      "$_runLocalStorageCacheEviction": "Et",
+      "$_setInMemoryCache": "Pt"
     }
   }
 }

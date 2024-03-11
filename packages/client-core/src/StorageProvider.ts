@@ -1,14 +1,17 @@
 import { Log } from './Log';
 
 type StorageProvider = {
+  getProviderName: () => string;
   getItem: (key: string) => Promise<string | null>;
   setItem: (key: string, value: string) => Promise<void>;
   removeItem: (key: string) => Promise<void>;
+  getAllKeys: () => Promise<readonly string[]>;
 };
 
 const inMemoryStore: Record<string, string> = {};
 
 let provider: StorageProvider = {
+  getProviderName: () => 'InMemory',
   getItem(key: string): Promise<string | null> {
     return Promise.resolve(inMemoryStore[key] ?? null);
   },
@@ -20,11 +23,15 @@ let provider: StorageProvider = {
     delete inMemoryStore[key];
     return Promise.resolve();
   },
+  getAllKeys(): Promise<readonly string[]> {
+    return Promise.resolve(Object.keys(inMemoryStore));
+  },
 };
 
 try {
   if (typeof window !== 'undefined' && 'localStorage' in window) {
     provider = {
+      getProviderName: () => 'LocalStorage',
       getItem(key: string): Promise<string | null> {
         return Promise.resolve(localStorage.getItem(key));
       },
@@ -36,6 +43,10 @@ try {
         localStorage.removeItem(key);
         return Promise.resolve();
       },
+      getAllKeys(): Promise<string[]> {
+        const keys = Object.keys(localStorage);
+        return Promise.resolve(keys);
+      },
     };
   }
 } catch (error) {
@@ -45,9 +56,11 @@ try {
 export const Storage: StorageProvider & {
   setProvider: (n: StorageProvider) => void;
 } = {
+  getProviderName: () => provider.getProviderName(),
   getItem: (key: string) => provider.getItem(key),
   setItem: (key: string, value: string) => provider.setItem(key, value),
   removeItem: (key: string) => provider.removeItem(key),
+  getAllKeys: () => provider.getAllKeys(),
   setProvider: (newProvider: StorageProvider) => {
     provider = newProvider;
   },

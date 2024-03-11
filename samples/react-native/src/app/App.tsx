@@ -8,7 +8,7 @@ import OnDeviceEvaluationsExample from './OnDeviceEvaluationsExample';
 import PrecomputedEvaluationsExample from './PrecomputedEvaluationsExample';
 
 export default function App(): React.ReactNode {
-  const [sample, setSample] = useState('precomputed-eval');
+  const [sample, setSample] = useState('on-device-eval');
   const [isModalVisible, setIsModalVisible] = useState(false);
 
   return (

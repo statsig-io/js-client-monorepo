@@ -1,17 +1,24 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useEffect, useState } from 'react';
 import { Button, Text, View } from 'react-native';
 
-import { PrecomputedEvaluationsClient } from '@statsig/precomputed-evaluations';
 import {
-  StatsigProvider,
-  useExperiment,
-  useGate,
-} from '@statsig/react-native-bindings';
+  EvaluationsDataAdapter,
+  PrecomputedEvaluationsClient,
+} from '@statsig/precomputed-evaluations';
+import { StatsigProvider } from '@statsig/react-bindings';
+import { useExperiment, useGate } from '@statsig/react-native-bindings';
 
 import { DEMO_CLIENT_KEY } from './Constants';
 
 const user = { userID: 'a-user' };
-const client = new PrecomputedEvaluationsClient(DEMO_CLIENT_KEY, user);
+const dataAdapter = new EvaluationsDataAdapter();
+const client = new PrecomputedEvaluationsClient(DEMO_CLIENT_KEY, user, {
+  dataAdapter,
+});
+client.initializeSync();
+
+const prefetching = dataAdapter.prefetchDataForUser(user);
 
 function Content() {
   const gate = useGate('a_gate');
@@ -29,7 +36,7 @@ function Content() {
         title="Clear Cache"
         onPress={() => {
           AsyncStorage.clear().catch((err) => {
-            alert(err.message);
+            throw err;
           });
         }}
       />
@@ -38,6 +45,26 @@ function Content() {
 }
 
 export default function DelayedInitExample(): JSX.Element {
+  const [isReady, setIsReady] = useState(false);
+
+  useEffect(() => {
+    prefetching
+      .then(() => {
+        client.updateUserSync(user);
+      })
+      .catch((e) => {
+        // eslint-disable-next-line no-console
+        console.error(e);
+      })
+      .finally(() => {
+        setIsReady(true);
+      });
+  }, []);
+
+  if (!isReady) {
+    return <Text>...</Text>;
+  }
+
   return (
     <StatsigProvider client={client}>
       <Content />

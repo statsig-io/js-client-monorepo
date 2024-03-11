@@ -1,6 +1,9 @@
 import fetchMock from 'jest-fetch-mock';
 
-import { getUserStorageKey } from '@statsig/client-core';
+import {
+  DataAdapterCachePrefix,
+  getUserStorageKey,
+} from '@statsig/client-core';
 
 import OnDeviceEvaluationsClient from '../OnDeviceEvaluationsClient';
 import { SpecsDataAdapter } from '../SpecsDataAdapter';
@@ -10,7 +13,7 @@ import DcsResponse from './dcs_response.json';
 describe('Init Strategy - Bootstrap', () => {
   const sdkKey = 'client-key';
   const user = { userID: 'a-user' };
-  const cacheKey = `statsig.cached.specs.${getUserStorageKey(sdkKey)}`;
+  const cacheKey = `${DataAdapterCachePrefix}.specs.${getUserStorageKey(sdkKey)}`;
 
   let client: OnDeviceEvaluationsClient;
   let storageMock: MockLocalStorage;

@@ -8,7 +8,7 @@ import {
   StatsigClientEventCallback,
 } from '@statsig/client-core';
 
-import StatsigProvider from '../StatsigProvider';
+import { StatsigProvider } from '../StatsigProvider';
 import useGate from '../useGate';
 
 const GateComponent = () => {

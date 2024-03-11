@@ -1,6 +1,6 @@
 import fetchMock from 'jest-fetch-mock';
 
-import { LogLevel } from '@statsig/client-core';
+import { DataAdapterCachePrefix, LogLevel } from '@statsig/client-core';
 
 import PrecomputedEvaluationsClient from '../PrecomputedEvaluationsClient';
 import { MockLocalStorage } from './MockLocalStorage';
@@ -58,7 +58,7 @@ describe('Initialize Network Bad Response', () => {
       fetchMock.mock.calls = [];
 
       storageMock.setItem(
-        'statsig.cached.evaluations.2442570830',
+        `${DataAdapterCachePrefix}.evaluations.2442570830`,
         JSON.stringify({
           source: 'Network',
           data: JSON.stringify(InitializeResponse),

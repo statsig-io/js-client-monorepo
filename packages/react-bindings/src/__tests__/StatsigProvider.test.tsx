@@ -4,7 +4,7 @@ import { MockRemoteServerEvalClient } from 'statsig-test-helpers';
 
 import { StatsigClientEventCallback } from '@statsig/client-core';
 
-import StatsigProvider from '../StatsigProvider';
+import { StatsigProvider } from '../StatsigProvider';
 
 describe('StatsigProvider', () => {
   let onStatusChange: StatsigClientEventCallback;

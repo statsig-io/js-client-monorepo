@@ -3,7 +3,10 @@ import { Button, FlatList, StyleSheet, Text, View } from 'react-native';
 
 import { LogLevel, StatsigClientEventData } from '@statsig/client-core';
 import { PrecomputedEvaluationsClient } from '@statsig/precomputed-evaluations';
-import { StatsigProvider } from '@statsig/react-native-bindings';
+import {
+  StatsigProviderRN,
+  warmCachingFromAsyncStorage,
+} from '@statsig/react-native-bindings';
 
 import { DEMO_CLIENT_KEY } from './Constants';
 
@@ -11,6 +14,8 @@ const user = { userID: 'a-user' };
 const client = new PrecomputedEvaluationsClient(DEMO_CLIENT_KEY, user, {
   logLevel: LogLevel.Debug,
 });
+const warming = warmCachingFromAsyncStorage(client);
+client.initializeSync();
 
 function ClientEventItem({ data }: { data: StatsigClientEventData }) {
   return (
@@ -27,7 +32,7 @@ function Content({ events }: { events: StatsigClientEventData[] }) {
   return (
     <View style={styles.container}>
       <View style={styles.buttons}>
-        <Text style={{ fontWeight: 'bold' }}>Delayed Init Example</Text>
+        <Text style={{ fontWeight: 'bold' }}>Client Event Stream Example</Text>
         <Button title="Check Gate" onPress={() => client.checkGate('a_gate')} />
         <Button
           title="Log Event"
@@ -59,9 +64,9 @@ export default function ClientEventStreamExample(): JSX.Element {
   }, []);
 
   return (
-    <StatsigProvider client={client}>
+    <StatsigProviderRN client={client} cacheWarming={warming}>
       <Content events={events} />
-    </StatsigProvider>
+    </StatsigProviderRN>
   );
 }
 

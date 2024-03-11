@@ -5,6 +5,7 @@ import {
   Layer,
   OnDeviceEvaluationsInterface,
   PrecomputedEvaluationsInterface,
+  StatsigDataAdapter,
   StatsigUser,
   makeDynamicConfig,
   makeFeatureGate,
@@ -32,6 +33,13 @@ const defaultEvaluation = <T>(type: 'gate' | 'config' | 'layer') => {
   };
 };
 
+const noopDataAdapter: StatsigDataAdapter = {
+  _setInMemoryCache: noop,
+  attach: noop,
+  getDataSync: () => null,
+  getDataAsync: () => Promise.resolve(null),
+};
+
 const client: OnDeviceEvaluationsInterface &
   PrecomputedEvaluationsInterface & { isNoop: true } = {
   isNoop: true,
@@ -50,6 +58,7 @@ const client: OnDeviceEvaluationsInterface &
   logEvent: noop,
   on: noop,
   off: noop,
+  getDataAdapter: () => noopDataAdapter,
 };
 
 export const NoopEvaluationsClient = client;

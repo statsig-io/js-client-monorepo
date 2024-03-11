@@ -2,6 +2,7 @@ import { ErrorBoundary } from './ErrorBoundary';
 import { Log } from './Log';
 import { monitorClass } from './Monitoring';
 import {
+  DataAdapterCachePrefix,
   StatsigDataAdapter,
   StatsigDataAdapterResult,
 } from './StatsigDataAdapter';
@@ -79,6 +80,14 @@ export abstract class DataAdapterCore<T extends UpdatesAwareObject>
     return latest;
   }
 
+  /**
+   * (Internal Use Only) - Used by @statsig/react-native-bindings to prime the cache from AsyncStorage
+   * @param {Record<string, StatsigDataAdapterResult>} cache The values to set for _inMemoryCache
+   */
+  _setInMemoryCache(cache: Record<string, StatsigDataAdapterResult>): void {
+    this._inMemoryCache = cache;
+  }
+
   protected abstract _fetchFromNetwork(
     current: string | null,
     user?: StatsigUser,
@@ -129,7 +138,7 @@ export abstract class DataAdapterCore<T extends UpdatesAwareObject>
 
   protected _getCacheKey(user?: StatsigUser): string {
     const key = getUserStorageKey(this._getSdkKey(), user);
-    return `statsig.cached.${this._cacheSuffix}.${key}`;
+    return `${DataAdapterCachePrefix}.${this._cacheSuffix}.${key}`;
   }
 
   protected _addToInMemoryCache(

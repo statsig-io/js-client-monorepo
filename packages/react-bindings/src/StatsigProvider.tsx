@@ -4,12 +4,12 @@ import { Log, StatsigClientInterface } from '@statsig/client-core';
 
 import StatsigContext from './StatsigContext';
 
-type Props = {
+export type StatsigProviderProps = {
   children: ReactNode | ReactNode[];
   client: StatsigClientInterface;
 };
 
-export default function StatsigProvider(props: Props): JSX.Element {
+export function StatsigProvider(props: StatsigProviderProps): JSX.Element {
   const [renderVersion, setRenderVersion] = useState(0);
   const { client, children } = props;
 
