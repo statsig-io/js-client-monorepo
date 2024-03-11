@@ -10,6 +10,9 @@ import Prism from 'prismjs';
 import { ReactNode, useEffect, useState } from 'react';
 
 const SAMPLES = [
+  // React
+  () => import('./samples/react-precomp/sample-react-login'),
+
   // Precomputed Evaluations Client
   () => import('./samples/precomputed-client/sample-precomp-initialize'),
   () => import('./samples/precomputed-client/sample-precomp-basic'),
