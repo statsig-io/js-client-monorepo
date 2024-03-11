@@ -69,7 +69,13 @@
       "$_runCacheEviction": "jt",
       "$_getOutputs": "xt",
       "$_fetchLatest": "Tt",
-      "$_getPopulatedBody": "Nt"
+      "$_getPopulatedBody": "Nt",
+      "$_className": "It",
+      "$_cacheSuffix": "kt",
+      "$_lastModifiedStoreKey": "Mt",
+      "$_addToInMemoryCache": "At",
+      "$_fetchFromNetwork": "Dt",
+      "$_runLocalStorageCacheEviction": "Et"
     }
   }
 }

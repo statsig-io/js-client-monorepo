@@ -53,8 +53,8 @@ export default class PrecomputedEvaluationsClient
       options,
     );
 
-    monitorClass(this._errorBoundary, PrecomputedEvaluationsClient, this);
-    monitorClass(this._errorBoundary, Network, network);
+    monitorClass(this._errorBoundary, this);
+    monitorClass(this._errorBoundary, network);
 
     this._options = options ?? {};
     this._store = new EvaluationStore(sdkKey);

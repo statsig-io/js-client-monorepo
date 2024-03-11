@@ -4,9 +4,16 @@ import * as Diagnostics from '../Diagnostics';
 import { ErrorBoundary } from '../ErrorBoundary';
 import { monitorClass } from '../Monitoring';
 
-class TestClass {
+class TestClassBase {
+  parentMethod() {
+    // noop
+  }
+}
+
+class TestClass extends TestClassBase {
   constructor(eb: ErrorBoundary) {
-    monitorClass(eb, TestClass, this);
+    super();
+    monitorClass(eb, this);
   }
 
   instanceMethod() {
@@ -34,10 +41,14 @@ describe('Monitoring', () => {
   });
 
   describe.each([
+    ['parent', () => klass.parentMethod()],
     ['instance', () => klass.instanceMethod()],
     ['static', () => TestClass.staticMethod()],
   ])('Calling the %s method', (_type, action) => {
-    beforeAll(() => {
+    beforeEach(() => {
+      ebSpy.mock.calls = [];
+      diagSpy.mock.calls = [];
+
       action();
     });
 

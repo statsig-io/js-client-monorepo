@@ -49,8 +49,8 @@ export default class OnDeviceEvaluationsClient
       options,
     );
 
-    monitorClass(this._errorBoundary, OnDeviceEvaluationsClient, this);
-    monitorClass(this._errorBoundary, Network, network);
+    monitorClass(this._errorBoundary, this);
+    monitorClass(this._errorBoundary, network);
 
     this._options = options ?? {};
     this._network = network;

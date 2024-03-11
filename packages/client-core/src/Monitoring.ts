@@ -2,32 +2,20 @@ import { captureDiagnostics } from './Diagnostics';
 import { ErrorBoundary } from './ErrorBoundary';
 import { StatsigClientBase } from './StatsigClientBase';
 
-export function monitorClass<T extends new (...args: any[]) => any>(
+type Proto = Record<string, unknown> | null;
+
+export function monitorClass(
   errorBoundary: ErrorBoundary,
-  target: T,
-  instance: unknown,
+  instance: object,
 ): void {
-  const methods = Object.getOwnPropertyNames(target.prototype);
-  const obj = instance as Record<string, unknown>;
-
-  for (const method of methods) {
-    if (method === 'constructor' || typeof obj[method] !== 'function') {
-      continue;
-    }
-
-    const original = obj[method] as (...args: unknown[]) => unknown;
-    obj[method] = function (...args: unknown[]) {
-      return monitorFunction(
-        errorBoundary,
-        method,
-        () => original.apply(this, args) as unknown,
-        instance,
-      );
-    };
+  try {
+    _monitorClassImpl(errorBoundary, instance);
+  } catch (error) {
+    errorBoundary.logError('monitorClass', error);
   }
 }
 
-export function monitorFunction<T>(
+function _monitorFunction<T>(
   errorBoundary: ErrorBoundary,
   tag: string,
   func: () => T,
@@ -41,4 +29,81 @@ export function monitorFunction<T>(
     () => captureDiagnostics(tag, () => func.apply(instance)),
     client,
   ) as T;
+}
+
+function _getProtoSafe(instance: unknown): Record<string, unknown> | null {
+  if (typeof instance === 'object') {
+    const proto = Object.getPrototypeOf(instance) as unknown;
+    return proto && typeof proto === 'object'
+      ? (proto as Record<string, unknown>)
+      : null;
+  }
+  return null;
+}
+
+function _getAllInstanceMethodNames(
+  instance: Record<string, unknown>,
+): string[] {
+  const names = new Set<string>();
+
+  let proto = _getProtoSafe(instance);
+  while (proto && proto !== Object.prototype) {
+    Object.getOwnPropertyNames(proto)
+      .filter((prop) => typeof proto?.[prop] === 'function')
+      .forEach((name) => names.add(name));
+    proto = Object.getPrototypeOf(proto) as Proto;
+  }
+
+  return Array.from(names);
+}
+
+function _getAllStaticMethodNames(instance: object): string[] {
+  const names = new Set<string>();
+
+  const proto = _getProtoSafe(instance);
+  Object.getOwnPropertyNames(proto?.constructor || {})
+    .filter(
+      (prop) =>
+        typeof (proto?.constructor as unknown as Record<string, unknown>)?.[
+          prop
+        ] === 'function',
+    )
+    .forEach((name) => names.add(name));
+
+  return Array.from(names);
+}
+
+function _monitorClassImpl(errorBoundary: ErrorBoundary, instance: object) {
+  const obj = instance as Record<string, unknown>;
+
+  for (const method of _getAllInstanceMethodNames(obj)) {
+    if (method === 'constructor') {
+      continue;
+    }
+
+    const original = obj[method] as (...args: unknown[]) => unknown;
+    obj[method] = function (...args: unknown[]) {
+      return _monitorFunction(
+        errorBoundary,
+        method,
+        () => original.apply(this, args) as unknown,
+        instance,
+      );
+    };
+  }
+
+  for (const method of _getAllStaticMethodNames(obj)) {
+    const original = (obj?.constructor as unknown as Record<string, unknown>)?.[
+      method
+    ] as (...args: unknown[]) => unknown;
+    (obj?.constructor as unknown as Record<string, unknown>)[method] =
+      function (...args: unknown[]) {
+        return _monitorFunction(
+          errorBoundary,
+          `${obj.constructor.name}.${method}`,
+          () => original.apply(obj.constructor, args) as unknown,
+          instance,
+        );
+      };
+  }
 }

@@ -26,6 +26,10 @@ export class ErrorBoundary {
     }
   }
 
+  logError(tag: string, error: unknown): void {
+    this._onError(tag, error);
+  }
+
   private _onError(
     tag: string,
     error: unknown,

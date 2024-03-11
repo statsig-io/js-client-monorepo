@@ -72,7 +72,8 @@ describe('Evaluations Data Adapter', () => {
   describe('getDataAsync', () => {
     let result: StatsigDataAdapterResult | null;
 
-    beforeAll(async () => {
+    beforeEach(async () => {
+      fetchMock.mock.calls = [];
       fetchMock.mockResponse(InitializeResponseString);
 
       adapter = new EvaluationsDataAdapter();
@@ -115,6 +116,16 @@ describe('Evaluations Data Adapter', () => {
       const errorResult = await adapter.getDataAsync(null, user);
 
       expect(errorResult).toBeNull();
+    });
+
+    it('hits error boundary', async () => {
+      (adapter as any).getDataSync = () => {
+        throw new Error('Test');
+      };
+      await adapter.prefetchDataForUser({ userID: 'a' });
+      expect(fetchMock.mock.calls[1][0]).toBe(
+        'https://statsigapi.net/v1/sdk_exception',
+      );
     });
   });
 });

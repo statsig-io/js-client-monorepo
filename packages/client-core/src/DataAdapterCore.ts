@@ -1,4 +1,6 @@
+import { ErrorBoundary } from './ErrorBoundary';
 import { Log } from './Log';
+import { monitorClass } from './Monitoring';
 import {
   StatsigDataAdapter,
   StatsigDataAdapterResult,
@@ -20,6 +22,8 @@ type UpdatesAwareObject = {
 export abstract class DataAdapterCore<T extends UpdatesAwareObject>
   implements StatsigDataAdapter
 {
+  protected _errorBoundary: ErrorBoundary | null = null;
+
   private _sdkKey: string | null = null;
   private _inMemoryCache: Record<string, StatsigDataAdapterResult> = {};
   private _lastModifiedStoreKey: string;
@@ -33,6 +37,8 @@ export abstract class DataAdapterCore<T extends UpdatesAwareObject>
 
   attach(sdkKey: string, _options: StatsigOptionsCommon | null): void {
     this._sdkKey = sdkKey;
+    this._errorBoundary = new ErrorBoundary(sdkKey);
+    monitorClass(this._errorBoundary, this);
   }
 
   getDataSync(user?: StatsigUser | undefined): StatsigDataAdapterResult | null {
