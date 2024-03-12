@@ -9,9 +9,11 @@ export type StatsigProviderProps = {
   client: StatsigClientInterface;
 };
 
-export function StatsigProvider(props: StatsigProviderProps): JSX.Element {
+export function StatsigProvider({
+  client,
+  children,
+}: StatsigProviderProps): JSX.Element {
   const [renderVersion, setRenderVersion] = useState(0);
-  const { client, children } = props;
 
   useEffect(() => {
     const onValuesUpdated = () => {

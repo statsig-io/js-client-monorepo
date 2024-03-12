@@ -89,11 +89,11 @@ export default class PrecomputedEvaluationsClient
   async updateUserAsync(user: StatsigUser): Promise<void> {
     this._resetForUser(user);
 
-    this._setStatus('Loading', null);
-
     const initiator = this._user;
 
     let result = this._adapter.getDataSync(initiator);
+    this._setStatus('Loading', result);
+
     this._store.setValuesFromDataAdapter(result);
 
     result = await this._adapter.getDataAsync(result, initiator);

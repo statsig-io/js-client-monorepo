@@ -6,7 +6,7 @@ import { NoopEvaluationsClient } from './NoopEvaluationsClient';
 import { isPrecomputedEvaluationsClient } from './OnDeviceVsPrecomputedUtils';
 import StatsigContext from './StatsigContext';
 
-export default function (): OnDeviceEvaluationsInterface {
+export function useOnDeviceEvaluationsClient(): OnDeviceEvaluationsInterface {
   const { client } = useContext(StatsigContext);
 
   if (!isPrecomputedEvaluationsClient(client)) {

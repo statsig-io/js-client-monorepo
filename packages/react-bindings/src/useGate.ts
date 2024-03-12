@@ -20,7 +20,7 @@ export default function (
   gateName: string,
   options: UseGateOptions = { ...DEFAULT_EVAL_OPTIONS, user: null },
 ): FeatureGate {
-  const { client } = useContext(StatsigContext);
+  const { client, renderVersion } = useContext(StatsigContext);
 
   const gate = useMemo(() => {
     if (isPrecomputedEvaluationsClient(client)) {
@@ -35,7 +35,7 @@ export default function (
       `useGate hook failed to find a valid Statsig client for gate '${gateName}'.`,
     );
     return NoopEvaluationsClient.getFeatureGate(gateName, options);
-  }, [client.loadingStatus, options]);
+  }, [gateName, renderVersion, options]);
 
   return gate;
 }

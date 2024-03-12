@@ -20,7 +20,7 @@ export default function (
   layerName: string,
   options: UseLayerOptions = { ...DEFAULT_EVAL_OPTIONS, user: null },
 ): Layer {
-  const { client } = useContext(StatsigContext);
+  const { client, renderVersion } = useContext(StatsigContext);
 
   const layer = useMemo(() => {
     if (isPrecomputedEvaluationsClient(client)) {
@@ -35,7 +35,7 @@ export default function (
       `useLayer hook failed to find a valid Statsig client for layer '${layerName}'.`,
     );
     return NoopEvaluationsClient.getLayer(layerName, options);
-  }, [client.loadingStatus, options]);
+  }, [layerName, renderVersion, options]);
 
   return layer;
 }

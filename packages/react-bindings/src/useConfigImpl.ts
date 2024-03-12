@@ -21,7 +21,7 @@ export function useConfigImpl(
   configName: string,
   options: UseConfigOptions = { ...DEFAULT_EVAL_OPTIONS, user: null },
 ): DynamicConfig {
-  const { client } = useContext(StatsigContext);
+  const { client, renderVersion } = useContext(StatsigContext);
 
   const config = useMemo(() => {
     if (isPrecomputedEvaluationsClient(client)) {
@@ -37,7 +37,7 @@ export function useConfigImpl(
       `${hook} hook failed to find a valid Statsig client for ${type} '${configName}'.`,
     );
     return NoopEvaluationsClient.getDynamicConfig(configName, options);
-  }, [client.loadingStatus, options]);
+  }, [configName, renderVersion, options]);
 
   return config;
 }

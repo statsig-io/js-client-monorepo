@@ -4,32 +4,32 @@ import useDynamicConfig from './useDynamicConfig';
 import useExperiment from './useExperiment';
 import useGate from './useGate';
 import useLayer from './useLayer';
-import useStatsigOnDeviceEvaluationsClient from './useStatsigOnDeviceEvaluationsClient';
-import useStatsigPrecomputedEvaluationsClient from './useStatsigPrecomputedEvaluationsClient';
-import useStatsigUser from './useStatsigUser';
+import { useOnDeviceEvaluationsClient } from './useOnDeviceEvaluationsClient';
+import { usePrecomputedEvaluationsClient } from './usePrecomputedEvaluationsClient';
+import { useStatsigUser } from './useStatsigUser';
 
 export type { StatsigProviderProps };
 
 export {
   StatsigContext,
   StatsigProvider,
-  useGate,
   useDynamicConfig,
   useExperiment,
+  useGate,
   useLayer,
+  useOnDeviceEvaluationsClient,
+  usePrecomputedEvaluationsClient,
   useStatsigUser,
-  useStatsigOnDeviceEvaluationsClient,
-  useStatsigPrecomputedEvaluationsClient,
 };
 
 __STATSIG__ = {
   ...__STATSIG__,
   StatsigContext,
   StatsigProvider,
-  useGate,
   useDynamicConfig,
   useExperiment,
+  useGate,
   useLayer,
-  useStatsigOnDeviceEvaluationsClient,
-  useStatsigPrecomputedEvaluationsClient,
+  useOnDeviceEvaluationsClient,
+  usePrecomputedEvaluationsClient,
 };

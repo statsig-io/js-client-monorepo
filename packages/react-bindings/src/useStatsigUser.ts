@@ -1,6 +1,8 @@
+import { useMemo } from 'react';
+
 import { StatsigUser } from '@statsig/client-core';
 
-import useStatsigPrecomputedEvaluationsClient from './useStatsigPrecomputedEvaluationsClient';
+import { usePrecomputedEvaluationsClient } from './usePrecomputedEvaluationsClient';
 
 export type UseStatsigUserResult = {
   user: StatsigUser;
@@ -10,17 +12,20 @@ export type UseStatsigUserResult = {
   ) => Promise<void>;
 };
 
-export default function (): UseStatsigUserResult {
-  const client = useStatsigPrecomputedEvaluationsClient();
+export function useStatsigUser(): UseStatsigUserResult {
+  const client = usePrecomputedEvaluationsClient();
+  const memoUser = useMemo(() => {
+    return client.getCurrentUser();
+  }, [client, client.getCurrentUser()]);
 
   return {
-    user: client.getCurrentUser(),
+    user: memoUser,
     updateUserSync: (fn: (prevState: StatsigUser) => StatsigUser) => {
-      const user = fn(client.getCurrentUser());
+      const user = fn(memoUser);
       client.updateUserSync(user);
     },
     updateUserAsync: (fn: (prevState: StatsigUser) => StatsigUser) => {
-      const user = fn(client.getCurrentUser());
+      const user = fn(memoUser);
       return client.updateUserAsync(user);
     },
   };

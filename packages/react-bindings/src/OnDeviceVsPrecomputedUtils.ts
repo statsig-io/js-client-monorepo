@@ -5,16 +5,19 @@ import {
 } from '@statsig/client-core';
 
 export function isPrecomputedEvaluationsClient(
-  client:
-    | OnDeviceEvaluationsInterface
-    | PrecomputedEvaluationsInterface
-    | { isNoop: true },
+  client: OnDeviceEvaluationsInterface | PrecomputedEvaluationsInterface,
 ): client is PrecomputedEvaluationsInterface {
-  if ('isNoop' in client) {
+  if (isNoopClient(client)) {
     return false;
   }
 
   return 'updateUserSync' in client;
+}
+
+export function isNoopClient(
+  client: OnDeviceEvaluationsInterface | PrecomputedEvaluationsInterface,
+): boolean {
+  return 'isNoop' in client;
 }
 
 export function logMissingStatsigUserWarning(): void {
