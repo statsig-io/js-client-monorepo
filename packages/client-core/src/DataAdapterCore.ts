@@ -128,7 +128,7 @@ export abstract class DataAdapterCore<T extends UpdatesAwareObject>
   }
 
   protected _getSdkKey(): string {
-    if (this._sdkKey) {
+    if (this._sdkKey != null) {
       return this._sdkKey;
     }
 

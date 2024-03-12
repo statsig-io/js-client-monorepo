@@ -91,11 +91,17 @@ export default class PrecomputedEvaluationsClient
 
     this._setStatus('Loading', null);
 
-    let result = this._adapter.getDataSync(this._user);
+    const initiator = this._user;
+
+    let result = this._adapter.getDataSync(initiator);
     this._store.setValuesFromDataAdapter(result);
 
-    result = await this._adapter.getDataAsync(result, this._user);
-    this._store.setValuesFromDataAdapter(result);
+    result = await this._adapter.getDataAsync(result, initiator);
+
+    // ensure the user hasn't changed while we were waiting
+    if (initiator === this._user) {
+      this._store.setValuesFromDataAdapter(result);
+    }
 
     this._store.finalize();
     this._setStatus('Ready', result);

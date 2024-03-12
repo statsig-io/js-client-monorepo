@@ -1,37 +1,22 @@
-export class TestPromise<T> extends Promise<T> {
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+
+export type TestPromise<T> = Promise<T> & {
   resolve: (value: T | PromiseLike<T>) => void;
   reject: (reason: T | Error) => void;
+};
 
-  initialCallStack: Error['stack'];
+export function CreateTestPromise<T>(): TestPromise<T> {
+  let resolver: any;
+  let rejector: any;
 
-  private constructor(
-    executor: (
-      resolve: (value: T | PromiseLike<T>) => void,
-      reject: (reason: T | Error) => void,
-    ) => void,
-  ) {
-    let resolver: ((value: T | PromiseLike<T>) => void) | null = null;
-    let rejector: ((reason: T | Error) => void) | null = null;
+  const promise = new Promise((resolve, reject) => {
+    resolver = resolve;
+    rejector = reject;
+  }) as unknown as TestPromise<T>;
 
-    super((resolve, reject) => {
-      resolver = resolve;
-      rejector = reject;
-      return executor(resolve, reject);
-    });
+  promise.resolve = resolver;
+  promise.reject = rejector;
 
-    if (!resolver || !rejector) {
-      throw new Error('Resolver and Rejector should be set at this point.');
-    }
-
-    this.resolve = resolver;
-    this.reject = rejector;
-
-    this.initialCallStack = Error().stack?.split('\n').slice(2).join('\n');
-  }
-
-  static create<T>(): TestPromise<T> {
-    return new TestPromise(() => {
-      // noop
-    });
-  }
+  return promise as unknown as TestPromise<T>;
 }
