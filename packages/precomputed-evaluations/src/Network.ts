@@ -1,14 +1,23 @@
 import {
-  Log,
   NetworkCore,
   StatsigClientEmitEventFunc,
   StatsigUser,
+  typedJsonParse,
 } from '@statsig/client-core';
 
 import { EvaluationResponse } from './EvaluationData';
+import { resolveDeltasResponse } from './EvaluationResponseDeltas';
 import { StatsigOptions } from './StatsigOptions';
 
 const DEFAULT_API = 'https://api.statsig.com/v1';
+
+type EvaluationsFetchArgs = {
+  hash: 'djb2' | 'sha256' | 'none';
+  deltasResponseRequested: boolean;
+  user?: StatsigUser;
+  sinceTime?: number;
+  previousDerivedFields?: Record<string, unknown>;
+};
 
 export default class StatsigNetwork extends NetworkCore {
   private _api: string;
@@ -26,17 +35,19 @@ export default class StatsigNetwork extends NetworkCore {
     current: string | null,
     user?: StatsigUser,
   ): Promise<string | null> {
-    let data: Record<string, unknown> = {
+    const cache = current
+      ? typedJsonParse<EvaluationResponse>(
+          current,
+          'has_updates',
+          'Failed to parse cached EvaluationResponse',
+        )
+      : null;
+
+    let data: EvaluationsFetchArgs = {
       user,
       hash: 'djb2',
+      deltasResponseRequested: false,
     };
-
-    let cache: EvaluationResponse | null = null;
-    try {
-      cache = current ? (JSON.parse(current) as EvaluationResponse) : null;
-    } catch {
-      Log.debug('Failed to parse cached EvaluationResponse');
-    }
 
     if (cache?.has_updates) {
       data = {
@@ -44,14 +55,22 @@ export default class StatsigNetwork extends NetworkCore {
         sinceTime: cache.time,
         previousDerivedFields:
           'derived_fields' in cache ? cache.derived_fields : {},
+        deltasResponseRequested: true,
       };
     }
 
+    return this._fetchEvaluations(sdkKey, cache, data);
+  }
+
+  private async _fetchEvaluations(
+    sdkKey: string,
+    cache: EvaluationResponse | null,
+    data: EvaluationsFetchArgs,
+  ): Promise<string | null> {
     const response = await this.post({
       sdkKey,
       url: `${this._api}/initialize`,
       data,
-      timeoutMs: 2000,
       retries: 2,
     });
 
@@ -59,6 +78,27 @@ export default class StatsigNetwork extends NetworkCore {
       return '{"has_updates": false}';
     }
 
-    return response?.body ?? null;
+    if (response?.code !== 200) {
+      return response?.body ?? null;
+    }
+
+    if (
+      cache?.has_updates !== true ||
+      response.body?.includes('"is_delta":true') !== true
+    ) {
+      return response.body;
+    }
+
+    const result = resolveDeltasResponse(cache, response.body);
+    if (typeof result === 'string') {
+      return result;
+    }
+
+    // retry without deltas
+    return this._fetchEvaluations(sdkKey, cache, {
+      ...data,
+      ...result,
+      deltasResponseRequested: false,
+    });
   }
 }

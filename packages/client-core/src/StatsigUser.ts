@@ -1,4 +1,4 @@
-import { DJB2 } from './Hashing';
+import { DJB2Object } from './Hashing';
 import type { StatsigEnvironment } from './StatsigOptionsCommon';
 
 type StatsigUserPrimitives =
@@ -46,24 +46,5 @@ export function normalizeUser(
 }
 
 export function getUserStorageKey(sdkKey: string, user?: StatsigUser): string {
-  return DJB2(JSON.stringify(_getSortedObject({ sdkKey, user })));
-}
-
-function _getSortedObject(
-  object: Record<string, unknown> | null,
-): Record<string, unknown> | null {
-  if (object == null) {
-    return null;
-  }
-  const keys = Object.keys(object).sort();
-  const sortedObject: Record<string, unknown> = {};
-  keys.forEach((key) => {
-    let value = object[key];
-    if (value instanceof Object) {
-      value = _getSortedObject(value as Record<string, unknown>);
-    }
-
-    sortedObject[key] = value;
-  });
-  return sortedObject;
+  return DJB2Object({ sdkKey, user });
 }

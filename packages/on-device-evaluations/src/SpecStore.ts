@@ -1,4 +1,8 @@
-import { DataSource, StatsigDataAdapterResult } from '@statsig/client-core';
+import {
+  DataSource,
+  StatsigDataAdapterResult,
+  typedJsonParse,
+} from '@statsig/client-core';
 
 type SpecType = 'gate' | 'config' | 'layer';
 
@@ -65,8 +69,13 @@ export default class SpecStore {
       return;
     }
 
-    const values = JSON.parse(result.data) as DownloadConfigSpecsResponse;
-    if (!values.has_updates) {
+    const values = typedJsonParse<DownloadConfigSpecsResponse>(
+      result.data,
+      'has_updates',
+      'Failed to parse DownloadConfigSpecsResponse',
+    );
+
+    if (values?.has_updates !== true) {
       return;
     }
 

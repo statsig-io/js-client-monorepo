@@ -6,6 +6,7 @@ import { StatsigEventInternal, isExposureEvent } from './StatsigEvent';
 import { StatsigMetadataProvider } from './StatsigMetadata';
 import { StatsigOptionsCommon } from './StatsigOptionsCommon';
 import { getObjectFromStorage, setObjectInStorage } from './StorageProvider';
+import { typedJsonParse } from './TypedJsonParse';
 import {
   Visibility,
   VisibilityChangeObserver,
@@ -206,11 +207,15 @@ export class EventLogger {
       },
     });
 
-    if (result?.body) {
-      return JSON.parse(result.body) as SendEventsResponse;
-    }
+    const response = result?.body
+      ? typedJsonParse<SendEventsResponse>(
+          result.body,
+          'success',
+          'Failed to parse SendEventsResponse',
+        )
+      : null;
 
-    return { success: false };
+    return { success: response?.success === true };
   }
 
   private async _sendEventsViaBeacon(

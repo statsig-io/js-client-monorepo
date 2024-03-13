@@ -2,6 +2,7 @@ import {
   DataSource,
   EvaluationDetails,
   StatsigDataAdapterResult,
+  typedJsonParse,
 } from '@statsig/client-core';
 
 import {
@@ -46,8 +47,13 @@ export default class EvaluationStore {
       return;
     }
 
-    const values = JSON.parse(result.data) as EvaluationResponse;
-    if (!values.has_updates) {
+    const values = typedJsonParse<EvaluationResponse>(
+      result.data,
+      'has_updates',
+      'Failed to parse EvaluationResponse',
+    );
+
+    if (values?.has_updates !== true) {
       return;
     }
 

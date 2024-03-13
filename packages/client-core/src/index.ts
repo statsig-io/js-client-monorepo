@@ -22,6 +22,7 @@ export * from './StatsigOptionsCommon';
 export * from './StatsigTypes';
 export * from './StatsigUser';
 export * from './StorageProvider';
+export * from './TypedJsonParse';
 export * from './UUID';
 export * from './VisibilityChangeObserver';
 

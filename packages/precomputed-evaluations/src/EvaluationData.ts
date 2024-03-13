@@ -27,14 +27,16 @@ export type LayerEvaluation = Omit<ConfigEvaluation, 'id_type'> & {
   undelegated_secondary_exposures?: SecondaryExposure[];
 };
 
+export type EvaluationResponseWithUpdates = {
+  feature_gates: Record<string, GateEvaluation>;
+  dynamic_configs: Record<string, ConfigEvaluation>;
+  layer_configs: Record<string, LayerEvaluation>;
+  time: number;
+  has_updates: true;
+  hash_used: 'none' | 'sha256' | 'djb2';
+  derived_fields?: Record<string, unknown>;
+};
+
 export type EvaluationResponse =
-  | {
-      feature_gates: Record<string, GateEvaluation>;
-      dynamic_configs: Record<string, ConfigEvaluation>;
-      layer_configs: Record<string, LayerEvaluation>;
-      time: number;
-      has_updates: true;
-      hash_used: 'none' | 'sha256' | 'djb2';
-      derived_fields?: Record<string, unknown>;
-    }
+  | EvaluationResponseWithUpdates
   | { has_updates: false };

@@ -18,7 +18,6 @@ export default class StatsigNetwork extends NetworkCore {
     const response = await this.get({
       sdkKey: sdkKey,
       url: `${this._downloadConfigSpecsUrlBase}/${sdkKey}.json`,
-      timeoutMs: 2000,
     });
 
     return response?.body ?? null;

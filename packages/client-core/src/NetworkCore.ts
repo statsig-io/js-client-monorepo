@@ -11,7 +11,6 @@ const DEFAULT_TIMEOUT_MS = 10_000;
 type RequestArgs = {
   sdkKey: string;
   url: string;
-  timeoutMs?: number;
   retries?: number;
   params?: Record<string, string>;
   headers?: /* Warn: Using headers leads to preflight requests */ Record<

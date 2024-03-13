@@ -13,6 +13,7 @@ import {
   getObjectFromStorage,
   setObjectInStorage,
 } from './StorageProvider';
+import { typedJsonParse } from './TypedJsonParse';
 
 const CACHE_LIMIT = 10;
 
@@ -104,27 +105,25 @@ export abstract class DataAdapterCore<T extends UpdatesAwareObject>
       return null;
     }
 
-    try {
-      const response = JSON.parse(latest) as T;
+    const response = typedJsonParse<T & { has_updates: boolean }>(
+      latest,
+      'has_updates',
+      'Failure while attempting to persist latest value',
+    );
 
-      if (current && response.has_updates === false) {
-        return {
-          source: 'NetworkNotModified',
-          data: current,
-          receivedAt: Date.now(),
-        };
-      }
-
-      if (response.has_updates !== true) {
-        return null;
-      }
-
-      return { source: 'Network', data: latest, receivedAt: Date.now() };
-    } catch {
-      Log.debug('Failure while attempting to persist latest value');
+    if (current && response?.has_updates === false) {
+      return {
+        source: 'NetworkNotModified',
+        data: current,
+        receivedAt: Date.now(),
+      };
     }
 
-    return null;
+    if (response?.has_updates !== true) {
+      return null;
+    }
+
+    return { source: 'Network', data: latest, receivedAt: Date.now() };
   }
 
   protected _getSdkKey(): string {
@@ -169,13 +168,13 @@ export abstract class DataAdapterCore<T extends UpdatesAwareObject>
       return null;
     }
 
-    try {
-      const result = JSON.parse(cache) as StatsigDataAdapterResult;
-      return { ...result, source: 'Cache' };
-    } catch (e) {
-      Log.error('Failed to parse cached result');
-      return null;
-    }
+    const result = typedJsonParse<StatsigDataAdapterResult>(
+      cache,
+      'source',
+      'Failed to parse cached result',
+    );
+
+    return result ? { ...result, source: 'Cache' } : null;
   }
 
   private async _writeToCache(
