@@ -152,29 +152,12 @@ export default class OnDeviceEvaluationsClient
     const { result, details } = this._evaluator.evaluateLayer(name, user);
 
     const layer = makeLayer(name, details, result?.rule_id, (param: string) => {
-      if (!result) {
-        return null;
+      if (result && param in result.json_value) {
+        this._enqueueExposure(
+          options,
+          createLayerParameterExposure(user, layer, param, result),
+        );
       }
-
-      const {
-        rule_id,
-        undelegated_secondary_exposures,
-        secondary_exposures,
-        explicit_parameters,
-        config_delegate,
-      } = result;
-
-      this._enqueueExposure(
-        options,
-        createLayerParameterExposure(user, name, param, {
-          rule_id,
-          explicit_parameters: explicit_parameters ?? [],
-          undelegated_secondary_exposures,
-          secondary_exposures,
-          allocated_experiment_name: config_delegate ?? '',
-          details,
-        }),
-      );
 
       return result?.json_value?.[param] ?? null;
     });

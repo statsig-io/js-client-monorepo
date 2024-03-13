@@ -32,7 +32,7 @@ type EvaluationResult = {
   readonly secondary_exposures: SecondaryExposure[];
   readonly json_value: Record<string, unknown>;
   readonly explicit_parameters: string[] | null;
-  readonly config_delegate: string | null;
+  readonly allocated_experiment_name: string | null;
   readonly undelegated_secondary_exposures: SecondaryExposure[] | undefined;
   readonly is_experiment_group: boolean;
   readonly group_name: string | null;
@@ -48,7 +48,7 @@ function makeEvalResult(
     secondary_exposures: [],
     json_value: {},
     explicit_parameters: null,
-    config_delegate: null,
+    allocated_experiment_name: null,
     is_experiment_group: false,
     group_name: null,
     undelegated_secondary_exposures: undefined,
@@ -333,7 +333,7 @@ export default class Evaluator {
     const result = this._evaluateSpec(spec, user);
     return makeEvalResult({
       ...result,
-      config_delegate: configDelegate,
+      allocated_experiment_name: configDelegate,
       explicit_parameters: spec.explicitParameters,
       secondary_exposures: exposures.concat(result.secondary_exposures),
       undelegated_secondary_exposures: exposures,

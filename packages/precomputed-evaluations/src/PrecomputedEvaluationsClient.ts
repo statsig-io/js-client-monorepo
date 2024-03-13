@@ -169,25 +169,15 @@ export default class PrecomputedEvaluationsClient
 
     const { evaluation, details } = this._store.getLayer(hash);
 
-    // todo: un-ugly
     const layer = makeLayer(name, details, evaluation?.rule_id, (param) => {
-      if (!evaluation) {
-        return;
+      if (evaluation && param in evaluation.value) {
+        this._enqueueExposure(
+          options,
+          createLayerParameterExposure(this._user, layer, param, evaluation),
+        );
       }
 
-      if (!(param in evaluation.value)) {
-        return undefined;
-      }
-
-      this._enqueueExposure(
-        options,
-        createLayerParameterExposure(this._user, name, param, {
-          ...evaluation,
-          details,
-        }),
-      );
-
-      return evaluation.value[param];
+      return evaluation?.value[param] ?? null;
     });
 
     this.emit({ event: 'layer_evaluation', layer });

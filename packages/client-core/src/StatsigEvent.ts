@@ -1,4 +1,9 @@
-import { DynamicConfig, EvaluationDetails, FeatureGate } from './StatsigTypes';
+import {
+  DynamicConfig,
+  EvaluationDetails,
+  FeatureGate,
+  Layer,
+} from './StatsigTypes';
 import { StatsigUser } from './StatsigUser';
 
 export type SecondaryExposure = {
@@ -17,6 +22,13 @@ export type StatsigEventInternal = StatsigEvent & {
   user: StatsigUser | null;
   time: number;
   secondaryExposures?: SecondaryExposure[];
+};
+
+type LayerEvaluation = {
+  explicit_parameters: string[] | null;
+  undelegated_secondary_exposures?: SecondaryExposure[];
+  secondary_exposures: SecondaryExposure[];
+  allocated_experiment_name: string | null;
 };
 
 const CONFIG_EXPOSURE_NAME = 'statsig::config_exposure';
@@ -81,34 +93,28 @@ export function createConfigExposure(
 
 export function createLayerParameterExposure(
   user: StatsigUser,
-  layerName: string,
+  layer: Layer,
   parameterName: string,
-  spec: {
-    rule_id: string;
-    explicit_parameters: string[];
-    undelegated_secondary_exposures?: SecondaryExposure[];
-    secondary_exposures: SecondaryExposure[];
-    allocated_experiment_name: string;
-    details: EvaluationDetails;
-  },
+  evaluation: LayerEvaluation | null,
 ): StatsigEventInternal {
-  const isExplicit = spec.explicit_parameters.includes(parameterName);
+  const isExplicit =
+    evaluation?.explicit_parameters?.includes(parameterName) === true;
   let allocatedExperiment = '';
-  let secondaryExposures = spec.undelegated_secondary_exposures ?? [];
+  let secondaryExposures = evaluation?.undelegated_secondary_exposures ?? [];
 
   if (isExplicit) {
-    allocatedExperiment = spec.allocated_experiment_name;
-    secondaryExposures = spec.secondary_exposures;
+    allocatedExperiment = evaluation.allocated_experiment_name ?? '';
+    secondaryExposures = evaluation.secondary_exposures;
   }
 
   return createExposure(
     LAYER_EXPOSURE_NAME,
     user,
-    spec.details,
+    layer.details,
     {
-      config: layerName,
+      config: layer.name,
       parameterName,
-      ruleID: spec.rule_id,
+      ruleID: layer.ruleID,
       allocatedExperiment,
       isExplicitParameter: String(isExplicit),
     },
