@@ -1,8 +1,14 @@
-import { getStatsigValues } from '../utils/get-statsig-values';
-import ClientApp from './client-app';
-
-export default async function Index(): Promise<JSX.Element> {
-  const user = { userID: 'first-user' };
-  const values = await getStatsigValues(user);
-  return <ClientApp user={user} values={values} />;
+export default function Index(): JSX.Element {
+  return (
+    <div>
+      <ul>
+        <li>
+          <a href="/bootstrap-example">Simple Server Side Render</a>
+        </li>
+        <li>
+          <a href="/proxy-example">Proxied API Calls</a>
+        </li>
+      </ul>
+    </div>
+  );
 }

@@ -1,9 +1,8 @@
 'use client';
 
-import { useContext, useEffect, useMemo } from 'react';
+import { useContext, useMemo } from 'react';
 import { StatsigUser } from 'statsig-node';
 
-import { StatsigClientEventData } from '@statsig/client-core';
 import { EvaluationsDataAdapter, StatsigClient } from '@statsig/js-client';
 import {
   StatsigContext,
@@ -13,9 +12,7 @@ import {
   useStatsigUser,
 } from '@statsig/react-bindings';
 
-/* eslint-disable no-console */
-
-const DEMO_CLIENT_KEY = 'client-rfLvYGag3eyU0jYW5zcIJTQip7GXxSrhOFN69IGMjvq';
+import { DEMO_CLIENT_KEY } from '../../utils/constants';
 
 function useBootstrappedClient(
   sdkKey: string,
@@ -26,6 +23,7 @@ function useBootstrappedClient(
     const dataAdapter = new EvaluationsDataAdapter();
     const client = new StatsigClient(sdkKey, user, {
       dataAdapter,
+      api: 'http://localhost:4200/api/statsig',
     });
     dataAdapter.setDataForUser(user, values);
     client.initializeSync();
@@ -68,6 +66,7 @@ function Content() {
       <button
         onClick={() => {
           client.updateUserAsync({ userID: 'second-user' }).catch((e) => {
+            // eslint-disable-next-line no-console
             console.error(e);
           });
         }}
@@ -86,7 +85,7 @@ function Content() {
   );
 }
 
-export default function ClientApp({
+export default function ProxyExample({
   user,
   values,
 }: {
@@ -94,12 +93,6 @@ export default function ClientApp({
   values: string;
 }): JSX.Element {
   const client = useBootstrappedClient(DEMO_CLIENT_KEY, user, values);
-
-  useEffect(() => {
-    const onClientEvent = (data: StatsigClientEventData) => console.log(data);
-    client.on('*', onClientEvent);
-    return () => client.off('*', onClientEvent);
-  }, [client]);
 
   return (
     <StatsigProvider client={client}>
