@@ -6,7 +6,7 @@ import { MockLocalStorage } from './MockLocalStorage';
 
 class TestClient extends StatsigClientBase {}
 
-class TestDataAdapter extends DataAdapterCore<{ has_updates: boolean }> {
+class TestDataAdapter extends DataAdapterCore {
   protected override _fetchFromNetwork(
     _current: string | null,
     _user?: StatsigUser | undefined,

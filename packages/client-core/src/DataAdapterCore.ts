@@ -17,13 +17,7 @@ import { typedJsonParse } from './TypedJsonParse';
 
 const CACHE_LIMIT = 10;
 
-type UpdatesAwareObject = {
-  has_updates?: boolean;
-};
-
-export abstract class DataAdapterCore<T extends UpdatesAwareObject>
-  implements StatsigDataAdapter
-{
+export abstract class DataAdapterCore implements StatsigDataAdapter {
   protected _errorBoundary: ErrorBoundary | null = null;
 
   private _sdkKey: string | null = null;
@@ -122,7 +116,7 @@ export abstract class DataAdapterCore<T extends UpdatesAwareObject>
       return null;
     }
 
-    const response = typedJsonParse<T & { has_updates: boolean }>(
+    const response = typedJsonParse<{ has_updates: boolean }>(
       latest,
       'has_updates',
       'Failure while attempting to persist latest value',

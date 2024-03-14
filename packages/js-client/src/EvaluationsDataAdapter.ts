@@ -4,10 +4,9 @@ import {
   StatsigUser,
 } from '@statsig/client-core';
 
-import { EvaluationResponse } from './EvaluationData';
 import Network from './Network';
 
-export class EvaluationsDataAdapter extends DataAdapterCore<EvaluationResponse> {
+export class EvaluationsDataAdapter extends DataAdapterCore {
   private _network: Network | null = null;
 
   constructor() {
