@@ -16,7 +16,10 @@ import {
   StatsigDataAdapterResult,
 } from './StatsigDataAdapter';
 import { StatsigEventInternal } from './StatsigEvent';
-import { StatsigOptionsCommon } from './StatsigOptionsCommon';
+import {
+  StatsigOptionsCommon,
+  StatsigRuntimeMutableOptions,
+} from './StatsigOptionsCommon';
 import { StatsigUser } from './StatsigUser';
 import { Storage } from './StorageProvider';
 
@@ -47,7 +50,7 @@ export abstract class StatsigClientBase
     network: NetworkCore,
     options: StatsigOptionsCommon | null,
   ) {
-    options?.disableStorage && Storage.disable();
+    options?.disableStorage && Storage.setDisabled(true);
     options?.overrideStableID &&
       StableID.setOverride(options.overrideStableID, _sdkKey);
 
@@ -67,6 +70,16 @@ export abstract class StatsigClientBase
     __STATSIG__.instances = instances;
 
     this._adapter.attach(_sdkKey, options);
+  }
+
+  updateRuntimeOptions(options: StatsigRuntimeMutableOptions): void {
+    if (options.disableLogging != null) {
+      this._logger.setLoggingDisabled(options.disableLogging);
+    }
+
+    if (options.disableStorage != null) {
+      Storage.setDisabled(options.disableStorage);
+    }
   }
 
   on(

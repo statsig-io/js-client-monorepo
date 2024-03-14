@@ -29,7 +29,7 @@ module.exports = composePlugins(withNx(), withWeb(), () =>
       },
       externals: [],
       output: {
-        filename: 'js-client.min.js',
+        filename: 'statsig-js-client.min.js',
         library: {
           type: 'umd',
           name: {

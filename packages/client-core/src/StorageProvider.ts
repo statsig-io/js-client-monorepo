@@ -11,9 +11,8 @@ type StorageProvider = {
 };
 
 type StorageProviderManagment = {
-  setProvider: (n: StorageProvider) => void;
-  disable: () => void;
-  enable: () => void;
+  setProvider: (newProvider: StorageProvider) => void;
+  setDisabled: (isDisabled: boolean) => void;
 };
 
 const inMemoryStore: Record<string, string> = {};
@@ -84,11 +83,12 @@ export const Storage: StorageProvider & StorageProviderManagment = {
     _main = newProvider;
     _current = newProvider;
   },
-  enable: () => {
-    _current = _main;
-  },
-  disable: () => {
-    _current = _inMemoryProvider;
+  setDisabled: (isDisabled: boolean) => {
+    if (isDisabled) {
+      _current = _inMemoryProvider;
+    } else {
+      _current = _main;
+    }
   },
 };
 

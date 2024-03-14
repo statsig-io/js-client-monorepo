@@ -33,7 +33,7 @@ module.exports = composePlugins(withNx(), withWeb(), () =>
       },
       externals: [],
       output: {
-        filename: 'js-on-device-eval-client.min.js',
+        filename: 'statsig-js-on-device-eval-client.min.js',
         library: {
           type: 'umd',
           name: {

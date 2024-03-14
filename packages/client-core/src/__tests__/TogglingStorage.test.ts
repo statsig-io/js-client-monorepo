@@ -2,7 +2,6 @@ import { DataAdapterCore } from '../DataAdapterCore';
 import { StatsigClientBase } from '../StatsigClientBase';
 import { StatsigOptionsCommon } from '../StatsigOptionsCommon';
 import { StatsigUser } from '../StatsigUser';
-import { Storage } from '../StorageProvider';
 import { MockLocalStorage } from './MockLocalStorage';
 
 class TestClient extends StatsigClientBase {}
@@ -50,7 +49,7 @@ describe('Toggle Storage', () => {
     });
 
     it('writes to local storage once enabled', async () => {
-      Storage.enable();
+      client.updateRuntimeOptions({ disableStorage: false });
 
       await client.getDataAdapter().getDataAsync(null);
       expect(Object.keys(storageMock.data).length).toBeGreaterThan(0);
@@ -69,7 +68,7 @@ describe('Toggle Storage', () => {
     });
 
     it('does not write to local storage', async () => {
-      Storage.disable();
+      client.updateRuntimeOptions({ disableStorage: true });
 
       await client.getDataAdapter().getDataAsync(null);
       expect(storageMock.data).toEqual({});

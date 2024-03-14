@@ -41,9 +41,9 @@ export class EventLogger {
   private _lastExposureMap: Record<string, number> = {};
 
   private _maxQueueSize: number;
-  private _failedLogs: EventQueue;
   private _hasRunQuickFlush = false;
   private _creationTime = Date.now();
+  private _isLoggingDisabled: boolean;
 
   constructor(
     private _sdkKey: string,
@@ -51,6 +51,7 @@ export class EventLogger {
     private _network: NetworkCore,
     private _options: StatsigOptionsCommon | null,
   ) {
+    this._isLoggingDisabled = _options?.disableLogging === true;
     this._maxQueueSize = _options?.loggingBufferMaxSize ?? DEFAULT_QUEUE_SIZE;
 
     const flushInterval =
@@ -59,8 +60,11 @@ export class EventLogger {
 
     VisibilityChangeObserver.add(this);
 
-    this._failedLogs = [];
     this._retryFailedLogs();
+  }
+
+  setLoggingDisabled(isDisabled: boolean): void {
+    this._isLoggingDisabled = isDisabled;
   }
 
   enqueue(event: StatsigEventInternal): void {
@@ -168,6 +172,11 @@ export class EventLogger {
   }
 
   private async _sendEvents(events: EventQueue): Promise<void> {
+    if (this._isLoggingDisabled) {
+      this._saveFailedLogsToStorage(events);
+      return;
+    }
+
     try {
       const isInForeground = VisibilityChangeObserver.isCurrentlyVisible();
       const api = this._options?.api ?? DEFAULT_API;
@@ -234,14 +243,13 @@ export class EventLogger {
   }
 
   private _saveFailedLogsToStorage(events: EventQueue) {
-    this._failedLogs.push(...events);
-    while (this._failedLogs.length > MAX_FAILED_LOGS) {
-      this._failedLogs.shift();
+    while (events.length > MAX_FAILED_LOGS) {
+      events.shift();
     }
 
     const storageKey = this._getStorageKey();
 
-    setObjectInStorage(storageKey, this._failedLogs).catch(() => {
+    setObjectInStorage(storageKey, events).catch(() => {
       Log.warn('Unable to save failed logs to storage');
     });
   }
@@ -261,6 +269,6 @@ export class EventLogger {
   }
 
   private _getStorageKey() {
-    return `STATSIG_FAILED_LOG:${DJB2(this._sdkKey)}`;
+    return `statsig.failed_logs.${DJB2(this._sdkKey)}`;
   }
 }

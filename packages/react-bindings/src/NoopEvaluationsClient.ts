@@ -47,6 +47,7 @@ const client: OnDeviceEvaluationsInterface &
   initializeSync: noop,
   initializeAsync: () => Promise.resolve(),
   shutdown: () => Promise.resolve(),
+  updateRuntimeOptions: noop,
   updateUserSync: noop,
   updateUserAsync: (_u: StatsigUser) => Promise.resolve(),
   getCurrentUser: () => ({ userID: '' }),

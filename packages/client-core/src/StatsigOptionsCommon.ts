@@ -1,8 +1,22 @@
 import { LogLevel } from './Log';
 import { StatsigDataAdapter } from './StatsigDataAdapter';
 
+export type StatsigRuntimeMutableOptions = {
+  /**
+   * Prevents writing anything to storage.
+   * Note: caching will not work if storage is disabled
+   */
+  disableLogging?: boolean;
+
+  /**
+   * Prevents writing anything to storage.
+   * Note: caching will not work if storage is disabled
+   */
+  disableStorage?: boolean;
+};
+
 /** Common options for configuring the Statsig SDK. */
-export type StatsigOptionsCommon = {
+export type StatsigOptionsCommon = StatsigRuntimeMutableOptions & {
   /**
    * The API to use for all SDK network requests. You should not need to override this
    * unless you have another API that implements the Statsig API endpoints.
@@ -49,12 +63,6 @@ export type StatsigOptionsCommon = {
    * Default: 10,000 (10 seconds)
    */
   loggingIntervalMs?: number;
-
-  /**
-   * Prevents writing anything to storage.
-   * Note: caching will not work if storage is disabled
-   */
-  disableStorage?: boolean;
 };
 
 export type StatsigEnvironment = {

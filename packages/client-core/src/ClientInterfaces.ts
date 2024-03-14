@@ -2,6 +2,7 @@ import { EvaluationOptions } from './StatsigClientBase';
 import { StatsigClientEventEmitterInterface } from './StatsigClientEventEmitter';
 import { StatsigDataAdapter } from './StatsigDataAdapter';
 import { StatsigEvent } from './StatsigEvent';
+import { StatsigRuntimeMutableOptions } from './StatsigOptionsCommon';
 import { DynamicConfig, Experiment, FeatureGate, Layer } from './StatsigTypes';
 import { StatsigUser } from './StatsigUser';
 
@@ -11,6 +12,7 @@ export interface StatsigClientCommonInterface
   initializeAsync(): Promise<void>;
   shutdown(): Promise<void>;
   getDataAdapter(): StatsigDataAdapter;
+  updateRuntimeOptions(options: StatsigRuntimeMutableOptions): void;
 }
 
 export interface OnDeviceEvaluationsInterface

@@ -76,7 +76,8 @@
       "$_addToInMemoryCache": "At",
       "$_fetchFromNetwork": "Dt",
       "$_runLocalStorageCacheEviction": "Et",
-      "$_setInMemoryCache": "Pt"
+      "$_setInMemoryCache": "Pt",
+      "$_isLoggingDisabled": "Gt"
     }
   }
 }
