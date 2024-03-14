@@ -2,10 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useEffect, useState } from 'react';
 import { Button, Text, View } from 'react-native';
 
-import {
-  EvaluationsDataAdapter,
-  PrecomputedEvaluationsClient,
-} from '@statsig/precomputed-evaluations';
+import { EvaluationsDataAdapter, StatsigClient } from '@statsig/js-client';
 import { StatsigProvider } from '@statsig/react-bindings';
 import { useExperiment, useGate } from '@statsig/react-native-bindings';
 
@@ -13,7 +10,7 @@ import { DEMO_CLIENT_KEY } from './Constants';
 
 const user = { userID: 'a-user' };
 const dataAdapter = new EvaluationsDataAdapter();
-const client = new PrecomputedEvaluationsClient(DEMO_CLIENT_KEY, user, {
+const client = new StatsigClient(DEMO_CLIENT_KEY, user, {
   dataAdapter,
 });
 client.initializeSync();
@@ -27,7 +24,7 @@ function Content() {
   return (
     <View style={{ padding: 16 }}>
       <Text style={{ fontWeight: 'bold' }}>Delayed Init Example</Text>
-      <Text>PrecomputedEvaluationsClient status: {client.loadingStatus}</Text>
+      <Text>StatsigClient status: {client.loadingStatus}</Text>
       <Text>
         a_gate: {gate.value ? 'Pass' : 'Fail'} ({gate.details.reason})
       </Text>

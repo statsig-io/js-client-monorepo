@@ -1,7 +1,7 @@
 import { Box, Button, TextField, Typography } from '@mui/material';
 import { ReactNode, useState } from 'react';
 
-import { PrecomputedEvaluationsClient } from '@statsig/precomputed-evaluations';
+import { StatsigClient } from '@statsig/js-client';
 import {
   StatsigProvider,
   useGate,
@@ -10,7 +10,7 @@ import {
 
 import { STATSIG_CLIENT_KEY } from './Contants';
 
-const client = new PrecomputedEvaluationsClient(STATSIG_CLIENT_KEY, {
+const client = new StatsigClient(STATSIG_CLIENT_KEY, {
   userID: 'a-user',
 });
 

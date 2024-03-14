@@ -1,4 +1,4 @@
-# [Statsig](https://statsig.com/) &middot; [![GitHub license](https://img.shields.io/badge/license-ISC-blue.svg)](https://github.com/statsig-io/js-client-monorepo/blob/main/LICENSE) [![npm version](https://img.shields.io/npm/v/@statsig/precomputed-evaluations.svg?style=flat)](https://www.npmjs.com/package/@statsig/precomputed-evaluations) [![slack](https://img.shields.io/badge/slack-statsig-brightgreen.svg?logo=slack)](https://statsig.com/community)
+# [Statsig](https://statsig.com/) &middot; [![GitHub license](https://img.shields.io/badge/license-ISC-blue.svg)](https://github.com/statsig-io/js-client-monorepo/blob/main/LICENSE) [![npm version](https://img.shields.io/npm/v/@statsig/js-client.svg?style=flat)](https://www.npmjs.com/package/@statsig/js-client) [![slack](https://img.shields.io/badge/slack-statsig-brightgreen.svg?logo=slack)](https://statsig.com/community)
 
 > [!IMPORTANT]
 > This version of the SDK is still in beta. The non-beta version can be found [here](https://github.com/statsig-io/js-client).
@@ -7,8 +7,8 @@ Statsig helps you move faster with feature gates (feature flags), and/or dynamic
 
 ## Variants
 
-- [Precomputed (Recommended)](packages/precomputed-evaluations/README.md)
-- [On Device](packages/on-device-evaluations/README.md)
+- [Precomputed (Recommended)](packages/js-client/README.md)
+- [On Device](packages/js-on-device-eval-client/README.md)
 
 ## React Bindings
 

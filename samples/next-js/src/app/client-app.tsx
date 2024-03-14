@@ -4,15 +4,12 @@ import { useContext, useEffect, useMemo } from 'react';
 import { StatsigUser } from 'statsig-node';
 
 import { StatsigClientEventData } from '@statsig/client-core';
-import {
-  EvaluationsDataAdapter,
-  PrecomputedEvaluationsClient,
-} from '@statsig/precomputed-evaluations';
+import { EvaluationsDataAdapter, StatsigClient } from '@statsig/js-client';
 import {
   StatsigContext,
   StatsigProvider,
   useGate,
-  usePrecomputedEvaluationsClient,
+  useStatsigClient,
   useStatsigUser,
 } from '@statsig/react-bindings';
 
@@ -24,10 +21,10 @@ function useBootstrappedClient(
   sdkKey: string,
   user: StatsigUser,
   values: string,
-): PrecomputedEvaluationsClient {
+): StatsigClient {
   const client = useMemo(() => {
     const dataAdapter = new EvaluationsDataAdapter();
-    const client = new PrecomputedEvaluationsClient(sdkKey, user, {
+    const client = new StatsigClient(sdkKey, user, {
       dataAdapter,
     });
     dataAdapter.setDataForUser(user, values);
@@ -52,7 +49,7 @@ function UserDisplay() {
 
 function Content() {
   const { value, details } = useGate('a_gate');
-  const client = usePrecomputedEvaluationsClient();
+  const client = useStatsigClient();
 
   return (
     <div style={{ padding: 16 }}>

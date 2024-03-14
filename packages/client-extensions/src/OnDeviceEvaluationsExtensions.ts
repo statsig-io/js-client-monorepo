@@ -1,21 +1,21 @@
 import { ClientPrototype, bind } from './LocalOverridesBinding';
 
-declare module '@statsig/on-device-evaluations' {
+declare module '@statsig/js-on-device-eval-client' {
   // eslint-disable-next-line @typescript-eslint/no-empty-interface
-  interface OnDeviceEvaluationsClient extends ClientPrototype {}
+  interface StatsigOnDeviceEvalClient extends ClientPrototype {}
 }
 
-let module: typeof import('@statsig/on-device-evaluations') | undefined;
+let module: typeof import('@statsig/js-on-device-eval-client') | undefined;
 
 try {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  module = require('@statsig/on-device-evaluations');
+  module = require('@statsig/js-on-device-eval-client');
 } catch {
   module = undefined;
 }
 
 if (module != null) {
-  bind(module.OnDeviceEvaluationsClient.prototype);
+  bind(module.StatsigOnDeviceEvalClient.prototype);
 }
 
 export { module as OnDeviceEvaluationsExtensions };

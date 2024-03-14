@@ -9,7 +9,7 @@ import {
 } from '@statsig/client-core';
 
 import { NoopEvaluationsClient } from './NoopEvaluationsClient';
-import { isPrecomputedEvaluationsClient } from './OnDeviceVsPrecomputedUtils';
+import { isStatsigClient } from './OnDeviceVsPrecomputedUtils';
 import StatsigContext from './StatsigContext';
 
 export type UseLayerOptions = EvaluationOptions & {
@@ -23,7 +23,7 @@ export default function (
   const { client, renderVersion } = useContext(StatsigContext);
 
   const layer = useMemo(() => {
-    if (isPrecomputedEvaluationsClient(client)) {
+    if (isStatsigClient(client)) {
       return client.getLayer(layerName, options);
     }
 

@@ -1,6 +1,6 @@
 import { Text, View } from 'react-native';
 
-import { PrecomputedEvaluationsClient } from '@statsig/precomputed-evaluations';
+import { StatsigClient } from '@statsig/js-client';
 import {
   StatsigProviderRN,
   useExperiment,
@@ -12,7 +12,7 @@ import { DEMO_CLIENT_KEY } from './Constants';
 
 const user = { userID: 'a-user' };
 
-const client = new PrecomputedEvaluationsClient(DEMO_CLIENT_KEY, user);
+const client = new StatsigClient(DEMO_CLIENT_KEY, user);
 const warming = warmCachingFromAsyncStorage(client);
 
 function Content() {
@@ -24,7 +24,7 @@ function Content() {
       <Text style={{ fontWeight: 'bold' }}>
         Precomputed Evaluations Example
       </Text>
-      <Text>PrecomputedEvaluationsClient status: {client.loadingStatus}</Text>
+      <Text>StatsigClient status: {client.loadingStatus}</Text>
       <Text>
         a_gate: {gate.value ? 'Pass' : 'Fail'} ({gate.details.reason})
       </Text>

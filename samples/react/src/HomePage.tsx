@@ -1,6 +1,6 @@
 import { ReactNode, useEffect, useState } from 'react';
 
-import { PrecomputedEvaluationsClient } from '@statsig/precomputed-evaluations';
+import { StatsigClient } from '@statsig/js-client';
 import { StatsigProvider, useGate } from '@statsig/react-bindings';
 
 import { STATSIG_CLIENT_KEY } from './Contants';
@@ -8,7 +8,7 @@ import { STATSIG_CLIENT_KEY } from './Contants';
 const user = {
   userID: 'a-user',
 };
-const client = new PrecomputedEvaluationsClient(STATSIG_CLIENT_KEY, user);
+const client = new StatsigClient(STATSIG_CLIENT_KEY, user);
 client.initializeSync();
 
 function Content() {

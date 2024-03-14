@@ -27,9 +27,9 @@ export const DataAdapterCachePrefix = 'statsig.cached';
  *
  * Defaults:
  *
- * - {@link PrecomputedEvaluationsClient} uses {@link EvaluationsDataAdapter}
+ * - {@link StatsigClient} uses {@link EvaluationsDataAdapter}
  *
- * - {@link OnDeviceEvaluationsClient} uses {@link SpecsDataAdapter}
+ * - {@link StatsigOnDeviceEvalClient} uses {@link SpecsDataAdapter}
  */
 export type StatsigDataAdapter = {
   readonly _setInMemoryCache: (

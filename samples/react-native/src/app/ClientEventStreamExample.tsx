@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Button, FlatList, StyleSheet, Text, View } from 'react-native';
 
 import { LogLevel, StatsigClientEventData } from '@statsig/client-core';
-import { PrecomputedEvaluationsClient } from '@statsig/precomputed-evaluations';
+import { StatsigClient } from '@statsig/js-client';
 import {
   StatsigProviderRN,
   warmCachingFromAsyncStorage,
@@ -11,7 +11,7 @@ import {
 import { DEMO_CLIENT_KEY } from './Constants';
 
 const user = { userID: 'a-user' };
-const client = new PrecomputedEvaluationsClient(DEMO_CLIENT_KEY, user, {
+const client = new StatsigClient(DEMO_CLIENT_KEY, user, {
   logLevel: LogLevel.Debug,
 });
 const warming = warmCachingFromAsyncStorage(client);

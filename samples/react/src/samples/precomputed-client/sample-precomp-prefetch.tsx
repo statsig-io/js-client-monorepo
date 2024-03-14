@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-import { EvaluationsDataAdapter } from '@statsig/precomputed-evaluations';
+import { EvaluationsDataAdapter } from '@statsig/js-client';
 
 import { myStatsigClient } from './sample-precomp-instance';
 

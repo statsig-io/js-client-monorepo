@@ -18,11 +18,9 @@
       "@statsig/client-core": ["packages/client-core/src/index.ts"],
       "@statsig/client-extensions": ["packages/client-extensions/src/index.ts"],
       "@statsig/expo-bindings": ["packages/expo-bindings/src/index.ts"],
-      "@statsig/on-device-evaluations": [
-        "packages/on-device-evaluations/src/index.ts"
-      ],
-      "@statsig/precomputed-evaluations": [
-        "packages/precomputed-evaluations/src/index.ts"
+      "@statsig/js-client": ["packages/js-client/src/index.ts"],
+      "@statsig/js-on-device-eval-client": [
+        "packages/js-on-device-eval-client/src/index.ts"
       ],
       "@statsig/react-bindings": ["packages/react-bindings/src/index.ts"],
       "@statsig/react-native-bindings": [

@@ -1,6 +1,6 @@
 import { Text, View } from 'react-native';
 
-import { OnDeviceEvaluationsClient } from '@statsig/on-device-evaluations';
+import { StatsigOnDeviceEvalClient } from '@statsig/js-on-device-eval-client';
 import {
   StatsigProviderRN,
   useExperiment,
@@ -12,7 +12,7 @@ import { DEMO_CLIENT_KEY } from './Constants';
 
 const user = { userID: 'a-user' };
 
-const client = new OnDeviceEvaluationsClient(DEMO_CLIENT_KEY);
+const client = new StatsigOnDeviceEvalClient(DEMO_CLIENT_KEY);
 const warming = warmCachingFromAsyncStorage(client);
 
 function Content() {
@@ -22,7 +22,7 @@ function Content() {
   return (
     <View style={{ padding: 16 }}>
       <Text style={{ fontWeight: 'bold' }}>On Device Evaluations Example</Text>
-      <Text>OnDeviceEvaluationsClient status: {client.loadingStatus}</Text>
+      <Text>StatsigOnDeviceEvalClient status: {client.loadingStatus}</Text>
       <Text>
         a_gate: {gate.value ? 'Pass' : 'Fail'} ({gate.details.reason})
       </Text>

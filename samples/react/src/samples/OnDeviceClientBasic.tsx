@@ -1,5 +1,5 @@
 // <snippet>
-import { OnDeviceEvaluationsClient } from '@statsig/on-device-evaluations';
+import { StatsigOnDeviceEvalClient } from '@statsig/js-on-device-eval-client';
 
 // </snippet>
 import { STATSIG_CLIENT_KEY as YOUR_CLIENT_KEY } from '../Contants';
@@ -8,7 +8,7 @@ import { STATSIG_CLIENT_KEY as YOUR_CLIENT_KEY } from '../Contants';
 export default async function Sample(): Promise<void> {
 // <snippet>
 const user = { userID: 'a-user' };
-const client = new OnDeviceEvaluationsClient(YOUR_CLIENT_KEY);
+const client = new StatsigOnDeviceEvalClient(YOUR_CLIENT_KEY);
 
 client.initializeSync();
 

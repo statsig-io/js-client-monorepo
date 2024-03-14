@@ -2,10 +2,7 @@
 
 /* eslint-disable no-console */
 // <snippet>
-import {
-  EvaluationsDataAdapter,
-  PrecomputedEvaluationsClient,
-} from '@statsig/precomputed-evaluations';
+import { EvaluationsDataAdapter, StatsigClient } from '@statsig/js-client';
 
 // </snippet>
 import { STATSIG_CLIENT_KEY as YOUR_CLIENT_KEY } from '../../Contants';
@@ -15,7 +12,7 @@ export default async function Sample(): Promise<void> {
 // <snippet>
 // Creating your own instance during startup
 const myDataAdapter = new EvaluationsDataAdapter();
-const myStatsigClient = new PrecomputedEvaluationsClient(
+const myStatsigClient = new StatsigClient(
   YOUR_CLIENT_KEY, 
   { userID: 'a-user' },
   { dataAdapter: myDataAdapter } // <- Pass the data adapter via StatsigOptions

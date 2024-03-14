@@ -1,2 +1,2 @@
-// declare module '@statsig/on-device-evaluations';
-// declare module '@statsig/precomputed-evaluations';
+// declare module '@statsig/js-on-device-eval-client';
+// declare module '@statsig/js-client';

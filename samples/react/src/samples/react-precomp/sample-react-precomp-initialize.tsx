@@ -1,5 +1,5 @@
 // <snippet>
-import { PrecomputedEvaluationsClient } from '@statsig/precomputed-evaluations';
+import { StatsigClient } from '@statsig/js-client';
 import { StatsigProvider, useGate } from '@statsig/react-bindings';
 
 // </snippet>
@@ -11,7 +11,7 @@ App();
 }
 
 // <snippet>
-const myStatsigClient = new PrecomputedEvaluationsClient(YOUR_CLIENT_KEY, {
+const myStatsigClient = new StatsigClient(YOUR_CLIENT_KEY, {
   userID: 'a-user',
 });
 

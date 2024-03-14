@@ -2,10 +2,7 @@ import { Box, Button, Typography } from '@mui/material';
 import { ReactNode, useEffect, useState } from 'react';
 
 import { StatsigClientEventData } from '@statsig/client-core';
-import {
-  EvaluationsDataAdapter,
-  PrecomputedEvaluationsClient,
-} from '@statsig/precomputed-evaluations';
+import { EvaluationsDataAdapter, StatsigClient } from '@statsig/js-client';
 import { StatsigProvider } from '@statsig/react-bindings';
 
 const DEMO_CLIENT_KEY = 'client-rfLvYGag3eyU0jYW5zcIJTQip7GXxSrhOFN69IGMjvq';
@@ -13,7 +10,7 @@ const DEMO_CLIENT_KEY = 'client-rfLvYGag3eyU0jYW5zcIJTQip7GXxSrhOFN69IGMjvq';
 const user = { userID: 'a-user' };
 
 const adapter = new EvaluationsDataAdapter();
-const client = new PrecomputedEvaluationsClient(DEMO_CLIENT_KEY, user, {
+const client = new StatsigClient(DEMO_CLIENT_KEY, user, {
   dataAdapter: adapter,
 });
 

@@ -1,6 +1,6 @@
 import { ReactNode, useEffect, useState } from 'react';
 
-import { OnDeviceEvaluationsClient } from '@statsig/on-device-evaluations';
+import { StatsigOnDeviceEvalClient } from '@statsig/js-on-device-eval-client';
 
 import ManyChecksExample from './ManyChecksExample';
 import MeasurementDetails from './MeasurementDetails';
@@ -9,7 +9,7 @@ const DEMO_CLIENT_KEY = 'client-QZ1butxQKLJVFgKJnSX6npZNVNpjACaIxjEoYSuUNLI';
 
 const user = { userID: 'a-user' };
 
-const client = new OnDeviceEvaluationsClient(DEMO_CLIENT_KEY);
+const client = new StatsigOnDeviceEvalClient(DEMO_CLIENT_KEY);
 
 export default function OnDeviceClientPerfExamplePage(): ReactNode {
   const [initMeasurement, setInitMeasurement] =

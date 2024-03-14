@@ -1,0 +1,52 @@
+{
+  "name": "js-client",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/js-client/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "command": ":",
+      "dependsOn": ["^build", "build-webpack"]
+    },
+    "publish": {
+      "command": "ts-node ./tools/scripts/publish.ts js-client",
+      "dependsOn": ["build", "^build-webpack"]
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "packages/js-client/jest.config.ts"
+      }
+    },
+    "build-ts": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/js-client",
+        "main": "packages/js-client/src/index.ts",
+        "tsConfig": "packages/js-client/tsconfig.lib.json",
+        "assets": ["packages/js-client/*.md"]
+      }
+    },
+    "build-webpack": {
+      "executor": "@nx/webpack:webpack",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
+      "options": {
+        "statsJson": true,
+        "verbose": true,
+        "outputPath": "overridden in webpack config",
+        "main": "overridden in webpack config",
+        "tsConfig": "packages/js-client/tsconfig.lib.json",
+        "webpackConfig": "packages/js-client/webpack.config.js"
+      },
+      "dependsOn": ["build-ts"]
+    }
+  },
+  "tags": []
+}

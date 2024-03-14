@@ -1,9 +1,6 @@
 /* eslint-disable no-console */
 import { DJB2 } from '@statsig/client-core';
-import {
-  EvaluationsDataAdapter,
-  PrecomputedEvaluationsClient,
-} from '@statsig/precomputed-evaluations';
+import { EvaluationsDataAdapter, StatsigClient } from '@statsig/js-client';
 
 import { STATSIG_CLIENT_KEY } from '../../Contants';
 
@@ -42,7 +39,7 @@ export default async function Sample(): Promise<void> {
 const user = { userID: 'a-user' };
 // </snippet>
 
-const myStatsigClient = new PrecomputedEvaluationsClient(
+const myStatsigClient = new StatsigClient(
   STATSIG_CLIENT_KEY, 
   user,
 );

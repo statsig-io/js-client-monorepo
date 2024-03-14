@@ -1,6 +1,6 @@
 import { ReactNode, useEffect, useState } from 'react';
 
-import { PrecomputedEvaluationsClient } from '@statsig/precomputed-evaluations';
+import { StatsigClient } from '@statsig/js-client';
 
 import ManyChecksExample from './ManyChecksExample';
 import MeasurementDetails from './MeasurementDetails';
@@ -9,7 +9,7 @@ const DEMO_CLIENT_KEY = 'client-rfLvYGag3eyU0jYW5zcIJTQip7GXxSrhOFN69IGMjvq';
 
 const user = { userID: 'a-user' };
 
-const client = new PrecomputedEvaluationsClient(DEMO_CLIENT_KEY, user);
+const client = new StatsigClient(DEMO_CLIENT_KEY, user);
 
 export default function PrecomputedClientPerfExamplePage(): ReactNode {
   const [initMeasurement, setInitMeasurement] =

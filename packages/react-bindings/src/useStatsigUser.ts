@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 
 import { StatsigUser } from '@statsig/client-core';
 
-import { usePrecomputedEvaluationsClient } from './usePrecomputedEvaluationsClient';
+import { useStatsigClient } from './useStatsigClient';
 
 export type UseStatsigUserResult = {
   user: StatsigUser;
@@ -13,7 +13,7 @@ export type UseStatsigUserResult = {
 };
 
 export function useStatsigUser(): UseStatsigUserResult {
-  const client = usePrecomputedEvaluationsClient();
+  const client = useStatsigClient();
   const memoUser = useMemo(() => {
     return client.getCurrentUser();
   }, [client, client.getCurrentUser()]);

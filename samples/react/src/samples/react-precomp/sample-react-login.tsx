@@ -1,9 +1,6 @@
 import { useState } from 'react';
 
-import {
-  EvaluationsDataAdapter,
-  PrecomputedEvaluationsClient,
-} from '@statsig/precomputed-evaluations';
+import { EvaluationsDataAdapter, StatsigClient } from '@statsig/js-client';
 import { StatsigProvider, useStatsigUser } from '@statsig/react-bindings';
 
 import { STATSIG_CLIENT_KEY as YOUR_CLIENT_KEY } from '../../Contants';
@@ -15,7 +12,7 @@ App();
 }
 
 const dataAdapter = new EvaluationsDataAdapter();
-const myStatsigClient = new PrecomputedEvaluationsClient(
+const myStatsigClient = new StatsigClient(
   YOUR_CLIENT_KEY,
   authService.getUser(),
   { dataAdapter },

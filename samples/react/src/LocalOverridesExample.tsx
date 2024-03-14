@@ -1,12 +1,12 @@
 import '@statsig/client-extensions';
-import { PrecomputedEvaluationsClient } from '@statsig/precomputed-evaluations';
+import { StatsigClient } from '@statsig/js-client';
 import {
   StatsigProvider,
   useExperiment,
   useGate,
 } from '@statsig/react-bindings';
 
-const client = new PrecomputedEvaluationsClient('client-key', {
+const client = new StatsigClient('client-key', {
   userID: 'a-user',
 });
 client.initializeSync();

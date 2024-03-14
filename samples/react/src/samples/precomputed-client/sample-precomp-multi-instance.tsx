@@ -1,5 +1,5 @@
 // <snippet>
-import { PrecomputedEvaluationsClient } from '@statsig/precomputed-evaluations';
+import { StatsigClient } from '@statsig/js-client';
 
 // </snippet>
 import {
@@ -10,12 +10,12 @@ import {
 // prettier-ignore
 export default async function Sample(): Promise<void> {
 // <snippet>
-const mainStatsigClient = new PrecomputedEvaluationsClient(
+const mainStatsigClient = new StatsigClient(
   YOUR_CLIENT_KEY, 
   { userID: 'a-user' },
 );
 
-const secondaryStatsigClient = new PrecomputedEvaluationsClient(
+const secondaryStatsigClient = new StatsigClient(
   SOME_OTHER_KEY, 
   { userID: 'some-other-user' },
 );

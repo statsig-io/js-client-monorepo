@@ -3,8 +3,8 @@
   "version": "0.0.1-beta.10",
   "dependencies": {
     "@statsig/client-core": "0.0.1-beta.10",
-    "@statsig/precomputed-evaluations": "0.0.1-beta.10",
-    "@statsig/on-device-evaluations": "0.0.1-beta.10"
+    "@statsig/js-client": "0.0.1-beta.10",
+    "@statsig/js-on-device-eval-client": "0.0.1-beta.10"
   },
   "type": "commonjs",
   "main": "./src/index.js",

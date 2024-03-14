@@ -1,8 +1,7 @@
-import { PrecomputedEvaluationsClient } from '@statsig/precomputed-evaluations';
+import { StatsigClient } from '@statsig/js-client';
 
 import { STATSIG_CLIENT_KEY } from '../../Contants';
 
-export const myStatsigClient = new PrecomputedEvaluationsClient(
-  STATSIG_CLIENT_KEY,
-  { userID: '' },
-);
+export const myStatsigClient = new StatsigClient(STATSIG_CLIENT_KEY, {
+  userID: '',
+});
