@@ -5,7 +5,6 @@ import {
   getUserStorageKey,
 } from '@statsig/client-core';
 
-import { EvaluationsDataAdapter } from '../EvaluationsDataAdapter';
 import StatsigClient from '../StatsigClient';
 import { MockLocalStorage } from './MockLocalStorage';
 import InitializeResponse from './initialize.json';
@@ -26,8 +25,8 @@ describe('Init Strategy - Bootstrap', () => {
     fetchMock.mockResponse(JSON.stringify(InitializeResponse));
 
     client = new StatsigClient(sdkKey, user);
-    const adapter = client.getDataAdapter() as EvaluationsDataAdapter;
-    adapter.setDataForUser(user, JSON.stringify(InitializeResponse));
+    const adapter = client.getDataAdapter();
+    adapter.setData(JSON.stringify(InitializeResponse), user);
 
     client.initializeSync();
   });

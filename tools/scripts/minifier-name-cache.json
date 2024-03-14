@@ -77,7 +77,11 @@
       "$_fetchFromNetwork": "Dt",
       "$_runLocalStorageCacheEviction": "Et",
       "$_setInMemoryCache": "Pt",
-      "$_isLoggingDisabled": "Gt"
+      "$_isLoggingDisabled": "Gt",
+      "$_fetchEvaluations": "Rt",
+      "$_api": "Ct",
+      "$_user": "Jt",
+      "$_resetForUser": "Ft"
     }
   }
 }

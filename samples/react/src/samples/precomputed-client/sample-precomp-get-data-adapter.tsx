@@ -19,6 +19,6 @@ const myStatsigClient = new StatsigClient(
 );
 
 // Or, get the adapter at some later point
-const dataAdapter = myStatsigClient.getDataAdapter() as EvaluationsDataAdapter;
+const dataAdapter = myStatsigClient.getDataAdapter();
 // </snippet>
 }

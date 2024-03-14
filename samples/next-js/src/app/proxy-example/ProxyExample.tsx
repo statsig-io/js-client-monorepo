@@ -25,7 +25,7 @@ function useBootstrappedClient(
       dataAdapter,
       api: 'http://localhost:4200/api/statsig',
     });
-    dataAdapter.setDataForUser(user, values);
+    dataAdapter.setData(values, user);
     client.initializeSync();
     return client;
   }, [sdkKey, user, values]);

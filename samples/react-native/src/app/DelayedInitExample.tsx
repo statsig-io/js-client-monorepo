@@ -15,7 +15,7 @@ const client = new StatsigClient(DEMO_CLIENT_KEY, user, {
 });
 client.initializeSync();
 
-const prefetching = dataAdapter.prefetchDataForUser(user);
+const prefetching = dataAdapter.prefetchData(user);
 
 function Content() {
   const gate = useGate('a_gate');

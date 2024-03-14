@@ -63,4 +63,8 @@ export type StatsigDataAdapter = {
     current: StatsigDataAdapterResult | null,
     user?: StatsigUser,
   ) => Promise<StatsigDataAdapterResult | null>;
+
+  readonly prefetchData: (user?: StatsigUser) => Promise<void>;
+
+  readonly setData: (data: string, user?: StatsigUser) => void;
 };

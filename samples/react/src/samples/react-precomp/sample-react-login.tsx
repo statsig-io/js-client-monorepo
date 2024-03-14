@@ -38,14 +38,14 @@ function LoginForm(): JSX.Element {
       .login(authData)
       .then(async ({ authorizedUser, bootstrapData }) => {
         // prefetch data from Statsig
-        await dataAdapter.prefetchDataForUser(authorizedUser);
+        await dataAdapter.prefetchData(authorizedUser);
 
         // </snippet>
         const actual = authorizedUser;
         authorizedUser = { userID: 'dummy' };
         // <snippet>
         // or, bootstrap with data from your own backend
-        dataAdapter.setDataForUser(authorizedUser, bootstrapData);
+        dataAdapter.setData(bootstrapData, authorizedUser);
 
         // </snippet>
         authorizedUser = actual;

@@ -81,6 +81,23 @@ export abstract class DataAdapterCore<T extends UpdatesAwareObject>
     return latest;
   }
 
+  async prefetchData(user?: StatsigUser | undefined): Promise<void> {
+    const cacheKey = this._getCacheKey(user);
+    const result = await this.getDataAsync(null, user);
+    if (result) {
+      this._addToInMemoryCache(cacheKey, { ...result, source: 'Prefetch' });
+    }
+  }
+
+  setData(data: string, user?: StatsigUser): void {
+    const cacheKey = this._getCacheKey(user);
+    this._addToInMemoryCache(cacheKey, {
+      source: 'Bootstrap',
+      data,
+      receivedAt: Date.now(),
+    });
+  }
+
   /**
    * (Internal Use Only) - Used by @statsig/react-native-bindings to prime the cache from AsyncStorage
    * @param {Record<string, StatsigDataAdapterResult>} cache The values to set for _inMemoryCache

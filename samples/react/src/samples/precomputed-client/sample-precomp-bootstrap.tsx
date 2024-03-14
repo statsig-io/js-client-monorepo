@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 import { DJB2 } from '@statsig/client-core';
-import { EvaluationsDataAdapter, StatsigClient } from '@statsig/js-client';
+import { StatsigClient } from '@statsig/js-client';
 
 import { STATSIG_CLIENT_KEY } from '../../Contants';
 
@@ -43,11 +43,11 @@ const myStatsigClient = new StatsigClient(
   STATSIG_CLIENT_KEY, 
   user,
 );
-const dataAdapter = myStatsigClient.getDataAdapter() as EvaluationsDataAdapter;
+const dataAdapter = myStatsigClient.getDataAdapter();
 // <snippet>
 
 // Pass the bootstrap values to the data adapter
-dataAdapter.setDataForUser(user, getStatsigBootstrapJson());
+dataAdapter.setData(getStatsigBootstrapJson(), user);
 
 // Then finally call initializeSync
 myStatsigClient.initializeSync();

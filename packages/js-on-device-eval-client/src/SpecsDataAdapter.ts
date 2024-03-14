@@ -16,15 +16,6 @@ export class SpecsDataAdapter extends DataAdapterCore<DownloadConfigSpecsRespons
     this._network = new Network(options ?? {});
   }
 
-  setData(data: string): void {
-    const cacheKey = this._getCacheKey();
-    this._addToInMemoryCache(cacheKey, {
-      source: 'Bootstrap',
-      data,
-      receivedAt: Date.now(),
-    });
-  }
-
   protected override async _fetchFromNetwork(
     _current: string | null,
     _user?: StatsigUser,

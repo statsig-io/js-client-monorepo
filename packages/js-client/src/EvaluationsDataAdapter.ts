@@ -19,23 +19,6 @@ export class EvaluationsDataAdapter extends DataAdapterCore<EvaluationResponse> 
     this._network = new Network(options ?? {});
   }
 
-  setDataForUser(user: StatsigUser, data: string): void {
-    const cacheKey = this._getCacheKey(user);
-    this._addToInMemoryCache(cacheKey, {
-      source: 'Bootstrap',
-      data,
-      receivedAt: Date.now(),
-    });
-  }
-
-  async prefetchDataForUser(user: StatsigUser): Promise<void> {
-    const cacheKey = this._getCacheKey(user);
-    const result = await this.getDataAsync(null, user);
-    if (result) {
-      this._addToInMemoryCache(cacheKey, { ...result, source: 'Prefetch' });
-    }
-  }
-
   protected override async _fetchFromNetwork(
     current: string | null,
     user?: StatsigUser,

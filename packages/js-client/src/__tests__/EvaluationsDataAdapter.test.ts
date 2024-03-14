@@ -51,7 +51,7 @@ describe('Evaluations Data Adapter', () => {
     });
 
     it('returns bootstrapped values', () => {
-      adapter.setDataForUser(user, InitializeResponseString);
+      adapter.setData(InitializeResponseString, user);
 
       const result = adapter.getDataSync(user);
 
@@ -60,7 +60,7 @@ describe('Evaluations Data Adapter', () => {
     });
 
     it('returns prefetched values', async () => {
-      await adapter.prefetchDataForUser(user);
+      await adapter.prefetchData(user);
 
       const result = adapter.getDataSync(user);
 
@@ -122,7 +122,7 @@ describe('Evaluations Data Adapter', () => {
       (adapter as any).getDataSync = () => {
         throw new Error('Test');
       };
-      await adapter.prefetchDataForUser({ userID: 'a' });
+      await adapter.prefetchData({ userID: 'a' });
       expect(fetchMock.mock.calls[1][0]).toBe(
         'https://statsigapi.net/v1/sdk_exception',
       );

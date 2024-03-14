@@ -23,7 +23,7 @@ function useBootstrappedClient(
     const client = new StatsigClient(sdkKey, user, {
       dataAdapter,
     });
-    dataAdapter.setDataForUser(user, values);
+    dataAdapter.setData(values, user);
     client.initializeSync();
     return client;
   }, [sdkKey, user, values]);
