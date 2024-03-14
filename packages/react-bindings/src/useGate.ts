@@ -9,7 +9,7 @@ import {
 } from '@statsig/client-core';
 
 import { NoopEvaluationsClient } from './NoopEvaluationsClient';
-import { isStatsigClient } from './OnDeviceVsPrecomputedUtils';
+import { isPrecomputedEvalClient } from './OnDeviceVsPrecomputedUtils';
 import StatsigContext from './StatsigContext';
 
 export type UseGateOptions = EvaluationOptions & {
@@ -23,7 +23,7 @@ export default function (
   const { client, renderVersion } = useContext(StatsigContext);
 
   const gate = useMemo(() => {
-    if (isStatsigClient(client)) {
+    if (isPrecomputedEvalClient(client)) {
       return client.getFeatureGate(gateName, options);
     }
 

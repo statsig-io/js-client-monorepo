@@ -49,6 +49,12 @@ export type StatsigOptionsCommon = {
    * Default: 10,000 (10 seconds)
    */
   loggingIntervalMs?: number;
+
+  /**
+   * Prevents writing anything to storage.
+   * Note: caching will not work if storage is disabled
+   */
+  disableStorage?: boolean;
 };
 
 export type StatsigEnvironment = {

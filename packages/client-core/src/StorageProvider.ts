@@ -6,12 +6,23 @@ type StorageProvider = {
   setItem: (key: string, value: string) => Promise<void>;
   removeItem: (key: string) => Promise<void>;
   getAllKeys: () => Promise<readonly string[]>;
+
+  getItemSync?: (key: string) => string | null;
+};
+
+type StorageProviderManagment = {
+  setProvider: (n: StorageProvider) => void;
+  disable: () => void;
+  enable: () => void;
 };
 
 const inMemoryStore: Record<string, string> = {};
 
-let provider: StorageProvider = {
+const _inMemoryProvider: StorageProvider = {
   getProviderName: () => 'InMemory',
+  getItemSync(key: string): string | null {
+    return inMemoryStore[key] ?? null;
+  },
   getItem(key: string): Promise<string | null> {
     return Promise.resolve(inMemoryStore[key] ?? null);
   },
@@ -28,10 +39,14 @@ let provider: StorageProvider = {
   },
 };
 
+let _localStorageProvider: StorageProvider | null = null;
 try {
   if (typeof window !== 'undefined' && 'localStorage' in window) {
-    provider = {
+    _localStorageProvider = {
       getProviderName: () => 'LocalStorage',
+      getItemSync(key: string): string | null {
+        return localStorage.getItem(key);
+      },
       getItem(key: string): Promise<string | null> {
         return Promise.resolve(localStorage.getItem(key));
       },
@@ -50,24 +65,35 @@ try {
     };
   }
 } catch (error) {
-  Log.warn('Failed to get storage provider. Failling back to in memory store.');
+  Log.warn('Failed to setup localStorageProvider.');
 }
 
-export const Storage: StorageProvider & {
-  setProvider: (n: StorageProvider) => void;
-} = {
-  getProviderName: () => provider.getProviderName(),
-  getItem: (key: string) => provider.getItem(key),
-  setItem: (key: string, value: string) => provider.setItem(key, value),
-  removeItem: (key: string) => provider.removeItem(key),
-  getAllKeys: () => provider.getAllKeys(),
+let _main: StorageProvider = _localStorageProvider ?? _inMemoryProvider;
+let _current = _main;
+
+export const Storage: StorageProvider & StorageProviderManagment = {
+  getProviderName: () => _current.getProviderName(),
+  getItem: (key: string) => _current.getItem(key),
+  setItem: (key: string, value: string) => _current.setItem(key, value),
+  removeItem: (key: string) => _current.removeItem(key),
+  getAllKeys: () => _current.getAllKeys(),
+  getItemSync: (key: string) => _current.getItemSync?.(key) ?? null,
+
+  // StorageProviderManagment
   setProvider: (newProvider: StorageProvider) => {
-    provider = newProvider;
+    _main = newProvider;
+    _current = newProvider;
+  },
+  enable: () => {
+    _current = _main;
+  },
+  disable: () => {
+    _current = _inMemoryProvider;
   },
 };
 
 export async function getObjectFromStorage<T>(key: string): Promise<T | null> {
-  const value = await provider.getItem(key);
+  const value = await _current.getItem(key);
   return JSON.parse(value ?? 'null') as T | null;
 }
 
@@ -75,5 +101,5 @@ export async function setObjectInStorage(
   key: string,
   obj: unknown,
 ): Promise<void> {
-  await provider.setItem(key, JSON.stringify(obj));
+  await _current.setItem(key, JSON.stringify(obj));
 }

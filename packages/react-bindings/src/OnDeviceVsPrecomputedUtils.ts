@@ -4,7 +4,7 @@ import {
   PrecomputedEvaluationsInterface,
 } from '@statsig/client-core';
 
-export function isStatsigClient(
+export function isPrecomputedEvalClient(
   client: OnDeviceEvaluationsInterface | PrecomputedEvaluationsInterface,
 ): client is PrecomputedEvaluationsInterface {
   if (isNoopClient(client)) {

@@ -3,13 +3,13 @@ import { useContext } from 'react';
 import { Log, OnDeviceEvaluationsInterface } from '@statsig/client-core';
 
 import { NoopEvaluationsClient } from './NoopEvaluationsClient';
-import { isStatsigClient } from './OnDeviceVsPrecomputedUtils';
+import { isPrecomputedEvalClient } from './OnDeviceVsPrecomputedUtils';
 import StatsigContext from './StatsigContext';
 
 export function useStatsigOnDeviceEvalClient(): OnDeviceEvaluationsInterface {
   const { client } = useContext(StatsigContext);
 
-  if (!isStatsigClient(client)) {
+  if (!isPrecomputedEvalClient(client)) {
     return client;
   }
   Log.warn(

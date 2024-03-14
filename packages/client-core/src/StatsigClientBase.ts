@@ -18,6 +18,7 @@ import {
 import { StatsigEventInternal } from './StatsigEvent';
 import { StatsigOptionsCommon } from './StatsigOptionsCommon';
 import { StatsigUser } from './StatsigUser';
+import { Storage } from './StorageProvider';
 
 export type EvaluationOptions = {
   disableExposureLog?: boolean;
@@ -46,6 +47,10 @@ export abstract class StatsigClientBase
     network: NetworkCore,
     options: StatsigOptionsCommon | null,
   ) {
+    options?.disableStorage && Storage.disable();
+    options?.overrideStableID &&
+      StableID.setOverride(options.overrideStableID, _sdkKey);
+
     Log.level = options?.logLevel ?? LogLevel.Warn;
 
     this._logger = new EventLogger(
@@ -55,10 +60,6 @@ export abstract class StatsigClientBase
       options,
     );
     this._errorBoundary = new ErrorBoundary(_sdkKey);
-
-    if (options?.overrideStableID) {
-      StableID.setOverride(options.overrideStableID, _sdkKey);
-    }
 
     __STATSIG__ = __STATSIG__ ?? {};
     const instances = __STATSIG__.instances ?? new Set();

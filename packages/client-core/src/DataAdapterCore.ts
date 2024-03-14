@@ -159,11 +159,7 @@ export abstract class DataAdapterCore<T extends UpdatesAwareObject>
   }
 
   private _loadFromCache(cacheKey: string): StatsigDataAdapterResult | null {
-    if (typeof window === 'undefined' || !window.localStorage) {
-      return null;
-    }
-
-    const cache = window.localStorage.getItem(cacheKey);
+    const cache = Storage.getItemSync?.(cacheKey);
     if (cache == null) {
       return null;
     }

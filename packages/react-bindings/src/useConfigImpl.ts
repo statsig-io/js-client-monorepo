@@ -9,7 +9,7 @@ import {
 } from '@statsig/client-core';
 
 import { NoopEvaluationsClient } from './NoopEvaluationsClient';
-import { isStatsigClient } from './OnDeviceVsPrecomputedUtils';
+import { isPrecomputedEvalClient } from './OnDeviceVsPrecomputedUtils';
 import StatsigContext from './StatsigContext';
 
 export type UseConfigOptions = EvaluationOptions & {
@@ -24,7 +24,7 @@ export function useConfigImpl(
   const { client, renderVersion } = useContext(StatsigContext);
 
   const config = useMemo(() => {
-    if (isStatsigClient(client)) {
+    if (isPrecomputedEvalClient(client)) {
       return client.getDynamicConfig(configName, options);
     }
 
