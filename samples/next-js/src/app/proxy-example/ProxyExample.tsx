@@ -3,7 +3,7 @@
 import { useContext, useMemo } from 'react';
 import { StatsigUser } from 'statsig-node';
 
-import { EvaluationsDataAdapter, StatsigClient } from '@statsig/js-client';
+import { StatsigClient } from '@statsig/js-client';
 import {
   StatsigContext,
   StatsigProvider,
@@ -20,12 +20,10 @@ function useBootstrappedClient(
   values: string,
 ): StatsigClient {
   const client = useMemo(() => {
-    const dataAdapter = new EvaluationsDataAdapter();
     const client = new StatsigClient(sdkKey, user, {
-      dataAdapter,
       api: 'http://localhost:4200/api/statsig',
     });
-    dataAdapter.setData(values, user);
+    client.dataAdapter.setData(values, user);
     client.initializeSync();
     return client;
   }, [sdkKey, user, values]);

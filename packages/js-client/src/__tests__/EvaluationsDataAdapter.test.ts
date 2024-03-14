@@ -1,8 +1,8 @@
 import fetchMock from 'jest-fetch-mock';
 
-import { Log, StatsigDataAdapterResult } from '@statsig/client-core';
+import { DataAdapterResult, Log } from '@statsig/client-core';
 
-import { EvaluationsDataAdapter } from '../EvaluationsDataAdapter';
+import { StatsigEvaluationsDataAdapter } from '../StatsigEvaluationsDataAdapter';
 import { MockLocalStorage } from './MockLocalStorage';
 import InitializeResponse from './initialize.json';
 
@@ -13,7 +13,7 @@ describe('Evaluations Data Adapter', () => {
   const user = { userID: 'a-user' };
 
   let storageMock: MockLocalStorage;
-  let adapter: EvaluationsDataAdapter;
+  let adapter: StatsigEvaluationsDataAdapter;
 
   beforeAll(() => {
     storageMock = MockLocalStorage.enabledMockStorage();
@@ -31,7 +31,7 @@ describe('Evaluations Data Adapter', () => {
     it('logs an error when called before attach', () => {
       Log.error = jest.fn();
 
-      new EvaluationsDataAdapter().getDataSync(user);
+      new StatsigEvaluationsDataAdapter().getDataSync(user);
 
       expect(Log.error).toHaveBeenCalled();
     });
@@ -41,7 +41,7 @@ describe('Evaluations Data Adapter', () => {
     beforeAll(async () => {
       fetchMock.mockResponse(InitializeResponseString);
 
-      adapter = new EvaluationsDataAdapter();
+      adapter = new StatsigEvaluationsDataAdapter();
       adapter.attach(sdkKey, null);
     });
 
@@ -70,13 +70,13 @@ describe('Evaluations Data Adapter', () => {
   });
 
   describe('getDataAsync', () => {
-    let result: StatsigDataAdapterResult | null;
+    let result: DataAdapterResult | null;
 
     beforeEach(async () => {
       fetchMock.mock.calls = [];
       fetchMock.mockResponse(InitializeResponseString);
 
-      adapter = new EvaluationsDataAdapter();
+      adapter = new StatsigEvaluationsDataAdapter();
       adapter.attach(sdkKey, null);
       result = await adapter.getDataAsync(null, user);
     });
@@ -93,7 +93,7 @@ describe('Evaluations Data Adapter', () => {
     });
 
     it('is cached for later sessions', () => {
-      const nextAdapter = new EvaluationsDataAdapter();
+      const nextAdapter = new StatsigEvaluationsDataAdapter();
       nextAdapter.attach(sdkKey, null);
 
       const syncResult = nextAdapter.getDataSync(user);

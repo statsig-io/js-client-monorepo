@@ -1,11 +1,12 @@
 import {
   DynamicConfig,
+  EvaluationsDataAdapter,
   Experiment,
   FeatureGate,
   Layer,
   OnDeviceEvaluationsInterface,
   PrecomputedEvaluationsInterface,
-  StatsigDataAdapter,
+  SpecsDataAdapter,
   makeDynamicConfig,
   makeFeatureGate,
   makeLayer,
@@ -34,7 +35,7 @@ const _defaultEvaluation = <T>(type: 'gate' | 'config' | 'layer') => {
   };
 };
 
-const _noopDataAdapter: StatsigDataAdapter = {
+const _noopDataAdapter: EvaluationsDataAdapter & SpecsDataAdapter = {
   _setInMemoryCache: _noop,
   attach: _noop,
   getDataSync: () => null,
@@ -62,7 +63,7 @@ const _client: OnDeviceEvaluationsInterface &
   logEvent: _noop,
   on: _noop,
   off: _noop,
-  getDataAdapter: () => _noopDataAdapter,
+  dataAdapter: _noopDataAdapter,
 };
 
 export const NoopEvaluationsClient = _client;

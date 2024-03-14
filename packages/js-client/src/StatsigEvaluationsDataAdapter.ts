@@ -1,12 +1,16 @@
 import {
   DataAdapterCore,
+  EvaluationsDataAdapter,
   StatsigOptionsCommon,
   StatsigUser,
 } from '@statsig/client-core';
 
 import Network from './Network';
 
-export class EvaluationsDataAdapter extends DataAdapterCore {
+export class StatsigEvaluationsDataAdapter
+  extends DataAdapterCore
+  implements EvaluationsDataAdapter
+{
   private _network: Network | null = null;
 
   constructor() {

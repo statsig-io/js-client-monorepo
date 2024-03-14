@@ -3,8 +3,7 @@ import { Log } from './Log';
 import { monitorClass } from './Monitoring';
 import {
   DataAdapterCachePrefix,
-  StatsigDataAdapter,
-  StatsigDataAdapterResult,
+  DataAdapterResult,
 } from './StatsigDataAdapter';
 import { StatsigOptionsCommon } from './StatsigOptionsCommon';
 import { StatsigUser, getUserStorageKey } from './StatsigUser';
@@ -17,11 +16,11 @@ import { typedJsonParse } from './TypedJsonParse';
 
 const CACHE_LIMIT = 10;
 
-export abstract class DataAdapterCore implements StatsigDataAdapter {
+export abstract class DataAdapterCore {
   protected _errorBoundary: ErrorBoundary | null = null;
 
   private _sdkKey: string | null = null;
-  private _inMemoryCache: Record<string, StatsigDataAdapterResult> = {};
+  private _inMemoryCache: Record<string, DataAdapterResult> = {};
   private _lastModifiedStoreKey: string;
 
   protected constructor(
@@ -37,7 +36,7 @@ export abstract class DataAdapterCore implements StatsigDataAdapter {
     monitorClass(this._errorBoundary, this);
   }
 
-  getDataSync(user?: StatsigUser | undefined): StatsigDataAdapterResult | null {
+  getDataSync(user?: StatsigUser | undefined): DataAdapterResult | null {
     const cacheKey = this._getCacheKey(user);
     const result = this._inMemoryCache[cacheKey];
     if (result) {
@@ -54,9 +53,9 @@ export abstract class DataAdapterCore implements StatsigDataAdapter {
   }
 
   async getDataAsync(
-    current: StatsigDataAdapterResult | null,
+    current: DataAdapterResult | null,
     user?: StatsigUser,
-  ): Promise<StatsigDataAdapterResult | null> {
+  ): Promise<DataAdapterResult | null> {
     const cache = current ?? this.getDataSync(user);
     const latest = await this._fetchLatest(cache?.data ?? null, user);
 
@@ -94,9 +93,9 @@ export abstract class DataAdapterCore implements StatsigDataAdapter {
 
   /**
    * (Internal Use Only) - Used by @statsig/react-native-bindings to prime the cache from AsyncStorage
-   * @param {Record<string, StatsigDataAdapterResult>} cache The values to set for _inMemoryCache
+   * @param {Record<string, DataAdapterResult>} cache The values to set for _inMemoryCache
    */
-  _setInMemoryCache(cache: Record<string, StatsigDataAdapterResult>): void {
+  _setInMemoryCache(cache: Record<string, DataAdapterResult>): void {
     this._inMemoryCache = cache;
   }
 
@@ -108,7 +107,7 @@ export abstract class DataAdapterCore implements StatsigDataAdapter {
   private async _fetchLatest(
     current: string | null,
     user?: StatsigUser,
-  ): Promise<StatsigDataAdapterResult | null> {
+  ): Promise<DataAdapterResult | null> {
     const latest = await this._fetchFromNetwork(current, user);
 
     if (!latest) {
@@ -153,7 +152,7 @@ export abstract class DataAdapterCore implements StatsigDataAdapter {
 
   protected _addToInMemoryCache(
     cacheKey: string,
-    result: StatsigDataAdapterResult,
+    result: DataAdapterResult,
   ): void {
     const entries = Object.entries(this._inMemoryCache);
     if (entries.length < CACHE_LIMIT) {
@@ -169,13 +168,13 @@ export abstract class DataAdapterCore implements StatsigDataAdapter {
     this._inMemoryCache[cacheKey] = result;
   }
 
-  private _loadFromCache(cacheKey: string): StatsigDataAdapterResult | null {
+  private _loadFromCache(cacheKey: string): DataAdapterResult | null {
     const cache = Storage.getItemSync?.(cacheKey);
     if (cache == null) {
       return null;
     }
 
-    const result = typedJsonParse<StatsigDataAdapterResult>(
+    const result = typedJsonParse<DataAdapterResult>(
       cache,
       'source',
       'Failed to parse cached result',
@@ -186,7 +185,7 @@ export abstract class DataAdapterCore implements StatsigDataAdapter {
 
   private async _writeToCache(
     cacheKey: string,
-    result: StatsigDataAdapterResult,
+    result: DataAdapterResult,
   ): Promise<void> {
     await Storage.setItem(cacheKey, JSON.stringify(result));
     await this._runLocalStorageCacheEviction(cacheKey);

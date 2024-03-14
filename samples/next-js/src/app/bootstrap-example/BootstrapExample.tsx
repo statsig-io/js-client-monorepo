@@ -4,7 +4,7 @@ import { useContext, useEffect, useMemo } from 'react';
 import { StatsigUser } from 'statsig-node';
 
 import { StatsigClientEventData } from '@statsig/client-core';
-import { EvaluationsDataAdapter, StatsigClient } from '@statsig/js-client';
+import { StatsigClient } from '@statsig/js-client';
 import {
   StatsigContext,
   StatsigProvider,
@@ -19,11 +19,8 @@ function useBootstrappedClient(
   values: string,
 ): StatsigClient {
   const client = useMemo(() => {
-    const dataAdapter = new EvaluationsDataAdapter();
-    const client = new StatsigClient(sdkKey, user, {
-      dataAdapter,
-    });
-    dataAdapter.setData(values, user);
+    const client = new StatsigClient(sdkKey, user);
+    client.dataAdapter.setData(values, user);
     client.initializeSync();
     return client;
   }, [sdkKey, user, values]);

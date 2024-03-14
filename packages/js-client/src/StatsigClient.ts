@@ -1,5 +1,7 @@
 import type {
+  DataAdapterResult,
   EvaluationOptions,
+  EvaluationsDataAdapter,
   FeatureGate,
   StatsigUser,
 } from '@statsig/client-core';
@@ -9,6 +11,7 @@ import {
   DynamicConfig,
   Experiment,
   Layer,
+  Log,
   PrecomputedEvaluationsInterface,
   StatsigClientBase,
   StatsigEvent,
@@ -23,13 +26,13 @@ import {
 } from '@statsig/client-core';
 
 import EvaluationStore from './EvaluationStore';
-import { EvaluationsDataAdapter } from './EvaluationsDataAdapter';
 import Network from './Network';
+import { StatsigEvaluationsDataAdapter } from './StatsigEvaluationsDataAdapter';
 import './StatsigMetadataAdditions';
 import type { StatsigOptions } from './StatsigOptions';
 
 export default class StatsigClient
-  extends StatsigClientBase
+  extends StatsigClientBase<EvaluationsDataAdapter>
   implements PrecomputedEvaluationsInterface
 {
   private _options: StatsigOptions;
@@ -48,7 +51,7 @@ export default class StatsigClient
 
     super(
       sdkKey,
-      options?.dataAdapter ?? new EvaluationsDataAdapter(),
+      options?.dataAdapter ?? new StatsigEvaluationsDataAdapter(),
       network,
       options,
     );
@@ -77,7 +80,7 @@ export default class StatsigClient
   updateUserSync(user: StatsigUser): void {
     this._resetForUser(user);
 
-    const result = this._adapter.getDataSync(this._user);
+    const result = this.dataAdapter.getDataSync(this._user);
     this._store.setValuesFromDataAdapter(result);
 
     this._store.finalize();
@@ -91,12 +94,12 @@ export default class StatsigClient
 
     const initiator = this._user;
 
-    let result = this._adapter.getDataSync(initiator);
+    let result = this.dataAdapter.getDataSync(initiator);
     this._setStatus('Loading', result);
 
     this._store.setValuesFromDataAdapter(result);
 
-    result = await this._adapter.getDataAsync(result, initiator);
+    result = await this.dataAdapter.getDataAsync(result, initiator);
 
     // ensure the user hasn't changed while we were waiting
     if (initiator === this._user) {
@@ -187,6 +190,15 @@ export default class StatsigClient
 
   logEvent(event: StatsigEvent): void {
     this._logger.enqueue({ ...event, user: this._user, time: Date.now() });
+  }
+
+  private _runPostUpdate(
+    current: DataAdapterResult | null,
+    user: StatsigUser,
+  ): void {
+    this.dataAdapter.getDataAsync(current, user).catch((err) => {
+      Log.error('An error occurred after update.', err);
+    });
   }
 
   private _resetForUser(user: StatsigUser) {

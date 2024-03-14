@@ -1,4 +1,4 @@
-import { StatsigDataAdapterResult } from './StatsigDataAdapter';
+import { DataAdapterResult } from './StatsigDataAdapter';
 import { DynamicConfig, Experiment, FeatureGate, Layer } from './StatsigTypes';
 
 export type StatsigLoadingStatus = 'Uninitialized' | 'Loading' | 'Ready';
@@ -39,7 +39,7 @@ export type StatsigClientEventData =
   | {
       event: 'values_updated';
       status: StatsigLoadingStatus;
-      values: StatsigDataAdapterResult | null;
+      values: DataAdapterResult | null;
     }
   | {
       event: 'error';

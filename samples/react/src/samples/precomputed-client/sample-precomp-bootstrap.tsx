@@ -43,7 +43,7 @@ const myStatsigClient = new StatsigClient(
   STATSIG_CLIENT_KEY, 
   user,
 );
-const dataAdapter = myStatsigClient.getDataAdapter();
+const dataAdapter = myStatsigClient.dataAdapter;
 // <snippet>
 
 // Pass the bootstrap values to the data adapter

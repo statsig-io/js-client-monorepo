@@ -1,10 +1,10 @@
-import { SpecsDataAdapter } from './SpecsDataAdapter';
 import './StatsigMetadataAdditions';
 import StatsigOnDeviceEvalClient from './StatsigOnDeviceEvalClient';
 import type { StatsigOptions } from './StatsigOptions';
+import { StatsigSpecsDataAdapter } from './StatsigSpecsDataAdapter';
 
 export type { StatsigOptions };
-export { StatsigOnDeviceEvalClient, SpecsDataAdapter };
+export { StatsigOnDeviceEvalClient, StatsigSpecsDataAdapter };
 
 export type {
   StatsigEnvironment,
@@ -14,6 +14,6 @@ export type {
 
 __STATSIG__ = {
   ...__STATSIG__,
-  SpecsDataAdapter,
+  StatsigSpecsDataAdapter,
   StatsigOnDeviceEvalClient,
 };

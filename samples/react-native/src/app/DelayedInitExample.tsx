@@ -2,20 +2,17 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useEffect, useState } from 'react';
 import { Button, Text, View } from 'react-native';
 
-import { EvaluationsDataAdapter, StatsigClient } from '@statsig/js-client';
+import { StatsigClient } from '@statsig/js-client';
 import { StatsigProvider } from '@statsig/react-bindings';
 import { useExperiment, useGate } from '@statsig/react-native-bindings';
 
 import { DEMO_CLIENT_KEY } from './Constants';
 
 const user = { userID: 'a-user' };
-const dataAdapter = new EvaluationsDataAdapter();
-const client = new StatsigClient(DEMO_CLIENT_KEY, user, {
-  dataAdapter,
-});
+const client = new StatsigClient(DEMO_CLIENT_KEY, user);
 client.initializeSync();
 
-const prefetching = dataAdapter.prefetchData(user);
+const prefetching = client.dataAdapter.prefetchData(user);
 
 function Content() {
   const gate = useGate('a_gate');

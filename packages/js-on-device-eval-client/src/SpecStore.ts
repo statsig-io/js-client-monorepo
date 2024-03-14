@@ -1,6 +1,6 @@
 import {
+  DataAdapterResult,
   DataSource,
-  StatsigDataAdapterResult,
   typedJsonParse,
 } from '@statsig/client-core';
 
@@ -64,7 +64,7 @@ export default class SpecStore {
   private _lcut = 0;
   private _receivedAt = 0;
 
-  setValuesFromDataAdapter(result: StatsigDataAdapterResult | null): void {
+  setValuesFromDataAdapter(result: DataAdapterResult | null): void {
     if (!result) {
       return;
     }

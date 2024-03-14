@@ -1,11 +1,14 @@
 import {
   DEFAULT_EVAL_OPTIONS,
+  DataAdapterResult,
   DynamicConfig,
   EvaluationOptions,
   Experiment,
   FeatureGate,
   Layer,
+  Log,
   OnDeviceEvaluationsInterface,
+  SpecsDataAdapter,
   StatsigClientBase,
   StatsigEvent,
   StatsigUser,
@@ -22,8 +25,8 @@ import {
 import Evaluator from './Evaluator';
 import Network from './Network';
 import SpecStore, { DownloadConfigSpecsResponse } from './SpecStore';
-import { SpecsDataAdapter } from './SpecsDataAdapter';
 import { StatsigOptions } from './StatsigOptions';
+import { StatsigSpecsDataAdapter } from './StatsigSpecsDataAdapter';
 
 declare global {
   interface Window {
@@ -32,7 +35,7 @@ declare global {
 }
 
 export default class StatsigOnDeviceEvalClient
-  extends StatsigClientBase
+  extends StatsigClientBase<SpecsDataAdapter>
   implements OnDeviceEvaluationsInterface
 {
   private _network: Network;
@@ -44,7 +47,7 @@ export default class StatsigOnDeviceEvalClient
     const network = new Network(options);
     super(
       sdkKey,
-      options?.dataAdapter ?? new SpecsDataAdapter(),
+      options?.dataAdapter ?? new StatsigSpecsDataAdapter(),
       network,
       options,
     );
@@ -61,7 +64,7 @@ export default class StatsigOnDeviceEvalClient
   initializeSync(): void {
     this._store.reset();
 
-    const result = this._adapter.getDataSync();
+    const result = this.dataAdapter.getDataSync();
     this._store.setValuesFromDataAdapter(result);
 
     this._store.finalize();
@@ -76,10 +79,10 @@ export default class StatsigOnDeviceEvalClient
 
     this._setStatus('Loading', null);
 
-    let result = this._adapter.getDataSync();
+    let result = this.dataAdapter.getDataSync();
     this._store.setValuesFromDataAdapter(result);
 
-    result = await this._adapter.getDataAsync(result);
+    result = await this.dataAdapter.getDataAsync(result);
     this._store.setValuesFromDataAdapter(result);
 
     this._store.finalize();
@@ -169,6 +172,12 @@ export default class StatsigOnDeviceEvalClient
 
   logEvent(event: StatsigEvent, user: StatsigUser): void {
     this._logger.enqueue({ ...event, user, time: Date.now() });
+  }
+
+  private _runPostUpdate(current: DataAdapterResult | null): void {
+    this.dataAdapter.getDataAsync(current).catch((err) => {
+      Log.error('An error occurred after update.', err);
+    });
   }
 
   private _getConfigImpl(

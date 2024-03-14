@@ -2,13 +2,13 @@ import fetchMock from 'jest-fetch-mock';
 
 import { DataAdapterCachePrefix } from '@statsig/client-core';
 
-import { EvaluationsDataAdapter } from '../EvaluationsDataAdapter';
+import { StatsigEvaluationsDataAdapter } from '../StatsigEvaluationsDataAdapter';
 import { MockLocalStorage } from './MockLocalStorage';
 import InitializeResponse from './initialize.json';
 
 describe('Cache Eviction', () => {
   let storageMock: MockLocalStorage;
-  let adapter: EvaluationsDataAdapter;
+  let adapter: StatsigEvaluationsDataAdapter;
 
   beforeAll(async () => {
     storageMock = MockLocalStorage.enabledMockStorage();
@@ -17,7 +17,7 @@ describe('Cache Eviction', () => {
     fetchMock.enableMocks();
     fetchMock.mockResponse(JSON.stringify(InitializeResponse));
 
-    adapter = new EvaluationsDataAdapter();
+    adapter = new StatsigEvaluationsDataAdapter();
     adapter.attach('client-key', null);
 
     for (let i = 0; i < 20; i++) {

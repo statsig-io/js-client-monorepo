@@ -1,7 +1,7 @@
 import {
+  DataAdapterResult,
   DataSource,
   EvaluationDetails,
-  StatsigDataAdapterResult,
   typedJsonParse,
 } from '@statsig/client-core';
 
@@ -42,7 +42,7 @@ export default class EvaluationStore {
     this._source = 'NoValues';
   }
 
-  setValuesFromDataAdapter(result: StatsigDataAdapterResult | null): void {
+  setValuesFromDataAdapter(result: DataAdapterResult | null): void {
     if (!result) {
       return;
     }

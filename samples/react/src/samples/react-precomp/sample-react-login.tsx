@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-import { EvaluationsDataAdapter, StatsigClient } from '@statsig/js-client';
+import { StatsigClient } from '@statsig/js-client';
 import { StatsigProvider, useStatsigUser } from '@statsig/react-bindings';
 
 import { STATSIG_CLIENT_KEY as YOUR_CLIENT_KEY } from '../../Contants';
@@ -11,12 +11,12 @@ export default async function Sample(): Promise<void> {
 App();
 }
 
-const dataAdapter = new EvaluationsDataAdapter();
 const myStatsigClient = new StatsigClient(
   YOUR_CLIENT_KEY,
   authService.getUser(),
-  { dataAdapter },
 );
+
+const dataAdapter = myStatsigClient.dataAdapter;
 myStatsigClient.initializeSync();
 
 // prettier-ignore

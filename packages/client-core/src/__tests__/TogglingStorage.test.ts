@@ -1,10 +1,11 @@
 import { DataAdapterCore } from '../DataAdapterCore';
 import { StatsigClientBase } from '../StatsigClientBase';
+import { SpecsDataAdapter } from '../StatsigDataAdapter';
 import { StatsigOptionsCommon } from '../StatsigOptionsCommon';
 import { StatsigUser } from '../StatsigUser';
 import { MockLocalStorage } from './MockLocalStorage';
 
-class TestClient extends StatsigClientBase {}
+class TestClient extends StatsigClientBase<SpecsDataAdapter> {}
 
 class TestDataAdapter extends DataAdapterCore {
   protected override _fetchFromNetwork(
@@ -44,14 +45,14 @@ describe('Toggle Storage', () => {
     });
 
     it('does not write to local storage', async () => {
-      await client.getDataAdapter().getDataAsync(null);
+      await client.dataAdapter.getDataAsync(null);
       expect(storageMock.data).toEqual({});
     });
 
     it('writes to local storage once enabled', async () => {
       client.updateRuntimeOptions({ disableStorage: false });
 
-      await client.getDataAdapter().getDataAsync(null);
+      await client.dataAdapter.getDataAsync(null);
       expect(Object.keys(storageMock.data).length).toBeGreaterThan(0);
     });
   });
@@ -63,14 +64,14 @@ describe('Toggle Storage', () => {
     });
 
     it('writes to local storage', async () => {
-      await client.getDataAdapter().getDataAsync(null);
+      await client.dataAdapter.getDataAsync(null);
       expect(Object.keys(storageMock.data).length).toBeGreaterThan(0);
     });
 
     it('does not write to local storage', async () => {
       client.updateRuntimeOptions({ disableStorage: true });
 
-      await client.getDataAdapter().getDataAsync(null);
+      await client.dataAdapter.getDataAsync(null);
       expect(storageMock.data).toEqual({});
     });
   });

@@ -5,7 +5,6 @@ import {
   getUserStorageKey,
 } from '@statsig/client-core';
 
-import { SpecsDataAdapter } from '../SpecsDataAdapter';
 import StatsigOnDeviceEvalClient from '../StatsigOnDeviceEvalClient';
 import { MockLocalStorage } from './MockLocalStorage';
 import DcsResponse from './dcs_response.json';
@@ -26,8 +25,7 @@ describe('Init Strategy - Bootstrap', () => {
     fetchMock.mockResponse(JSON.stringify(DcsResponse));
 
     client = new StatsigOnDeviceEvalClient(sdkKey);
-    const adapter = client.getDataAdapter() as SpecsDataAdapter;
-    adapter.setData(JSON.stringify(DcsResponse));
+    client.dataAdapter.setData(JSON.stringify(DcsResponse));
 
     client.initializeSync();
   });

@@ -1,6 +1,6 @@
 import { EvaluationOptions } from './StatsigClientBase';
 import { StatsigClientEventEmitterInterface } from './StatsigClientEventEmitter';
-import { StatsigDataAdapter } from './StatsigDataAdapter';
+import { EvaluationsDataAdapter, SpecsDataAdapter } from './StatsigDataAdapter';
 import { StatsigEvent } from './StatsigEvent';
 import { StatsigRuntimeMutableOptions } from './StatsigOptionsCommon';
 import { DynamicConfig, Experiment, FeatureGate, Layer } from './StatsigTypes';
@@ -11,12 +11,12 @@ export interface StatsigClientCommonInterface
   initializeSync(): void;
   initializeAsync(): Promise<void>;
   shutdown(): Promise<void>;
-  getDataAdapter(): StatsigDataAdapter;
   updateRuntimeOptions(options: StatsigRuntimeMutableOptions): void;
 }
 
 export interface OnDeviceEvaluationsInterface
   extends StatsigClientCommonInterface {
+  readonly dataAdapter: SpecsDataAdapter;
   checkGate(
     name: string,
     user: StatsigUser,
@@ -43,6 +43,8 @@ export interface OnDeviceEvaluationsInterface
 
 export interface PrecomputedEvaluationsInterface
   extends StatsigClientCommonInterface {
+  readonly dataAdapter: EvaluationsDataAdapter;
+
   getCurrentUser(): StatsigUser;
   updateUserSync(user: StatsigUser): void;
   updateUserAsync(user: StatsigUser): Promise<void>;

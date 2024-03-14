@@ -1,6 +1,6 @@
 import { LogLevel } from './Log';
-import { StatsigDataAdapter } from './StatsigDataAdapter';
 
+/** Options that can be set at init and updated during runtime. */
 export type StatsigRuntimeMutableOptions = {
   /**
    * Prevents writing anything to storage.
@@ -15,7 +15,7 @@ export type StatsigRuntimeMutableOptions = {
   disableStorage?: boolean;
 };
 
-/** Common options for configuring the Statsig SDK. */
+/** Options for configuring a Statsig client. */
 export type StatsigOptionsCommon = StatsigRuntimeMutableOptions & {
   /**
    * The API to use for all SDK network requests. You should not need to override this
@@ -39,12 +39,6 @@ export type StatsigOptionsCommon = StatsigRuntimeMutableOptions & {
    * Default: LogLevel.Warn
    */
   logLevel?: LogLevel;
-
-  /**
-   * StatsigDataAdapter implementor used to customize the initialization/update flow.
-   * Default: EvaluationsDataAdapter (Precomputed) or SpecsDataAdapter (OnDevice)
-   */
-  dataAdapter?: StatsigDataAdapter;
 
   /**
    * The maximum amount of time (in milliseconds) that any network request can take

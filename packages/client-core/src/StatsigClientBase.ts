@@ -12,15 +12,15 @@ import {
   StatsigLoadingStatus,
 } from './StatsigClientEventEmitter';
 import {
-  StatsigDataAdapter,
-  StatsigDataAdapterResult,
+  DataAdapterResult,
+  EvaluationsDataAdapter,
+  SpecsDataAdapter,
 } from './StatsigDataAdapter';
 import { StatsigEventInternal } from './StatsigEvent';
 import {
   StatsigOptionsCommon,
   StatsigRuntimeMutableOptions,
 } from './StatsigOptionsCommon';
-import { StatsigUser } from './StatsigUser';
 import { Storage } from './StorageProvider';
 
 export type EvaluationOptions = {
@@ -33,9 +33,11 @@ export const DEFAULT_EVAL_OPTIONS: EvaluationOptions = {
 
 export type StatsigClientEmitEventFunc = (data: StatsigClientEventData) => void;
 
-export abstract class StatsigClientBase
-  implements StatsigClientEventEmitterInterface
+export abstract class StatsigClientBase<
+  TAdapter extends EvaluationsDataAdapter | SpecsDataAdapter,
+> implements StatsigClientEventEmitterInterface
 {
+  readonly dataAdapter: TAdapter;
   loadingStatus: StatsigLoadingStatus = 'Uninitialized';
 
   protected readonly _errorBoundary: ErrorBoundary;
@@ -45,8 +47,7 @@ export abstract class StatsigClientBase
 
   constructor(
     protected readonly _sdkKey: string,
-    protected readonly _adapter: StatsigDataAdapter,
-
+    adapter: TAdapter,
     network: NetworkCore,
     options: StatsigOptionsCommon | null,
   ) {
@@ -69,7 +70,8 @@ export abstract class StatsigClientBase
     instances.add(this);
     __STATSIG__.instances = instances;
 
-    this._adapter.attach(_sdkKey, options);
+    this.dataAdapter = adapter;
+    this.dataAdapter.attach(_sdkKey, options);
   }
 
   updateRuntimeOptions(options: StatsigRuntimeMutableOptions): void {
@@ -104,10 +106,6 @@ export abstract class StatsigClientBase
     }
   }
 
-  getDataAdapter(): StatsigDataAdapter {
-    return this._adapter;
-  }
-
   protected emit(data: StatsigClientEventData): void {
     if (this._listeners[data.event]) {
       this._listeners[data.event].forEach((listener) => listener(data));
@@ -118,7 +116,7 @@ export abstract class StatsigClientBase
 
   protected _setStatus(
     newStatus: StatsigLoadingStatus,
-    values: StatsigDataAdapterResult | null,
+    values: DataAdapterResult | null,
   ): void {
     this.loadingStatus = newStatus;
     this.emit({ event: 'values_updated', status: newStatus, values });
@@ -133,14 +131,5 @@ export abstract class StatsigClientBase
     }
 
     this._logger.enqueue(exposure);
-  }
-
-  protected _runPostUpdate(
-    current: StatsigDataAdapterResult | null,
-    user?: StatsigUser,
-  ): void {
-    this._adapter.getDataAsync(current, user).catch((err) => {
-      Log.error('An error occurred after update.', err);
-    });
   }
 }

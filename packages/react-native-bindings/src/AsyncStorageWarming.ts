@@ -1,8 +1,9 @@
 import {
   DataAdapterCachePrefix,
+  DataAdapterResult,
+  EvaluationsDataAdapter,
+  SpecsDataAdapter,
   StatsigClientInterface,
-  StatsigDataAdapter,
-  StatsigDataAdapterResult,
   Storage,
   typedJsonParse,
 } from '@statsig/client-core';
@@ -15,13 +16,15 @@ export function warmCachingFromAsyncStorage(
   client: StatsigClientInterface,
 ): StatsigAsyncCacheWarming {
   return {
-    result: _loadCacheAsync(client.getDataAdapter()),
+    result: _loadCacheAsync(client.dataAdapter),
   };
 }
 
-async function _loadCacheAsync(adapter: StatsigDataAdapter): Promise<void> {
+async function _loadCacheAsync(
+  adapter: EvaluationsDataAdapter | SpecsDataAdapter,
+): Promise<void> {
   const keys = await Storage.getAllKeys();
-  const results: Record<string, StatsigDataAdapterResult> = {};
+  const results: Record<string, DataAdapterResult> = {};
 
   await Promise.all(
     keys.map(async (key) => {
@@ -34,7 +37,7 @@ async function _loadCacheAsync(adapter: StatsigDataAdapter): Promise<void> {
         return;
       }
 
-      const result = typedJsonParse<StatsigDataAdapterResult>(
+      const result = typedJsonParse<DataAdapterResult>(
         cache,
         'source',
         'Failed to parse cached result',
