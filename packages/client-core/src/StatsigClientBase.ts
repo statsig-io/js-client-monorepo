@@ -37,8 +37,8 @@ export abstract class StatsigClientBase<
   TAdapter extends EvaluationsDataAdapter | SpecsDataAdapter,
 > implements StatsigClientEventEmitterInterface
 {
-  readonly dataAdapter: TAdapter;
   loadingStatus: StatsigLoadingStatus = 'Uninitialized';
+  readonly dataAdapter: TAdapter;
 
   protected readonly _errorBoundary: ErrorBoundary;
   protected readonly _logger: EventLogger;

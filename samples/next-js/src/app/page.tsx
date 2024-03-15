@@ -3,10 +3,14 @@ export default function Index(): JSX.Element {
     <div>
       <ul>
         <li>
-          <a href="/bootstrap-example">Simple Server Side Render</a>
+          <button>
+            <a href="/bootstrap-example">Simple Server Side Render</a>
+          </button>
         </li>
         <li>
-          <a href="/proxy-example">Proxied API Calls</a>
+          <button>
+            <a href="/proxy-example">Proxied API Calls</a>
+          </button>
         </li>
       </ul>
     </div>

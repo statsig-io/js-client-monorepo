@@ -5,7 +5,11 @@ import { StatsigClientEmitEventFunc } from './StatsigClientBase';
 import { StatsigEventInternal, isExposureEvent } from './StatsigEvent';
 import { StatsigMetadataProvider } from './StatsigMetadata';
 import { StatsigOptionsCommon } from './StatsigOptionsCommon';
-import { getObjectFromStorage, setObjectInStorage } from './StorageProvider';
+import {
+  Storage,
+  getObjectFromStorage,
+  setObjectInStorage,
+} from './StorageProvider';
 import { typedJsonParse } from './TypedJsonParse';
 import {
   Visibility,
@@ -262,9 +266,10 @@ export class EventLogger {
         return;
       }
 
+      await Storage.removeItem(storageKey);
       await this._sendEvents(events);
     })().catch(() => {
-      Log.warn('Unable to flush stored logs');
+      Log.warn('Failed to flush stored logs');
     });
   }
 
