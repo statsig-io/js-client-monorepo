@@ -1,16 +1,6 @@
-import {
-  DynamicConfig,
-  EvaluationDetails,
-  FeatureGate,
-  Layer,
-} from './StatsigTypes';
+import { EvaluationDetails, SecondaryExposure } from './EvaluationTypes';
+import { DynamicConfig, FeatureGate, Layer } from './StatsigTypes';
 import { StatsigUser } from './StatsigUser';
-
-export type SecondaryExposure = {
-  gate: string;
-  gateValue: string;
-  ruleID: string;
-};
 
 export type StatsigEvent = {
   eventName: string;

@@ -11,3 +11,7 @@ export function anyNumber(): unknown {
 export function anyFunction(): unknown {
   return expect.any(Function);
 }
+
+export function anyObject(): unknown {
+  return expect.any(Object);
+}

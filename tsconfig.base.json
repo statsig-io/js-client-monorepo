@@ -19,6 +19,9 @@
       "@statsig/client-extensions": ["packages/client-extensions/src/index.ts"],
       "@statsig/expo-bindings": ["packages/expo-bindings/src/index.ts"],
       "@statsig/js-client": ["packages/js-client/src/index.ts"],
+      "@statsig/js-local-overrides": [
+        "packages/js-local-overrides/src/index.ts"
+      ],
       "@statsig/js-on-device-eval-client": [
         "packages/js-on-device-eval-client/src/index.ts"
       ],

@@ -55,6 +55,11 @@ export default function BootstrapExample({
     // eslint-disable-next-line no-console
     const onClientEvent = (data: StatsigClientEventData) => console.log(data);
     client.on('*', onClientEvent);
+    client.on('logs_flushed', (data) => {
+      if (data.event === 'logs_flushed') {
+        data.events.unshift();
+      }
+    });
     return () => client.off('*', onClientEvent);
   }, [client]);
 

@@ -1,0 +1,10 @@
+{
+  "name": "@statsig/js-local-overrides",
+  "version": "0.0.1-beta.10",
+  "dependencies": {
+    "@statsig/client-core": "0.0.1-beta.10"
+  },
+  "type": "commonjs",
+  "main": "./src/index.js",
+  "typings": "./src/index.d.ts"
+}

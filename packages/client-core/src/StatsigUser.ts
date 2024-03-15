@@ -48,3 +48,13 @@ export function normalizeUser(
 export function getUserStorageKey(sdkKey: string, user?: StatsigUser): string {
   return DJB2Object({ sdkKey, user });
 }
+
+export function getUnitIDFromUser(
+  user: StatsigUser,
+  idType: string,
+): string | undefined {
+  if (typeof idType === 'string' && idType.toLowerCase() !== 'userid') {
+    return user.customIDs?.[idType] ?? user?.customIDs?.[idType.toLowerCase()];
+  }
+  return user.userID;
+}

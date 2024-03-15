@@ -107,18 +107,13 @@ export default class StatsigOnDeviceEvalClient
     options: EvaluationOptions = DEFAULT_EVAL_OPTIONS,
   ): FeatureGate {
     user = normalizeUser(user, this._options.environment);
-    const { result, details } = this._evaluator.evaluateGate(name, user);
+    const { evaluation, details } = this._evaluator.evaluateGate(name, user);
 
-    const gate = makeFeatureGate(
-      name,
-      details,
-      result?.rule_id,
-      result?.bool_value,
-    );
+    const gate = makeFeatureGate(name, details, evaluation);
 
     this._enqueueExposure(
       options,
-      createGateExposure(user, gate, result?.secondary_exposures),
+      createGateExposure(user, gate, evaluation?.secondary_exposures),
     );
 
     this._emit({ event: 'gate_evaluation', gate });
@@ -152,17 +147,17 @@ export default class StatsigOnDeviceEvalClient
     options: EvaluationOptions = DEFAULT_EVAL_OPTIONS,
   ): Layer {
     user = normalizeUser(user, this._options.environment);
-    const { result, details } = this._evaluator.evaluateLayer(name, user);
+    const { evaluation, details } = this._evaluator.evaluateLayer(name, user);
 
-    const layer = makeLayer(name, details, result?.rule_id, (param: string) => {
-      if (result && param in result.json_value) {
+    const layer = makeLayer(name, details, evaluation, (param: string) => {
+      if (evaluation && param in evaluation.value) {
         this._enqueueExposure(
           options,
-          createLayerParameterExposure(user, layer, param, result),
+          createLayerParameterExposure(user, layer, param, evaluation),
         );
       }
 
-      return result?.json_value?.[param] ?? null;
+      return evaluation?.value?.[param] ?? null;
     });
 
     this._emit({ event: 'layer_evaluation', layer });
@@ -186,17 +181,12 @@ export default class StatsigOnDeviceEvalClient
     options: EvaluationOptions,
   ): DynamicConfig {
     user = normalizeUser(user, this._options.environment);
-    const { result, details } = this._evaluator.evaluateConfig(name, user);
-    const config = makeDynamicConfig(
-      name,
-      details,
-      result?.rule_id,
-      result?.json_value,
-    );
+    const { evaluation, details } = this._evaluator.evaluateConfig(name, user);
+    const config = makeDynamicConfig(name, details, evaluation);
 
     this._enqueueExposure(
       options,
-      createConfigExposure(user, config, result?.secondary_exposures),
+      createConfigExposure(user, config, evaluation?.secondary_exposures),
     );
 
     return config;

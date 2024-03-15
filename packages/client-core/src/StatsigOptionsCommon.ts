@@ -1,4 +1,5 @@
 import { LogLevel } from './Log';
+import { OverrideProvider } from './OverrideProvider';
 
 /** Options that can be set at init and updated during runtime. */
 export type StatsigRuntimeMutableOptions = {
@@ -57,6 +58,11 @@ export type StatsigOptionsCommon = StatsigRuntimeMutableOptions & {
    * Default: 10,000 (10 seconds)
    */
   loggingIntervalMs?: number;
+
+  /**
+   *
+   */
+  overrideProvider?: OverrideProvider;
 };
 
 export type StatsigEnvironment = {

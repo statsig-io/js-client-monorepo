@@ -1,11 +1,22 @@
 import {
+  DynamicConfigEvaluation,
   EvaluationDetails,
+  GateEvaluation,
+  LayerEvaluation,
   SecondaryExposure,
   StatsigUserInternal,
+  getUnitIDFromUser,
 } from '@statsig/client-core';
 import { SHA256 } from '@statsig/sha256';
 
 import Compare from './EvaluationComparison';
+import {
+  EvaluationResult,
+  makeEvalResult,
+  resultToConfigEval,
+  resultToGateEval,
+  resultToLayerEval,
+} from './EvaluationResult';
 import SpecStore, {
   Spec,
   SpecAndSourceInfo,
@@ -16,82 +27,62 @@ import SpecStore, {
 const CONDITION_SEGMENT_COUNT = 10 * 1000;
 const USER_BUCKET_COUNT = 1000;
 
-export type EvaluationReason =
-  | 'Network'
-  | 'LocalOverride'
-  | 'Unrecognized'
-  | 'Uninitialized'
-  | 'Bootstrap'
-  | 'DataAdapter'
-  | 'Unsupported';
-
-type EvaluationResult = {
-  readonly unsupported: boolean;
-  readonly bool_value: boolean;
-  readonly rule_id: string;
-  readonly secondary_exposures: SecondaryExposure[];
-  readonly json_value: Record<string, unknown>;
-  readonly explicit_parameters: string[] | null;
-  readonly allocated_experiment_name: string | null;
-  readonly undelegated_secondary_exposures: SecondaryExposure[] | undefined;
-  readonly is_experiment_group: boolean;
-  readonly group_name: string | null;
-};
-
-function makeEvalResult(
-  overrides: Partial<EvaluationResult>,
-): EvaluationResult {
-  const base: EvaluationResult = {
-    unsupported: false,
-    bool_value: false,
-    rule_id: '',
-    secondary_exposures: [],
-    json_value: {},
-    explicit_parameters: null,
-    allocated_experiment_name: null,
-    is_experiment_group: false,
-    group_name: null,
-    undelegated_secondary_exposures: undefined,
-  };
-
-  return { ...base, ...overrides };
-}
-
-type DetailedEvaluation = {
-  result: EvaluationResult | null;
+type DetailedEvaluation<T> = {
+  evaluation: T | null;
   details: EvaluationDetails;
 };
 
 export default class Evaluator {
   constructor(private _store: SpecStore) {}
 
-  evaluateGate(name: string, user: StatsigUserInternal): DetailedEvaluation {
-    const specAndSourceInfo = this._store.getSpec('gate', name);
-    return this._makeDetailedEvaluation(specAndSourceInfo, user);
-  }
-
-  evaluateConfig(name: string, user: StatsigUserInternal): DetailedEvaluation {
-    const specAndSourceInfo = this._store.getSpec('config', name);
-    return this._makeDetailedEvaluation(specAndSourceInfo, user);
-  }
-
-  evaluateLayer(name: string, user: StatsigUserInternal): DetailedEvaluation {
-    const specAndSourceInfo = this._store.getSpec('layer', name);
-    return this._makeDetailedEvaluation(specAndSourceInfo, user);
-  }
-
-  private _makeDetailedEvaluation(
-    info: SpecAndSourceInfo,
+  evaluateGate(
+    name: string,
     user: StatsigUserInternal,
-  ) {
+  ): DetailedEvaluation<GateEvaluation> {
+    const specAndSourceInfo = this._store.getSpec('gate', name);
+    const spec = specAndSourceInfo.spec;
+
     return {
-      result: info.spec ? this._evaluateSpec(info.spec, user) : null,
-      details: this._getDetails(info),
+      evaluation: spec
+        ? resultToGateEval(spec, this._evaluateSpec(spec, user))
+        : null,
+      details: this._getDetails(specAndSourceInfo),
+    };
+  }
+
+  evaluateConfig(
+    name: string,
+    user: StatsigUserInternal,
+  ): DetailedEvaluation<DynamicConfigEvaluation> {
+    const specAndSourceInfo = this._store.getSpec('config', name);
+    const spec = specAndSourceInfo.spec;
+
+    return {
+      evaluation: spec
+        ? resultToConfigEval(spec, this._evaluateSpec(spec, user))
+        : null,
+      details: this._getDetails(specAndSourceInfo),
+    };
+  }
+
+  evaluateLayer(
+    name: string,
+    user: StatsigUserInternal,
+  ): DetailedEvaluation<LayerEvaluation> {
+    const specAndSourceInfo = this._store.getSpec('layer', name);
+    const spec = specAndSourceInfo.spec;
+
+    return {
+      evaluation: spec
+        ? resultToLayerEval(spec, this._evaluateSpec(spec, user))
+        : null,
+      details: this._getDetails(specAndSourceInfo),
     };
   }
 
   private _getDetails(info: SpecAndSourceInfo): EvaluationDetails {
     const { source, spec, lcut, receivedAt } = info;
+
     if (source === 'Uninitialized' || source === 'NoValues') {
       return { reason: source };
     }
@@ -244,14 +235,14 @@ export default class Evaluator {
       case 'user_bucket': {
         const salt = String(condition.additionalValues?.['salt'] ?? '');
         const userHash = _computeUserHash(
-          salt + '.' + _getUnitID(user, idType) ?? '',
+          salt + '.' + getUnitIDFromUser(user, idType) ?? '',
         );
         value = Number(userHash % BigInt(USER_BUCKET_COUNT));
         break;
       }
 
       case 'unit_id':
-        value = _getUnitID(user, idType);
+        value = getUnitIDFromUser(user, idType);
         break;
 
       default:
@@ -431,18 +422,11 @@ function _evalPassPercent(
       '.' +
       (rule.salt ?? rule.id) +
       '.' +
-      (_getUnitID(user, rule.idType) ?? ''),
+      (getUnitIDFromUser(user, rule.idType) ?? ''),
   );
   return (
     Number(hash % BigInt(CONDITION_SEGMENT_COUNT)) < rule.passPercentage * 100
   );
-}
-
-function _getUnitID(user: StatsigUserInternal, idType: string) {
-  if (typeof idType === 'string' && idType.toLowerCase() !== 'userid') {
-    return user?.customIDs?.[idType] ?? user?.customIDs?.[idType.toLowerCase()];
-  }
-  return user?.userID;
 }
 
 function _computeUserHash(userHash: string): bigint {

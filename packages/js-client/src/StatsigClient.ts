@@ -128,13 +128,7 @@ export default class StatsigClient
     const hash = DJB2(name);
 
     const { evaluation, details } = this._store.getGate(hash);
-
-    const gate = makeFeatureGate(
-      name,
-      details,
-      evaluation?.rule_id,
-      evaluation?.value,
-    );
+    const gate = makeFeatureGate(name, details, evaluation);
 
     this._enqueueExposure(
       options,
@@ -172,7 +166,7 @@ export default class StatsigClient
 
     const { evaluation, details } = this._store.getLayer(hash);
 
-    const layer = makeLayer(name, details, evaluation?.rule_id, (param) => {
+    const layer = makeLayer(name, details, evaluation, (param) => {
       if (evaluation && param in evaluation.value) {
         this._enqueueExposure(
           options,
@@ -215,12 +209,7 @@ export default class StatsigClient
     const hash = DJB2(name);
     const { evaluation, details } = this._store.getConfig(hash);
 
-    const config = makeDynamicConfig(
-      name,
-      details,
-      evaluation?.rule_id,
-      evaluation?.value,
-    );
+    const config = makeDynamicConfig(name, details, evaluation);
 
     this._enqueueExposure(
       options,

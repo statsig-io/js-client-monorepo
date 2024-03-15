@@ -1,5 +1,5 @@
 import fetchMock from 'jest-fetch-mock';
-import { anyFunction, anyNumber } from 'statsig-test-helpers';
+import { anyFunction, anyNumber, anyObject } from 'statsig-test-helpers';
 
 import { StatsigClientEventData } from '@statsig/client-core';
 
@@ -43,6 +43,7 @@ describe('Client Evaluations Callback', () => {
             receivedAt: anyNumber(),
           },
           value: true,
+          __raw: anyObject(),
         },
       },
     ]);
@@ -66,6 +67,7 @@ describe('Client Evaluations Callback', () => {
             green: '#0000FF',
             red: '#FF0000',
           },
+          __raw: anyObject(),
         },
       },
     ]);
@@ -87,6 +89,7 @@ describe('Client Evaluations Callback', () => {
           value: {
             a_string: 'Experiment Test Value',
           },
+          __raw: anyObject(),
         },
       },
     ]);
@@ -106,6 +109,7 @@ describe('Client Evaluations Callback', () => {
             receivedAt: anyNumber(),
           },
           getValue: anyFunction(),
+          __raw: anyObject(),
         },
       },
     ]);

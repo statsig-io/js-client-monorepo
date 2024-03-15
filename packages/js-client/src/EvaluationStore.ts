@@ -1,23 +1,18 @@
 import {
+  AnyEvaluation,
   DataAdapterResult,
   DataSource,
+  DetailedEvaluation,
+  DynamicConfigEvaluation,
   EvaluationDetails,
+  GateEvaluation,
+  LayerEvaluation,
   typedJsonParse,
 } from '@statsig/client-core';
 
-import {
-  ConfigEvaluation,
-  EvaluationResponse,
-  GateEvaluation,
-  LayerEvaluation,
-} from './EvaluationData';
+import { EvaluationResponse } from './EvaluationData';
 
 type EvaluationStoreValues = EvaluationResponse & { has_updates: true };
-
-type DetailedEvaluation<T> = {
-  evaluation: T | null;
-  details: EvaluationDetails;
-};
 
 export default class EvaluationStore {
   private _values: EvaluationStoreValues | null = null;
@@ -68,7 +63,7 @@ export default class EvaluationStore {
     return this._makeDetailedEvaluation(evaluation);
   }
 
-  getConfig(name: string): DetailedEvaluation<ConfigEvaluation> {
+  getConfig(name: string): DetailedEvaluation<DynamicConfigEvaluation> {
     const evaluation = this._values?.dynamic_configs[name] ?? null;
     return this._makeDetailedEvaluation(evaluation);
   }
@@ -78,7 +73,7 @@ export default class EvaluationStore {
     return this._makeDetailedEvaluation(evaluation);
   }
 
-  private _makeDetailedEvaluation<T>(
+  private _makeDetailedEvaluation<T extends AnyEvaluation>(
     evaluation: T | null,
   ): DetailedEvaluation<T> {
     return {

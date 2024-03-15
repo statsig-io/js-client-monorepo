@@ -32,10 +32,9 @@ export type StatsigClientEvent =
 /**
  * Type representing various events emitted by a Statsig client.
  */
-export type StatsigClientEventData =
-  | {
-      event: StatsigClientEvent;
-    }
+export type StatsigClientEventData = {
+  event: StatsigClientEvent;
+} & (
   | {
       event: 'values_updated';
       status: StatsigLoadingStatus;
@@ -64,7 +63,8 @@ export type StatsigClientEventData =
   | {
       event: 'layer_evaluation';
       layer: Layer;
-    };
+    }
+);
 
 export type StatsigClientEventCallback = (data: StatsigClientEventData) => void;
 

@@ -4,8 +4,6 @@ import {
   typedJsonParse,
 } from '@statsig/client-core';
 
-type SpecType = 'gate' | 'config' | 'layer';
-
 export type SpecCondition = {
   type: string;
   targetValue: unknown;
@@ -58,6 +56,8 @@ export type SpecAndSourceInfo = {
   receivedAt: number;
 };
 
+export type SpecKind = 'gate' | 'config' | 'layer';
+
 export default class SpecStore {
   private _values: DownloadConfigSpecsResponse | null = null;
   private _source: DataSource = 'Uninitialized';
@@ -98,9 +98,9 @@ export default class SpecStore {
     this._source = 'NoValues';
   }
 
-  getSpec(type: SpecType, name: string): SpecAndSourceInfo {
+  getSpec(kind: SpecKind, name: string): SpecAndSourceInfo {
     // todo: use Object instead of Array
-    const specs = this._getSpecs(type);
+    const specs = this._getSpecs(kind);
 
     return {
       spec: specs?.find((spec) => spec.name === name) ?? null,
@@ -110,8 +110,8 @@ export default class SpecStore {
     };
   }
 
-  private _getSpecs(type: SpecType) {
-    switch (type) {
+  private _getSpecs(kind: SpecKind) {
+    switch (kind) {
       case 'gate':
         return this._values?.feature_gates;
       case 'config':
