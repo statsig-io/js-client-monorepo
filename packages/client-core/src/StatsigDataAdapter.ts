@@ -43,10 +43,11 @@ type DataAdapterCommon = {
   ) => void;
 
   /**
-   * (Internal Use Only) - Used by @statsig/react-native-bindings to prime the cache from AsyncStorage
+   * (Internal Use Only) - Used by \@statsig/react-native-bindings to prime the cache from AsyncStorage
+   *
    * @param {Record<string, DataAdapterResult>} cache The values to set for _inMemoryCache
    */
-  readonly _setInMemoryCache: (
+  readonly __setInMemoryCache: (
     cache: Record<string, DataAdapterResult>,
   ) => void;
 };

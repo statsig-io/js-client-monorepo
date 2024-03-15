@@ -121,7 +121,7 @@ export default class StatsigOnDeviceEvalClient
       createGateExposure(user, gate, result?.secondary_exposures),
     );
 
-    this.emit({ event: 'gate_evaluation', gate });
+    this._emit({ event: 'gate_evaluation', gate });
 
     return gate;
   }
@@ -132,7 +132,7 @@ export default class StatsigOnDeviceEvalClient
     options: EvaluationOptions = DEFAULT_EVAL_OPTIONS,
   ): DynamicConfig {
     const dynamicConfig = this._getConfigImpl(name, user, options);
-    this.emit({ event: 'dynamic_config_evaluation', dynamicConfig });
+    this._emit({ event: 'dynamic_config_evaluation', dynamicConfig });
     return dynamicConfig;
   }
 
@@ -142,7 +142,7 @@ export default class StatsigOnDeviceEvalClient
     options: EvaluationOptions = DEFAULT_EVAL_OPTIONS,
   ): Experiment {
     const experiment = this._getConfigImpl(name, user, options);
-    this.emit({ event: 'experiment_evaluation', experiment });
+    this._emit({ event: 'experiment_evaluation', experiment });
     return experiment;
   }
 
@@ -165,7 +165,7 @@ export default class StatsigOnDeviceEvalClient
       return result?.json_value?.[param] ?? null;
     });
 
-    this.emit({ event: 'layer_evaluation', layer });
+    this._emit({ event: 'layer_evaluation', layer });
 
     return layer;
   }

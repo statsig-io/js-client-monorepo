@@ -46,7 +46,7 @@ export default class StatsigClient
     options: StatsigOptions | null = null,
   ) {
     const network = new Network(options, (e) => {
-      this.emit(e);
+      this._emit(e);
     });
 
     super(
@@ -141,7 +141,7 @@ export default class StatsigClient
       createGateExposure(this._user, gate, evaluation?.secondary_exposures),
     );
 
-    this.emit({ event: 'gate_evaluation', gate });
+    this._emit({ event: 'gate_evaluation', gate });
 
     return gate;
   }
@@ -151,7 +151,7 @@ export default class StatsigClient
     options: EvaluationOptions = DEFAULT_EVAL_OPTIONS,
   ): DynamicConfig {
     const dynamicConfig = this._getConfigImpl(name, options);
-    this.emit({ event: 'dynamic_config_evaluation', dynamicConfig });
+    this._emit({ event: 'dynamic_config_evaluation', dynamicConfig });
     return dynamicConfig;
   }
 
@@ -160,7 +160,7 @@ export default class StatsigClient
     options: EvaluationOptions = DEFAULT_EVAL_OPTIONS,
   ): Experiment {
     const experiment = this._getConfigImpl(name, options);
-    this.emit({ event: 'experiment_evaluation', experiment });
+    this._emit({ event: 'experiment_evaluation', experiment });
     return experiment;
   }
 
@@ -183,7 +183,7 @@ export default class StatsigClient
       return evaluation?.value[param] ?? null;
     });
 
-    this.emit({ event: 'layer_evaluation', layer });
+    this._emit({ event: 'layer_evaluation', layer });
 
     return layer;
   }

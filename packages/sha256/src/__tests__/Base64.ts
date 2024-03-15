@@ -13,7 +13,7 @@ export abstract class Base64 {
     return this._encodeBinary(binary);
   }
 
-  static _encodeBinary(value: string): string {
+  private static _encodeBinary(value: string): string {
     let output = '';
     let chr1: number;
     let chr2: number;

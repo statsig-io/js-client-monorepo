@@ -22,7 +22,7 @@ function _monitorFunction<T>(
   instance: unknown,
 ): T {
   const client =
-    instance instanceof StatsigClientBase ? instance['emit'] : undefined;
+    instance instanceof StatsigClientBase ? instance['_emit'] : undefined;
 
   return errorBoundary.capture(
     tag,

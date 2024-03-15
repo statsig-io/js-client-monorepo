@@ -35,14 +35,29 @@
         "@typescript-eslint/explicit-module-boundary-types": "error",
         "@typescript-eslint/no-floating-promises": [
           "error",
-          { "ignoreVoid": false }
+          {
+            "ignoreVoid": false
+          }
         ],
         "@typescript-eslint/no-misused-promises": "error",
         "@typescript-eslint/naming-convention": [
           "error",
           {
-            "selector": "memberLike",
-            "modifiers": ["private"],
+            "selector": ["classMethod", "classProperty"],
+            "format": null,
+            "filter": {
+              "regex": "^__", // ignore if starts with "__"
+              "match": true
+            }
+          },
+          {
+            "selector": ["classMethod", "classProperty"],
+            "modifiers": ["public"],
+            "format": ["camelCase"],
+            "leadingUnderscore": "forbid"
+          },
+          {
+            "selector": ["classMethod", "classProperty"],
             "format": ["camelCase"],
             "leadingUnderscore": "require"
           }
@@ -54,13 +69,20 @@
         "@typescript-eslint/no-unsafe-return": "warn",
         "@typescript-eslint/no-unused-vars": [
           "error",
-          { "argsIgnorePattern": "^_", "vars": "all", "args": "all" }
+          {
+            "argsIgnorePattern": "^_",
+            "vars": "all",
+            "args": "all"
+          }
         ],
         "no-await-in-loop": "warn",
         "no-console": "error",
         "no-warning-comments": [
           "error",
-          { "terms": ["@nocommit"], "location": "anywhere" }
+          {
+            "terms": ["@nocommit", "no-commit", "@no-commit", "nocommit"],
+            "location": "anywhere"
+          }
         ],
         "eqeqeq": ["warn", "smart"]
       }

@@ -24,7 +24,7 @@ export abstract class DataAdapterCore {
   private _lastModifiedStoreKey: string;
 
   protected constructor(
-    private _className: string,
+    private _adapterName: string,
     private _cacheSuffix: string,
   ) {
     this._lastModifiedStoreKey = `statsig.last_modified_time.${_cacheSuffix}`;
@@ -92,10 +92,11 @@ export abstract class DataAdapterCore {
   }
 
   /**
-   * (Internal Use Only) - Used by @statsig/react-native-bindings to prime the cache from AsyncStorage
+   * (Internal Use Only) - Used by \@statsig/react-native-bindings to prime the cache from AsyncStorage
+   *
    * @param {Record<string, DataAdapterResult>} cache The values to set for _inMemoryCache
    */
-  _setInMemoryCache(cache: Record<string, DataAdapterResult>): void {
+  __setInMemoryCache(cache: Record<string, DataAdapterResult>): void {
     this._inMemoryCache = cache;
   }
 
@@ -141,7 +142,7 @@ export abstract class DataAdapterCore {
       return this._sdkKey;
     }
 
-    Log.error(`${this._className} is not attached to a Client`);
+    Log.error(`${this._adapterName} is not attached to a Client`);
     return '';
   }
 

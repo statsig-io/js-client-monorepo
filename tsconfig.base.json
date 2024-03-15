@@ -34,7 +34,7 @@
     "skipLibCheck": true,
     "sourceMap": false,
     "strict": true,
-    "target": "es5"
+    "target": "es6"
   },
   "exclude": ["node_modules", "tmp", "tools"]
 }

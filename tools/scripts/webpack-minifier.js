@@ -21,7 +21,7 @@ const terser = new TerserPlugin({
     },
     mangle: {
       properties: {
-        regex: /^_/,
+        regex: /^_[^_]/, // anything starting with a single underscore
       },
     },
   },

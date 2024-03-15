@@ -59,7 +59,7 @@ export abstract class StatsigClientBase<
 
     this._logger = new EventLogger(
       _sdkKey,
-      this.emit.bind(this),
+      this._emit.bind(this),
       network,
       options,
     );
@@ -106,7 +106,7 @@ export abstract class StatsigClientBase<
     }
   }
 
-  protected emit(data: StatsigClientEventData): void {
+  protected _emit(data: StatsigClientEventData): void {
     if (this._listeners[data.event]) {
       this._listeners[data.event].forEach((listener) => listener(data));
     }
@@ -119,7 +119,7 @@ export abstract class StatsigClientBase<
     values: DataAdapterResult | null,
   ): void {
     this.loadingStatus = newStatus;
-    this.emit({ event: 'values_updated', status: newStatus, values });
+    this._emit({ event: 'values_updated', status: newStatus, values });
   }
 
   protected _enqueueExposure(
