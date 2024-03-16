@@ -4,7 +4,7 @@ import {
   makeLayer,
 } from '@statsig/client-core';
 
-import { LocalOverrideProvider } from '../LocalOverrideProvider';
+import { LocalOverrideAdapter } from '../LocalOverrideAdapter';
 
 describe('Local Overrides', () => {
   const user = { userID: 'a-user' };
@@ -13,10 +13,10 @@ describe('Local Overrides', () => {
   const experiment = makeDynamicConfig('an_experiment', { reason: '' }, null);
   const layer = makeLayer('a_layer', { reason: '' }, null);
 
-  let provider: LocalOverrideProvider;
+  let provider: LocalOverrideAdapter;
 
   beforeAll(() => {
-    provider = new LocalOverrideProvider();
+    provider = new LocalOverrideAdapter();
   });
 
   it('returns overidden gates', () => {
@@ -40,6 +40,6 @@ describe('Local Overrides', () => {
   it('returns overidden layer', () => {
     provider.overrideLayer(layer.name, { layer_key: 'value' });
     const overridden = provider.getLayerOverride(layer, user);
-    expect(overridden?.getValue('layer_key')).toBe('value');
+    expect(overridden?._value).toEqual({ layer_key: 'value' });
   });
 });

@@ -98,7 +98,7 @@ export default class SpecStore {
     this._source = 'NoValues';
   }
 
-  getSpec(kind: SpecKind, name: string): SpecAndSourceInfo {
+  getSpecAndSourceInfo(kind: SpecKind, name: string): SpecAndSourceInfo {
     // todo: use Object instead of Array
     const specs = this._getSpecs(kind);
 

@@ -1,5 +1,5 @@
 import { LogLevel } from './Log';
-import { OverrideProvider } from './OverrideProvider';
+import { OverrideAdapter } from './OverrideAdapter';
 
 /** Options that can be set at init and updated during runtime. */
 export type StatsigRuntimeMutableOptions = {
@@ -37,32 +37,38 @@ export type StatsigOptionsCommon = StatsigRuntimeMutableOptions & {
 
   /**
    * How much information is allowed to be printed to the console.
-   * Default: LogLevel.Warn
+   *
+   * default: {@link LogLevel.Warn}
    */
   logLevel?: LogLevel;
 
   /**
    * The maximum amount of time (in milliseconds) that any network request can take
-   * before timing out. Default: 10,000 (10 seconds)
+   * before timing out.
+   *
+   * default: `10,000 ms` (10 seconds)
    */
   networkTimeoutMs?: number;
 
   /**
    * The maximum number of events to batch before flushing logs to Statsig.
-   * Default: 50
+   *
+   * default: `50`
    */
   loggingBufferMaxSize?: number;
 
   /**
    * How often (in milliseconds) to flush logs to Statsig.
-   * Default: 10,000 (10 seconds)
+   *
+   * default: `10,000 ms`  (10 seconds)
    */
   loggingIntervalMs?: number;
 
   /**
-   *
+   * An implementor of {@link OverrideAdapter}, used to alter evaluations before its
+   * returned to the caller of a check api (checkGate/getExperiment etc).
    */
-  overrideProvider?: OverrideProvider;
+  overrideAdapter?: OverrideAdapter;
 };
 
 export type StatsigEnvironment = {

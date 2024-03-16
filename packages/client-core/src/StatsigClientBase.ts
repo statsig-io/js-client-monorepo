@@ -3,6 +3,7 @@ import { ErrorBoundary } from './ErrorBoundary';
 import { EventLogger } from './EventLogger';
 import { Log, LogLevel } from './Log';
 import { NetworkCore } from './NetworkCore';
+import { OverrideAdapter } from './OverrideAdapter';
 import { StableID } from './StableID';
 import {
   StatsigClientEvent,
@@ -42,6 +43,7 @@ export abstract class StatsigClientBase<
 
   protected readonly _errorBoundary: ErrorBoundary;
   protected readonly _logger: EventLogger;
+  protected readonly _overrideAdapter: OverrideAdapter | null;
 
   private _listeners: Record<string, StatsigClientEventCallback[]> = {};
 
@@ -57,6 +59,7 @@ export abstract class StatsigClientBase<
 
     Log.level = options?.logLevel ?? LogLevel.Warn;
 
+    this._overrideAdapter = options?.overrideAdapter ?? null;
     this._logger = new EventLogger(
       _sdkKey,
       this._emit.bind(this),
@@ -82,6 +85,10 @@ export abstract class StatsigClientBase<
     if (options.disableStorage != null) {
       Storage.setDisabled(options.disableStorage);
     }
+  }
+
+  flush(): Promise<void> {
+    return this._logger.flush();
   }
 
   on(

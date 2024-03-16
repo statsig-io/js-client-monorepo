@@ -26,28 +26,29 @@ export type SpecType = 'gate' | 'dynamic_config' | 'experiment' | 'layer';
 export type FeatureGate = Flatten<
   CommonFields & {
     readonly value: boolean;
-    readonly __raw: GateEvaluation | null;
+    readonly __evaluation: GateEvaluation | null;
   }
 >;
 
 export type DynamicConfig = Flatten<
   CommonFields & {
     readonly value: Record<string, unknown>;
-    readonly __raw: DynamicConfigEvaluation | null;
+    readonly __evaluation: DynamicConfigEvaluation | null;
   }
 >;
 
 export type Experiment = Flatten<
   CommonFields & {
     readonly value: Record<string, unknown>;
-    readonly __raw: ExperimentEvaluation | null;
+    readonly __evaluation: ExperimentEvaluation | null;
   }
 >;
 
 export type Layer = Flatten<
   CommonFields & {
     readonly getValue: (parameterName: string) => unknown;
-    readonly __raw: LayerEvaluation | null;
+    readonly _value: Record<string, unknown>;
+    readonly __evaluation: LayerEvaluation | null;
   }
 >;
 
@@ -63,7 +64,7 @@ export function makeFeatureGate(
     details,
     ruleID: evaluation?.rule_id ?? DEFAULT_RULE,
     value: evaluation?.value === true,
-    __raw: evaluation,
+    __evaluation: evaluation,
   };
 }
 
@@ -77,7 +78,7 @@ export function makeDynamicConfig(
     details,
     ruleID: evaluation?.rule_id ?? DEFAULT_RULE,
     value: evaluation?.value ?? {},
-    __raw: evaluation,
+    __evaluation: evaluation,
   };
 }
 
@@ -92,6 +93,7 @@ export function makeLayer(
     details,
     getValue: getValue ?? ((): unknown => undefined),
     ruleID: evaluation?.rule_id ?? DEFAULT_RULE,
-    __raw: evaluation,
+    _value: evaluation?.value ?? {},
+    __evaluation: evaluation,
   };
 }

@@ -75,11 +75,10 @@ export class NetworkCore {
       () => controller.abort(`Timeout of ${this._timeout}ms expired.`),
       this._timeout,
     );
+    const url = this._getPopulatedURL(args);
 
     let response: Response | null = null;
     try {
-      const url = this._getPopulatedURL(args);
-
       response = await fetch(url, {
         method,
         body,
@@ -90,13 +89,14 @@ export class NetworkCore {
       });
       clearTimeout(handle);
 
-      const text = await response.text();
       if (!response.ok) {
+        const text = await response.text().catch(() => 'No Text');
         const err = new Error(`Failed to fetch: ${url} ${text}`);
         err.name = 'NetworkError';
         throw err;
       }
 
+      const text = await response.text();
       Diagnostics.mark('_sendRequest:response-received', {
         status: response.status,
         contentLength: response.headers.get('content-length'),
@@ -116,7 +116,11 @@ export class NetworkCore {
 
       if (!retries || retries <= 0) {
         this._emitter?.({ event: 'error', error });
-        Log.error('A networking error occured.', errorMessage, error);
+        Log.error(
+          `A networking error occured during ${method} request to ${url}.`,
+          errorMessage,
+          error,
+        );
         return null;
       }
 

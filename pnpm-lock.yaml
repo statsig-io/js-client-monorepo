@@ -287,6 +287,18 @@ importers:
         specifier: 0.0.1-beta.10
         version: link:../js-on-device-eval-client
 
+  packages/combination-tests:
+    dependencies:
+      '@statsig/client-core':
+        specifier: 0.0.1-beta.10
+        version: link:../client-core
+      '@statsig/js-client':
+        specifier: 0.0.1-beta.10
+        version: link:../js-client
+      '@statsig/js-local-overrides':
+        specifier: 0.0.1-beta.10
+        version: link:../js-local-overrides
+
   packages/expo-bindings:
     dependencies:
       '@statsig/client-core':

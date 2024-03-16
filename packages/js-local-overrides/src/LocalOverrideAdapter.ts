@@ -3,9 +3,11 @@ import {
   Experiment,
   FeatureGate,
   Layer,
-  OverrideProvider,
+  OverrideAdapter,
   StatsigUser,
 } from '@statsig/client-core';
+
+const LOCAL_OVERRIDE_REASON = 'LocalOverride';
 
 type OverrideStore = {
   gate: Record<string, boolean>;
@@ -14,7 +16,7 @@ type OverrideStore = {
   layer: OverrideStore['dynamicConfig'];
 };
 
-export class LocalOverrideProvider implements OverrideProvider {
+export class LocalOverrideAdapter implements OverrideAdapter {
   private readonly _overrides: OverrideStore = {
     gate: {},
     dynamicConfig: {},
@@ -38,7 +40,7 @@ export class LocalOverrideProvider implements OverrideProvider {
     return {
       ...current,
       value: overridden,
-      details: { ...current.details },
+      details: { ...current.details, reason: LOCAL_OVERRIDE_REASON },
     };
   }
 
@@ -76,8 +78,8 @@ export class LocalOverrideProvider implements OverrideProvider {
 
     return {
       ...current,
-      getValue: (param: string) => overridden[param],
-      details: { ...current.details },
+      _value: overridden,
+      details: { ...current.details, reason: LOCAL_OVERRIDE_REASON },
     };
   }
 
@@ -93,7 +95,7 @@ export class LocalOverrideProvider implements OverrideProvider {
     return {
       ...current,
       value: overridden,
-      details: { ...current.details },
+      details: { ...current.details, reason: LOCAL_OVERRIDE_REASON },
     };
   }
 }

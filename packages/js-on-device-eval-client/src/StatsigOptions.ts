@@ -17,9 +17,10 @@ export type StatsigOptions = Flatten<
     baseDownloadConfigSpecsUrl?: string;
 
     /**
-     * An implementor of SpecsDataAdapter, used to customize the initialization/update flow.
+     * An implementor of {@link SpecsDataAdapter}, used to customize the initialization/update flow.
      *
-     * @default StatsigSpecsDataAdapter
+     * default: `StatsigSpecsDataAdapter`
+     *
      * @see {@link https://docs.statsig.com/client/javascript-sdk/using-evaluations-data-adapter}
      */
     dataAdapter?: SpecsDataAdapter;

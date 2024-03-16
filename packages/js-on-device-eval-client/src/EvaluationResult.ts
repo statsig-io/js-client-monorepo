@@ -65,17 +65,18 @@ export function resultToConfigEval(
     group: result.group_name ?? '',
     group_name: result.group_name ?? undefined,
     is_device_based: false,
-    is_experiment_active: false,
-    is_user_in_experiment: false,
+    is_experiment_active: spec.isActive,
+    is_user_in_experiment: result.is_experiment_group,
   };
 }
 
 export function resultToLayerEval(
-  spec: Spec,
+  layerSpec: Spec,
+  experimentSpec: Spec | null,
   result: EvaluationResult,
 ): LayerEvaluation {
   return {
-    name: spec.name,
+    name: layerSpec.name,
     rule_id: result.rule_id,
     value: result.json_value,
     secondary_exposures: result.secondary_exposures,
@@ -85,7 +86,7 @@ export function resultToLayerEval(
     group: result.group_name ?? '',
     group_name: result.group_name ?? undefined,
     is_device_based: false,
-    is_experiment_active: false,
-    is_user_in_experiment: false,
+    is_experiment_active: experimentSpec?.isActive,
+    is_user_in_experiment: result.is_experiment_group,
   };
 }

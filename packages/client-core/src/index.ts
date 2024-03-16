@@ -13,7 +13,7 @@ export * from './Hashing';
 export * from './Log';
 export * from './Monitoring';
 export * from './NetworkCore';
-export * from './OverrideProvider';
+export * from './OverrideAdapter';
 export * from './StableID';
 export * from './StatsigClientBase';
 export * from './StatsigClientEventEmitter';

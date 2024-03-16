@@ -21,13 +21,15 @@ function _monitorFunction<T>(
   func: () => T,
   instance: unknown,
 ): T {
-  const client =
-    instance instanceof StatsigClientBase ? instance['_emit'] : undefined;
+  const emitFunc =
+    instance instanceof StatsigClientBase
+      ? instance['_emit'].bind(instance)
+      : undefined;
 
   return errorBoundary.capture(
     tag,
     () => captureDiagnostics(tag, () => func.apply(instance)),
-    client,
+    emitFunc,
   ) as T;
 }
 

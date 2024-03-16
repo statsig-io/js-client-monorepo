@@ -43,7 +43,7 @@ describe('Client Evaluations Callback', () => {
             receivedAt: anyNumber(),
           },
           value: true,
-          __raw: anyObject(),
+          __evaluation: anyObject(),
         },
       },
     ]);
@@ -67,7 +67,7 @@ describe('Client Evaluations Callback', () => {
             green: '#0000FF',
             red: '#FF0000',
           },
-          __raw: anyObject(),
+          __evaluation: anyObject(),
         },
       },
     ]);
@@ -89,7 +89,7 @@ describe('Client Evaluations Callback', () => {
           value: {
             a_string: 'Experiment Test Value',
           },
-          __raw: anyObject(),
+          __evaluation: anyObject(),
         },
       },
     ]);
@@ -109,7 +109,8 @@ describe('Client Evaluations Callback', () => {
             receivedAt: anyNumber(),
           },
           getValue: anyFunction(),
-          __raw: anyObject(),
+          _value: anyObject(),
+          __evaluation: anyObject(),
         },
       },
     ]);

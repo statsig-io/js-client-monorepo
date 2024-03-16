@@ -129,22 +129,28 @@ export default class StatsigClient
 
     const { evaluation, details } = this._store.getGate(hash);
     const gate = makeFeatureGate(name, details, evaluation);
+    const overridden = this._overrideAdapter?.getGateOverride?.(
+      gate,
+      this._user,
+    );
+
+    const result = overridden ?? gate;
 
     this._enqueueExposure(
       options,
-      createGateExposure(this._user, gate, evaluation?.secondary_exposures),
+      createGateExposure(this._user, result, evaluation?.secondary_exposures),
     );
 
-    this._emit({ event: 'gate_evaluation', gate });
+    this._emit({ event: 'gate_evaluation', gate: result });
 
-    return gate;
+    return result;
   }
 
   getDynamicConfig(
     name: string,
     options: EvaluationOptions = DEFAULT_EVAL_OPTIONS,
   ): DynamicConfig {
-    const dynamicConfig = this._getConfigImpl(name, options);
+    const dynamicConfig = this._getConfigImpl('dynamic_config', name, options);
     this._emit({ event: 'dynamic_config_evaluation', dynamicConfig });
     return dynamicConfig;
   }
@@ -153,7 +159,7 @@ export default class StatsigClient
     name: string,
     options: EvaluationOptions = DEFAULT_EVAL_OPTIONS,
   ): Experiment {
-    const experiment = this._getConfigImpl(name, options);
+    const experiment = this._getConfigImpl('experiment', name, options);
     this._emit({ event: 'experiment_evaluation', experiment });
     return experiment;
   }
@@ -165,21 +171,35 @@ export default class StatsigClient
     const hash = DJB2(name);
 
     const { evaluation, details } = this._store.getLayer(hash);
+    const layer = makeLayer(name, details, evaluation);
 
-    const layer = makeLayer(name, details, evaluation, (param) => {
-      if (evaluation && param in evaluation.value) {
-        this._enqueueExposure(
-          options,
-          createLayerParameterExposure(this._user, layer, param, evaluation),
+    const overridden = this._overrideAdapter?.getLayerOverride?.(
+      layer,
+      this._user,
+    );
+
+    const result = overridden ?? layer;
+    this._emit({ event: 'layer_evaluation', layer: result });
+
+    return {
+      ...result,
+      getValue: (param) => {
+        if (!(param in result._value)) {
+          return null;
+        }
+
+        const exposure = createLayerParameterExposure(
+          this._user,
+          result,
+          param,
+          result.__evaluation,
         );
-      }
 
-      return evaluation?.value[param] ?? null;
-    });
+        this._enqueueExposure(options, exposure);
 
-    this._emit({ event: 'layer_evaluation', layer });
-
-    return layer;
+        return result._value[param] ?? null;
+      },
+    };
   }
 
   logEvent(event: StatsigEvent): void {
@@ -203,6 +223,7 @@ export default class StatsigClient
   }
 
   private _getConfigImpl(
+    kind: 'experiment' | 'dynamic_config',
     name: string,
     options: EvaluationOptions,
   ): DynamicConfig {
@@ -211,11 +232,18 @@ export default class StatsigClient
 
     const config = makeDynamicConfig(name, details, evaluation);
 
+    const overridden =
+      kind === 'experiment'
+        ? this._overrideAdapter?.getExperimentOverride?.(config, this._user)
+        : this._overrideAdapter?.getDynamicConfigOverride?.(config, this._user);
+
+    const result = overridden ?? config;
+
     this._enqueueExposure(
       options,
-      createConfigExposure(this._user, config, evaluation?.secondary_exposures),
+      createConfigExposure(this._user, result, evaluation?.secondary_exposures),
     );
 
-    return config;
+    return result;
   }
 }

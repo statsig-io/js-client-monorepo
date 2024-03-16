@@ -1,1 +1,1 @@
-export * from './LocalOverrideProvider';
+export * from './LocalOverrideAdapter';

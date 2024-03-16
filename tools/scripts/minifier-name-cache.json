@@ -68,7 +68,11 @@
       "$_evaluator": "Tt",
       "$_runPostUpdate": "Dt",
       "$_getConfigImpl": "kt",
-      "$_getOutputs": "At"
+      "$_getOutputs": "At",
+      "$_overrideAdapter": "Pt",
+      "$_value": "Et",
+      "$_getSpecAndDetails": "Ct",
+      "$_getEvaluationDetails": "Gt"
     }
   }
 }

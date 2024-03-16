@@ -21,6 +21,7 @@ import SpecStore, {
   Spec,
   SpecAndSourceInfo,
   SpecCondition,
+  SpecKind,
   SpecRule,
 } from './SpecStore';
 
@@ -39,48 +40,59 @@ export default class Evaluator {
     name: string,
     user: StatsigUserInternal,
   ): DetailedEvaluation<GateEvaluation> {
-    const specAndSourceInfo = this._store.getSpec('gate', name);
-    const spec = specAndSourceInfo.spec;
+    const { spec, details } = this._getSpecAndDetails('gate', name);
+    if (!spec) {
+      return { evaluation: null, details };
+    }
 
-    return {
-      evaluation: spec
-        ? resultToGateEval(spec, this._evaluateSpec(spec, user))
-        : null,
-      details: this._getDetails(specAndSourceInfo),
-    };
+    const evaluation = resultToGateEval(spec, this._evaluateSpec(spec, user));
+    return { evaluation, details };
   }
 
   evaluateConfig(
     name: string,
     user: StatsigUserInternal,
   ): DetailedEvaluation<DynamicConfigEvaluation> {
-    const specAndSourceInfo = this._store.getSpec('config', name);
-    const spec = specAndSourceInfo.spec;
+    const { spec, details } = this._getSpecAndDetails('config', name);
+    if (!spec) {
+      return { evaluation: null, details };
+    }
 
-    return {
-      evaluation: spec
-        ? resultToConfigEval(spec, this._evaluateSpec(spec, user))
-        : null,
-      details: this._getDetails(specAndSourceInfo),
-    };
+    const evaluation = resultToConfigEval(spec, this._evaluateSpec(spec, user));
+    return { evaluation, details };
   }
 
   evaluateLayer(
     name: string,
     user: StatsigUserInternal,
   ): DetailedEvaluation<LayerEvaluation> {
-    const specAndSourceInfo = this._store.getSpec('layer', name);
-    const spec = specAndSourceInfo.spec;
+    const { spec, details } = this._getSpecAndDetails('layer', name);
+    if (!spec) {
+      return { evaluation: null, details };
+    }
 
-    return {
-      evaluation: spec
-        ? resultToLayerEval(spec, this._evaluateSpec(spec, user))
-        : null,
-      details: this._getDetails(specAndSourceInfo),
-    };
+    const result = this._evaluateSpec(spec, user);
+    const experimentName = result?.allocated_experiment_name ?? '';
+    const experimentSpec = this._store.getSpecAndSourceInfo(
+      'config',
+      experimentName,
+    ).spec;
+    const evaluation = resultToLayerEval(spec, experimentSpec, result);
+
+    return { evaluation, details };
   }
 
-  private _getDetails(info: SpecAndSourceInfo): EvaluationDetails {
+  private _getSpecAndDetails(
+    kind: SpecKind,
+    name: string,
+  ): { details: EvaluationDetails; spec: Spec | null } {
+    const specAndSourceInfo = this._store.getSpecAndSourceInfo(kind, name);
+    const details = this._getEvaluationDetails(specAndSourceInfo);
+
+    return { details, spec: specAndSourceInfo.spec };
+  }
+
+  private _getEvaluationDetails(info: SpecAndSourceInfo): EvaluationDetails {
     const { source, spec, lcut, receivedAt } = info;
 
     if (source === 'Uninitialized' || source === 'NoValues') {
@@ -90,11 +102,7 @@ export default class Evaluator {
     const subreason = spec == null ? 'Unrecognized' : 'Recognized';
     const reason = `${source}:${subreason}`;
 
-    return {
-      reason,
-      lcut,
-      receivedAt,
-    };
+    return { reason, lcut, receivedAt };
   }
 
   private _evaluateSpec(
@@ -316,7 +324,7 @@ export default class Evaluator {
       return null;
     }
 
-    const { spec } = this._store.getSpec('config', configDelegate);
+    const { spec } = this._store.getSpecAndSourceInfo('config', configDelegate);
     if (!spec) {
       return null;
     }
@@ -338,7 +346,7 @@ export default class Evaluator {
     const exposures: SecondaryExposure[] = [];
     let pass = false;
 
-    const { spec } = this._store.getSpec('gate', name);
+    const { spec } = this._store.getSpecAndSourceInfo('gate', name);
     if (spec) {
       const result = this._evaluateSpec(spec, user);
 

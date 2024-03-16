@@ -1,7 +1,7 @@
 import { DynamicConfig, Experiment, FeatureGate, Layer } from './StatsigTypes';
 import { StatsigUser } from './StatsigUser';
 
-export type OverrideProvider = {
+export type OverrideAdapter = {
   getGateOverride?(current: FeatureGate, user: StatsigUser): FeatureGate | null;
   getDynamicConfigOverride?(
     current: DynamicConfig,
@@ -14,8 +14,8 @@ export type OverrideProvider = {
   getLayerOverride?(current: Layer, user: StatsigUser): Layer | null;
 };
 
-export class CombinationOverrideProvider implements OverrideProvider {
-  constructor(public readonly providers: OverrideProvider[]) {}
+export class CombinationOverrideProvider implements OverrideAdapter {
+  constructor(public readonly providers: OverrideAdapter[]) {}
 
   getGateOverride(current: FeatureGate, user: StatsigUser): FeatureGate | null {
     return this._getOverride<FeatureGate>(
@@ -33,7 +33,7 @@ export class CombinationOverrideProvider implements OverrideProvider {
   }
 
   private _getOverride<T>(
-    fn: (provider: OverrideProvider) => T | null,
+    fn: (provider: OverrideAdapter) => T | null,
   ): T | null {
     for (const provider of this.providers) {
       const override = fn(provider);

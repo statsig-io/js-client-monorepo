@@ -111,7 +111,18 @@ export class EventLogger {
       this._flushTimer = null;
     }
 
-    await this._flush();
+    await this.flush();
+  }
+
+  async flush(): Promise<void> {
+    if (this._queue.length === 0) {
+      return;
+    }
+
+    const events = this._queue;
+    this._queue = [];
+
+    await this._sendEvents(events);
   }
 
   /**
@@ -159,20 +170,9 @@ export class EventLogger {
   }
 
   private _flushAndForget() {
-    this._flush().catch(() => {
+    this.flush().catch(() => {
       // noop
     });
-  }
-
-  private async _flush(): Promise<void> {
-    if (this._queue.length === 0) {
-      return;
-    }
-
-    const events = this._queue;
-    this._queue = [];
-
-    await this._sendEvents(events);
   }
 
   private async _sendEvents(events: EventQueue): Promise<void> {
