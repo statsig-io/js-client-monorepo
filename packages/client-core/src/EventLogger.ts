@@ -45,7 +45,8 @@ type EventQueue = (StatsigEventInternal & StatsigEventExtras)[];
 export class EventLogger {
   private _queue: EventQueue = [];
   private _flushTimer: ReturnType<typeof setInterval> | null;
-  private _lastExposureMap: Record<string, number> = {};
+  private _lastExposureTimeMap: Record<string, number> = {};
+  private _nonExposedChecks: Record<string, number> = {};
   private _maxQueueSize: number;
   private _hasRunQuickFlush = false;
   private _creationTime = Date.now();
@@ -94,17 +95,7 @@ export class EventLogger {
       return;
     }
 
-    if (event.user) {
-      event.user = { ...event.user };
-      delete event.user.privateAttributes;
-    }
-
-    const { sdkType, sdkVersion } = StatsigMetadataProvider.get();
-
-    this._queue.push({
-      ...event,
-      ...{ statsigMetadata: { sdkType, sdkVersion } },
-    });
+    this._normalizeAndAppendEvent(event);
 
     this._quickFlushIfNeeded();
 
@@ -113,8 +104,13 @@ export class EventLogger {
     }
   }
 
+  incrementNonExposureCount(name: string): void {
+    const current = this._nonExposedChecks[name] ?? 0;
+    this._nonExposedChecks[name] = current + 1;
+  }
+
   reset(): void {
-    this._lastExposureMap = {};
+    this._lastExposureTimeMap = {};
   }
 
   onVisibilityChanged(visibility: Visibility): void {
@@ -133,6 +129,8 @@ export class EventLogger {
   }
 
   async flush(): Promise<void> {
+    this._appendAndResetNonExposedChecks();
+
     if (this._queue.length === 0) {
       return;
     }
@@ -172,18 +170,18 @@ export class EventLogger {
       event.metadata?.['config'],
       event.metadata?.['ruleID'],
     ].join('|');
-    const previous = this._lastExposureMap[key];
+    const previous = this._lastExposureTimeMap[key];
     const now = Date.now();
 
     if (previous && now - previous < DEDUPER_WINDOW_DURATION_MS) {
       return false;
     }
 
-    if (Object.keys(this._lastExposureMap).length > MAX_DEDUPER_KEYS) {
-      this._lastExposureMap = {};
+    if (Object.keys(this._lastExposureTimeMap).length > MAX_DEDUPER_KEYS) {
+      this._lastExposureTimeMap = {};
     }
 
-    this._lastExposureMap[key] = now;
+    this._lastExposureTimeMap[key] = now;
     return true;
   }
 
@@ -290,5 +288,36 @@ export class EventLogger {
 
   private _getStorageKey() {
     return `statsig.failed_logs.${DJB2(this._sdkKey)}`;
+  }
+
+  private _normalizeAndAppendEvent(event: StatsigEventInternal) {
+    if (event.user) {
+      event.user = { ...event.user };
+      delete event.user.privateAttributes;
+    }
+
+    const { sdkType, sdkVersion } = StatsigMetadataProvider.get();
+
+    this._queue.push({
+      ...event,
+      ...{ statsigMetadata: { sdkType, sdkVersion } },
+    });
+  }
+
+  private _appendAndResetNonExposedChecks() {
+    if (Object.keys(this._nonExposedChecks).length === 0) {
+      return;
+    }
+
+    this._normalizeAndAppendEvent({
+      eventName: 'statsig::non_exposed_checks',
+      user: null,
+      time: Date.now(),
+      metadata: {
+        checks: { ...this._nonExposedChecks },
+      },
+    });
+
+    this._nonExposedChecks = {};
   }
 }

@@ -8,9 +8,10 @@ export type StatsigEvent = {
   metadata?: { [key: string]: string } | null;
 };
 
-export type StatsigEventInternal = StatsigEvent & {
+export type StatsigEventInternal = Omit<StatsigEvent, 'metadata'> & {
   user: StatsigUser | null;
   time: number;
+  metadata?: { [key: string]: unknown } | null;
   secondaryExposures?: SecondaryExposure[];
 };
 

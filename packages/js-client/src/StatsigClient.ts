@@ -137,6 +137,7 @@ export default class StatsigClient
     const result = overridden ?? gate;
 
     this._enqueueExposure(
+      name,
       options,
       createGateExposure(this._user, result, evaluation?.secondary_exposures),
     );
@@ -195,7 +196,7 @@ export default class StatsigClient
           result.__evaluation,
         );
 
-        this._enqueueExposure(options, exposure);
+        this._enqueueExposure(name, options, exposure);
 
         return result._value[param] ?? null;
       },
@@ -240,6 +241,7 @@ export default class StatsigClient
     const result = overridden ?? config;
 
     this._enqueueExposure(
+      name,
       options,
       createConfigExposure(this._user, result, evaluation?.secondary_exposures),
     );

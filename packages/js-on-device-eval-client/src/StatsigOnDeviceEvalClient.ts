@@ -112,6 +112,7 @@ export default class StatsigOnDeviceEvalClient
     const gate = makeFeatureGate(name, details, evaluation);
 
     this._enqueueExposure(
+      name,
       options,
       createGateExposure(user, gate, evaluation?.secondary_exposures),
     );
@@ -152,6 +153,7 @@ export default class StatsigOnDeviceEvalClient
     const layer = makeLayer(name, details, evaluation, (param: string) => {
       if (evaluation && param in evaluation.value) {
         this._enqueueExposure(
+          name,
           options,
           createLayerParameterExposure(user, layer, param, evaluation),
         );
@@ -185,6 +187,7 @@ export default class StatsigOnDeviceEvalClient
     const config = makeDynamicConfig(name, details, evaluation);
 
     this._enqueueExposure(
+      name,
       options,
       createConfigExposure(user, config, evaluation?.secondary_exposures),
     );

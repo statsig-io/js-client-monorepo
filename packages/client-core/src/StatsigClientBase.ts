@@ -130,10 +130,12 @@ export abstract class StatsigClientBase<
   }
 
   protected _enqueueExposure(
+    name: string,
     options: EvaluationOptions,
     exposure: StatsigEventInternal,
   ): void {
     if (options.disableExposureLog === true) {
+      this._logger.incrementNonExposureCount(name);
       return;
     }
 

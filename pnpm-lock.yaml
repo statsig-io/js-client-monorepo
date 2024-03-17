@@ -301,6 +301,9 @@ importers:
       '@statsig/js-on-device-eval-client':
         specifier: 0.0.1-beta.10
         version: link:../js-on-device-eval-client
+      statsig-test-helpers:
+        specifier: 0.0.1-beta.10
+        version: link:../test-helpers
 
   packages/expo-bindings:
     dependencies:
