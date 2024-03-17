@@ -1,13 +1,12 @@
 {
   "private": "true",
   "name": "combination-tests",
-  "version": "0.0.1-beta.10",
+  "version": "0.0.1-beta.12",
   "dependencies": {
-    "@statsig/client-core": "0.0.1-beta.10",
-    "@statsig/js-client": "0.0.1-beta.10",
-    "@statsig/js-on-device-eval-client": "0.0.1-beta.10",
-    "@statsig/js-local-overrides": "0.0.1-beta.10",
-    "statsig-test-helpers": "0.0.1-beta.10"
+    "@statsig/client-core": "0.0.1-beta.12",
+    "@statsig/js-client": "0.0.1-beta.12",
+    "@statsig/js-on-device-eval-client": "0.0.1-beta.12",
+    "@statsig/js-local-overrides": "0.0.1-beta.12"
   },
   "type": "commonjs",
   "main": "./src/index.js",

@@ -45,6 +45,11 @@
       "cache": true,
       "dependsOn": ["^build"],
       "inputs": ["default", "^default"]
+    },
+    "@nx/webpack:webpack": {
+      "cache": true,
+      "dependsOn": ["^build"],
+      "inputs": ["default", "^default"]
     }
   },
   "generators": {

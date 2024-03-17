@@ -23,7 +23,7 @@ export {
 };
 
 __STATSIG__ = {
-  ...__STATSIG__,
+  ...(__STATSIG__ ?? {}),
   StatsigContext,
   StatsigProvider,
   useDynamicConfig,

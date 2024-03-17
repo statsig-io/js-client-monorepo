@@ -76,7 +76,16 @@
       "$_logEventUrl": "Ft",
       "$_getOverridableUrl": "Lt",
       "$_logEventBeaconUrl": "Vt",
-      "$_downloadConfigSpecsUrl": "Rt"
+      "$_downloadConfigSpecsUrl": "Rt",
+      "$_lastExposureTimeMap": "qt",
+      "$_nonExposedChecks": "Kt",
+      "$_normalizeAndAppendEvent": "Jt",
+      "$_appendAndResetNonExposedChecks": "zt",
+      "$_makeDetailedEvaluation": "Ut",
+      "$_initializeUrl": "$t",
+      "$_fetchEvaluations": "Bt",
+      "$_user": "Yt",
+      "$_resetForUser": "Wt"
     }
   }
 }

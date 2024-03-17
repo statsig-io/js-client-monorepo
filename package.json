@@ -1,6 +1,6 @@
 {
   "name": "statsig",
-  "version": "0.0.1-beta.10",
+  "version": "0.0.1-beta.12",
   "license": "MIT",
   "scripts": {
     "lint": "nx run-many --parallel=4 --target=lint",
@@ -9,7 +9,8 @@
     "format": "nx format:write",
     "sync-version": "nx sync-version",
     "publish-all": "nx publish-all",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "copy-min-libs": "node ./tools/scripts/copy-min-libs.js"
   },
   "private": true,
   "devDependencies": {

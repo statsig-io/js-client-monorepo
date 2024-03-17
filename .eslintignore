@@ -1,2 +1,4 @@
 node_modules
 .babelrc.js
+statsig-js-client.min.js
+statsig-js-on-device-eval-client.min.js

@@ -18,3 +18,5 @@ __STATSIG__ = {
   StatsigEvaluationsDataAdapter,
   StatsigClient,
 };
+
+export default __STATSIG__;

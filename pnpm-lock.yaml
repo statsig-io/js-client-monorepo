@@ -278,76 +278,73 @@ importers:
   packages/client-extensions:
     dependencies:
       '@statsig/client-core':
-        specifier: 0.0.1-beta.10
+        specifier: 0.0.1-beta.12
         version: link:../client-core
       '@statsig/js-client':
-        specifier: 0.0.1-beta.10
+        specifier: 0.0.1-beta.12
         version: link:../js-client
       '@statsig/js-on-device-eval-client':
-        specifier: 0.0.1-beta.10
+        specifier: 0.0.1-beta.12
         version: link:../js-on-device-eval-client
 
   packages/combination-tests:
     dependencies:
       '@statsig/client-core':
-        specifier: 0.0.1-beta.10
+        specifier: 0.0.1-beta.12
         version: link:../client-core
       '@statsig/js-client':
-        specifier: 0.0.1-beta.10
+        specifier: 0.0.1-beta.12
         version: link:../js-client
       '@statsig/js-local-overrides':
-        specifier: 0.0.1-beta.10
+        specifier: 0.0.1-beta.12
         version: link:../js-local-overrides
       '@statsig/js-on-device-eval-client':
-        specifier: 0.0.1-beta.10
+        specifier: 0.0.1-beta.12
         version: link:../js-on-device-eval-client
-      statsig-test-helpers:
-        specifier: 0.0.1-beta.10
-        version: link:../test-helpers
 
   packages/expo-bindings:
     dependencies:
       '@statsig/client-core':
-        specifier: 0.0.1-beta.10
+        specifier: 0.0.1-beta.12
         version: link:../client-core
       '@statsig/react-bindings':
-        specifier: 0.0.1-beta.10
+        specifier: 0.0.1-beta.12
         version: link:../react-bindings
 
   packages/js-client:
     dependencies:
       '@statsig/client-core':
-        specifier: 0.0.1-beta.10
+        specifier: 0.0.1-beta.12
         version: link:../client-core
 
   packages/js-local-overrides:
     dependencies:
       '@statsig/client-core':
-        specifier: 0.0.1-beta.10
+        specifier: 0.0.1-beta.12
         version: link:../client-core
 
   packages/js-on-device-eval-client:
     dependencies:
       '@statsig/client-core':
-        specifier: 0.0.1-beta.10
+        specifier: 0.0.1-beta.12
         version: link:../client-core
       '@statsig/sha256':
-        specifier: 0.0.1-beta.10
+        specifier: 0.0.1-beta.12
         version: link:../sha256
 
   packages/react-bindings:
     dependencies:
       '@statsig/client-core':
-        specifier: 0.0.1-beta.10
+        specifier: 0.0.1-beta.12
         version: link:../client-core
 
   packages/react-native-bindings:
     dependencies:
       '@statsig/client-core':
-        specifier: 0.0.1-beta.10
+        specifier: 0.0.1-beta.12
         version: link:../client-core
       '@statsig/react-bindings':
-        specifier: 0.0.1-beta.10
+        specifier: 0.0.1-beta.12
         version: link:../react-bindings
 
   packages/sha256:
@@ -362,7 +359,7 @@ importers:
         specifier: 29.7.0
         version: 29.7.0
       '@statsig/client-core':
-        specifier: 0.0.1-beta.10
+        specifier: 0.0.1-beta.12
         version: link:../client-core
 
 packages:

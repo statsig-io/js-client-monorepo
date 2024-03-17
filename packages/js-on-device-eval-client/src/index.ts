@@ -13,7 +13,9 @@ export type {
 } from '@statsig/client-core';
 
 __STATSIG__ = {
-  ...__STATSIG__,
+  ...(__STATSIG__ ?? {}),
   StatsigSpecsDataAdapter,
   StatsigOnDeviceEvalClient,
 };
+
+export default __STATSIG__;

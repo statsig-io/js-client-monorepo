@@ -37,9 +37,9 @@ module.exports = composePlugins(withNx(), withWeb(), () =>
         library: {
           type: 'umd',
           name: {
-            root: 'statsig',
-            amd: 'statsig',
-            commonjs: 'statsig',
+            root: 'StatsigOnDeviceEval',
+            amd: 'StatsigOnDeviceEval',
+            commonjs: 'StatsigOnDeviceEval',
           },
         },
         path: path.resolve(

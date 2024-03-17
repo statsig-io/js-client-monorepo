@@ -33,9 +33,9 @@ module.exports = composePlugins(withNx(), withWeb(), () =>
         library: {
           type: 'umd',
           name: {
-            root: 'statsig',
-            amd: 'statsig',
-            commonjs: 'statsig',
+            root: 'Statsig',
+            amd: 'Statsig',
+            commonjs: 'Statsig',
           },
         },
         path: path.resolve(__dirname, '../../dist/packages/js-client/build'),
