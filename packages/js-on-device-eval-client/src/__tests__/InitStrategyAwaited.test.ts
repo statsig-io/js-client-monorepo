@@ -36,10 +36,10 @@ describe('Init Strategy - Awaited', () => {
     expect(gate.details.reason).toBe('Network:Recognized');
   });
 
-  it('calls /initialize from network', () => {
+  it('calls /download_config_specs from network', () => {
     expect(fetchMock.mock.calls).toHaveLength(1);
     expect(fetchMock.mock.calls[0][0]).toContain(
-      'https://api.statsigcdn.com/v1/download_config_specs/client-key.json',
+      'https://api.statsigcdn.com/v1/download_config_specs?k=client-key',
     );
   });
 

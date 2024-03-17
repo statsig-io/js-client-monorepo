@@ -11,6 +11,7 @@ import {
   setObjectInStorage,
 } from './StorageProvider';
 import { typedJsonParse } from './TypedJsonParse';
+import { _getOverridableUrl } from './UrlOverrides';
 import {
   Visibility,
   VisibilityChangeObserver,
@@ -24,6 +25,8 @@ const DEDUPER_WINDOW_DURATION_MS = 60_000;
 const MAX_FAILED_LOGS = 500;
 
 const DEFAULT_API = 'https://api.statsig.com/v1';
+const DEFAULT_ENDPOINT = '/rgstr';
+const DEFAULT_BEACON_ENDPOINT = '/log_event_beacon';
 const QUICK_FLUSH_WINDOW_MS = 200;
 
 type SendEventsResponse = {
@@ -43,11 +46,12 @@ export class EventLogger {
   private _queue: EventQueue = [];
   private _flushTimer: ReturnType<typeof setInterval> | null;
   private _lastExposureMap: Record<string, number> = {};
-
   private _maxQueueSize: number;
   private _hasRunQuickFlush = false;
   private _creationTime = Date.now();
   private _isLoggingDisabled: boolean;
+  private _logEventUrl: string;
+  private _logEventBeaconUrl: string;
 
   constructor(
     private _sdkKey: string,
@@ -61,6 +65,20 @@ export class EventLogger {
     const flushInterval =
       _options?.loggingIntervalMs ?? DEFAULT_FLUSH_INTERVAL_MS;
     this._flushTimer = setInterval(() => this._flushAndForget(), flushInterval);
+
+    this._logEventUrl = _getOverridableUrl(
+      _options?.logEventUrl,
+      _options?.api,
+      DEFAULT_ENDPOINT,
+      DEFAULT_API,
+    );
+
+    this._logEventBeaconUrl = _getOverridableUrl(
+      _options?.logEventBeaconUrl,
+      _options?.api,
+      DEFAULT_BEACON_ENDPOINT,
+      DEFAULT_API,
+    );
 
     VisibilityChangeObserver.add(this);
 
@@ -183,12 +201,11 @@ export class EventLogger {
 
     try {
       const isInForeground = VisibilityChangeObserver.isCurrentlyVisible();
-      const api = this._options?.api ?? DEFAULT_API;
 
       const response =
         !isInForeground && this._network.isBeaconSupported()
-          ? await this._sendEventsViaBeacon(api, events)
-          : await this._sendEventsViaPost(api, events);
+          ? await this._sendEventsViaBeacon(events)
+          : await this._sendEventsViaPost(events);
 
       if (response.success) {
         this._emitter({
@@ -204,7 +221,6 @@ export class EventLogger {
   }
 
   private async _sendEventsViaPost(
-    api: string,
     events: StatsigEventInternal[],
   ): Promise<SendEventsResponse> {
     const result = await this._network.post({
@@ -212,7 +228,7 @@ export class EventLogger {
       data: {
         events,
       },
-      url: `${api}/rgstr`,
+      url: this._logEventUrl,
       retries: 3,
       params: {
         // ec = Event Count
@@ -232,7 +248,6 @@ export class EventLogger {
   }
 
   private async _sendEventsViaBeacon(
-    api: string,
     events: StatsigEventInternal[],
   ): Promise<SendEventsResponse> {
     return {
@@ -241,7 +256,7 @@ export class EventLogger {
         data: {
           events,
         },
-        url: `${api}/log_event_beacon`,
+        url: this._logEventBeaconUrl,
       }),
     };
   }

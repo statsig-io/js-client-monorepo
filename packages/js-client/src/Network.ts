@@ -2,6 +2,7 @@ import {
   NetworkCore,
   StatsigClientEmitEventFunc,
   StatsigUser,
+  _getOverridableUrl,
   typedJsonParse,
 } from '@statsig/client-core';
 
@@ -10,6 +11,7 @@ import { resolveDeltasResponse } from './EvaluationResponseDeltas';
 import { StatsigOptions } from './StatsigOptions';
 
 const DEFAULT_API = 'https://api.statsig.com/v1';
+const DEFAULT_ENDPOINT = '/initialize';
 
 type EvaluationsFetchArgs = {
   hash: 'djb2' | 'sha256' | 'none';
@@ -20,14 +22,20 @@ type EvaluationsFetchArgs = {
 };
 
 export default class StatsigNetwork extends NetworkCore {
-  private _api: string;
+  private _initializeUrl: string;
 
   constructor(
     options: StatsigOptions | null,
     emitter?: StatsigClientEmitEventFunc,
   ) {
     super(options, emitter);
-    this._api = options?.api ?? DEFAULT_API;
+
+    this._initializeUrl = _getOverridableUrl(
+      options?.initializeUrl,
+      options?.api,
+      DEFAULT_ENDPOINT,
+      DEFAULT_API,
+    );
   }
 
   async fetchEvaluations(
@@ -69,7 +77,7 @@ export default class StatsigNetwork extends NetworkCore {
   ): Promise<string | null> {
     const response = await this.post({
       sdkKey,
-      url: `${this._api}/initialize`,
+      url: this._initializeUrl,
       data,
       retries: 2,
     });

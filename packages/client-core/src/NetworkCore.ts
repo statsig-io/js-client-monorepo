@@ -132,12 +132,12 @@ export class NetworkCore {
     const metadata = StatsigMetadataProvider.get();
 
     const params = {
-      ...args.params,
       k: args.sdkKey,
       st: metadata.sdkType,
       sv: metadata.sdkVersion,
       t: String(Date.now()),
       sid: SessionID.get(args.sdkKey),
+      ...args.params,
     };
 
     const query = Object.entries(params)

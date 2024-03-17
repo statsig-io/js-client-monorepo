@@ -298,6 +298,9 @@ importers:
       '@statsig/js-local-overrides':
         specifier: 0.0.1-beta.10
         version: link:../js-local-overrides
+      '@statsig/js-on-device-eval-client':
+        specifier: 0.0.1-beta.10
+        version: link:../js-on-device-eval-client
 
   packages/expo-bindings:
     dependencies:

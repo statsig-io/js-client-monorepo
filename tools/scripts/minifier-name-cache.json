@@ -72,7 +72,11 @@
       "$_overrideAdapter": "Pt",
       "$_value": "Et",
       "$_getSpecAndDetails": "Ct",
-      "$_getEvaluationDetails": "Gt"
+      "$_getEvaluationDetails": "Gt",
+      "$_logEventUrl": "Ft",
+      "$_getOverridableUrl": "Lt",
+      "$_logEventBeaconUrl": "Vt",
+      "$_downloadConfigSpecsUrl": "Rt"
     }
   }
 }

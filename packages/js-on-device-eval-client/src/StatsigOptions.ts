@@ -11,10 +11,11 @@ import {
 export type StatsigOptions = Flatten<
   StatsigOptionsCommon & {
     /**
-     * The URL used to fetch your latest Statsig configurations.
-     * Default: https://api.statsigcdn.com/v1/download_config_specs
+     * The URL used to fetch your latest Statsig specifications. Takes precedence over {@link StatsigOptionsCommon.api}.
+     *
+     * default: `https://api.statsigcdn.com/v1/download_config_specs`
      */
-    baseDownloadConfigSpecsUrl?: string;
+    downloadConfigSpecsUrl?: string;
 
     /**
      * An implementor of {@link SpecsDataAdapter}, used to customize the initialization/update flow.

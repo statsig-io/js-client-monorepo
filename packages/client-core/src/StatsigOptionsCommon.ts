@@ -25,6 +25,20 @@ export type StatsigOptionsCommon = StatsigRuntimeMutableOptions & {
   api?: string;
 
   /**
+   * The URL used to flush queued events via a POST request. Takes precedence over {@link StatsigOptionsCommon.api}.
+   *
+   * default: `https://api.statsig.com/v1/initialize`
+   */
+  logEventUrl?: string;
+
+  /**
+   * The URL used to flush queued events via {@link window.navigator.sendBeacon} (web only). Takes precedence over {@link StatsigOptionsCommon.api}.
+   *
+   * default: `https://api.statsig.com/v1/initialize`
+   */
+  logEventBeaconUrl?: string;
+
+  /**
    * An object you can use to set environment variables that apply to all of your users
    * in the same session.
    */
