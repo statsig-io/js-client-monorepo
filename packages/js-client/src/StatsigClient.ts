@@ -1,12 +1,14 @@
 import type {
   DataAdapterResult,
-  EvaluationOptions,
+  DynamicConfigEvaluationOptions,
   EvaluationsDataAdapter,
+  ExperimentEvaluationOptions,
   FeatureGate,
+  FeatureGateEvaluationOptions,
+  LayerEvaluationOptions,
   StatsigUser,
 } from '@statsig/client-core';
 import {
-  DEFAULT_EVAL_OPTIONS,
   DJB2,
   DynamicConfig,
   Experiment,
@@ -114,16 +116,13 @@ export default class StatsigClient
     await this._logger.shutdown();
   }
 
-  checkGate(
-    name: string,
-    options: EvaluationOptions = DEFAULT_EVAL_OPTIONS,
-  ): boolean {
+  checkGate(name: string, options?: FeatureGateEvaluationOptions): boolean {
     return this.getFeatureGate(name, options).value;
   }
 
   getFeatureGate(
     name: string,
-    options: EvaluationOptions = DEFAULT_EVAL_OPTIONS,
+    options?: FeatureGateEvaluationOptions,
   ): FeatureGate {
     const hash = DJB2(name);
 
@@ -132,14 +131,15 @@ export default class StatsigClient
     const overridden = this._overrideAdapter?.getGateOverride?.(
       gate,
       this._user,
+      options,
     );
 
     const result = overridden ?? gate;
 
     this._enqueueExposure(
       name,
+      createGateExposure(this._user, result),
       options,
-      createGateExposure(this._user, result, evaluation?.secondary_exposures),
     );
 
     this._emit({ event: 'gate_evaluation', gate: result });
@@ -149,7 +149,7 @@ export default class StatsigClient
 
   getDynamicConfig(
     name: string,
-    options: EvaluationOptions = DEFAULT_EVAL_OPTIONS,
+    options?: DynamicConfigEvaluationOptions,
   ): DynamicConfig {
     const dynamicConfig = this._getConfigImpl('dynamic_config', name, options);
     this._emit({ event: 'dynamic_config_evaluation', dynamicConfig });
@@ -158,17 +158,14 @@ export default class StatsigClient
 
   getExperiment(
     name: string,
-    options: EvaluationOptions = DEFAULT_EVAL_OPTIONS,
+    options?: ExperimentEvaluationOptions,
   ): Experiment {
     const experiment = this._getConfigImpl('experiment', name, options);
     this._emit({ event: 'experiment_evaluation', experiment });
     return experiment;
   }
 
-  getLayer(
-    name: string,
-    options: EvaluationOptions = DEFAULT_EVAL_OPTIONS,
-  ): Layer {
+  getLayer(name: string, options?: LayerEvaluationOptions): Layer {
     const hash = DJB2(name);
 
     const { evaluation, details } = this._store.getLayer(hash);
@@ -177,6 +174,7 @@ export default class StatsigClient
     const overridden = this._overrideAdapter?.getLayerOverride?.(
       layer,
       this._user,
+      options,
     );
 
     const result = overridden ?? layer;
@@ -193,10 +191,9 @@ export default class StatsigClient
           this._user,
           result,
           param,
-          result.__evaluation,
         );
 
-        this._enqueueExposure(name, options, exposure);
+        this._enqueueExposure(name, exposure, options);
 
         return result._value[param] ?? null;
       },
@@ -226,7 +223,7 @@ export default class StatsigClient
   private _getConfigImpl(
     kind: 'experiment' | 'dynamic_config',
     name: string,
-    options: EvaluationOptions,
+    options?: DynamicConfigEvaluationOptions | ExperimentEvaluationOptions,
   ): DynamicConfig {
     const hash = DJB2(name);
     const { evaluation, details } = this._store.getConfig(hash);
@@ -235,15 +232,23 @@ export default class StatsigClient
 
     const overridden =
       kind === 'experiment'
-        ? this._overrideAdapter?.getExperimentOverride?.(config, this._user)
-        : this._overrideAdapter?.getDynamicConfigOverride?.(config, this._user);
+        ? this._overrideAdapter?.getExperimentOverride?.(
+            config,
+            this._user,
+            options,
+          )
+        : this._overrideAdapter?.getDynamicConfigOverride?.(
+            config,
+            this._user,
+            options,
+          );
 
     const result = overridden ?? config;
 
     this._enqueueExposure(
       name,
+      createConfigExposure(this._user, result),
       options,
-      createConfigExposure(this._user, result, evaluation?.secondary_exposures),
     );
 
     return result;

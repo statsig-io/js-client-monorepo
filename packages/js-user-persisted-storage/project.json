@@ -1,0 +1,33 @@
+{
+  "name": "js-user-persisted-storage",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/js-user-persisted-storage/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/js-user-persisted-storage",
+        "main": "packages/js-user-persisted-storage/src/index.ts",
+        "tsConfig": "packages/js-user-persisted-storage/tsconfig.lib.json",
+        "assets": []
+      }
+    },
+    "publish": {
+      "command": "node tools/scripts/publish.mjs js-user-persisted-storage {args.ver} {args.tag}",
+      "dependsOn": ["build"]
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "packages/js-user-persisted-storage/jest.config.ts"
+      }
+    }
+  },
+  "tags": []
+}

@@ -1,0 +1,10 @@
+{
+  "name": "@statsig/js-user-persisted-storage",
+  "version": "0.0.1",
+  "dependencies": {
+    "@statsig/client-core": "0.0.1-beta.12"
+  },
+  "type": "commonjs",
+  "main": "./src/index.js",
+  "typings": "./src/index.d.ts"
+}

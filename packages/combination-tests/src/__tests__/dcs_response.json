@@ -1,0 +1,484 @@
+{
+  "__note": "Sample Response using the SDK Demo project",
+  "dynamic_configs": [
+    {
+      "name": "a_dynamic_config",
+      "type": "dynamic_config",
+      "salt": "5519338f-1c08-4673-b833-9e06ef7bfe3a",
+      "enabled": true,
+      "defaultValue": {
+        "red": "#FF0000",
+        "blue": "#00FF00",
+        "green": "#0000FF"
+      },
+      "rules": [],
+      "isDeviceBased": false,
+      "idType": "userID",
+      "entity": "dynamic_config"
+    },
+    {
+      "name": "another_experiment",
+      "type": "dynamic_config",
+      "salt": "a37c5e3d-f2f1-407e-9f91-5669de5de0fd",
+      "enabled": true,
+      "defaultValue": {},
+      "rules": [
+        {
+          "name": "layerAssignment",
+          "groupName": "Layer Assignment",
+          "passPercentage": 100,
+          "conditions": [
+            {
+              "type": "user_bucket",
+              "targetValue": [-1],
+              "operator": "any",
+              "field": null,
+              "additionalValues": {
+                "salt": "daa8ca46-c742-4869-83be-43e00c59f704"
+              },
+              "isDeviceBased": false,
+              "idType": "userID"
+            }
+          ],
+          "returnValue": {},
+          "id": "layerAssignment",
+          "salt": "",
+          "isDeviceBased": false,
+          "idType": "userID"
+        },
+        {
+          "name": "3cOnAalaaO5dOXqAvGjLX9",
+          "groupName": "Control",
+          "passPercentage": 100,
+          "conditions": [
+            {
+              "type": "user_bucket",
+              "targetValue": 500,
+              "operator": "lt",
+              "field": null,
+              "additionalValues": {
+                "salt": "a37c5e3d-f2f1-407e-9f91-5669de5de0fd"
+              },
+              "isDeviceBased": false,
+              "idType": "userID"
+            }
+          ],
+          "returnValue": {
+            "a_string": "control",
+            "a_bool": false
+          },
+          "id": "3cOnAalaaO5dOXqAvGjLX9",
+          "salt": "3cOnAalaaO5dOXqAvGjLX9",
+          "isDeviceBased": false,
+          "idType": "userID",
+          "isExperimentGroup": true
+        },
+        {
+          "name": "3cOnAc0cD6eI8mYw6Ofpgb",
+          "groupName": "Test",
+          "passPercentage": 100,
+          "conditions": [
+            {
+              "type": "user_bucket",
+              "targetValue": 1000,
+              "operator": "lt",
+              "field": null,
+              "additionalValues": {
+                "salt": "a37c5e3d-f2f1-407e-9f91-5669de5de0fd"
+              },
+              "isDeviceBased": false,
+              "idType": "userID"
+            }
+          ],
+          "returnValue": {
+            "a_string": "test",
+            "a_bool": true
+          },
+          "id": "3cOnAc0cD6eI8mYw6Ofpgb",
+          "salt": "3cOnAc0cD6eI8mYw6Ofpgb",
+          "isDeviceBased": false,
+          "idType": "userID",
+          "isExperimentGroup": true
+        }
+      ],
+      "isDeviceBased": false,
+      "idType": "userID",
+      "entity": "experiment",
+      "isActive": true,
+      "hasSharedParams": false
+    },
+    {
+      "name": "three_groups",
+      "type": "dynamic_config",
+      "salt": "19ad889d-f4b5-4740-bcb2-72ff1896d438",
+      "enabled": true,
+      "defaultValue": {},
+      "rules": [
+        {
+          "name": "layerAssignment",
+          "groupName": "Layer Assignment",
+          "passPercentage": 100,
+          "conditions": [
+            {
+              "type": "user_bucket",
+              "targetValue": [-1],
+              "operator": "any",
+              "field": null,
+              "additionalValues": {
+                "salt": "87b91fb6-6d25-4f8e-a53c-73e49a72560f"
+              },
+              "isDeviceBased": false,
+              "idType": "userID"
+            }
+          ],
+          "returnValue": {},
+          "id": "layerAssignment",
+          "salt": "",
+          "isDeviceBased": false,
+          "idType": "userID"
+        },
+        {
+          "name": "1J6QLlETnyrV1XE2um2XiS",
+          "groupName": "Control",
+          "passPercentage": 100,
+          "conditions": [
+            {
+              "type": "user_bucket",
+              "targetValue": 334,
+              "operator": "lt",
+              "field": null,
+              "additionalValues": {
+                "salt": "19ad889d-f4b5-4740-bcb2-72ff1896d438"
+              },
+              "isDeviceBased": false,
+              "idType": "userID"
+            }
+          ],
+          "returnValue": {
+            "a_string": "c"
+          },
+          "id": "1J6QLlETnyrV1XE2um2XiS",
+          "salt": "1J6QLlETnyrV1XE2um2XiS",
+          "isDeviceBased": false,
+          "idType": "userID",
+          "isExperimentGroup": true
+        },
+        {
+          "name": "1J6QLnjVPQBplnbY5tYABU",
+          "groupName": "Test",
+          "passPercentage": 100,
+          "conditions": [
+            {
+              "type": "user_bucket",
+              "targetValue": 667,
+              "operator": "lt",
+              "field": null,
+              "additionalValues": {
+                "salt": "19ad889d-f4b5-4740-bcb2-72ff1896d438"
+              },
+              "isDeviceBased": false,
+              "idType": "userID"
+            }
+          ],
+          "returnValue": {
+            "a_string": "t"
+          },
+          "id": "1J6QLnjVPQBplnbY5tYABU",
+          "salt": "1J6QLnjVPQBplnbY5tYABU",
+          "isDeviceBased": false,
+          "idType": "userID",
+          "isExperimentGroup": true
+        },
+        {
+          "name": "22NwxasoExmyIpd8Iy3m1o",
+          "groupName": "Test #2",
+          "passPercentage": 100,
+          "conditions": [
+            {
+              "type": "user_bucket",
+              "targetValue": 1000,
+              "operator": "lt",
+              "field": null,
+              "additionalValues": {
+                "salt": "19ad889d-f4b5-4740-bcb2-72ff1896d438"
+              },
+              "isDeviceBased": false,
+              "idType": "userID"
+            }
+          ],
+          "returnValue": {
+            "a_string": "t2"
+          },
+          "id": "22NwxasoExmyIpd8Iy3m1o",
+          "salt": "22NwxasoExmyIpd8Iy3m1o",
+          "isDeviceBased": false,
+          "idType": "userID",
+          "isExperimentGroup": true
+        }
+      ],
+      "isDeviceBased": false,
+      "idType": "userID",
+      "entity": "experiment",
+      "isActive": true,
+      "hasSharedParams": false
+    },
+    {
+      "name": "an_experiment",
+      "type": "dynamic_config",
+      "salt": "f5c1b26a-6374-4f8b-8b9b-de2292019ecd",
+      "enabled": true,
+      "defaultValue": {
+        "a_string": "Layer Default Value"
+      },
+      "rules": [
+        {
+          "name": "layerAssignment",
+          "groupName": "Layer Assignment",
+          "passPercentage": 100,
+          "conditions": [
+            {
+              "type": "user_bucket",
+              "targetValue": [-1],
+              "operator": "any",
+              "field": null,
+              "additionalValues": {
+                "salt": "3269e41c-4c15-4da2-a8d3-85d01895b887"
+              },
+              "isDeviceBased": false,
+              "idType": "userID"
+            }
+          ],
+          "returnValue": {
+            "a_string": "Layer Default Value"
+          },
+          "id": "layerAssignment",
+          "salt": "",
+          "isDeviceBased": false,
+          "idType": "userID"
+        },
+        {
+          "name": "49CGlRW56QYlkNSNzhUM2y",
+          "groupName": "Control",
+          "passPercentage": 100,
+          "conditions": [
+            {
+              "type": "user_bucket",
+              "targetValue": 500,
+              "operator": "lt",
+              "field": null,
+              "additionalValues": {
+                "salt": "f5c1b26a-6374-4f8b-8b9b-de2292019ecd"
+              },
+              "isDeviceBased": false,
+              "idType": "userID"
+            }
+          ],
+          "returnValue": {
+            "a_string": "Experiment Control Value"
+          },
+          "id": "49CGlRW56QYlkNSNzhUM2y",
+          "salt": "49CGlRW56QYlkNSNzhUM2y",
+          "isDeviceBased": false,
+          "idType": "userID",
+          "isExperimentGroup": true
+        },
+        {
+          "name": "49CGlTB7z97PEdqJapQplA",
+          "groupName": "Test",
+          "passPercentage": 100,
+          "conditions": [
+            {
+              "type": "user_bucket",
+              "targetValue": 1000,
+              "operator": "lt",
+              "field": null,
+              "additionalValues": {
+                "salt": "f5c1b26a-6374-4f8b-8b9b-de2292019ecd"
+              },
+              "isDeviceBased": false,
+              "idType": "userID"
+            }
+          ],
+          "returnValue": {
+            "a_string": "Experiment Test Value"
+          },
+          "id": "49CGlTB7z97PEdqJapQplA",
+          "salt": "49CGlTB7z97PEdqJapQplA",
+          "isDeviceBased": false,
+          "idType": "userID",
+          "isExperimentGroup": true
+        }
+      ],
+      "isDeviceBased": false,
+      "idType": "userID",
+      "entity": "experiment",
+      "isActive": true,
+      "hasSharedParams": true,
+      "explicitParameters": ["a_string"]
+    }
+  ],
+  "feature_gates": [
+    {
+      "name": "third_gate",
+      "type": "feature_gate",
+      "salt": "f1261590-d48e-44b4-8f87-4eb9988d1174",
+      "enabled": true,
+      "defaultValue": false,
+      "rules": [
+        {
+          "name": "2XsjGYU4EC4c28B86AMCMx",
+          "groupName": "Specific User",
+          "passPercentage": 100,
+          "conditions": [
+            {
+              "type": "user_field",
+              "targetValue": ["1", "2", "3", "4", "5"],
+              "operator": "any",
+              "field": "userID",
+              "additionalValues": {},
+              "isDeviceBased": false,
+              "idType": "userID"
+            }
+          ],
+          "returnValue": true,
+          "id": "2XsjGYU4EC4c28B86AMCMx",
+          "salt": "593d1d17-e7f5-4a33-ae3c-f7f300617945",
+          "isDeviceBased": false,
+          "idType": "userID"
+        }
+      ],
+      "isDeviceBased": false,
+      "idType": "userID",
+      "entity": "feature_gate"
+    },
+    {
+      "name": "partial_gate",
+      "type": "feature_gate",
+      "salt": "62afcf6d-2879-4a0b-8ffd-7b482d7da05d",
+      "enabled": true,
+      "defaultValue": false,
+      "rules": [
+        {
+          "name": "59nkHdlmIytrqNG9iT7gkd:50.00:2",
+          "groupName": "50/50",
+          "passPercentage": 50,
+          "conditions": [
+            {
+              "type": "public",
+              "targetValue": null,
+              "operator": null,
+              "field": null,
+              "additionalValues": {},
+              "isDeviceBased": false,
+              "idType": "userID"
+            }
+          ],
+          "returnValue": true,
+          "id": "59nkHdlmIytrqNG9iT7gkd:50.00:2",
+          "salt": "235f34bc-3067-4947-a617-29bbbb1c5f62",
+          "isDeviceBased": false,
+          "idType": "userID"
+        }
+      ],
+      "isDeviceBased": false,
+      "idType": "userID",
+      "entity": "feature_gate"
+    },
+    {
+      "name": "a_gate",
+      "type": "feature_gate",
+      "salt": "6ca5e892-2dd3-4607-8742-7c48fe92d265",
+      "enabled": true,
+      "defaultValue": false,
+      "rules": [
+        {
+          "name": "2QWhVkWdUEXR6Q3KYgV73O",
+          "groupName": "First gate rule",
+          "passPercentage": 100,
+          "conditions": [
+            {
+              "type": "public",
+              "targetValue": null,
+              "operator": null,
+              "field": null,
+              "additionalValues": {},
+              "isDeviceBased": false,
+              "idType": "userID"
+            }
+          ],
+          "returnValue": true,
+          "id": "2QWhVkWdUEXR6Q3KYgV73O",
+          "salt": "df505804-d3a5-48cb-949a-44fa378426d4",
+          "isDeviceBased": false,
+          "idType": "userID"
+        }
+      ],
+      "isDeviceBased": false,
+      "idType": "userID",
+      "entity": "feature_gate"
+    }
+  ],
+  "layers": {
+    "a_layer": ["an_experiment"]
+  },
+  "layer_configs": [
+    {
+      "name": "a_layer",
+      "type": "dynamic_config",
+      "salt": "3269e41c-4c15-4da2-a8d3-85d01895b887",
+      "enabled": true,
+      "defaultValue": {
+        "a_string": "Layer Default Value"
+      },
+      "rules": [
+        {
+          "name": "experimentAssignment",
+          "groupName": "Experiment Assignment",
+          "passPercentage": 100,
+          "conditions": [
+            {
+              "type": "public",
+              "targetValue": null,
+              "operator": null,
+              "field": null,
+              "additionalValues": {
+                "salt": "3269e41c-4c15-4da2-a8d3-85d01895b887"
+              },
+              "isDeviceBased": false,
+              "idType": "userID"
+            }
+          ],
+          "returnValue": {
+            "a_string": "Layer Default Value"
+          },
+          "id": "experimentAssignment",
+          "salt": "",
+          "isDeviceBased": false,
+          "idType": "userID",
+          "configDelegate": "an_experiment"
+        }
+      ],
+      "isDeviceBased": false,
+      "idType": "userID",
+      "entity": "layer"
+    }
+  ],
+  "has_updates": true,
+  "time": 1705543730484,
+  "company_id": "2etz0PtUkhGsJfH0mR6whu",
+  "id_lists": {},
+  "diagnostics": {
+    "initialize": 10000,
+    "dcs": 1000,
+    "download_config_specs": 1000,
+    "idlist": 100,
+    "get_id_list": 100,
+    "get_id_list_sources": 100,
+    "log": 100,
+    "log_event": 100,
+    "api_call": 100
+  },
+  "sdk_flags": {
+    "stop_log_event_compression": true
+  }
+}

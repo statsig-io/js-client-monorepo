@@ -1,9 +1,8 @@
 import { useContext, useMemo } from 'react';
 
 import {
-  DEFAULT_EVAL_OPTIONS,
-  EvaluationOptions,
   FeatureGate,
+  FeatureGateEvaluationOptions,
   Log,
   StatsigUser,
 } from '@statsig/client-core';
@@ -12,13 +11,13 @@ import { NoopEvaluationsClient } from './NoopEvaluationsClient';
 import { isPrecomputedEvalClient } from './OnDeviceVsPrecomputedUtils';
 import StatsigContext from './StatsigContext';
 
-export type UseGateOptions = EvaluationOptions & {
+export type UseGateOptions = FeatureGateEvaluationOptions & {
   user: StatsigUser | null;
 };
 
 export default function (
   gateName: string,
-  options: UseGateOptions = { ...DEFAULT_EVAL_OPTIONS, user: null },
+  options?: UseGateOptions,
 ): FeatureGate {
   const { client, renderVersion } = useContext(StatsigContext);
 
@@ -27,7 +26,7 @@ export default function (
       return client.getFeatureGate(gateName, options);
     }
 
-    if (options.user != null) {
+    if (options?.user != null) {
       return client.getFeatureGate(gateName, options.user, options);
     }
 

@@ -1,4 +1,9 @@
-import { EvaluationOptions } from './StatsigClientBase';
+import {
+  DynamicConfigEvaluationOptions,
+  ExperimentEvaluationOptions,
+  FeatureGateEvaluationOptions,
+  LayerEvaluationOptions,
+} from './EvaluationOptions';
 import { StatsigClientEventEmitterInterface } from './StatsigClientEventEmitter';
 import { EvaluationsDataAdapter, SpecsDataAdapter } from './StatsigDataAdapter';
 import { StatsigEvent } from './StatsigEvent';
@@ -20,24 +25,28 @@ export interface OnDeviceEvaluationsInterface
   checkGate(
     name: string,
     user: StatsigUser,
-    options: EvaluationOptions,
+    options?: FeatureGateEvaluationOptions,
   ): boolean;
   getFeatureGate(
     name: string,
     user: StatsigUser,
-    options: EvaluationOptions,
+    options?: FeatureGateEvaluationOptions,
   ): FeatureGate;
   getDynamicConfig(
     name: string,
     user: StatsigUser,
-    options: EvaluationOptions,
+    options?: DynamicConfigEvaluationOptions,
   ): DynamicConfig;
   getExperiment(
     name: string,
     user: StatsigUser,
-    options: EvaluationOptions,
+    options?: ExperimentEvaluationOptions,
   ): Experiment;
-  getLayer(name: string, user: StatsigUser, options: EvaluationOptions): Layer;
+  getLayer(
+    name: string,
+    user: StatsigUser,
+    options?: LayerEvaluationOptions,
+  ): Layer;
   logEvent(event: StatsigEvent, user: StatsigUser): void;
 }
 
@@ -48,11 +57,20 @@ export interface PrecomputedEvaluationsInterface
   getCurrentUser(): StatsigUser;
   updateUserSync(user: StatsigUser): void;
   updateUserAsync(user: StatsigUser): Promise<void>;
-  checkGate(name: string, options: EvaluationOptions): boolean;
-  getFeatureGate(name: string, options: EvaluationOptions): FeatureGate;
-  getDynamicConfig(name: string, options: EvaluationOptions): DynamicConfig;
-  getExperiment(name: string, options: EvaluationOptions): Experiment;
-  getLayer(name: string, options: EvaluationOptions): Layer;
+  checkGate(name: string, options?: FeatureGateEvaluationOptions): boolean;
+  getFeatureGate(
+    name: string,
+    options?: FeatureGateEvaluationOptions,
+  ): FeatureGate;
+  getDynamicConfig(
+    name: string,
+    options?: DynamicConfigEvaluationOptions,
+  ): DynamicConfig;
+  getExperiment(
+    name: string,
+    options?: ExperimentEvaluationOptions,
+  ): Experiment;
+  getLayer(name: string, options?: LayerEvaluationOptions): Layer;
   logEvent(event: StatsigEvent): void;
 }
 

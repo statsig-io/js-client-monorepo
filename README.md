@@ -7,8 +7,8 @@ Statsig helps you move faster with feature gates (feature flags), and/or dynamic
 
 ## Variants
 
-- [Precomputed (Recommended)](packages/js-client/README.md)
-- [On Device](packages/js-on-device-eval-client/README.md)
+- [Precomputed Evaluations (Recommended)](packages/js-client/README.md)
+- [On Device Evaluations](packages/js-on-device-eval-client/README.md)
 
 ## React Bindings
 

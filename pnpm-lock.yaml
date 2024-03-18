@@ -275,32 +275,7 @@ importers:
 
   packages/client-core: {}
 
-  packages/client-extensions:
-    dependencies:
-      '@statsig/client-core':
-        specifier: 0.0.1-beta.12
-        version: link:../client-core
-      '@statsig/js-client':
-        specifier: 0.0.1-beta.12
-        version: link:../js-client
-      '@statsig/js-on-device-eval-client':
-        specifier: 0.0.1-beta.12
-        version: link:../js-on-device-eval-client
-
-  packages/combination-tests:
-    dependencies:
-      '@statsig/client-core':
-        specifier: 0.0.1-beta.12
-        version: link:../client-core
-      '@statsig/js-client':
-        specifier: 0.0.1-beta.12
-        version: link:../js-client
-      '@statsig/js-local-overrides':
-        specifier: 0.0.1-beta.12
-        version: link:../js-local-overrides
-      '@statsig/js-on-device-eval-client':
-        specifier: 0.0.1-beta.12
-        version: link:../js-on-device-eval-client
+  packages/combination-tests: {}
 
   packages/expo-bindings:
     dependencies:
@@ -331,6 +306,12 @@ importers:
       '@statsig/sha256':
         specifier: 0.0.1-beta.12
         version: link:../sha256
+
+  packages/js-user-persisted-storage:
+    dependencies:
+      '@statsig/client-core':
+        specifier: 0.0.1-beta.12
+        version: link:../client-core
 
   packages/react-bindings:
     dependencies:

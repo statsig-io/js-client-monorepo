@@ -15,13 +15,6 @@ export type StatsigEventInternal = Omit<StatsigEvent, 'metadata'> & {
   secondaryExposures?: SecondaryExposure[];
 };
 
-type LayerEvaluation = {
-  explicit_parameters: string[] | null;
-  undelegated_secondary_exposures?: SecondaryExposure[];
-  secondary_exposures: SecondaryExposure[];
-  allocated_experiment_name: string | null;
-};
-
 const CONFIG_EXPOSURE_NAME = 'statsig::config_exposure';
 const GATE_EXPOSURE_NAME = 'statsig::gate_exposure';
 const LAYER_EXPOSURE_NAME = 'statsig::layer_exposure';
@@ -50,7 +43,6 @@ export function isExposureEvent({ eventName }: StatsigEventInternal): boolean {
 export function createGateExposure(
   user: StatsigUser,
   gate: FeatureGate,
-  secondaryExposures: SecondaryExposure[] | undefined,
 ): StatsigEventInternal {
   return createExposure(
     GATE_EXPOSURE_NAME,
@@ -61,14 +53,13 @@ export function createGateExposure(
       gateValue: String(gate.value),
       ruleID: gate.ruleID,
     },
-    secondaryExposures ?? [],
+    gate.__evaluation?.secondary_exposures ?? [],
   );
 }
 
 export function createConfigExposure(
   user: StatsigUser,
   config: DynamicConfig,
-  secondaryExposures: SecondaryExposure[] | undefined,
 ): StatsigEventInternal {
   return createExposure(
     CONFIG_EXPOSURE_NAME,
@@ -78,7 +69,7 @@ export function createConfigExposure(
       config: config.name,
       ruleID: config.ruleID,
     },
-    secondaryExposures ?? [],
+    config.__evaluation?.secondary_exposures ?? [],
   );
 }
 
@@ -86,8 +77,8 @@ export function createLayerParameterExposure(
   user: StatsigUser,
   layer: Layer,
   parameterName: string,
-  evaluation: LayerEvaluation | null,
 ): StatsigEventInternal {
+  const evaluation = layer.__evaluation;
   const isExplicit =
     evaluation?.explicit_parameters?.includes(parameterName) === true;
   let allocatedExperiment = '';

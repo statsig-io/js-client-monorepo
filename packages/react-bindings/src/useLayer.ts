@@ -1,9 +1,8 @@
 import { useContext, useMemo } from 'react';
 
 import {
-  DEFAULT_EVAL_OPTIONS,
-  EvaluationOptions,
   Layer,
+  LayerEvaluationOptions,
   Log,
   StatsigUser,
 } from '@statsig/client-core';
@@ -12,14 +11,11 @@ import { NoopEvaluationsClient } from './NoopEvaluationsClient';
 import { isPrecomputedEvalClient } from './OnDeviceVsPrecomputedUtils';
 import StatsigContext from './StatsigContext';
 
-export type UseLayerOptions = EvaluationOptions & {
+export type UseLayerOptions = LayerEvaluationOptions & {
   user: StatsigUser | null;
 };
 
-export default function (
-  layerName: string,
-  options: UseLayerOptions = { ...DEFAULT_EVAL_OPTIONS, user: null },
-): Layer {
+export default function (layerName: string, options?: UseLayerOptions): Layer {
   const { client, renderVersion } = useContext(StatsigContext);
 
   const layer = useMemo(() => {
@@ -27,7 +23,7 @@ export default function (
       return client.getLayer(layerName, options);
     }
 
-    if (options.user != null) {
+    if (options?.user != null) {
       return client.getLayer(layerName, options.user, options);
     }
 

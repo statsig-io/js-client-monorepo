@@ -5,15 +5,9 @@ import {
   GateEvaluation,
   LayerEvaluation,
 } from './EvaluationTypes';
+import { Flatten } from './UtitlityTypes';
 
 const DEFAULT_RULE = 'default';
-
-export type Flatten<T> = {
-  [K in keyof T]: T[K];
-
-  // Intentional: This is a utility type
-  // eslint-disable-next-line @typescript-eslint/ban-types
-} & {};
 
 type CommonFields = {
   readonly name: string;

@@ -1,11 +1,13 @@
 import {
-  DEFAULT_EVAL_OPTIONS,
   DataAdapterResult,
   DynamicConfig,
-  EvaluationOptions,
+  DynamicConfigEvaluationOptions,
   Experiment,
+  ExperimentEvaluationOptions,
   FeatureGate,
+  FeatureGateEvaluationOptions,
   Layer,
+  LayerEvaluationOptions,
   Log,
   OnDeviceEvaluationsInterface,
   SpecsDataAdapter,
@@ -96,7 +98,7 @@ export default class StatsigOnDeviceEvalClient
   checkGate(
     name: string,
     user: StatsigUser,
-    options: EvaluationOptions = DEFAULT_EVAL_OPTIONS,
+    options?: FeatureGateEvaluationOptions,
   ): boolean {
     return this.getFeatureGate(name, user, options).value;
   }
@@ -104,18 +106,14 @@ export default class StatsigOnDeviceEvalClient
   getFeatureGate(
     name: string,
     user: StatsigUser,
-    options: EvaluationOptions = DEFAULT_EVAL_OPTIONS,
+    options?: FeatureGateEvaluationOptions,
   ): FeatureGate {
     user = normalizeUser(user, this._options.environment);
     const { evaluation, details } = this._evaluator.evaluateGate(name, user);
 
     const gate = makeFeatureGate(name, details, evaluation);
 
-    this._enqueueExposure(
-      name,
-      options,
-      createGateExposure(user, gate, evaluation?.secondary_exposures),
-    );
+    this._enqueueExposure(name, createGateExposure(user, gate), options);
 
     this._emit({ event: 'gate_evaluation', gate });
 
@@ -125,9 +123,14 @@ export default class StatsigOnDeviceEvalClient
   getDynamicConfig(
     name: string,
     user: StatsigUser,
-    options: EvaluationOptions = DEFAULT_EVAL_OPTIONS,
+    options?: DynamicConfigEvaluationOptions,
   ): DynamicConfig {
-    const dynamicConfig = this._getConfigImpl(name, user, options);
+    const dynamicConfig = this._getConfigImpl(
+      'dynamic_config',
+      name,
+      user,
+      options,
+    );
     this._emit({ event: 'dynamic_config_evaluation', dynamicConfig });
     return dynamicConfig;
   }
@@ -135,9 +138,9 @@ export default class StatsigOnDeviceEvalClient
   getExperiment(
     name: string,
     user: StatsigUser,
-    options: EvaluationOptions = DEFAULT_EVAL_OPTIONS,
+    options?: ExperimentEvaluationOptions,
   ): Experiment {
-    const experiment = this._getConfigImpl(name, user, options);
+    const experiment = this._getConfigImpl('experiment', name, user, options);
     this._emit({ event: 'experiment_evaluation', experiment });
     return experiment;
   }
@@ -145,7 +148,7 @@ export default class StatsigOnDeviceEvalClient
   getLayer(
     name: string,
     user: StatsigUser,
-    options: EvaluationOptions = DEFAULT_EVAL_OPTIONS,
+    options?: LayerEvaluationOptions,
   ): Layer {
     user = normalizeUser(user, this._options.environment);
     const { evaluation, details } = this._evaluator.evaluateLayer(name, user);
@@ -154,8 +157,8 @@ export default class StatsigOnDeviceEvalClient
       if (evaluation && param in evaluation.value) {
         this._enqueueExposure(
           name,
+          createLayerParameterExposure(user, layer, param),
           options,
-          createLayerParameterExposure(user, layer, param, evaluation),
         );
       }
 
@@ -178,20 +181,28 @@ export default class StatsigOnDeviceEvalClient
   }
 
   private _getConfigImpl(
+    kind: 'experiment' | 'dynamic_config',
     name: string,
     user: StatsigUser,
-    options: EvaluationOptions,
+    options?: DynamicConfigEvaluationOptions | ExperimentEvaluationOptions,
   ): DynamicConfig {
     user = normalizeUser(user, this._options.environment);
     const { evaluation, details } = this._evaluator.evaluateConfig(name, user);
     const config = makeDynamicConfig(name, details, evaluation);
 
-    this._enqueueExposure(
-      name,
-      options,
-      createConfigExposure(user, config, evaluation?.secondary_exposures),
-    );
+    const overridden =
+      kind === 'experiment'
+        ? this._overrideAdapter?.getExperimentOverride?.(config, user, options)
+        : this._overrideAdapter?.getDynamicConfigOverride?.(
+            config,
+            user,
+            options,
+          );
 
-    return config;
+    const result = overridden ?? config;
+
+    this._enqueueExposure(name, createConfigExposure(user, result), options);
+
+    return result;
   }
 }

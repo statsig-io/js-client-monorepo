@@ -2,12 +2,7 @@
   "private": "true",
   "name": "combination-tests",
   "version": "0.0.1-beta.12",
-  "dependencies": {
-    "@statsig/client-core": "0.0.1-beta.12",
-    "@statsig/js-client": "0.0.1-beta.12",
-    "@statsig/js-on-device-eval-client": "0.0.1-beta.12",
-    "@statsig/js-local-overrides": "0.0.1-beta.12"
-  },
+  "dependencies": {},
   "type": "commonjs",
   "main": "./src/index.js",
   "typings": "./src/index.d.ts"

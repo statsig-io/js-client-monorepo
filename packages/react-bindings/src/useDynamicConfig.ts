@@ -1,12 +1,38 @@
-import { DEFAULT_EVAL_OPTIONS, DynamicConfig } from '@statsig/client-core';
+import { useContext, useMemo } from 'react';
 
-import { UseConfigOptions, useConfigImpl } from './useConfigImpl';
+import {
+  DynamicConfig,
+  DynamicConfigEvaluationOptions,
+  StatsigUser,
+} from '@statsig/client-core';
+import { Log } from '@statsig/client-core';
 
-export type UseDynamicConfigOptions = UseConfigOptions;
+import { NoopEvaluationsClient } from './NoopEvaluationsClient';
+import { isPrecomputedEvalClient } from './OnDeviceVsPrecomputedUtils';
+import StatsigContext from './StatsigContext';
+
+export type UseDynamicConfigOptions = DynamicConfigEvaluationOptions & {
+  user: StatsigUser | null;
+};
 
 export default function (
   configName: string,
-  options: UseDynamicConfigOptions = { ...DEFAULT_EVAL_OPTIONS, user: null },
+  options?: UseDynamicConfigOptions,
 ): DynamicConfig {
-  return useConfigImpl('useDynamicConfig', configName, options);
+  const { client, renderVersion } = useContext(StatsigContext);
+
+  return useMemo(() => {
+    if (isPrecomputedEvalClient(client)) {
+      return client.getExperiment(configName, options);
+    }
+
+    if (options?.user != null) {
+      return client.getExperiment(configName, options.user, options);
+    }
+
+    Log.warn(
+      `useDynamicConfig hook failed to find a valid Statsig client for dynamic config '${configName}'.`,
+    );
+    return NoopEvaluationsClient.getExperiment(configName, options);
+  }, [configName, renderVersion, options]);
 }

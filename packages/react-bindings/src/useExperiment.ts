@@ -1,12 +1,38 @@
-import { DEFAULT_EVAL_OPTIONS, Experiment } from '@statsig/client-core';
+import { useContext, useMemo } from 'react';
 
-import { UseConfigOptions, useConfigImpl } from './useConfigImpl';
+import {
+  Experiment,
+  ExperimentEvaluationOptions,
+  Log,
+  StatsigUser,
+} from '@statsig/client-core';
 
-export type UseExperimentOptions = UseConfigOptions;
+import { NoopEvaluationsClient } from './NoopEvaluationsClient';
+import { isPrecomputedEvalClient } from './OnDeviceVsPrecomputedUtils';
+import StatsigContext from './StatsigContext';
+
+export type UseExperimentOptions = ExperimentEvaluationOptions & {
+  user: StatsigUser | null;
+};
 
 export default function (
   experimentName: string,
-  options: UseExperimentOptions = { ...DEFAULT_EVAL_OPTIONS, user: null },
+  options?: UseExperimentOptions,
 ): Experiment {
-  return useConfigImpl('useExperiment', experimentName, options);
+  const { client, renderVersion } = useContext(StatsigContext);
+
+  return useMemo(() => {
+    if (isPrecomputedEvalClient(client)) {
+      return client.getExperiment(experimentName, options);
+    }
+
+    if (options?.user != null) {
+      return client.getExperiment(experimentName, options.user, options);
+    }
+
+    Log.warn(
+      `useGate hook failed to find a valid Statsig client for experiment '${experimentName}'.`,
+    );
+    return NoopEvaluationsClient.getExperiment(experimentName, options);
+  }, [experimentName, renderVersion, options]);
 }

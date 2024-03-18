@@ -1,5 +1,6 @@
 import './$_StatsigGlobal';
 import { ErrorBoundary } from './ErrorBoundary';
+import { EvaluationOptionsCommon } from './EvaluationOptions';
 import { EventLogger } from './EventLogger';
 import { Log, LogLevel } from './Log';
 import { NetworkCore } from './NetworkCore';
@@ -23,14 +24,6 @@ import {
   StatsigRuntimeMutableOptions,
 } from './StatsigOptionsCommon';
 import { Storage } from './StorageProvider';
-
-export type EvaluationOptions = {
-  disableExposureLog?: boolean;
-};
-
-export const DEFAULT_EVAL_OPTIONS: EvaluationOptions = {
-  disableExposureLog: false,
-};
 
 export type StatsigClientEmitEventFunc = (data: StatsigClientEventData) => void;
 
@@ -131,10 +124,10 @@ export abstract class StatsigClientBase<
 
   protected _enqueueExposure(
     name: string,
-    options: EvaluationOptions,
     exposure: StatsigEventInternal,
+    options?: EvaluationOptionsCommon,
   ): void {
-    if (options.disableExposureLog === true) {
+    if (options?.disableExposureLog === true) {
       this._logger.incrementNonExposureCount(name);
       return;
     }

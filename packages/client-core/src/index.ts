@@ -8,6 +8,7 @@ export * from './$_StatsigGlobal';
 export * from './ClientInterfaces';
 export * from './DataAdapterCore';
 export * from './ErrorBoundary';
+export * from './EvaluationOptions';
 export * from './EvaluationTypes';
 export * from './Hashing';
 export * from './Log';
@@ -26,6 +27,7 @@ export * from './StatsigUser';
 export * from './StorageProvider';
 export * from './TypedJsonParse';
 export * from './UrlOverrides';
+export * from './UtitlityTypes';
 export * from './UUID';
 export * from './VisibilityChangeObserver';
 

@@ -14,7 +14,7 @@ import {
 
 import { DEMO_CLIENT_KEY } from '../../utils/constants';
 
-function useBootstrappedClient(
+function useProxiedClient(
   sdkKey: string,
   user: StatsigUser,
   values: string,
@@ -90,7 +90,7 @@ export default function ProxyExample({
   user: StatsigUser;
   values: string;
 }): JSX.Element {
-  const client = useBootstrappedClient(DEMO_CLIENT_KEY, user, values);
+  const client = useProxiedClient(DEMO_CLIENT_KEY, user, values);
 
   return (
     <StatsigProvider client={client}>
