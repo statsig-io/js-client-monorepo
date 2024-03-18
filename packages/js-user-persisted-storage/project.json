@@ -15,7 +15,7 @@
       }
     },
     "publish": {
-      "command": "node tools/scripts/publish.mjs js-user-persisted-storage {args.ver} {args.tag}",
+      "command": "ts-node ./tools/scripts/publish.ts js-user-persisted-storage",
       "dependsOn": ["build"]
     },
     "lint": {
