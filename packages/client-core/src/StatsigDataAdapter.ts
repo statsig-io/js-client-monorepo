@@ -54,7 +54,7 @@ type DataAdapterCommon = {
 
 export type EvaluationsDataAdapter = DataAdapterCommon & {
   /**
-   * Synchronously  get evaluation data for the given user. Called during initializeSync and/or updateUserSync.
+   * Synchronously get evaluation data for the given user. Called during initializeSync and/or updateUserSync.
    *
    * It is also called during async update operations before StatsigDataAdapter.getDataAsync is called.
    * @param {StatsigUser} user The StatsigUser to get data for.

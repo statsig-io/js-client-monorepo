@@ -10,9 +10,6 @@ import Prism from 'prismjs';
 import { ReactNode, useEffect, useState } from 'react';
 
 const SAMPLES = [
-  // React
-  () => import('./samples/react-precomp/sample-react-login'),
-
   // Precomputed Evaluations Client
   () => import('./samples/precomputed-client/sample-precomp-initialize'),
   () => import('./samples/precomputed-client/sample-precomp-basic'),
@@ -22,6 +19,10 @@ const SAMPLES = [
   () => import('./samples/precomputed-client/sample-precomp-log-event'),
   () => import('./samples/precomputed-client/sample-precomp-shutdown'),
   () => import('./samples/precomputed-client/sample-precomp-bootstrap'),
+  () => import('./samples/precomputed-client/sample-precomp-get-data-adapter'),
+
+  // React
+  () => import('./samples/react-precomp/sample-react-login'),
 
   () => import('./samples/OnDeviceClientBasic'),
 ];
