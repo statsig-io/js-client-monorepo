@@ -5,7 +5,7 @@
     "@statsig/client-core": "0.0.1-beta.13",
     "@statsig/sha256": "0.0.1-beta.13"
   },
-  "jsdelivr": "./build/js-on-device-eval-client.min.js",
+  "jsdelivr": "./build/statsig-js-on-device-eval-client.min.js",
   "type": "commonjs",
   "main": "./src/index.js",
   "typings": "./src/index.d.ts"

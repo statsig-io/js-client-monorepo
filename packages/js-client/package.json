@@ -4,7 +4,7 @@
   "dependencies": {
     "@statsig/client-core": "0.0.1-beta.13"
   },
-  "jsdelivr": "./build/js-client.min.js",
+  "jsdelivr": "./build/statsig-js-client.min.js",
   "type": "commonjs",
   "main": "./src/index.js",
   "typings": "./src/index.d.ts"
