@@ -1,9 +1,9 @@
 {
   "name": "@statsig/expo-bindings",
-  "version": "0.0.1-beta.13",
+  "version": "0.0.1-beta.14",
   "dependencies": {
-    "@statsig/client-core": "0.0.1-beta.13",
-    "@statsig/react-bindings": "0.0.1-beta.13"
+    "@statsig/client-core": "0.0.1-beta.14",
+    "@statsig/react-bindings": "0.0.1-beta.14"
   },
   "peerDependencies": {
     "react-native": "0.*",
