@@ -1,7 +1,7 @@
 import { Box, Button, Typography } from '@mui/material';
 import { ReactNode, useEffect, useState } from 'react';
 
-import { StatsigClientEventData } from '@statsig/client-core';
+import { StatsigClientEvent } from '@statsig/client-core';
 import { StatsigClient } from '@statsig/js-client';
 import { StatsigProvider } from '@statsig/react-bindings';
 
@@ -11,7 +11,7 @@ const user = { userID: 'a-user' };
 
 const client = new StatsigClient(DEMO_CLIENT_KEY, user, {});
 
-function Content({ events }: { events: StatsigClientEventData[] }) {
+function Content({ events }: { events: StatsigClientEvent[] }) {
   return (
     <Box
       display="flex"
@@ -44,12 +44,12 @@ function Content({ events }: { events: StatsigClientEventData[] }) {
         <Box>
           {events.map((data, i) => (
             <Box
-              key={`${data.event}-${i}`}
+              key={`${data.name}-${i}`}
               padding="4px 8px"
               bgcolor="#194b7d"
               marginBottom="8px"
             >
-              <Typography variant="subtitle1">{data.event}</Typography>
+              <Typography variant="subtitle1">{data.name}</Typography>
               <pre>
                 {JSON.stringify({ ...data, event: undefined }, null, 2)}
               </pre>
@@ -62,18 +62,16 @@ function Content({ events }: { events: StatsigClientEventData[] }) {
 }
 
 export default function ClientEventStreamExample(): ReactNode {
-  const [events, setEvents] = useState<StatsigClientEventData[]>([]);
+  const [events, setEvents] = useState<StatsigClientEvent[]>([]);
 
   useEffect(() => {
-    const onFlush = (data: StatsigClientEventData) => {
-      setEvents((old) => [...old, data]);
+    const onFlush = (event: StatsigClientEvent) => {
+      setEvents((old) => [...old, event]);
     };
 
     client.on('*', onFlush);
 
-    return () => {
-      client.off('*', onFlush);
-    };
+    return () => client.off('*', onFlush);
   }, []);
 
   return (

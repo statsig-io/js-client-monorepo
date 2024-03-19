@@ -207,7 +207,7 @@ export class EventLogger {
 
       if (response.success) {
         this._emitter({
-          event: 'logs_flushed',
+          name: 'logs_flushed',
           events,
         });
       } else {

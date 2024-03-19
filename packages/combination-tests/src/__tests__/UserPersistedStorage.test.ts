@@ -1,6 +1,6 @@
 import fetchMock from 'jest-fetch-mock';
 import { DownloadConfigSpecsResponse } from 'packages/js-on-device-eval-client/src/SpecStore';
-import { anyNumber } from 'statsig-test-helpers';
+import { DcsResponseString, anyNumber } from 'statsig-test-helpers';
 
 import { StatsigOnDeviceEvalClient } from '@statsig/js-on-device-eval-client';
 import {
@@ -9,13 +9,9 @@ import {
   UserPersistentStorage,
 } from '@statsig/js-user-persisted-storage';
 
-import DcsResponse from './dcs_response.json';
-
-const DCS_RESPONSE = JSON.stringify(DcsResponse);
+const DCS_RESPONSE = DcsResponseString;
 const DCS_RESPONSE_INACTIVE_EXP = (() => {
-  const dcsClone = JSON.parse(
-    JSON.stringify(DcsResponse),
-  ) as DownloadConfigSpecsResponse;
+  const dcsClone = JSON.parse(DcsResponseString) as DownloadConfigSpecsResponse;
 
   dcsClone.dynamic_configs.find((e) => {
     if (e.name !== 'an_experiment') {

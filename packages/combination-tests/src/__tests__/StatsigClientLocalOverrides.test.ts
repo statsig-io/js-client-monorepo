@@ -4,7 +4,7 @@ import {
   DynamicConfig,
   FeatureGate,
   Layer,
-  StatsigClientEventData,
+  StatsigClientEvent,
 } from '@statsig/client-core';
 import { StatsigClient } from '@statsig/js-client';
 import { LocalOverrideAdapter } from '@statsig/js-local-overrides';
@@ -14,7 +14,7 @@ describe('Local Overrides - StatsigClient', () => {
 
   let client: StatsigClient;
   let overrideAdapter: LocalOverrideAdapter;
-  let emissions: StatsigClientEventData[];
+  let emissions: StatsigClientEvent[];
 
   beforeAll(() => {
     fetchMock.enableMocks();
@@ -23,9 +23,9 @@ describe('Local Overrides - StatsigClient', () => {
     overrideAdapter = new LocalOverrideAdapter();
     client = new StatsigClient('', user, { overrideAdapter });
 
-    client.on('*', (data) => {
-      if (data.event.endsWith('_evaluation')) {
-        emissions.push(data);
+    client.on('*', (event) => {
+      if (event.name.endsWith('_evaluation')) {
+        emissions.push(event);
       }
     });
 
@@ -59,7 +59,7 @@ describe('Local Overrides - StatsigClient', () => {
 
     it('emits the correct client event', () => {
       const emission = emissions[0] as any;
-      expect(emission.event).toBe('gate_evaluation');
+      expect(emission.name).toBe('gate_evaluation');
       expect(emission.gate.details.reason).toBe('LocalOverride');
       expect(emission.gate.value).toBe(true);
     });
@@ -98,7 +98,7 @@ describe('Local Overrides - StatsigClient', () => {
 
     it('emits the correct client event', () => {
       const emission = emissions[0] as any;
-      expect(emission.event).toBe('dynamic_config_evaluation');
+      expect(emission.name).toBe('dynamic_config_evaluation');
       expect(emission.dynamicConfig.details.reason).toBe('LocalOverride');
       expect(emission.dynamicConfig.value).toEqual({ a_string: 'foo' });
     });
@@ -139,7 +139,7 @@ describe('Local Overrides - StatsigClient', () => {
 
     it('emits the correct client event', () => {
       const emission = emissions[0] as any;
-      expect(emission.event).toBe('layer_evaluation');
+      expect(emission.name).toBe('layer_evaluation');
       expect(emission.layer.details.reason).toBe('LocalOverride');
       expect(emission.layer._value).toEqual({ a_string: 'foo' });
     });

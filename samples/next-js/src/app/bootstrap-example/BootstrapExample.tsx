@@ -3,7 +3,7 @@
 import { useContext, useEffect, useMemo } from 'react';
 import { StatsigUser } from 'statsig-node';
 
-import { StatsigClientEventData } from '@statsig/client-core';
+import { StatsigClientEvent } from '@statsig/client-core';
 import { StatsigClient } from '@statsig/js-client';
 import {
   StatsigContext,
@@ -53,12 +53,10 @@ export default function BootstrapExample({
 
   useEffect(() => {
     // eslint-disable-next-line no-console
-    const onClientEvent = (data: StatsigClientEventData) => console.log(data);
+    const onClientEvent = (event: StatsigClientEvent) => console.log(event);
     client.on('*', onClientEvent);
-    client.on('logs_flushed', (data) => {
-      if (data.event === 'logs_flushed') {
-        data.events.unshift();
-      }
+    client.on('logs_flushed', (event) => {
+      event.events.unshift();
     });
     return () => client.off('*', onClientEvent);
   }, [client]);

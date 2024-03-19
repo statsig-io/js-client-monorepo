@@ -115,7 +115,7 @@ export class NetworkCore {
       });
 
       if (!retries || retries <= 0) {
-        this._emitter?.({ event: 'error', error });
+        this._emitter?.({ name: 'error', error });
         Log.error(
           `A networking error occured during ${method} request to ${url}.`,
           errorMessage,

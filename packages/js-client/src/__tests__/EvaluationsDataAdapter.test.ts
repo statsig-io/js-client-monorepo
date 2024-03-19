@@ -1,12 +1,10 @@
 import fetchMock from 'jest-fetch-mock';
+import { InitResponseString } from 'statsig-test-helpers';
 
 import { DataAdapterResult, Log } from '@statsig/client-core';
 
 import { StatsigEvaluationsDataAdapter } from '../StatsigEvaluationsDataAdapter';
 import { MockLocalStorage } from './MockLocalStorage';
-import InitializeResponse from './initialize.json';
-
-const InitializeResponseString = JSON.stringify(InitializeResponse);
 
 describe('Evaluations Data Adapter', () => {
   const sdkKey = 'client-key';
@@ -39,7 +37,7 @@ describe('Evaluations Data Adapter', () => {
 
   describe('getDataSync', () => {
     beforeAll(async () => {
-      fetchMock.mockResponse(InitializeResponseString);
+      fetchMock.mockResponse(InitResponseString);
 
       adapter = new StatsigEvaluationsDataAdapter();
       adapter.attach(sdkKey, null);
@@ -51,12 +49,12 @@ describe('Evaluations Data Adapter', () => {
     });
 
     it('returns bootstrapped values', () => {
-      adapter.setData(InitializeResponseString, user);
+      adapter.setData(InitResponseString, user);
 
       const result = adapter.getDataSync(user);
 
       expect(result?.source).toBe('Bootstrap');
-      expect(result?.data).toBe(InitializeResponseString);
+      expect(result?.data).toBe(InitResponseString);
     });
 
     it('returns prefetched values', async () => {
@@ -65,7 +63,7 @@ describe('Evaluations Data Adapter', () => {
       const result = adapter.getDataSync(user);
 
       expect(result?.source).toBe('Prefetch');
-      expect(result?.data).toBe(InitializeResponseString);
+      expect(result?.data).toBe(InitResponseString);
     });
   });
 
@@ -74,7 +72,7 @@ describe('Evaluations Data Adapter', () => {
 
     beforeEach(async () => {
       fetchMock.mock.calls = [];
-      fetchMock.mockResponse(InitializeResponseString);
+      fetchMock.mockResponse(InitResponseString);
 
       adapter = new StatsigEvaluationsDataAdapter();
       adapter.attach(sdkKey, null);
@@ -83,13 +81,13 @@ describe('Evaluations Data Adapter', () => {
 
     it('returns the network result on success', () => {
       expect(result?.source).toBe('Network');
-      expect(result?.data).toBe(InitializeResponseString);
+      expect(result?.data).toBe(InitResponseString);
     });
 
     it('saves the network value for later getDataSync calls', () => {
       const syncResult = adapter.getDataSync(user);
       expect(syncResult?.source).toBe('Network');
-      expect(syncResult?.data).toBe(InitializeResponseString);
+      expect(syncResult?.data).toBe(InitResponseString);
     });
 
     it('is cached for later sessions', () => {
@@ -98,7 +96,7 @@ describe('Evaluations Data Adapter', () => {
 
       const syncResult = nextAdapter.getDataSync(user);
       expect(syncResult?.source).toBe('Cache');
-      expect(syncResult?.data).toBe(InitializeResponseString);
+      expect(syncResult?.data).toBe(InitResponseString);
     });
 
     it('returns NetworkNotModifed on 204', async () => {
@@ -107,7 +105,7 @@ describe('Evaluations Data Adapter', () => {
       const notModifiedResult = await adapter.getDataAsync(null, user);
 
       expect(notModifiedResult?.source).toBe('NetworkNotModified');
-      expect(notModifiedResult?.data).toBe(InitializeResponseString);
+      expect(notModifiedResult?.data).toBe(InitResponseString);
     });
 
     it('returns null on network failure', async () => {

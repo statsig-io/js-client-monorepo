@@ -1,4 +1,5 @@
 import fetchMock from 'jest-fetch-mock';
+import { InitResponseString } from 'statsig-test-helpers';
 
 import {
   DataAdapterCachePrefix,
@@ -7,7 +8,6 @@ import {
 
 import StatsigClient from '../StatsigClient';
 import { MockLocalStorage } from './MockLocalStorage';
-import InitializeResponse from './initialize.json';
 
 describe('Init Strategy - Delayed', () => {
   const sdkKey = 'client-key';
@@ -22,7 +22,7 @@ describe('Init Strategy - Delayed', () => {
     storageMock.clear();
 
     fetchMock.enableMocks();
-    fetchMock.mockResponse(JSON.stringify(InitializeResponse));
+    fetchMock.mockResponse(InitResponseString);
 
     client = new StatsigClient(sdkKey, user);
     client.initializeSync();

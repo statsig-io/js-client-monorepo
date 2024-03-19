@@ -70,7 +70,7 @@ export class ErrorBoundary {
           body,
         });
 
-        emitter?.({ event: 'error', error });
+        emitter?.({ name: 'error', error });
       };
 
       impl()

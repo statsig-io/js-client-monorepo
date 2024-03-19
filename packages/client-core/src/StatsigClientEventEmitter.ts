@@ -1,10 +1,25 @@
 import { DataAdapterResult } from './StatsigDataAdapter';
 import { DynamicConfig, Experiment, FeatureGate, Layer } from './StatsigTypes';
+import { Flatten } from './UtitlityTypes';
 
 export type StatsigLoadingStatus = 'Uninitialized' | 'Loading' | 'Ready';
 
+type EventNameToEventDataMap = {
+  values_updated: {
+    status: StatsigLoadingStatus;
+    values: DataAdapterResult | null;
+  };
+  error: { error: unknown };
+  logs_flushed: { events: Record<string, unknown>[] };
+
+  gate_evaluation: { gate: FeatureGate };
+  dynamic_config_evaluation: { dynamicConfig: DynamicConfig };
+  experiment_evaluation: { experiment: Experiment };
+  layer_evaluation: { layer: Layer };
+};
+
 /**
- * All the possible events emitted from a Statsig client.
+ * Type representing various events emitted by a Statsig client.
  *
  * `values_updated` - When the Statsig clients internal values change as the result of an initialize/update operation.
  *
@@ -20,57 +35,31 @@ export type StatsigLoadingStatus = 'Uninitialized' | 'Loading' | 'Ready';
  *
  * `layer_evaluation` - Fired when any layer is checked from the Statsig client.
  */
-export type StatsigClientEvent =
-  | 'values_updated'
-  | 'error'
-  | 'logs_flushed'
-  | 'gate_evaluation'
-  | 'dynamic_config_evaluation'
-  | 'experiment_evaluation'
-  | 'layer_evaluation';
+export type StatsigClientEvent = Flatten<
+  {
+    [K in keyof EventNameToEventDataMap]: {
+      name: K;
+    } & EventNameToEventDataMap[K];
+  }[keyof EventNameToEventDataMap]
+>;
 
-/**
- * Type representing various events emitted by a Statsig client.
- */
-export type StatsigClientEventData = {
-  event: StatsigClientEvent;
-} & (
-  | {
-      event: 'values_updated';
-      status: StatsigLoadingStatus;
-      values: DataAdapterResult | null;
-    }
-  | {
-      event: 'error';
-      error: unknown;
-    }
-  | {
-      event: 'logs_flushed';
-      events: Record<string, unknown>[];
-    }
-  | {
-      event: 'gate_evaluation';
-      gate: FeatureGate;
-    }
-  | {
-      event: 'dynamic_config_evaluation';
-      dynamicConfig: DynamicConfig;
-    }
-  | {
-      event: 'experiment_evaluation';
-      experiment: Experiment;
-    }
-  | {
-      event: 'layer_evaluation';
-      layer: Layer;
-    }
-);
+export type StatsigClientEventName = StatsigClientEvent['name'] | '*';
 
-export type StatsigClientEventCallback = (data: StatsigClientEventData) => void;
+export type StatsigClientEventCallback<T extends StatsigClientEventName> = (
+  event: T extends '*'
+    ? StatsigClientEvent
+    : Extract<StatsigClientEvent, { name: T }>,
+) => void;
 
 export interface StatsigClientEventEmitterInterface {
   readonly loadingStatus: StatsigLoadingStatus;
 
-  on(event: StatsigClientEvent, listener: StatsigClientEventCallback): void;
-  off(event: StatsigClientEvent, listener: StatsigClientEventCallback): void;
+  on<T extends StatsigClientEventName>(
+    event: T,
+    listener: StatsigClientEventCallback<T>,
+  ): void;
+  off<T extends StatsigClientEventName>(
+    event: T,
+    listener: StatsigClientEventCallback<T>,
+  ): void;
 }

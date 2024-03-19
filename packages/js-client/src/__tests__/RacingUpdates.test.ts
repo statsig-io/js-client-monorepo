@@ -1,9 +1,12 @@
 import fetchMock from 'jest-fetch-mock';
-import { CreateTestPromise, TestPromise } from 'statsig-test-helpers';
+import {
+  CreateTestPromise,
+  InitResponseString,
+  TestPromise,
+} from 'statsig-test-helpers';
 
 import StatsigClient from '../StatsigClient';
 import { MockLocalStorage } from './MockLocalStorage';
-import InitializeResponse from './initialize.json';
 
 const FIRST_RESPONSE = () =>
   new Response(getResponseWithConfigValue({ isFirst: true }), { headers: {} });
@@ -98,7 +101,7 @@ describe('Racing Updates', () => {
 
 function getResponseWithConfigValue(value: Record<string, unknown>): string {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  const result = JSON.parse(JSON.stringify(InitializeResponse)) as any;
+  const result = JSON.parse(InitResponseString) as any;
 
   result['dynamic_configs']['3495537376' /* DJB2('a_dynamic_config') */][
     'value'

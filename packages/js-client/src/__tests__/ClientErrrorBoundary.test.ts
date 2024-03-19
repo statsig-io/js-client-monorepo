@@ -1,9 +1,9 @@
 import fetchMock from 'jest-fetch-mock';
+import { InitResponseString } from 'statsig-test-helpers';
 
 import { LogLevel } from '@statsig/client-core';
 
 import StatsigClient from '../StatsigClient';
-import InitializeResponse from './initialize.json';
 
 describe('Client Error Boundary', () => {
   let client: StatsigClient;
@@ -18,7 +18,7 @@ describe('Client Error Boundary', () => {
     );
 
     fetchMock.enableMocks();
-    fetchMock.mockResponse(JSON.stringify(InitializeResponse));
+    fetchMock.mockResponse(InitResponseString);
     client.initializeSync();
   });
 

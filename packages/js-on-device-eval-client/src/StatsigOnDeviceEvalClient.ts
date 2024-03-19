@@ -115,7 +115,7 @@ export default class StatsigOnDeviceEvalClient
 
     this._enqueueExposure(name, createGateExposure(user, gate), options);
 
-    this._emit({ event: 'gate_evaluation', gate });
+    this._emit({ name: 'gate_evaluation', gate });
 
     return gate;
   }
@@ -131,7 +131,7 @@ export default class StatsigOnDeviceEvalClient
       user,
       options,
     );
-    this._emit({ event: 'dynamic_config_evaluation', dynamicConfig });
+    this._emit({ name: 'dynamic_config_evaluation', dynamicConfig });
     return dynamicConfig;
   }
 
@@ -141,7 +141,7 @@ export default class StatsigOnDeviceEvalClient
     options?: ExperimentEvaluationOptions,
   ): Experiment {
     const experiment = this._getConfigImpl('experiment', name, user, options);
-    this._emit({ event: 'experiment_evaluation', experiment });
+    this._emit({ name: 'experiment_evaluation', experiment });
     return experiment;
   }
 
@@ -165,7 +165,7 @@ export default class StatsigOnDeviceEvalClient
       return evaluation?.value?.[param] ?? null;
     });
 
-    this._emit({ event: 'layer_evaluation', layer });
+    this._emit({ name: 'layer_evaluation', layer });
 
     return layer;
   }

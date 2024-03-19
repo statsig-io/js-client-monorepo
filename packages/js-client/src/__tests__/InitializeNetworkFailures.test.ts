@@ -1,10 +1,10 @@
 import fetchMock from 'jest-fetch-mock';
+import { InitResponseString } from 'statsig-test-helpers';
 
 import { DataAdapterCachePrefix, LogLevel } from '@statsig/client-core';
 
 import StatsigClient from '../StatsigClient';
 import { MockLocalStorage } from './MockLocalStorage';
-import InitializeResponse from './initialize.json';
 
 describe('Initialize Network Failure', () => {
   const sdkKey = 'client-key';
@@ -68,7 +68,7 @@ describe('Initialize Network Failure', () => {
         `${DataAdapterCachePrefix}.evaluations.2442570830`,
         JSON.stringify({
           source: 'Network',
-          data: JSON.stringify(InitializeResponse),
+          data: InitResponseString,
           receivedAt: Date.now(),
         }),
       );

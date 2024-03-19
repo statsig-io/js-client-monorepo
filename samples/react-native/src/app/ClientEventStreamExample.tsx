@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Button, FlatList, StyleSheet, Text, View } from 'react-native';
 
-import { LogLevel, StatsigClientEventData } from '@statsig/client-core';
+import { LogLevel, StatsigClientEvent } from '@statsig/client-core';
 import { StatsigClient } from '@statsig/js-client';
 import {
   StatsigProviderRN,
@@ -17,18 +17,18 @@ const client = new StatsigClient(DEMO_CLIENT_KEY, user, {
 const warming = warmCachingFromAsyncStorage(client);
 client.initializeSync();
 
-function ClientEventItem({ data }: { data: StatsigClientEventData }) {
+function ClientEventItem({ event }: { event: StatsigClientEvent }) {
   return (
     <View style={styles.item}>
-      <Text style={styles.title}>{data.event}</Text>
+      <Text style={styles.title}>{event.name}</Text>
       <Text style={styles.subtitle}>
-        {JSON.stringify({ ...data, event: undefined }, null, 2)}
+        {JSON.stringify({ ...event, event: undefined }, null, 2)}
       </Text>
     </View>
   );
 }
 
-function Content({ events }: { events: StatsigClientEventData[] }) {
+function Content({ events }: { events: StatsigClientEvent[] }) {
   return (
     <View style={styles.container}>
       <View style={styles.buttons}>
@@ -42,7 +42,7 @@ function Content({ events }: { events: StatsigClientEventData[] }) {
       <FlatList
         style={styles.list}
         data={events}
-        renderItem={({ item }) => <ClientEventItem data={item} />}
+        renderItem={({ item }) => <ClientEventItem event={item} />}
         keyExtractor={(item, index) => `${item}-${index}`}
       />
     </View>
@@ -50,17 +50,14 @@ function Content({ events }: { events: StatsigClientEventData[] }) {
 }
 
 export default function ClientEventStreamExample(): JSX.Element {
-  const [events, setEvents] = useState<StatsigClientEventData[]>([]);
+  const [events, setEvents] = useState<StatsigClientEvent[]>([]);
   useEffect(() => {
-    const onClientEvent = (data: StatsigClientEventData) => {
-      setEvents((old) => [...old, data]);
+    const onClientEvent = (event: StatsigClientEvent) => {
+      setEvents((old) => [...old, event]);
     };
 
     client.on('*', onClientEvent);
-
-    return () => {
-      client.off('*', onClientEvent);
-    };
+    return () => client.off('*', onClientEvent);
   }, []);
 
   return (

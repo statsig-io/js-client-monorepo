@@ -142,7 +142,7 @@ export default class StatsigClient
       options,
     );
 
-    this._emit({ event: 'gate_evaluation', gate: result });
+    this._emit({ name: 'gate_evaluation', gate: result });
 
     return result;
   }
@@ -152,7 +152,7 @@ export default class StatsigClient
     options?: DynamicConfigEvaluationOptions,
   ): DynamicConfig {
     const dynamicConfig = this._getConfigImpl('dynamic_config', name, options);
-    this._emit({ event: 'dynamic_config_evaluation', dynamicConfig });
+    this._emit({ name: 'dynamic_config_evaluation', dynamicConfig });
     return dynamicConfig;
   }
 
@@ -161,7 +161,7 @@ export default class StatsigClient
     options?: ExperimentEvaluationOptions,
   ): Experiment {
     const experiment = this._getConfigImpl('experiment', name, options);
-    this._emit({ event: 'experiment_evaluation', experiment });
+    this._emit({ name: 'experiment_evaluation', experiment });
     return experiment;
   }
 
@@ -178,7 +178,7 @@ export default class StatsigClient
     );
 
     const result = overridden ?? layer;
-    this._emit({ event: 'layer_evaluation', layer: result });
+    this._emit({ name: 'layer_evaluation', layer: result });
 
     return {
       ...result,

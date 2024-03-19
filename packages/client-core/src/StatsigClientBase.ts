@@ -9,8 +9,8 @@ import { StableID } from './StableID';
 import {
   StatsigClientEvent,
   StatsigClientEventCallback,
-  StatsigClientEventData,
   StatsigClientEventEmitterInterface,
+  StatsigClientEventName,
   StatsigLoadingStatus,
 } from './StatsigClientEventEmitter';
 import {
@@ -25,7 +25,11 @@ import {
 } from './StatsigOptionsCommon';
 import { Storage } from './StorageProvider';
 
-export type StatsigClientEmitEventFunc = (data: StatsigClientEventData) => void;
+export type StatsigClientEmitEventFunc = (event: StatsigClientEvent) => void;
+
+type EventListenersMap = {
+  [K in StatsigClientEventName]: StatsigClientEventCallback<K>[];
+};
 
 export abstract class StatsigClientBase<
   TAdapter extends EvaluationsDataAdapter | SpecsDataAdapter,
@@ -38,7 +42,7 @@ export abstract class StatsigClientBase<
   protected readonly _logger: EventLogger;
   protected readonly _overrideAdapter: OverrideAdapter | null;
 
-  private _listeners: Record<string, StatsigClientEventCallback[]> = {};
+  private _listeners = {} as EventListenersMap;
 
   constructor(
     protected readonly _sdkKey: string,
@@ -84,9 +88,9 @@ export abstract class StatsigClientBase<
     return this._logger.flush();
   }
 
-  on(
-    event: StatsigClientEvent | '*',
-    listener: StatsigClientEventCallback,
+  on<T extends StatsigClientEventName>(
+    event: T,
+    listener: StatsigClientEventCallback<T>,
   ): void {
     if (!this._listeners[event]) {
       this._listeners[event] = [];
@@ -94,9 +98,9 @@ export abstract class StatsigClientBase<
     this._listeners[event].push(listener);
   }
 
-  off(
-    event: StatsigClientEvent | '*',
-    listener: StatsigClientEventCallback,
+  off<T extends StatsigClientEventName>(
+    event: T,
+    listener: StatsigClientEventCallback<T>,
   ): void {
     if (this._listeners[event]) {
       const index = this._listeners[event].indexOf(listener);
@@ -106,12 +110,27 @@ export abstract class StatsigClientBase<
     }
   }
 
-  protected _emit(data: StatsigClientEventData): void {
-    if (this._listeners[data.event]) {
-      this._listeners[data.event].forEach((listener) => listener(data));
+  protected _emit(event: StatsigClientEvent): void {
+    const barrier = (
+      listener: StatsigClientEventCallback<typeof event.name>,
+    ) => {
+      try {
+        listener(event);
+      } catch (error) {
+        Log.error(
+          `An error occurred in a StatsigClientEvent listener. This is not an issue with Statsig.`,
+          event,
+        );
+      }
+    };
+
+    if (this._listeners[event.name]) {
+      this._listeners[event.name].forEach((l) =>
+        barrier(l as StatsigClientEventCallback<typeof event.name>),
+      );
     }
 
-    this._listeners['*']?.forEach((listener) => listener(data));
+    this._listeners['*']?.forEach(barrier);
   }
 
   protected _setStatus(
@@ -119,7 +138,7 @@ export abstract class StatsigClientBase<
     values: DataAdapterResult | null,
   ): void {
     this.loadingStatus = newStatus;
-    this._emit({ event: 'values_updated', status: newStatus, values });
+    this._emit({ name: 'values_updated', status: newStatus, values });
   }
 
   protected _enqueueExposure(
