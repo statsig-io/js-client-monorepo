@@ -1,0 +1,91 @@
+{
+  "name": "expo-sample",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "samples/expo/src",
+  "projectType": "application",
+  "targets": {
+    "start": {
+      "executor": "@nx/expo:start",
+      "dependsOn": ["sync-deps"],
+      "options": {}
+    },
+    "serve": {
+      "executor": "@nx/expo:serve",
+      "dependsOn": ["sync-deps"],
+      "options": {
+        "port": 4200
+      }
+    },
+    "run-ios": {
+      "executor": "@nx/expo:run",
+      "dependsOn": ["sync-deps"],
+      "options": {
+        "platform": "ios"
+      }
+    },
+    "run-android": {
+      "executor": "@nx/expo:run",
+      "dependsOn": ["sync-deps"],
+      "options": {
+        "platform": "android"
+      }
+    },
+    "build-expo": {
+      "executor": "@nx/expo:build",
+      "dependsOn": ["sync-deps"],
+      "options": {}
+    },
+    "submit": {
+      "executor": "@nx/expo:submit",
+      "options": {}
+    },
+    "build-list": {
+      "executor": "@nx/expo:build-list",
+      "options": {}
+    },
+    "sync-deps": {
+      "executor": "@nx/expo:sync-deps",
+      "options": {}
+    },
+    "prebuild": {
+      "executor": "@nx/expo:prebuild",
+      "dependsOn": ["sync-deps"],
+      "options": {}
+    },
+    "install": {
+      "executor": "@nx/expo:install",
+      "options": {}
+    },
+    "update": {
+      "executor": "@nx/expo:update",
+      "options": {}
+    },
+    "export": {
+      "executor": "@nx/expo:export",
+      "dependsOn": ["sync-deps"],
+      "outputs": ["{options.outputDir}"],
+      "options": {
+        "platform": "all",
+        "outputDir": "dist/samples/expo"
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "samples/expo/jest.config.ts"
+      }
+    },
+    "serve-static": {
+      "executor": "@nx/web:file-server",
+      "options": {
+        "buildTarget": "expo-sample:export",
+        "staticFilePath": "dist/samples/expo"
+      }
+    }
+  },
+  "tags": []
+}

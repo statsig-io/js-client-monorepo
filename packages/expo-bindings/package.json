@@ -3,7 +3,8 @@
   "version": "0.0.1-beta.14",
   "dependencies": {
     "@statsig/client-core": "0.0.1-beta.14",
-    "@statsig/react-bindings": "0.0.1-beta.14"
+    "@statsig/react-bindings": "0.0.1-beta.14",
+    "@statsig/react-native-bindings": "0.0.1-beta.14"
   },
   "peerDependencies": {
     "react-native": "0.*",

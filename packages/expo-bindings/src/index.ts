@@ -4,9 +4,13 @@ import './StatsigMetadataAdditions';
 
 export {
   StatsigContext,
-  StatsigProvider,
   useGate,
   useDynamicConfig,
   useExperiment,
   useLayer,
 } from '@statsig/react-bindings';
+
+export {
+  StatsigProviderRN as StatsigProviderExpo,
+  warmCachingFromAsyncStorage,
+} from '@statsig/react-native-bindings';

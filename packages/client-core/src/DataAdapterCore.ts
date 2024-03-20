@@ -39,6 +39,7 @@ export abstract class DataAdapterCore {
   getDataSync(user?: StatsigUser | undefined): DataAdapterResult | null {
     const cacheKey = this._getCacheKey(user);
     const result = this._inMemoryCache[cacheKey];
+
     if (result) {
       return result;
     }

@@ -36,14 +36,15 @@ async function _loadCacheAsync(
       if (!cache) {
         return;
       }
-
       const result = typedJsonParse<DataAdapterResult>(
         cache,
         'source',
         'Failed to parse cached result',
       );
 
-      return result ? { ...result, source: 'Cache' } : null;
+      if (result && 'source' in result) {
+        results[key] = { ...result, source: 'Cache' };
+      }
     }),
   );
 
