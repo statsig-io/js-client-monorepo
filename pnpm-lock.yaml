@@ -322,8 +322,8 @@ importers:
         specifier: 0.0.1-beta.15
         version: link:../react-bindings
       '@statsig/react-native-bindings':
-        specifier: 0.0.1-beta.14
-        version: 0.0.1-beta.14
+        specifier: 0.0.1-beta.15
+        version: link:../react-native-bindings
 
   packages/js-client:
     dependencies:
@@ -5881,30 +5881,6 @@ packages:
     dependencies:
       '@sinonjs/commons': 3.0.1
 
-  /@statsig/client-core@0.0.1-beta.14:
-    resolution: {integrity: sha512-4SkX1br2s4UvD1dbexiiSo/1LwuFnt102VqZbZuxVn0LfVqxFlv0GXeGd/Cv0xgkULCjDlhnksMW/ZTdkM8Jlg==}
-    dev: false
-
-  /@statsig/react-bindings@0.0.1-beta.14:
-    resolution: {integrity: sha512-fyuFGFSwpIsYgDO7To3QcklDlnhjFsvJz5GEc5BQ4oBReXoFlg5MTykoIemGo5FQSIvslpRwtm5aIZFdHJpUMw==}
-    peerDependencies:
-      react: ^16.6.3 || ^17.0.0 || ^18.0.0
-    dependencies:
-      '@statsig/client-core': 0.0.1-beta.14
-    dev: false
-
-  /@statsig/react-native-bindings@0.0.1-beta.14:
-    resolution: {integrity: sha512-o1KIW+OsqWAp8YdTHR7xySJWY06LIYFRKp+jbIfzWn0RdfJYcI9jTwkHXiNnRvfroHy6cDKxEfVqK3/gn9szIA==}
-    peerDependencies:
-      '@react-native-async-storage/async-storage': 1.*
-      react: ^16.6.3 || ^17.0.0 || ^18.0.0
-      react-native: 0.*
-      react-native-device-info: 10.*
-    dependencies:
-      '@statsig/client-core': 0.0.1-beta.14
-      '@statsig/react-bindings': 0.0.1-beta.14
-    dev: false
-
   /@svgr/babel-plugin-add-jsx-attribute@8.0.0(@babel/core@7.23.9):
     resolution: {integrity: sha512-b9MIk7yhdS1pMCZM8VeNfUlSKVRhsHZNMl5O9SfaX0l0t5wjdgu4IDzGB8bpnGBBOjGST3rRFVsaaEtI4W6f7g==}
     engines: {node: '>=14'}
@@ -7059,10 +7035,8 @@ packages:
       clean-stack: 2.2.0
       indent-string: 4.0.0
 
-  /ajv-formats@2.1.1(ajv@8.12.0):
+  /ajv-formats@2.1.1:
     resolution: {integrity: sha512-Wx0Kx52hxE7C18hkMEggYlEifqWZtYaRgouJor+WMdPnQyEK13vgEWyVNup7SoeeoLMsr4kf5h6dOW11I15MUA==}
-    peerDependencies:
-      ajv: ^8.0.0
     peerDependenciesMeta:
       ajv:
         optional: true
@@ -15670,7 +15644,7 @@ packages:
     dependencies:
       '@types/json-schema': 7.0.15
       ajv: 8.12.0
-      ajv-formats: 2.1.1(ajv@8.12.0)
+      ajv-formats: 2.1.1
       ajv-keywords: 5.1.0(ajv@8.12.0)
     dev: true
 

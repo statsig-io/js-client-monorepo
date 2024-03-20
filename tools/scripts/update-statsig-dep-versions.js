@@ -12,6 +12,8 @@ function sync(subpath) {
     '@statsig/client-core',
     '@statsig/sha256',
     '@statsig/react-bindings',
+    '@statsig/react-native-bindings',
+    '@statsig/expo-bindings',
     '@statsig/js-client',
     '@statsig/js-on-device-eval-client',
   ].map((mod) => new RegExp(`(${mod}": ")([^"]*)`));

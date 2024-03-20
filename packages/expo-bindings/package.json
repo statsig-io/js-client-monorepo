@@ -4,7 +4,7 @@
   "dependencies": {
     "@statsig/client-core": "0.0.1-beta.15",
     "@statsig/react-bindings": "0.0.1-beta.15",
-    "@statsig/react-native-bindings": "0.0.1-beta.14"
+    "@statsig/react-native-bindings": "0.0.1-beta.15"
   },
   "peerDependencies": {
     "react-native": "0.*",
