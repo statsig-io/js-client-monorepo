@@ -34,6 +34,7 @@
       ],
       "@statsig/sha256": ["packages/sha256/src/index.ts"],
       "combination-tests": ["packages/combination-tests/src/index.ts"],
+      "statsig-rn-shared": ["samples/rn-shared/src/index.ts"],
       "statsig-test-helpers": ["packages/test-helpers/src/index.ts"]
     },
     "rootDir": ".",

@@ -16,6 +16,9 @@ window.fetch = (url, args) => {
 const client = new StatsigClient(DEMO_CLIENT_KEY, { userID: 'a-user' });
 
 (async () => {
+  const timeout = setTimeout(() => {
+    test('test timeout', () => false);
+  }, 5000);
   await client.initializeAsync(); // prime cache
 
   client.on('*', (event) => {
@@ -69,4 +72,7 @@ const client = new StatsigClient(DEMO_CLIENT_KEY, { userID: 'a-user' });
   // SDK Exception
   test('logged to sdk_exception', () =>
     requests[3].url.startsWith('https://statsigapi.net/v1/sdk_exception'));
+
+  clearTimeout(timeout);
+  test('test timeout', () => true);
 })();

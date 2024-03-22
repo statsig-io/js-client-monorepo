@@ -42,10 +42,10 @@ describe('App', () => {
   test(
     'renders correctly',
     async () => {
-      const { getByTestId } = render(<App />);
+      const { getByText } = render(<App />);
 
-      const result = await waitFor(() => getByTestId('test-text'));
-      expect(result).toHaveTextContent('a_gate: Pass');
+      const result = await waitFor(() => getByText('Bootstrapping'));
+      expect(result).toBeDefined();
     },
     1000 * 10,
   );

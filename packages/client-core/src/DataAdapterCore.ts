@@ -95,10 +95,10 @@ export abstract class DataAdapterCore {
   /**
    * (Internal Use Only) - Used by \@statsig/react-native-bindings to prime the cache from AsyncStorage
    *
-   * @param {Record<string, DataAdapterResult>} cache The values to set for _inMemoryCache
+   * @param {Record<string, DataAdapterResult>} cache The values to merge into _inMemoryCache
    */
-  __setInMemoryCache(cache: Record<string, DataAdapterResult>): void {
-    this._inMemoryCache = cache;
+  __primeInMemoryCache(cache: Record<string, DataAdapterResult>): void {
+    this._inMemoryCache = { ...this._inMemoryCache, ...cache };
   }
 
   protected abstract _fetchFromNetwork(
@@ -111,7 +111,6 @@ export abstract class DataAdapterCore {
     user?: StatsigUser,
   ): Promise<DataAdapterResult | null> {
     const latest = await this._fetchFromNetwork(current, user);
-
     if (!latest) {
       Log.debug('No response returned for latest value');
       return null;

@@ -48,5 +48,5 @@ async function _loadCacheAsync(
     }),
   );
 
-  adapter.__setInMemoryCache(results);
+  adapter.__primeInMemoryCache(results);
 }

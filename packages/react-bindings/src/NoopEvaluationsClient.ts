@@ -36,7 +36,7 @@ const _defaultEvaluation = <T>(type: 'gate' | 'config' | 'layer') => {
 };
 
 const _noopDataAdapter: EvaluationsDataAdapter & SpecsDataAdapter = {
-  __setInMemoryCache: _noop,
+  __primeInMemoryCache: _noop,
   attach: _noop,
   getDataSync: () => null,
   getDataAsync: () => Promise.resolve(null),
