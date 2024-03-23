@@ -1,21 +1,16 @@
-import '@react-native-async-storage/async-storage';
+import { warmCachingFromAsyncStorage } from '@statsig/react-native-core';
 
-import {
-  GetStatsigProviderWithCacheWarming,
-  warmCachingFromAsyncStorage,
-} from '@statsig/react-native-bindings';
-
-import { GetStatsigMetadataAdditions } from './StatsigMetadataAdditions';
+import { StatsigProviderExpo } from './StatsigProviderExpo';
 
 export {
   StatsigContext,
-  useGate,
   useDynamicConfig,
   useExperiment,
+  useGate,
   useLayer,
+  useStatsigOnDeviceEvalClient,
+  useStatsigClient,
+  useStatsigUser,
 } from '@statsig/react-bindings';
 
-const StatsigProviderExpo = GetStatsigProviderWithCacheWarming(
-  GetStatsigMetadataAdditions(),
-);
 export { StatsigProviderExpo, warmCachingFromAsyncStorage };

@@ -1,16 +1,14 @@
 {
-  "name": "@statsig/expo-bindings",
+  "name": "@statsig/react-native-core",
   "version": "0.0.1-beta.19",
   "dependencies": {
     "@statsig/client-core": "0.0.1-beta.19",
-    "@statsig/react-bindings": "0.0.1-beta.19",
-    "@statsig/react-native-core": "0.0.1-beta.19"
+    "@statsig/react-bindings": "0.0.1-beta.19"
   },
   "peerDependencies": {
     "react": "^16.6.3 || ^17.0.0 || ^18.0.0",
     "react-native": "0.*",
-    "expo-application": "5.*",
-    "expo-device": "5.*"
+    "@react-native-async-storage/async-storage": "1.*"
   },
   "type": "commonjs",
   "main": "./src/index.js",

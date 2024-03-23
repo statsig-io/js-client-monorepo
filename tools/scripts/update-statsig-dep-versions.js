@@ -13,6 +13,7 @@ function sync(subpath) {
     '@statsig/sha256',
     '@statsig/react-bindings',
     '@statsig/react-native-bindings',
+    '@statsig/react-native-core',
     '@statsig/expo-bindings',
     '@statsig/js-client',
     '@statsig/js-on-device-eval-client',

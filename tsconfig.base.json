@@ -32,6 +32,7 @@
       "@statsig/react-native-bindings": [
         "packages/react-native-bindings/src/index.ts"
       ],
+      "@statsig/react-native-core": ["packages/react-native-core/src/index.ts"],
       "@statsig/sha256": ["packages/sha256/src/index.ts"],
       "combination-tests": ["packages/combination-tests/src/index.ts"],
       "statsig-rn-shared": ["samples/rn-shared/src/index.ts"],

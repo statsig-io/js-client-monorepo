@@ -64,12 +64,17 @@ function _getAllStaticMethodNames(instance: object): string[] {
 
   const proto = _getProtoSafe(instance);
   Object.getOwnPropertyNames(proto?.constructor || {})
-    .filter(
-      (prop) =>
+    .filter((prop) => {
+      if (prop === 'caller' || prop === 'arguments' || prop === 'callee') {
+        return false;
+      }
+
+      return (
         typeof (proto?.constructor as unknown as Record<string, unknown>)?.[
           prop
-        ] === 'function',
-    )
+        ] === 'function'
+      );
+    })
     .forEach((name) => names.add(name));
 
   return Array.from(names);
