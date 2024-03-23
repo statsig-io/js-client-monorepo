@@ -1,8 +1,6 @@
 import { NativeModules, Platform } from 'react-native';
 import DeviceInfo from 'react-native-device-info';
 
-import { StatsigMetadataProvider } from '@statsig/client-core';
-
 type I18nManager = { localIdentifer: string };
 type SettingsManager = {
   settings?: { AppLocale?: string; AppleLanguages?: string[] };
@@ -26,11 +24,16 @@ if (Platform.OS === 'ios') {
   locale = settings?.AppLocale ?? settings?.AppleLanguages?.[0] ?? undefined;
 }
 
-StatsigMetadataProvider.add({
-  appVersion: DeviceInfo.getVersion() ?? undefined,
-  systemVersion: DeviceInfo.getSystemVersion() ?? undefined,
-  systemName: DeviceInfo.getSystemName() ?? undefined,
-  deviceModelName: DeviceInfo.getModel() ?? undefined,
-  deviceModel: DeviceInfo.getDeviceId() ?? undefined,
-  locale,
-});
+export function GetStatsigMetadataAdditions(): Record<
+  string,
+  string | undefined
+> {
+  return {
+    appVersion: DeviceInfo.getVersion() ?? undefined,
+    systemVersion: DeviceInfo.getSystemVersion() ?? undefined,
+    systemName: DeviceInfo.getSystemName() ?? undefined,
+    deviceModelName: DeviceInfo.getModel() ?? undefined,
+    deviceModel: DeviceInfo.getDeviceId() ?? undefined,
+    locale,
+  };
+}

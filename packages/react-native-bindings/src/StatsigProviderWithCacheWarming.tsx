@@ -2,7 +2,12 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useEffect, useState } from 'react';
 import { AppState } from 'react-native';
 
-import { Log, Storage, VisibilityChangeObserver } from '@statsig/client-core';
+import {
+  Log,
+  StatsigMetadataProvider,
+  Storage,
+  VisibilityChangeObserver,
+} from '@statsig/client-core';
 import { StatsigProvider, StatsigProviderProps } from '@statsig/react-bindings';
 
 import { StatsigAsyncCacheWarming } from './AsyncStorageWarming';
@@ -22,7 +27,14 @@ AppState.addEventListener('change', (nextAppState) =>
   ),
 );
 
-export function StatsigProviderRN(props: Props): JSX.Element {
+export function GetStatsigProviderWithCacheWarming(additions: {
+  [key: string]: string | undefined;
+}): (props: Props) => JSX.Element {
+  StatsigMetadataProvider.add(additions);
+  return StatsigProviderWithCacheWarming;
+}
+
+function StatsigProviderWithCacheWarming(props: Props): JSX.Element {
   const [isWarmed, setIsWarmed] = useState(false);
 
   useEffect(() => {

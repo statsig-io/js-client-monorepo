@@ -20,8 +20,10 @@ describe('StatsigMetadataProvider', () => {
   let metadata: Record<string, unknown>;
 
   beforeAll(async () => {
-    await import('../StatsigMetadataAdditions');
-
+    const { GetStatsigMetadataAdditions } = await import(
+      '../StatsigMetadataAdditions'
+    );
+    StatsigMetadataProvider.add(GetStatsigMetadataAdditions());
     metadata = StatsigMetadataProvider.get();
   });
 

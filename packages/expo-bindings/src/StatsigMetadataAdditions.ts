@@ -2,8 +2,6 @@ import { nativeApplicationVersion } from 'expo-application';
 import { modelId, modelName, osName, osVersion } from 'expo-device';
 import { NativeModules, Platform } from 'react-native';
 
-import { StatsigMetadataProvider } from '@statsig/client-core';
-
 type I18nManager = { localIdentifer: string };
 type SettingsManager = {
   settings?: { AppLocale?: string; AppleLanguages?: string[] };
@@ -27,11 +25,16 @@ if (Platform.OS === 'ios') {
   locale = settings?.AppLocale ?? settings?.AppleLanguages?.[0] ?? undefined;
 }
 
-StatsigMetadataProvider.add({
-  appVersion: nativeApplicationVersion ?? undefined,
-  systemVersion: osVersion ?? undefined,
-  systemName: osName ?? undefined,
-  deviceModelName: modelName ?? undefined,
-  deviceModel: modelId != null ? String(modelId) : undefined,
-  locale,
-});
+export function GetStatsigMetadataAdditions(): Record<
+  string,
+  string | undefined
+> {
+  return {
+    appVersion: nativeApplicationVersion ?? undefined,
+    systemVersion: osVersion ?? undefined,
+    systemName: osName ?? undefined,
+    deviceModelName: modelName ?? undefined,
+    deviceModel: modelId != null ? String(modelId) : undefined,
+    locale,
+  };
+}

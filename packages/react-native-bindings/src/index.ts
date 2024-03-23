@@ -1,7 +1,12 @@
-import './StatsigMetadataAdditions';
+import { GetStatsigMetadataAdditions } from './StatsigMetadataAdditions';
+import { GetStatsigProviderWithCacheWarming } from './StatsigProviderWithCacheWarming';
 
 export * from './AsyncStorageWarming';
-export * from './StatsigProviderRN';
+
+const StatsigProviderRN = GetStatsigProviderWithCacheWarming(
+  GetStatsigMetadataAdditions(),
+);
+export { StatsigProviderRN, GetStatsigProviderWithCacheWarming };
 
 export {
   StatsigContext,
