@@ -316,55 +316,55 @@ importers:
   packages/expo-bindings:
     dependencies:
       '@statsig/client-core':
-        specifier: 0.0.1-beta.16
+        specifier: 0.0.1-beta.17
         version: link:../client-core
       '@statsig/react-bindings':
-        specifier: 0.0.1-beta.16
+        specifier: 0.0.1-beta.17
         version: link:../react-bindings
       '@statsig/react-native-bindings':
-        specifier: 0.0.1-beta.16
+        specifier: 0.0.1-beta.17
         version: link:../react-native-bindings
 
   packages/js-client:
     dependencies:
       '@statsig/client-core':
-        specifier: 0.0.1-beta.16
+        specifier: 0.0.1-beta.17
         version: link:../client-core
 
   packages/js-local-overrides:
     dependencies:
       '@statsig/client-core':
-        specifier: 0.0.1-beta.16
+        specifier: 0.0.1-beta.17
         version: link:../client-core
 
   packages/js-on-device-eval-client:
     dependencies:
       '@statsig/client-core':
-        specifier: 0.0.1-beta.16
+        specifier: 0.0.1-beta.17
         version: link:../client-core
       '@statsig/sha256':
-        specifier: 0.0.1-beta.16
+        specifier: 0.0.1-beta.17
         version: link:../sha256
 
   packages/js-user-persisted-storage:
     dependencies:
       '@statsig/client-core':
-        specifier: 0.0.1-beta.16
+        specifier: 0.0.1-beta.17
         version: link:../client-core
 
   packages/react-bindings:
     dependencies:
       '@statsig/client-core':
-        specifier: 0.0.1-beta.16
+        specifier: 0.0.1-beta.17
         version: link:../client-core
 
   packages/react-native-bindings:
     dependencies:
       '@statsig/client-core':
-        specifier: 0.0.1-beta.16
+        specifier: 0.0.1-beta.17
         version: link:../client-core
       '@statsig/react-bindings':
-        specifier: 0.0.1-beta.16
+        specifier: 0.0.1-beta.17
         version: link:../react-bindings
 
   packages/sha256:
@@ -379,7 +379,7 @@ importers:
         specifier: 29.7.0
         version: 29.7.0
       '@statsig/client-core':
-        specifier: 0.0.1-beta.16
+        specifier: 0.0.1-beta.17
         version: link:../client-core
 
 packages:
