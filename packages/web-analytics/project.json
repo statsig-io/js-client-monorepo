@@ -1,0 +1,51 @@
+{
+  "name": "web-analytics",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/web-analytics/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "command": ":",
+      "dependsOn": ["^build", "build-webpack"]
+    },
+    "build-ts": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/web-analytics",
+        "main": "packages/web-analytics/src/index.ts",
+        "tsConfig": "packages/web-analytics/tsconfig.lib.json",
+        "assets": ["packages/web-analytics/*.md"]
+      }
+    },
+    "publish": {
+      "command": "node tools/scripts/publish.mjs web-analytics {args.ver} {args.tag}",
+      "dependsOn": ["build"]
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "packages/web-analytics/jest.config.ts"
+      }
+    },
+    "build-webpack": {
+      "executor": "@nx/webpack:webpack",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
+      "options": {
+        "statsJson": true,
+        "verbose": true,
+        "outputPath": "overridden in webpack config",
+        "main": "overridden in webpack config",
+        "tsConfig": "packages/web-analytics/tsconfig.lib.json",
+        "webpackConfig": "packages/web-analytics/webpack.config.js"
+      },
+      "dependsOn": ["build-ts"]
+    }
+  },
+  "tags": []
+}

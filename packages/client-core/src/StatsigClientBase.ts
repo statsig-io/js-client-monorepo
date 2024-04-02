@@ -1,4 +1,5 @@
 import './$_StatsigGlobal';
+import { StatsigClientInterface } from './ClientInterfaces';
 import { ErrorBoundary } from './ErrorBoundary';
 import { EvaluationOptionsCommon } from './EvaluationOptions';
 import { EventLogger } from './EventLogger';
@@ -66,8 +67,8 @@ export abstract class StatsigClientBase<
     this._errorBoundary = new ErrorBoundary(_sdkKey);
 
     __STATSIG__ = __STATSIG__ ?? {};
-    const instances = __STATSIG__.instances ?? new Set();
-    instances.add(this);
+    const instances = __STATSIG__.instances ?? {};
+    instances[_sdkKey] = this as unknown as StatsigClientInterface;
     __STATSIG__.instances = instances;
 
     this.dataAdapter = adapter;

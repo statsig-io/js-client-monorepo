@@ -1,9 +1,12 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
+
+import { StatsigClientInterface } from "./ClientInterfaces";
+
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export type StatsigGlobal = {
   [key: string]: unknown;
-  instances?: Set<unknown>;
+  instances?: Record<string, StatsigClientInterface>;
 };
 
 declare global {

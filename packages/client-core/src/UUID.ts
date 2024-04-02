@@ -1,4 +1,11 @@
 export function getUUID(): string {
+  if (
+    typeof crypto !== 'undefined' &&
+    typeof crypto.randomUUID === 'function'
+  ) {
+    return crypto.randomUUID();
+  }
+
   let d = new Date().getTime();
   let d2 =
     (typeof performance !== 'undefined' &&

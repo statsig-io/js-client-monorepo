@@ -85,7 +85,27 @@
       "$_initializeUrl": "$t",
       "$_fetchEvaluations": "Bt",
       "$_user": "Yt",
-      "$_resetForUser": "Wt"
+      "$_resetForUser": "Wt",
+      "$_started": "Ht",
+      "$_statsigInstance": "Qt",
+      "$_queuedEvents": "Xt",
+      "$_startTime": "Zt",
+      "$_deepestScroll": "te",
+      "$_initialize": "ee",
+      "$_addEventHandlers": "ne",
+      "$_autoLogEvent": "ie",
+      "$_registerEventHandler": "oe",
+      "$_pageUnloadHandler": "re",
+      "$_scrollEventHandler": "se",
+      "$_logError": "ue",
+      "$_queueAutoCapture": "le",
+      "$_logPageView": "ae",
+      "$_logPerformance": "ce",
+      "$_enqueue": "de",
+      "$_capture": "he",
+      "$_client": "ve",
+      "$_enqueueAutoCapture": "fe",
+      "$_logAutoCaptureImmediately": "_e"
     }
   }
 }

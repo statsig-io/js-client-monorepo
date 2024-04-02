@@ -1,0 +1,11 @@
+{
+  "name": "@statsig/web-analytics",
+  "version": "0.0.1",
+  "dependencies": {
+    "@statsig/client-core": "0.0.1-beta.20",
+    "@statsig/js-client": "0.0.1-beta.20"
+  },
+  "type": "commonjs",
+  "main": "./src/index.js",
+  "typings": "./src/index.d.ts"
+}

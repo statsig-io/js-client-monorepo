@@ -17,6 +17,7 @@ function sync(subpath) {
     '@statsig/expo-bindings',
     '@statsig/js-client',
     '@statsig/js-on-device-eval-client',
+    '@statsig/web-analytics',
   ].map((mod) => new RegExp(`(${mod}": ")([^"]*)`));
 
   regexes.forEach((regex) => {
