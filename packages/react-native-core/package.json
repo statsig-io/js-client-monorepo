@@ -1,9 +1,9 @@
 {
   "name": "@statsig/react-native-core",
-  "version": "0.0.1-beta.21",
+  "version": "0.0.1-beta.22",
   "dependencies": {
-    "@statsig/client-core": "0.0.1-beta.21",
-    "@statsig/react-bindings": "0.0.1-beta.21"
+    "@statsig/client-core": "0.0.1-beta.22",
+    "@statsig/react-bindings": "0.0.1-beta.22"
   },
   "peerDependencies": {
     "react": "^16.6.3 || ^17.0.0 || ^18.0.0",
