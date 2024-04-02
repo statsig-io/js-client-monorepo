@@ -5,6 +5,7 @@
     "@statsig/client-core": "0.0.1-beta.21",
     "@statsig/js-client": "0.0.1-beta.21"
   },
+  "jsdelivr": "./build/statsig-web-analytics.min.js",
   "type": "commonjs",
   "main": "./src/index.js",
   "typings": "./src/index.d.ts"
