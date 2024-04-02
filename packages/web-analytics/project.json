@@ -19,7 +19,7 @@
       }
     },
     "publish": {
-      "command": "node tools/scripts/publish.mjs web-analytics {args.ver} {args.tag}",
+      "command": "ts-node ./tools/scripts/publish.ts web-analytics",
       "dependsOn": ["build"]
     },
     "lint": {
