@@ -31,7 +31,7 @@ export default function (
     }
 
     Log.warn(
-      `useGate hook failed to find a valid Statsig client for experiment '${experimentName}'.`,
+      `useExperiment hook failed to find a valid Statsig client for experiment '${experimentName}'.`,
     );
     return NoopEvaluationsClient.getExperiment(experimentName, options);
   }, [experimentName, renderVersion, options]);

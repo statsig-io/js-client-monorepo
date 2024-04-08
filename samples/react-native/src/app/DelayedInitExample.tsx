@@ -4,7 +4,7 @@ import { Button, Text, View } from 'react-native';
 
 import { StatsigClient } from '@statsig/js-client';
 import { StatsigProvider } from '@statsig/react-bindings';
-import { useExperiment, useGate } from '@statsig/react-native-bindings';
+import { useExperiment, useFeatureGate } from '@statsig/react-native-bindings';
 
 import { DEMO_CLIENT_KEY } from './Constants';
 
@@ -15,7 +15,7 @@ client.initializeSync();
 const prefetching = client.dataAdapter.prefetchData(user);
 
 function Content() {
-  const gate = useGate('a_gate');
+  const gate = useFeatureGate('a_gate');
   const experiment = useExperiment('an_experiment');
 
   return (

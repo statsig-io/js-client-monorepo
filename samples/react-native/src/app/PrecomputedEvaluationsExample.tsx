@@ -4,7 +4,7 @@ import { StatsigClient } from '@statsig/js-client';
 import {
   StatsigProviderRN,
   useExperiment,
-  useGate,
+  useFeatureGate,
   warmCachingFromAsyncStorage,
 } from '@statsig/react-native-bindings';
 
@@ -16,7 +16,7 @@ const client = new StatsigClient(DEMO_CLIENT_KEY, user);
 const warming = warmCachingFromAsyncStorage(client);
 
 function Content() {
-  const gate = useGate('a_gate');
+  const gate = useFeatureGate('a_gate');
   const experiment = useExperiment('an_experiment');
 
   return (

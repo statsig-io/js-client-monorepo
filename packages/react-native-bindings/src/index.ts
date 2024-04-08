@@ -8,7 +8,7 @@ export {
   StatsigContext,
   useDynamicConfig,
   useExperiment,
-  useGate,
+  useFeatureGate,
   useLayer,
   useStatsigClient,
   useStatsigOnDeviceEvalClient,

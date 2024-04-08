@@ -3,7 +3,7 @@ import { ReactNode } from 'react';
 
 import { LogLevel } from '@statsig/client-core';
 import { StatsigClient } from '@statsig/js-client';
-import { StatsigProvider, useGate } from '@statsig/react-bindings';
+import { StatsigProvider, useFeatureGate } from '@statsig/react-bindings';
 
 import { STATSIG_CLIENT_KEY } from './Contants';
 
@@ -14,7 +14,7 @@ const client = new StatsigClient(STATSIG_CLIENT_KEY, user, {
 });
 
 function Content() {
-  const gate = useGate('partial_gate');
+  const gate = useFeatureGate('partial_gate');
 
   return (
     <Box display="flex" flexDirection="column">

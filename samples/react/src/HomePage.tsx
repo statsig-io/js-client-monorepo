@@ -1,7 +1,7 @@
 import { ReactNode, useEffect, useState } from 'react';
 
 import { StatsigClient } from '@statsig/js-client';
-import { StatsigProvider, useGate } from '@statsig/react-bindings';
+import { StatsigProvider, useGateValue } from '@statsig/react-bindings';
 
 import { STATSIG_CLIENT_KEY } from './Contants';
 
@@ -12,7 +12,7 @@ const client = new StatsigClient(STATSIG_CLIENT_KEY, user);
 client.initializeSync();
 
 function Content() {
-  const { value } = useGate('a_gate');
+  const gateOn = useGateValue('a_gate');
 
   return (
     <div
@@ -21,7 +21,7 @@ function Content() {
         fontFamily: 'sans-serif',
       }}
     >
-      {value ? 'Passing' : 'Failing'}
+      {gateOn ? 'Passing' : 'Failing'}
     </div>
   );
 }

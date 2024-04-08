@@ -6,7 +6,7 @@ export {
   StatsigContext,
   useDynamicConfig,
   useExperiment,
-  useGate,
+  useFeatureGate,
   useLayer,
   useStatsigOnDeviceEvalClient,
   useStatsigClient,

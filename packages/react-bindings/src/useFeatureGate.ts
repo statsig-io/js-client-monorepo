@@ -11,13 +11,13 @@ import { NoopEvaluationsClient } from './NoopEvaluationsClient';
 import { isPrecomputedEvalClient } from './OnDeviceVsPrecomputedUtils';
 import StatsigContext from './StatsigContext';
 
-export type UseGateOptions = FeatureGateEvaluationOptions & {
+export type useFeatureGateOptions = FeatureGateEvaluationOptions & {
   user: StatsigUser | null;
 };
 
 export default function (
   gateName: string,
-  options?: UseGateOptions,
+  options?: useFeatureGateOptions,
 ): FeatureGate {
   const { client, renderVersion } = useContext(StatsigContext);
 
@@ -31,7 +31,7 @@ export default function (
     }
 
     Log.warn(
-      `useGate hook failed to find a valid Statsig client for gate '${gateName}'.`,
+      `useFeatureGate hook failed to find a valid Statsig client for gate '${gateName}'.`,
     );
     return NoopEvaluationsClient.getFeatureGate(gateName, options);
   }, [gateName, renderVersion, options]);

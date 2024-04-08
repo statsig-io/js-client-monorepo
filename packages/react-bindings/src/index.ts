@@ -2,7 +2,8 @@ import StatsigContext from './StatsigContext';
 import { StatsigProvider, StatsigProviderProps } from './StatsigProvider';
 import useDynamicConfig from './useDynamicConfig';
 import useExperiment from './useExperiment';
-import useGate from './useGate';
+import useFeatureGate from './useFeatureGate';
+import useGateValue from './useGateValue';
 import useLayer from './useLayer';
 import { useStatsigClient } from './useStatsigClient';
 import { useStatsigOnDeviceEvalClient } from './useStatsigOnDeviceEvalClient';
@@ -15,7 +16,8 @@ export {
   StatsigProvider,
   useDynamicConfig,
   useExperiment,
-  useGate,
+  useGateValue,
+  useFeatureGate,
   useLayer,
   useStatsigOnDeviceEvalClient,
   useStatsigClient,
@@ -28,7 +30,8 @@ __STATSIG__ = {
   StatsigProvider,
   useDynamicConfig,
   useExperiment,
-  useGate,
+  useGateValue,
+  useFeatureGate,
   useLayer,
   useStatsigOnDeviceEvalClient,
   useStatsigClient,

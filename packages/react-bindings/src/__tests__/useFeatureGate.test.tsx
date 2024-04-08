@@ -9,21 +9,21 @@ import {
 } from '@statsig/client-core';
 
 import { StatsigProvider } from '../StatsigProvider';
-import useGateValue from '../useGateValue';
+import useFeatureGate from '../useFeatureGate';
 
 const GateComponent = () => {
-  const value = useGateValue('a_gate');
+  const { value } = useFeatureGate('a_gate');
   return <div data-testid="gate-value">{String(value)}</div>;
 };
 
-describe('useGate', () => {
+describe('useFeatureGate', () => {
   let client: jest.Mocked<PrecomputedEvaluationsInterface>;
   let onStatusChange: StatsigClientEventCallback;
 
   beforeEach(() => {
     client = MockRemoteServerEvalClient.create();
     client.shutdown.mockReturnValue(Promise.resolve());
-    client.checkGate.mockReturnValue(true);
+    client.getFeatureGate.mockReturnValue({ value: true } as any);
     client.on.mockImplementation((event, callback) => {
       if (event === 'values_updated') {
         onStatusChange = callback;

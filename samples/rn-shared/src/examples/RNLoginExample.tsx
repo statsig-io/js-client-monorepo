@@ -5,7 +5,7 @@ import { StatsigClient } from '@statsig/js-client';
 import { useStatsigClient } from '@statsig/react-bindings';
 import {
   StatsigProviderRN,
-  useGate,
+  useFeatureGate,
   warmCachingFromAsyncStorage,
 } from '@statsig/react-native-bindings';
 
@@ -17,7 +17,7 @@ type Props = {
 };
 
 function Content() {
-  const gate = useGate('third_gate'); // gate passes with non-empty email
+  const gate = useFeatureGate('third_gate'); // gate passes with non-empty email
   const client = useStatsigClient();
 
   return (

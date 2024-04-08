@@ -1,6 +1,6 @@
 // <snippet>
 import { StatsigClient } from '@statsig/js-client';
-import { StatsigProvider, useGate } from '@statsig/react-bindings';
+import { StatsigProvider, useFeatureGate } from '@statsig/react-bindings';
 
 // </snippet>
 import { STATSIG_CLIENT_KEY as YOUR_CLIENT_KEY } from '../../Contants';
@@ -16,7 +16,7 @@ const myStatsigClient = new StatsigClient(YOUR_CLIENT_KEY, {
 });
 
 function Content() {
-  const gate = useGate('a_gate');
+  const gate = useFeatureGate('a_gate');
 
   return <div>a_gate: {gate.value ? 'Passing' : 'Failing'}</div>;
 }

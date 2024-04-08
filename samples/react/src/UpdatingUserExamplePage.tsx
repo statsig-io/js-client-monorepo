@@ -4,7 +4,7 @@ import { ReactNode, useState } from 'react';
 import { StatsigClient } from '@statsig/js-client';
 import {
   StatsigProvider,
-  useGate,
+  useFeatureGate,
   useStatsigUser,
 } from '@statsig/react-bindings';
 
@@ -25,7 +25,7 @@ function Form() {
   const [isLoading, setIsLoading] = useState(false);
   const { user, updateUserSync, updateUserAsync } = useStatsigUser();
   const [editedUser, setEditedUser] = useState(user);
-  const gate = useGate('third_gate');
+  const gate = useFeatureGate('third_gate');
 
   return (
     <>

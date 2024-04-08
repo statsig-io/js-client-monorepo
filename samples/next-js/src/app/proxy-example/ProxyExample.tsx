@@ -7,7 +7,7 @@ import { StatsigClient } from '@statsig/js-client';
 import {
   StatsigContext,
   StatsigProvider,
-  useGate,
+  useFeatureGate,
   useStatsigClient,
   useStatsigUser,
 } from '@statsig/react-bindings';
@@ -44,7 +44,7 @@ function UserDisplay() {
 }
 
 function Content() {
-  const { value, details } = useGate('a_gate');
+  const { value, details } = useFeatureGate('a_gate');
   const client = useStatsigClient();
 
   return (

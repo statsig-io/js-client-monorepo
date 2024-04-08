@@ -2,7 +2,7 @@ import { ReactNode } from 'react';
 
 import {
   StatsigProvider,
-  useGate,
+  useFeatureGate,
   useStatsigUser,
 } from '@statsig/react-bindings';
 
@@ -21,7 +21,7 @@ function Content() {
   renderCount++;
 
   const { user } = useStatsigUser();
-  const gate = useGate('third_gate'); // gate passes with non-empty email
+  const gate = useFeatureGate('third_gate'); // gate passes with non-empty email
 
   const handleLogout = () => {
     authService.logout();

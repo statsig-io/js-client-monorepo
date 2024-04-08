@@ -5,7 +5,7 @@ import { Storage } from '@statsig/client-core';
 import { StatsigOnDeviceEvalClient } from '@statsig/js-on-device-eval-client';
 import {
   StatsigProviderRN,
-  useGate,
+  useFeatureGate,
   warmCachingFromAsyncStorage,
 } from '@statsig/react-native-bindings';
 
@@ -17,7 +17,7 @@ type Props = {
 };
 
 function Content() {
-  const gate = useGate('a_gate', { user: { userID: 'a-user' } });
+  const gate = useFeatureGate('a_gate', { user: { userID: 'a-user' } });
   return (
     <Text>
       a_gate: {gate.value ? 'Pass' : 'Fail'} ({gate.details.reason}){' '}
