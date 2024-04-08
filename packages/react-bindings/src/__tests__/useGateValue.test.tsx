@@ -17,7 +17,7 @@ const GateComponent = () => {
   return <div data-testid="gate-value">{String(value)}</div>;
 };
 
-describe('useGate', () => {
+describe('useGateValue', () => {
   let client: jest.Mocked<PrecomputedEvaluationsInterface>;
   let onStatusChange: StatsigClientEventCallback<StatsigClientEventName>;
 

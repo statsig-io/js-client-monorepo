@@ -15,7 +15,7 @@
       }
     },
     "publish": {
-      "command": "node tools/scripts/publish.mjs session-replay {args.ver} {args.tag}",
+      "command": "ts-node ./tools/scripts/publish.ts session-replay",
       "dependsOn": ["build"]
     },
     "lint": {

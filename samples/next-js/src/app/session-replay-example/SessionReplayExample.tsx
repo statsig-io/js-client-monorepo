@@ -7,7 +7,7 @@ import { StatsigClient } from '@statsig/js-client';
 import {
   StatsigContext,
   StatsigProvider,
-  useGate,
+  useFeatureGate,
 } from '@statsig/react-bindings';
 import { SessionReplay } from '@statsig/session-replay';
 
@@ -35,7 +35,7 @@ function useClientWithSessionReplay(
 }
 
 function Content() {
-  const { value, details } = useGate('a_gate');
+  const { value, details } = useFeatureGate('a_gate');
   const { renderVersion } = useContext(StatsigContext);
 
   return (
