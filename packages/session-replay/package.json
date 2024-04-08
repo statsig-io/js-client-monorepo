@@ -6,7 +6,7 @@
     "@statsig/client-core": "0.0.1-beta.22"
   },
   "devDependencies": {
-    "@rrweb/types": "2.0.0-alpha.11"
+    "@rrweb/types": "2.0.0-alpha.12"
   },
   "type": "commonjs",
   "main": "./src/index.js",
