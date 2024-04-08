@@ -1,0 +1,14 @@
+{
+  "name": "@statsig/session-replay",
+  "version": "0.0.1",
+  "dependencies": {
+    "rrweb": "2.0.0-alpha.4",
+    "@statsig/client-core": "0.0.1-beta.22"
+  },
+  "devDependencies": {
+    "@rrweb/types": "2.0.0-alpha.11"
+  },
+  "type": "commonjs",
+  "main": "./src/index.js",
+  "typings": "./src/index.d.ts"
+}

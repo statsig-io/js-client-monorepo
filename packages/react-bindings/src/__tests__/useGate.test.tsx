@@ -6,6 +6,7 @@ import { MockRemoteServerEvalClient } from 'statsig-test-helpers';
 import {
   PrecomputedEvaluationsInterface,
   StatsigClientEventCallback,
+  StatsigClientEventName,
 } from '@statsig/client-core';
 
 import { StatsigProvider } from '../StatsigProvider';
@@ -18,10 +19,10 @@ const GateComponent = () => {
 
 describe('useGate', () => {
   let client: jest.Mocked<PrecomputedEvaluationsInterface>;
-  let onStatusChange: StatsigClientEventCallback;
+  let onStatusChange: StatsigClientEventCallback<StatsigClientEventName>;
 
   beforeEach(() => {
-    client = MockRemoteServerEvalClient.create();
+    client = MockRemoteServerEvalClient.create() as any;
     client.shutdown.mockReturnValue(Promise.resolve());
     client.checkGate.mockReturnValue(true);
     client.on.mockImplementation((event, callback) => {
@@ -44,7 +45,7 @@ describe('useGate', () => {
   it('renders the gate value', async () => {
     act(() => {
       (client.loadingStatus as any) = 'Ready';
-      onStatusChange({ event: 'values_updated', status: 'Ready' });
+      onStatusChange({ name: 'values_updated', status: 'Ready', values: null });
     });
 
     await waitFor(() => {

@@ -1,4 +1,5 @@
 import {
+  InitializeResponse,
   NetworkCore,
   StatsigClientEmitEventFunc,
   StatsigUser,
@@ -6,7 +7,6 @@ import {
   typedJsonParse,
 } from '@statsig/client-core';
 
-import { EvaluationResponse } from './EvaluationData';
 import { resolveDeltasResponse } from './EvaluationResponseDeltas';
 import { StatsigOptions } from './StatsigOptions';
 
@@ -44,7 +44,7 @@ export default class StatsigNetwork extends NetworkCore {
     user?: StatsigUser,
   ): Promise<string | null> {
     const cache = current
-      ? typedJsonParse<EvaluationResponse>(
+      ? typedJsonParse<InitializeResponse>(
           current,
           'has_updates',
           'Failed to parse cached EvaluationResponse',
@@ -72,7 +72,7 @@ export default class StatsigNetwork extends NetworkCore {
 
   private async _fetchEvaluations(
     sdkKey: string,
-    cache: EvaluationResponse | null,
+    cache: InitializeResponse | null,
     data: EvaluationsFetchArgs,
   ): Promise<string | null> {
     const response = await this.post({

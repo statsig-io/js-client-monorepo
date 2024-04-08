@@ -11,7 +11,9 @@ function getBaseMock<T>(): T {
     initializeSync: jest.fn(),
     initializeAsync: jest.fn(),
     shutdown: jest.fn(),
+    flush: jest.fn(),
     checkGate: jest.fn(),
+    getContext: jest.fn(),
     getFeatureGate: jest.fn(),
     getDynamicConfig: jest.fn(),
     getExperiment: jest.fn(),
@@ -23,7 +25,8 @@ function getBaseMock<T>(): T {
 }
 
 export abstract class MockRemoteServerEvalClient {
-  static create(): jest.Mocked<PrecomputedEvaluationsInterface> {
+  static create(): jest.MockedObject<PrecomputedEvaluationsInterface> &
+    PrecomputedEvaluationsInterface {
     return {
       ...getBaseMock(),
       updateUserSync: jest.fn(),
@@ -33,7 +36,8 @@ export abstract class MockRemoteServerEvalClient {
 }
 
 export abstract class MockOnDeviceEvalClient {
-  static create(): jest.Mocked<OnDeviceEvaluationsInterface> {
+  static create(): jest.Mocked<OnDeviceEvaluationsInterface> &
+    OnDeviceEvaluationsInterface {
     return {
       ...getBaseMock(),
     };

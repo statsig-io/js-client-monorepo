@@ -11,6 +11,7 @@ type EventNameToEventDataMap = {
   };
   error: { error: unknown };
   logs_flushed: { events: Record<string, unknown>[] };
+  pre_shutdown: object;
 
   gate_evaluation: { gate: FeatureGate };
   dynamic_config_evaluation: { dynamicConfig: DynamicConfig };
@@ -26,6 +27,8 @@ type EventNameToEventDataMap = {
  * `error` - When an unexpected error occurs within the Statsig client.
  *
  * `logs_flushed` - When queued StatsigEvents are flushed to Statsig servers.
+ *
+ * `pre_shutdown` - Fired just before the SDK is shutdown
  *
  * `gate_evaluation` - Fired when any gate is checked from the Statsig client.
  *

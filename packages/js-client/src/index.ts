@@ -7,11 +7,10 @@ export type {
   StatsigEnvironment,
   StatsigEvent,
   StatsigUser,
+  InitializeResponse,
 } from '@statsig/client-core';
 
 export { StatsigEvaluationsDataAdapter, StatsigClient, StatsigOptions };
-
-export type { EvaluationResponse } from './EvaluationData';
 
 __STATSIG__ = {
   ...(__STATSIG__ ?? {}),

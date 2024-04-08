@@ -4,10 +4,14 @@ import {
   FeatureGateEvaluationOptions,
   LayerEvaluationOptions,
 } from './EvaluationOptions';
+import { InitializeResponseWithUpdates } from './InitializeResponse';
 import { StatsigClientEventEmitterInterface } from './StatsigClientEventEmitter';
 import { EvaluationsDataAdapter, SpecsDataAdapter } from './StatsigDataAdapter';
 import { StatsigEvent } from './StatsigEvent';
-import { StatsigRuntimeMutableOptions } from './StatsigOptionsCommon';
+import {
+  StatsigOptionsCommon,
+  StatsigRuntimeMutableOptions,
+} from './StatsigOptionsCommon';
 import { DynamicConfig, Experiment, FeatureGate, Layer } from './StatsigTypes';
 import { StatsigUser } from './StatsigUser';
 
@@ -16,6 +20,7 @@ export interface StatsigClientCommonInterface
   initializeSync(): void;
   initializeAsync(): Promise<void>;
   shutdown(): Promise<void>;
+  flush(): Promise<void>;
   updateRuntimeOptions(options: StatsigRuntimeMutableOptions): void;
 }
 
@@ -50,11 +55,19 @@ export interface OnDeviceEvaluationsInterface
   logEvent(event: StatsigEvent, user: StatsigUser): void;
 }
 
+export type PrecomputedEvaluationsContext = {
+  sdkKey: string;
+  options: StatsigOptionsCommon;
+  sessionID: string;
+  values: InitializeResponseWithUpdates | null;
+  user: StatsigUser;
+};
+
 export interface PrecomputedEvaluationsInterface
   extends StatsigClientCommonInterface {
   readonly dataAdapter: EvaluationsDataAdapter;
 
-  getCurrentUser(): StatsigUser;
+  getContext(): PrecomputedEvaluationsContext;
   updateUserSync(user: StatsigUser): void;
   updateUserAsync(user: StatsigUser): Promise<void>;
   checkGate(name: string, options?: FeatureGateEvaluationOptions): boolean;

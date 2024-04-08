@@ -19,6 +19,13 @@ export default function Index(): JSX.Element {
             </a>
           </button>
         </li>
+        <li>
+          <button>
+            <a href="/session-replay-example">
+              Session Replay
+            </a>
+          </button>
+        </li>
       </ul>
     </div>
   );

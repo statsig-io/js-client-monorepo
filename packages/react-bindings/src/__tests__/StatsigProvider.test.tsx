@@ -7,7 +7,7 @@ import { StatsigClientEventCallback } from '@statsig/client-core';
 import { StatsigProvider } from '../StatsigProvider';
 
 describe('StatsigProvider', () => {
-  let onStatusChange: StatsigClientEventCallback;
+  let onStatusChange: StatsigClientEventCallback<any>;
 
   it('renders children', async () => {
     const client = MockRemoteServerEvalClient.create();
@@ -27,7 +27,7 @@ describe('StatsigProvider', () => {
 
     act(() => {
       (client.loadingStatus as any) = 'Ready';
-      onStatusChange({ event: 'values_updated', status: 'Ready' });
+      onStatusChange({ name: 'values_updated', status: 'Ready', values: null });
     });
     await waitFor(() => screen.getByTestId('first-child'));
   });

@@ -1,7 +1,8 @@
-import { useMemo } from 'react';
+import { useContext, useMemo } from 'react';
 
 import { StatsigUser } from '@statsig/client-core';
 
+import StatsigContext from './StatsigContext';
 import { useStatsigClient } from './useStatsigClient';
 
 export type UseStatsigUserResult = {
@@ -14,9 +15,12 @@ export type UseStatsigUserResult = {
 
 export function useStatsigUser(): UseStatsigUserResult {
   const client = useStatsigClient();
+  const { renderVersion } = useContext(StatsigContext);
+
   const memoUser = useMemo(() => {
-    return client.getCurrentUser();
-  }, [client, client.getCurrentUser()]);
+    const context = client.getContext();
+    return context.user;
+  }, [client, renderVersion]);
 
   return {
     user: memoUser,

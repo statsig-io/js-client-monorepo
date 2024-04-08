@@ -26,10 +26,17 @@ import {
 } from './StatsigOptionsCommon';
 import { Storage } from './StorageProvider';
 
-export type StatsigClientEmitEventFunc = (event: StatsigClientEvent) => void;
-
 type EventListenersMap = {
   [K in StatsigClientEventName]: StatsigClientEventCallback<K>[];
+};
+
+export type StatsigClientEmitEventFunc = (event: StatsigClientEvent) => void;
+
+export type StatsigContext = {
+  sdkKey: string;
+  options: StatsigOptionsCommon;
+  sessionID: string;
+  values: unknown;
 };
 
 export abstract class StatsigClientBase<
@@ -39,6 +46,8 @@ export abstract class StatsigClientBase<
   loadingStatus: StatsigLoadingStatus = 'Uninitialized';
   readonly dataAdapter: TAdapter;
 
+  protected readonly _sdkKey: string;
+  protected readonly _options: StatsigOptionsCommon;
   protected readonly _errorBoundary: ErrorBoundary;
   protected readonly _logger: EventLogger;
   protected readonly _overrideAdapter: OverrideAdapter | null;
@@ -46,47 +55,57 @@ export abstract class StatsigClientBase<
   private _listeners = {} as EventListenersMap;
 
   constructor(
-    protected readonly _sdkKey: string,
+    sdkKey: string,
     adapter: TAdapter,
     network: NetworkCore,
     options: StatsigOptionsCommon | null,
   ) {
+    this._sdkKey = sdkKey;
+    this._options = options ?? {};
+
     options?.disableStorage && Storage.setDisabled(true);
     options?.overrideStableID &&
-      StableID.setOverride(options.overrideStableID, _sdkKey);
+      StableID.setOverride(options.overrideStableID, sdkKey);
 
     Log.level = options?.logLevel ?? LogLevel.Warn;
 
     this._overrideAdapter = options?.overrideAdapter ?? null;
     this._logger = new EventLogger(
-      _sdkKey,
+      sdkKey,
       this._emit.bind(this),
       network,
       options,
     );
-    this._errorBoundary = new ErrorBoundary(_sdkKey);
+    this._errorBoundary = new ErrorBoundary(sdkKey);
 
     __STATSIG__ = __STATSIG__ ?? {};
     const instances = __STATSIG__.instances ?? {};
-    instances[_sdkKey] = this as unknown as StatsigClientInterface;
+    instances[sdkKey] = this as unknown as StatsigClientInterface;
     __STATSIG__.instances = instances;
 
     this.dataAdapter = adapter;
-    this.dataAdapter.attach(_sdkKey, options);
+    this.dataAdapter.attach(sdkKey, options);
   }
 
   updateRuntimeOptions(options: StatsigRuntimeMutableOptions): void {
     if (options.disableLogging != null) {
+      this._options.disableLogging = options.disableLogging;
       this._logger.setLoggingDisabled(options.disableLogging);
     }
 
     if (options.disableStorage != null) {
+      this._options.disableStorage = options.disableStorage;
       Storage.setDisabled(options.disableStorage);
     }
   }
 
   flush(): Promise<void> {
     return this._logger.flush();
+  }
+
+  async shutdown(): Promise<void> {
+    this._emit({ name: 'pre_shutdown' });
+    await this._logger.shutdown();
   }
 
   on<T extends StatsigClientEventName>(

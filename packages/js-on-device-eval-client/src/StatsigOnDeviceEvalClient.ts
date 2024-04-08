@@ -40,8 +40,6 @@ export default class StatsigOnDeviceEvalClient
   extends StatsigClientBase<SpecsDataAdapter>
   implements OnDeviceEvaluationsInterface
 {
-  private _network: Network;
-  private _options: StatsigOptions;
   private _store: SpecStore;
   private _evaluator: Evaluator;
 
@@ -57,8 +55,6 @@ export default class StatsigOnDeviceEvalClient
     monitorClass(this._errorBoundary, this);
     monitorClass(this._errorBoundary, network);
 
-    this._options = options ?? {};
-    this._network = network;
     this._store = new SpecStore();
     this._evaluator = new Evaluator(this._store);
   }
@@ -89,10 +85,6 @@ export default class StatsigOnDeviceEvalClient
 
     this._store.finalize();
     this._setStatus('Ready', result);
-  }
-
-  async shutdown(): Promise<void> {
-    await this._logger.shutdown();
   }
 
   checkGate(

@@ -1,0 +1,33 @@
+{
+  "name": "session-replay",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/session-replay/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/session-replay",
+        "main": "packages/session-replay/src/index.ts",
+        "tsConfig": "packages/session-replay/tsconfig.lib.json",
+        "assets": ["packages/session-replay/*.md"]
+      }
+    },
+    "publish": {
+      "command": "node tools/scripts/publish.mjs session-replay {args.ver} {args.tag}",
+      "dependsOn": ["build"]
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "packages/session-replay/jest.config.ts"
+      }
+    }
+  },
+  "tags": []
+}

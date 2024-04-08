@@ -105,7 +105,9 @@
       "$_capture": "he",
       "$_client": "ve",
       "$_enqueueAutoCapture": "fe",
-      "$_logAutoCaptureImmediately": "_e"
+      "$_logAutoCaptureImmediately": "_e",
+      "$_context": "ge",
+      "$_rawValues": "be"
     }
   }
 }

@@ -2,9 +2,14 @@ import {
   DynamicConfigEvaluation,
   GateEvaluation,
   LayerEvaluation,
-} from '@statsig/client-core';
+} from './EvaluationTypes';
 
-export type EvaluationResponseWithUpdates = {
+type SessionReplayFields = {
+  can_record_session?: boolean;
+  session_recording_rate?: number;
+};
+
+export type InitializeResponseWithUpdates = SessionReplayFields & {
   feature_gates: Record<string, GateEvaluation>;
   dynamic_configs: Record<string, DynamicConfigEvaluation>;
   layer_configs: Record<string, LayerEvaluation>;
@@ -14,6 +19,6 @@ export type EvaluationResponseWithUpdates = {
   derived_fields?: Record<string, unknown>;
 };
 
-export type EvaluationResponse =
-  | EvaluationResponseWithUpdates
+export type InitializeResponse =
+  | InitializeResponseWithUpdates
   | { has_updates: false };

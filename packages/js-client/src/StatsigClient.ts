@@ -1,22 +1,22 @@
-import type {
+import {
+  DJB2,
   DataAdapterResult,
+  DynamicConfig,
   DynamicConfigEvaluationOptions,
   EvaluationsDataAdapter,
+  Experiment,
   ExperimentEvaluationOptions,
   FeatureGate,
   FeatureGateEvaluationOptions,
-  LayerEvaluationOptions,
-  StatsigUser,
-} from '@statsig/client-core';
-import {
-  DJB2,
-  DynamicConfig,
-  Experiment,
   Layer,
+  LayerEvaluationOptions,
   Log,
+  PrecomputedEvaluationsContext,
   PrecomputedEvaluationsInterface,
+  SessionID,
   StatsigClientBase,
   StatsigEvent,
+  StatsigUser,
   createConfigExposure,
   createGateExposure,
   createLayerParameterExposure,
@@ -37,8 +37,6 @@ export default class StatsigClient
   extends StatsigClientBase<EvaluationsDataAdapter>
   implements PrecomputedEvaluationsInterface
 {
-  private _options: StatsigOptions;
-  private _network: Network;
   private _store: EvaluationStore;
   private _user: StatsigUser;
 
@@ -61,9 +59,7 @@ export default class StatsigClient
     monitorClass(this._errorBoundary, this);
     monitorClass(this._errorBoundary, network);
 
-    this._options = options ?? {};
-    this._store = new EvaluationStore(sdkKey);
-    this._network = network;
+    this._store = new EvaluationStore();
     this._user = user;
   }
 
@@ -73,10 +69,6 @@ export default class StatsigClient
 
   initializeAsync(): Promise<void> {
     return this.updateUserAsync(this._user);
-  }
-
-  getCurrentUser(): StatsigUser {
-    return JSON.parse(JSON.stringify(this._user)) as StatsigUser;
   }
 
   updateUserSync(user: StatsigUser): void {
@@ -112,12 +104,18 @@ export default class StatsigClient
     this._setStatus('Ready', result);
   }
 
-  async shutdown(): Promise<void> {
-    await this._logger.shutdown();
-  }
-
   checkGate(name: string, options?: FeatureGateEvaluationOptions): boolean {
     return this.getFeatureGate(name, options).value;
+  }
+
+  getContext(): PrecomputedEvaluationsContext {
+    return {
+      sdkKey: this._sdkKey,
+      options: this._options,
+      sessionID: SessionID.get(this._sdkKey),
+      values: this._store.getValues(),
+      user: JSON.parse(JSON.stringify(this._user)) as StatsigUser,
+    };
   }
 
   getFeatureGate(

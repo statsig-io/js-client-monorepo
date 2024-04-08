@@ -6,24 +6,32 @@ import {
   DynamicConfigEvaluation,
   EvaluationDetails,
   GateEvaluation,
+  InitializeResponse,
+  InitializeResponseWithUpdates,
   LayerEvaluation,
   typedJsonParse,
 } from '@statsig/client-core';
 
-import { EvaluationResponse } from './EvaluationData';
-
-type EvaluationStoreValues = EvaluationResponse & { has_updates: true };
-
 export default class EvaluationStore {
-  private _values: EvaluationStoreValues | null = null;
+  private _rawValues: string | null = null;
+  private _values: InitializeResponseWithUpdates | null = null;
   private _source: DataSource = 'Uninitialized';
   private _lcut = 0;
   private _receivedAt = 0;
 
-  constructor(private _sdkKey: string) {}
+  getValues(): InitializeResponseWithUpdates | null {
+    return this._rawValues
+      ? typedJsonParse<InitializeResponseWithUpdates>(
+          this._rawValues,
+          'has_updates',
+          'Failed to parse EvaluationStoreValues',
+        )
+      : null;
+  }
 
   reset(): void {
     this._values = null;
+    this._rawValues = null;
     this._source = 'Loading';
     this._lcut = 0;
     this._receivedAt = 0;
@@ -42,7 +50,7 @@ export default class EvaluationStore {
       return;
     }
 
-    const values = typedJsonParse<EvaluationResponse>(
+    const values = typedJsonParse<InitializeResponse>(
       result.data,
       'has_updates',
       'Failed to parse EvaluationResponse',
@@ -52,6 +60,7 @@ export default class EvaluationStore {
       return;
     }
 
+    this._rawValues = result.data;
     this._lcut = values.time;
     this._receivedAt = result.receivedAt;
     this._source = result.source;
