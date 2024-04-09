@@ -23,16 +23,16 @@ export default function (
 
   return useMemo(() => {
     if (isPrecomputedEvalClient(client)) {
-      return client.getExperiment(configName, options);
+      return client.getDynamicConfig(configName, options);
     }
 
     if (options?.user != null) {
-      return client.getExperiment(configName, options.user, options);
+      return client.getDynamicConfig(configName, options.user, options);
     }
 
     Log.warn(
       `useDynamicConfig hook failed to find a valid Statsig client for dynamic config '${configName}'.`,
     );
-    return NoopEvaluationsClient.getExperiment(configName, options);
+    return NoopEvaluationsClient.getDynamicConfig(configName, options);
   }, [configName, renderVersion, options]);
 }
