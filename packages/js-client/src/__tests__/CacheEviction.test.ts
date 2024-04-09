@@ -48,6 +48,7 @@ describe('Cache Eviction', () => {
     );
     expect(Array.from(new Set(keys))).toEqual([
       'statsig.stable_id',
+      'statsig.session_id',
       'statsig.last_modified_time',
       DataAdapterCachePrefix,
     ]);

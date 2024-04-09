@@ -58,15 +58,20 @@ export interface OnDeviceEvaluationsInterface
 export type PrecomputedEvaluationsContext = {
   sdkKey: string;
   options: StatsigOptionsCommon;
-  sessionID: string;
   values: InitializeResponseWithUpdates | null;
   user: StatsigUser;
 };
+
+export type PrecomputedEvaluationsAsyncContext = {
+  sessionID: string;
+  stableID: string;
+} & PrecomputedEvaluationsContext;
 
 export interface PrecomputedEvaluationsInterface
   extends StatsigClientCommonInterface {
   readonly dataAdapter: EvaluationsDataAdapter;
 
+  getAsyncContext(): Promise<PrecomputedEvaluationsAsyncContext>;
   getContext(): PrecomputedEvaluationsContext;
   updateUserSync(user: StatsigUser): void;
   updateUserAsync(user: StatsigUser): Promise<void>;

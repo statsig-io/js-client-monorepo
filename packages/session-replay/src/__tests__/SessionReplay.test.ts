@@ -21,6 +21,11 @@ describe('Session Replay', () => {
         shutdownListener = listener;
       }
     });
+    client.getAsyncContext.mockReturnValue(
+      Promise.resolve({
+        values: { session_recording_rate: 1, can_record_session: true },
+      } as any),
+    );
     client.getContext.mockReturnValue({
       values: { session_recording_rate: 1, can_record_session: true },
     } as any);

@@ -44,6 +44,13 @@ const _noopDataAdapter: EvaluationsDataAdapter & SpecsDataAdapter = {
   prefetchData: _noopAsync,
 };
 
+const context = {
+  sdkKey: '',
+  options: {},
+  values: null,
+  user: { userID: '' },
+};
+
 const _client: OnDeviceEvaluationsInterface &
   PrecomputedEvaluationsInterface & { isNoop: true } = {
   isNoop: true,
@@ -56,11 +63,12 @@ const _client: OnDeviceEvaluationsInterface &
   updateUserSync: _noop,
   updateUserAsync: _noopAsync,
   getContext: () => ({
-    sdkKey: '',
+    ...context,
+  }),
+  getAsyncContext: async () => ({
+    ...context,
     sessionID: '',
-    options: {},
-    values: null,
-    user: { userID: '' },
+    stableID: '',
   }),
   checkGate: () => false,
   getFeatureGate: _defaultEvaluation<FeatureGate>('gate'),

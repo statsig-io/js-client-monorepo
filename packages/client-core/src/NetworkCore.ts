@@ -60,7 +60,7 @@ export class NetworkCore {
   }
 
   async beacon(args: RequestArgsWithData): Promise<boolean> {
-    const url = this._getPopulatedURL(args);
+    const url = await this._getPopulatedURL(args);
     const body = await this._getPopulatedBody(args);
     return navigator.sendBeacon(url, body);
   }
@@ -75,7 +75,7 @@ export class NetworkCore {
       () => controller.abort(`Timeout of ${this._timeout}ms expired.`),
       this._timeout,
     );
-    const url = this._getPopulatedURL(args);
+    const url = await this._getPopulatedURL(args);
 
     let response: Response | null = null;
     try {
@@ -128,7 +128,7 @@ export class NetworkCore {
     }
   }
 
-  private _getPopulatedURL(args: RequestArgs): string {
+  private async _getPopulatedURL(args: RequestArgs): Promise<string> {
     const metadata = StatsigMetadataProvider.get();
 
     const params = {
@@ -136,7 +136,7 @@ export class NetworkCore {
       st: metadata.sdkType,
       sv: metadata.sdkVersion,
       t: String(Date.now()),
-      sid: SessionID.get(args.sdkKey),
+      sid: await SessionID.get(args.sdkKey),
       ...args.params,
     };
 
@@ -152,7 +152,7 @@ export class NetworkCore {
   private async _getPopulatedBody(args: RequestArgsWithData): Promise<string> {
     const { data } = args;
     const stableID = await StableID.get(args.sdkKey);
-    const sessionID = SessionID.get(args.sdkKey);
+    const sessionID = await SessionID.get(args.sdkKey);
     return JSON.stringify({
       ...data,
       statsigMetadata: {

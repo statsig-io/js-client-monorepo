@@ -72,18 +72,24 @@ export class SessionReplay {
     });
 
     const { sdkVersion } = StatsigMetadataProvider.get();
-
-    this._client.logEvent({
-      eventName: 'statsig::session_recording',
-      value: this._client.getContext().sessionID,
-      metadata: {
-        session_start_ts: String(data.startTime),
-        session_end_ts: String(data.endTime),
-        clicks_captured_cumulative: String(data.clickCount),
-        rrweb_events: payload,
-        session_replay_sdk_version: sdkVersion,
-      },
-    });
+    this._client
+      .getAsyncContext()
+      .then((context) => {
+        this._client.logEvent({
+          eventName: 'statsig::session_recording',
+          value: context.sessionID,
+          metadata: {
+            session_start_ts: String(data.startTime),
+            session_end_ts: String(data.endTime),
+            clicks_captured_cumulative: String(data.clickCount),
+            rrweb_events: payload,
+            session_replay_sdk_version: sdkVersion,
+          },
+        });
+      })
+      .catch((err) => {
+        Log.error(err);
+      });
 
     this._events = [];
   }

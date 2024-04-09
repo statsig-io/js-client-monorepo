@@ -14,6 +14,7 @@ function getBaseMock<T>(): T {
     flush: jest.fn(),
     checkGate: jest.fn(),
     getContext: jest.fn(),
+    getAsyncContext: jest.fn(),
     getFeatureGate: jest.fn(),
     getDynamicConfig: jest.fn(),
     getExperiment: jest.fn(),

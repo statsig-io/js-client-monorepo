@@ -11,9 +11,11 @@ import {
   Layer,
   LayerEvaluationOptions,
   Log,
+  PrecomputedEvaluationsAsyncContext,
   PrecomputedEvaluationsContext,
   PrecomputedEvaluationsInterface,
   SessionID,
+  StableID,
   StatsigClientBase,
   StatsigEvent,
   StatsigUser,
@@ -112,9 +114,16 @@ export default class StatsigClient
     return {
       sdkKey: this._sdkKey,
       options: this._options,
-      sessionID: SessionID.get(this._sdkKey),
       values: this._store.getValues(),
       user: JSON.parse(JSON.stringify(this._user)) as StatsigUser,
+    };
+  }
+
+  async getAsyncContext(): Promise<PrecomputedEvaluationsAsyncContext> {
+    return {
+      ...this.getContext(),
+      sessionID: await SessionID.get(this._sdkKey),
+      stableID: await StableID.get(this._sdkKey),
     };
   }
 
