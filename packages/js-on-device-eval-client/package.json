@@ -1,9 +1,9 @@
 {
   "name": "@statsig/js-on-device-eval-client",
-  "version": "0.0.1-beta.23",
+  "version": "0.0.1-beta.24",
   "dependencies": {
-    "@statsig/client-core": "0.0.1-beta.23",
-    "@statsig/sha256": "0.0.1-beta.23"
+    "@statsig/client-core": "0.0.1-beta.24",
+    "@statsig/sha256": "0.0.1-beta.24"
   },
   "jsdelivr": "./build/statsig-js-on-device-eval-client.min.js",
   "type": "commonjs",

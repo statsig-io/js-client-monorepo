@@ -1,7 +1,7 @@
 {
   "private": "true",
   "name": "combination-tests",
-  "version": "0.0.1-beta.23",
+  "version": "0.0.1-beta.24",
   "dependencies": {},
   "type": "commonjs",
   "main": "./src/index.js",

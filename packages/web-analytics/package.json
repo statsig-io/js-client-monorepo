@@ -1,9 +1,9 @@
 {
   "name": "@statsig/web-analytics",
-  "version": "0.0.1-beta.23",
+  "version": "0.0.1-beta.24",
   "dependencies": {
-    "@statsig/client-core": "0.0.1-beta.23",
-    "@statsig/js-client": "0.0.1-beta.23"
+    "@statsig/client-core": "0.0.1-beta.24",
+    "@statsig/js-client": "0.0.1-beta.24"
   },
   "jsdelivr": "./build/statsig-web-analytics.min.js",
   "type": "commonjs",
