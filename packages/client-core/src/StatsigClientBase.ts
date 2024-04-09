@@ -80,8 +80,10 @@ export abstract class StatsigClientBase<
 
     __STATSIG__ = __STATSIG__ ?? {};
     const instances = __STATSIG__.instances ?? {};
-    instances[sdkKey] = this as unknown as StatsigClientInterface;
+    const inst = this as unknown as StatsigClientInterface;
+    instances[sdkKey] = inst;
     __STATSIG__.instances = instances;
+    __STATSIG__.lastInstance = inst;
 
     this.dataAdapter = adapter;
     this.dataAdapter.attach(sdkKey, options);

@@ -87,6 +87,18 @@ export default class StatsigOnDeviceEvalClient
     this._setStatus('Ready', result);
   }
 
+  public static instance(
+    sdkKey?: string,
+  ): StatsigOnDeviceEvalClient | undefined {
+    __STATSIG__ = __STATSIG__ ?? {};
+    if (sdkKey == null) {
+      return __STATSIG__.lastInstance as StatsigOnDeviceEvalClient | undefined;
+    }
+    return __STATSIG__.instances?.[sdkKey] as
+      | StatsigOnDeviceEvalClient
+      | undefined;
+  }
+
   checkGate(
     name: string,
     user: StatsigUser,

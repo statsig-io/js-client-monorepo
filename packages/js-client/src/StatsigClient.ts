@@ -65,6 +65,14 @@ export default class StatsigClient
     this._user = user;
   }
 
+  public static instance(sdkKey?: string): StatsigClient | undefined {
+    __STATSIG__ = __STATSIG__ ?? {};
+    if (sdkKey == null) {
+      return __STATSIG__.lastInstance as StatsigClient | undefined;
+    }
+    return __STATSIG__.instances?.[sdkKey] as StatsigClient | undefined;
+  }
+
   initializeSync(): void {
     this.updateUserSync(this._user);
   }
