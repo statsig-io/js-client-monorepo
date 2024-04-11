@@ -36,8 +36,8 @@ describe('StableID', () => {
       expect(stableID).toMatch(UUID_V4_REGEX);
     });
 
-    it('persists to storage', () => {
-      const found = storageMock.getItem(STORAGE_KEY) ?? 'ERROR';
+    it('persists to storage', async () => {
+      const found = (await storageMock.getItem(STORAGE_KEY)) ?? 'ERROR';
       expect(JSON.parse(found)).toBe(stableID);
     });
 
@@ -62,8 +62,8 @@ describe('StableID', () => {
       expect(stableID).toEqual(existingStableID);
     });
 
-    it('still has the same value in storage', () => {
-      const found = storageMock.getItem(STORAGE_KEY) ?? 'ERROR';
+    it('still has the same value in storage', async () => {
+      const found = (await storageMock.getItem(STORAGE_KEY)) ?? 'ERROR';
       expect(JSON.parse(found)).toBe(existingStableID);
     });
 

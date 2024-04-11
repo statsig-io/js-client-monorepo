@@ -6,6 +6,7 @@ import { EventLogger } from './EventLogger';
 import { Log, LogLevel } from './Log';
 import { NetworkCore } from './NetworkCore';
 import { OverrideAdapter } from './OverrideAdapter';
+import { SessionID } from './SessionID';
 import { StableID } from './StableID';
 import {
   StatsigClientEvent,
@@ -76,6 +77,9 @@ export abstract class StatsigClientBase<
       network,
       options,
     );
+    SessionID._setEmitFunction(() => {
+      this._emit({ name: 'session_expired' });
+    }, sdkKey);
     this._errorBoundary = new ErrorBoundary(sdkKey);
 
     __STATSIG__ = __STATSIG__ ?? {};

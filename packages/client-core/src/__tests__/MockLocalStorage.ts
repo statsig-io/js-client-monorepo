@@ -24,8 +24,8 @@ export class MockLocalStorage {
     this.data = {};
   }
 
-  getItem(key: string): string | null {
-    return this.data[key] ? this.data[key] : null;
+  async getItem(key: string): Promise<string | null> {
+    return Promise.resolve(this.data[key] ? this.data[key] : null);
   }
 
   setItem(key: string, value: string): void {

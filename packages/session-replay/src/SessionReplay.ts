@@ -16,13 +16,35 @@ export class SessionReplay {
   private _replayer: SessionReplayClient;
   private _sessionData: ReplaySessionData | null = null;
   private _events: ReplayEvent[] = [];
+  private _sessionID = '';
 
   constructor(private _client: PrecomputedEvaluationsInterface) {
     this._replayer = new SessionReplayClient();
     this._client.on('pre_shutdown', () => this._shutdown());
     this._client.on('values_updated', () => this._attemptToStartRecording());
+    this._client.on('session_expired', () => {
+      this._replayer.stop();
+      StatsigMetadataProvider.add({ isRecordingSession: 'false' });
+      this._flushWithSessionID(this._sessionID);
+      this._client
+        .getAsyncContext()
+        .then((context) => {
+          this._sessionID = context.sessionID;
+        })
+        .catch((err) => {
+          Log.error(err);
+        });
+    });
 
-    this._attemptToStartRecording();
+    this._client
+      .getAsyncContext()
+      .then((context) => {
+        this._sessionID = context.sessionID;
+        this._attemptToStartRecording();
+      })
+      .catch((err) => {
+        Log.error(err);
+      });
   }
 
   private _onRecordingEvent(event: ReplayEvent, data: ReplaySessionData) {
@@ -36,6 +58,7 @@ export class SessionReplay {
   }
 
   private _attemptToStartRecording() {
+    this._shutdown(); // Flush and end the previous session if any
     const values = this._client.getContext().values;
 
     if (values?.can_record_session !== true) {
@@ -65,12 +88,27 @@ export class SessionReplay {
     this._flush(payload, this._sessionData);
   }
 
-  private _flush(payload: string, data: ReplaySessionData) {
-    // prevent blowing up the log queue
-    this._client.flush().catch((err) => {
-      Log.error(err);
+  private _flushWithSessionID(sessionID: string) {
+    if (this._events.length === 0 || this._sessionData == null) {
+      return;
+    }
+    const data = this._sessionData;
+    const payload = JSON.stringify(this._events);
+    const { sdkVersion } = StatsigMetadataProvider.get();
+    this._client.logEvent({
+      eventName: 'statsig::session_recording',
+      value: sessionID,
+      metadata: {
+        session_start_ts: String(data.startTime),
+        session_end_ts: String(data.endTime),
+        clicks_captured_cumulative: String(data.clickCount),
+        rrweb_events: payload,
+        session_replay_sdk_version: sdkVersion,
+      },
     });
+  }
 
+  private _flush(payload: string, data: ReplaySessionData) {
     const { sdkVersion } = StatsigMetadataProvider.get();
     this._client
       .getAsyncContext()

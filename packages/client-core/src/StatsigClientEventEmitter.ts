@@ -9,6 +9,7 @@ type EventNameToEventDataMap = {
     status: StatsigLoadingStatus;
     values: DataAdapterResult | null;
   };
+  session_expired: object;
   error: { error: unknown };
   logs_flushed: { events: Record<string, unknown>[] };
   pre_shutdown: object;

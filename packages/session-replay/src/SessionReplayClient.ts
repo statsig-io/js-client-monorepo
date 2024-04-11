@@ -3,7 +3,7 @@ import { EventType, IncrementalSource, MouseInteractions, record } from 'rrweb';
 
 import { Flatten } from '@statsig/client-core';
 
-const TIMEOUT_MS = 1000 * 60 * 30;
+const TIMEOUT_MS = 1000 * 60 * 60 * 4; // 4 hours
 
 export type ReplayEvent = Flatten<eventWithTime>;
 
