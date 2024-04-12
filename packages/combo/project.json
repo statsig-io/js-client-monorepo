@@ -1,0 +1,89 @@
+{
+  "name": "statsig-combo",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/combo/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "command": ":",
+      "dependsOn": [
+        "^build",
+        "build-webpack-js-client+session-replay+web-analytics",
+        "build-webpack-js-client+web-analytics",
+        "build-webpack-js-client"
+      ]
+    },
+    "copy-js-min-bundles": {
+      "command": "cp -r dist/packages/combo/build dist/packages/js-client/build",
+      "dependsOn": ["build"]
+    },
+    "build-ts": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/combo",
+        "main": "packages/combo/src/index.ts",
+        "tsConfig": "packages/combo/tsconfig.lib.json",
+        "assets": []
+      }
+    },
+    "build-webpack-js-client+session-replay+web-analytics": {
+      "executor": "@nx/webpack:webpack",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
+      "options": {
+        "statsJson": true,
+        "verbose": true,
+        "outputPath": "overridden in webpack config",
+        "main": "overridden in webpack config",
+        "tsConfig": "packages/combo/tsconfig.lib.json",
+        "webpackConfig": "packages/combo/webpack[js-client+session-replay+web-analytics].config.js"
+      },
+      "dependsOn": [
+        "build-ts",
+        "js-client:build",
+        "session-replay:build",
+        "web-analytics:build"
+      ]
+    },
+    "build-webpack-js-client+web-analytics": {
+      "executor": "@nx/webpack:webpack",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
+      "options": {
+        "statsJson": true,
+        "verbose": true,
+        "outputPath": "overridden in webpack config",
+        "main": "overridden in webpack config",
+        "tsConfig": "packages/combo/tsconfig.lib.json",
+        "webpackConfig": "packages/combo/webpack[js-client+web-analytics].config.js"
+      },
+      "dependsOn": ["build-ts", "js-client:build", "web-analytics:build"]
+    },
+    "build-webpack-js-client": {
+      "executor": "@nx/webpack:webpack",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
+      "options": {
+        "statsJson": true,
+        "verbose": true,
+        "outputPath": "overridden in webpack config",
+        "main": "overridden in webpack config",
+        "tsConfig": "packages/combo/tsconfig.lib.json",
+        "webpackConfig": "packages/combo/webpack[js-client].config.js"
+      },
+      "dependsOn": ["build-ts", "js-client:build"]
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "packages/combo/jest.config.ts"
+      }
+    }
+  },
+  "tags": []
+}

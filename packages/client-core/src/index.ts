@@ -3,6 +3,7 @@ import './$_StatsigGlobal';
 import { EventLogger } from './EventLogger';
 import { Log } from './Log';
 import { Storage } from './StorageProvider';
+import { getUUID } from './UUID';
 
 export * from './$_StatsigGlobal';
 export * from './ClientInterfaces';
@@ -39,5 +40,6 @@ __STATSIG__ = {
   ...(__STATSIG__ ?? {}),
   EventLogger,
   Log,
+  getUUID,
   Storage,
 };

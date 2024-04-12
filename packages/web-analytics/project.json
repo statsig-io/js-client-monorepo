@@ -6,7 +6,7 @@
   "targets": {
     "build": {
       "command": ":",
-      "dependsOn": ["^build", "build-webpack"]
+      "dependsOn": ["^build", "build-ts"]
     },
     "build-ts": {
       "executor": "@nx/js:tsc",
@@ -31,20 +31,6 @@
       "options": {
         "jestConfig": "packages/web-analytics/jest.config.ts"
       }
-    },
-    "build-webpack": {
-      "executor": "@nx/webpack:webpack",
-      "outputs": ["{options.outputPath}"],
-      "defaultConfiguration": "production",
-      "options": {
-        "statsJson": true,
-        "verbose": true,
-        "outputPath": "overridden in webpack config",
-        "main": "overridden in webpack config",
-        "tsConfig": "packages/web-analytics/tsconfig.lib.json",
-        "webpackConfig": "packages/web-analytics/webpack.config.js"
-      },
-      "dependsOn": ["build-ts"]
     }
   },
   "tags": []

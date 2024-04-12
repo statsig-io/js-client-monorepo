@@ -5,7 +5,7 @@ const { execSync } = require('child_process');
 execSync(
   [
     'cp',
-    './dist/packages/js-client/build/statsig-js-client.min.js',
+    './dist/packages/combo/build/statsig-js-client.min.js',
     './samples/web-minified/src/assets/statsig-js-client.min.js',
   ].join(' '),
 );
@@ -24,14 +24,14 @@ execSync(
 
 console.log('statsig-js-on-device-eval-client.min.js copied');
 
-// web-analytics
+// js-client+session-replay+web-analytics
 
 execSync(
   [
     'cp',
-    './dist/packages/web-analytics/build/statsig-web-analytics.min.js',
-    './samples/web-minified/src/assets/statsig-web-analytics.min.js',
+    './dist/packages/combo/build/statsig-js-client+session-replay+web-analytics.min.js',
+    './samples/web-minified/src/assets/statsig-js-client+session-replay+web-analytics.min.js',
   ].join(' '),
 );
 
-console.log('statsig-web-analytics.min.js copied');
+console.log('statsig-js-client+session-replay+web-analytics.min.js copied');

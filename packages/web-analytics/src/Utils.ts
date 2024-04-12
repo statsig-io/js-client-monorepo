@@ -147,6 +147,7 @@ function _getAnchorNodeInHierarchy(node: Element | null): Element | null {
   if (!node) {
     return null;
   }
+
   let parent: Element | null = node;
   while (parent) {
     const parentTagName = parent.tagName.toLowerCase();
@@ -158,6 +159,7 @@ function _getAnchorNodeInHierarchy(node: Element | null): Element | null {
     }
     parent = parent.parentElement;
   }
+
   return null;
 }
 
@@ -166,7 +168,6 @@ function _setLocalValue(key: string, value: string): void {
     window.localStorage.setItem(key, value);
   } else {
     globals[key] = value;
-
     Log.error('Statsig Web AutoCapture: No window.localStorage');
   }
 }

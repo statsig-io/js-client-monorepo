@@ -15,10 +15,7 @@ export class AutoCapture {
   private _startTime = Date.now();
   private _deepestScroll = 0;
 
-  constructor(
-    private _sdkKey: string,
-    private _client: StatsigClient,
-  ) {
+  constructor(private _client: StatsigClient) {
     if (typeof document !== 'undefined' && document.readyState === 'loading') {
       document.addEventListener('DOMContentLoaded', () => this._initialize());
       return;
@@ -166,7 +163,7 @@ export class AutoCapture {
       eventName: `auto_capture::${name}`,
       value,
       metadata: {
-        sessionId: getWebSessionId(this._sdkKey),
+        sessionId: getWebSessionId(this._client.getContext().sdkKey),
         page_url: window?.location?.href || '',
         ...metadata,
       },

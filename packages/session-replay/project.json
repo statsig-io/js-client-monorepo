@@ -5,6 +5,10 @@
   "projectType": "library",
   "targets": {
     "build": {
+      "command": ":",
+      "dependsOn": ["^build", "build-ts"]
+    },
+    "build-ts": {
       "executor": "@nx/js:tsc",
       "outputs": ["{options.outputPath}"],
       "options": {
@@ -14,6 +18,7 @@
         "assets": ["packages/session-replay/*.md"]
       }
     },
+
     "publish": {
       "command": "ts-node ./tools/scripts/publish.ts session-replay",
       "dependsOn": ["build"]

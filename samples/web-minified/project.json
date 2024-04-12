@@ -59,16 +59,7 @@
     },
     "include-min-libs": {
       "command": "pnpm copy-min-libs",
-      "dependsOn": ["include-js-client", "include-js-on-device-eval-client", "include-web-analytics"]
-    },
-    "include-js-client": {
-      "command": "pnpm exec nx run js-client:build"
-    },
-    "include-js-on-device-eval-client": {
-      "command": "pnpm exec nx run js-on-device-eval-client:build"
-    },
-    "include-web-analytics": {
-      "command": "pnpm exec nx run web-analytics:build"
+      "dependsOn": ["statsig-combo:copy-js-min-bundles"]
     }
   }
 }

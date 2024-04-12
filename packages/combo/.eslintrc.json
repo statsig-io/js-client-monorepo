@@ -24,11 +24,7 @@
             "ignoredDependencies": [
               "jest-fetch-mock",
               "statsig-test-helpers",
-              "@statsig/js-client",
-              "@statsig/js-on-device-eval-client",
-              "@statsig/client-core",
-              "@statsig/js-local-overrides",
-              "@statsig/js-user-persisted-storage"
+              "@nx/webpack"
             ]
           }
         ]

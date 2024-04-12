@@ -6,11 +6,11 @@
   "targets": {
     "build": {
       "command": ":",
-      "dependsOn": ["^build", "build-webpack"]
+      "dependsOn": ["^build", "build-ts", "copy-js-min-bundles"]
     },
     "publish": {
       "command": "ts-node ./tools/scripts/publish.ts js-client",
-      "dependsOn": ["build", "^build-webpack"]
+      "dependsOn": ["statsig-combo:build", "verify-min-files"]
     },
     "lint": {
       "executor": "@nx/eslint:lint",
@@ -33,19 +33,16 @@
         "assets": ["packages/js-client/*.md"]
       }
     },
-    "build-webpack": {
-      "executor": "@nx/webpack:webpack",
-      "outputs": ["{options.outputPath}"],
-      "defaultConfiguration": "production",
+    "verify-min-files": {
+      "executor": "nx:run-commands",
       "options": {
-        "statsJson": true,
-        "verbose": true,
-        "outputPath": "overridden in webpack config",
-        "main": "overridden in webpack config",
-        "tsConfig": "packages/js-client/tsconfig.lib.json",
-        "webpackConfig": "packages/js-client/webpack.config.js"
-      },
-      "dependsOn": ["build-ts"]
+        "commands": [
+          "test -f dist/packages/js-client/build/statsig-js-client.min.js || exit 1;",
+          "test -f dist/packages/js-client/build/statsig-js-client+session-replay+web-analytics.min.js || exit 1;",
+          "test -f dist/packages/js-client/build/statsig-js-client+web-analytics.min.js || exit 1;"
+        ],
+        "parallel": true
+      }
     }
   },
   "tags": []
