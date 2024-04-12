@@ -42,7 +42,8 @@
           "test -f dist/packages/js-client/build/statsig-js-client+web-analytics.min.js || exit 1;"
         ],
         "parallel": true
-      }
+      },
+      "dependsOn": ["statsig-combo:copy-js-min-bundles"]
     }
   },
   "tags": []

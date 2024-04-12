@@ -20,7 +20,7 @@
     },
     "publish": {
       "command": "ts-node ./tools/scripts/publish.ts js-on-device-eval-client",
-      "dependsOn": ["statsig-combo:copy-js-min-bundles", "verify-min-files"]
+      "dependsOn": ["verify-min-files"]
     },
     "lint": {
       "executor": "@nx/eslint:lint",
@@ -40,7 +40,8 @@
           "test -f dist/packages/js-on-device-eval-client/build/statsig-js-on-device-eval-client.min.js || exit 1;"
         ],
         "parallel": true
-      }
+      },
+      "dependsOn": ["statsig-combo:copy-js-min-bundles"]
     }
   },
   "tags": []

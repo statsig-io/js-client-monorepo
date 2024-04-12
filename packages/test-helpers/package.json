@@ -1,9 +1,9 @@
 {
   "private": true,
   "name": "statsig-test-helpers",
-  "version": "0.0.1-beta.24",
+  "version": "0.0.1-beta.25",
   "dependencies": {
-    "@statsig/client-core": "0.0.1-beta.24",
+    "@statsig/client-core": "0.0.1-beta.25",
     "@jest/globals": "29.7.0"
   },
   "type": "commonjs",

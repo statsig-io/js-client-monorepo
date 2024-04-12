@@ -8,21 +8,9 @@ function sync(subpath) {
 
   let content = fs.readFileSync(filepath).toString();
 
-  const regexes = [
-    '@statsig/client-core',
-    '@statsig/sha256',
-    '@statsig/react-bindings',
-    '@statsig/react-native-bindings',
-    '@statsig/react-native-core',
-    '@statsig/expo-bindings',
-    '@statsig/js-client',
-    '@statsig/js-on-device-eval-client',
-    '@statsig/web-analytics',
-  ].map((mod) => new RegExp(`(${mod}": ")([^"]*)`));
+  const regex = /("@statsig\/[^":]+":\s*")([^"]+)(")/g;
 
-  regexes.forEach((regex) => {
-    content = content.replace(regex, `$1${version}`);
-  });
+  content = content.replace(regex, `$1${version}$3`);
 
   fs.writeFileSync(filepath, content);
 }
