@@ -1,24 +1,26 @@
 /* eslint-disable no-console */
 import { StatsigClient } from '@statsig/js-client';
-import { SessionReplay } from '@statsig/session-replay';
-import { AutoCapture } from '@statsig/web-analytics';
+import { runStatsigSessionReplay } from '@statsig/session-replay';
+import { runStatsigAutoCapture } from '@statsig/web-analytics';
 
 import { STATSIG_CLIENT_KEY as YOUR_CLIENT_KEY } from '../../Contants';
 
 type Bundle = {
-  SessionReplay: typeof SessionReplay;
-  AutoCapture: typeof AutoCapture;
   StatsigClient: typeof StatsigClient;
+  runStatsigSessionReplay: typeof runStatsigSessionReplay;
+  runStatsigAutoCapture: typeof runStatsigAutoCapture;
 };
 
-class Dummy {}
+const noop = () => {
+  //
+};
 
 const window = {
   myStatsigClient: {} as StatsigClient,
   Statsig: {
     StatsigClient,
-    AutoCapture,
-    SessionReplay: Dummy as unknown as SessionReplay,
+    runStatsigSessionReplay: noop,
+    runStatsigAutoCapture: noop,
   } as unknown as Bundle,
 };
 
@@ -33,12 +35,12 @@ export default async function Sample(): Promise<void> {
   {
     (() => {
       // <snippet>
-  const { StatsigClient, AutoCapture, SessionReplay } = window.Statsig;
+  const { StatsigClient, runStatsigAutoCapture, runStatsigSessionReplay } = window.Statsig;
 
   const client = new StatsigClient(YOUR_CLIENT_KEY, { userID: 'a-user' });
 
-  new AutoCapture(client);
-  new SessionReplay(client);
+  runStatsigAutoCapture(client);
+  runStatsigSessionReplay(client);
 
   client.initializeAsync().catch((err) => console.error(err));
       // </snippet>

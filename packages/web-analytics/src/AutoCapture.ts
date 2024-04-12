@@ -11,11 +11,22 @@ import {
   shouldLogEvent,
 } from './Utils';
 
+export function runStatsigAutoCapture(client: StatsigClient): void {
+  new AutoCapture(client);
+}
+
 export class AutoCapture {
   private _startTime = Date.now();
   private _deepestScroll = 0;
 
   constructor(private _client: StatsigClient) {
+    const { sdkKey } = _client.getContext();
+
+    __STATSIG__ = __STATSIG__ ?? {};
+    const instances = __STATSIG__.acInstances ?? {};
+    instances[sdkKey] = this;
+    __STATSIG__.acInstances = instances;
+
     if (typeof document !== 'undefined' && document.readyState === 'loading') {
       document.addEventListener('DOMContentLoaded', () => this._initialize());
       return;

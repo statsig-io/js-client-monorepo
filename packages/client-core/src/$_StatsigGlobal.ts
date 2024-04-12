@@ -8,6 +8,8 @@ export type StatsigGlobal = {
   [key: string]: unknown;
   instances?: Record<string, StatsigClientInterface>;
   lastInstance?: StatsigClientInterface;
+  acInstances?: Record<string, unknown>;
+  srInstances?: Record<string, unknown>;
 };
 
 declare global {

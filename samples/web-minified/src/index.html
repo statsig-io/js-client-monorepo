@@ -12,21 +12,21 @@
   <script src="assets/statsig-js-on-device-eval-client.min.js"></script> -->
   <!-- <script src="assets/statsig-js-client+session-replay+web-analytics.min.js?sdkKey=client-rfLvYGag3eyU0jYW5zcIJTQip7GXxSrhOFN69IGMjvq"></script> -->
   <script src="assets/statsig-js-client+session-replay+web-analytics.min.js"></script>
-  <script>
-    const { StatsigClient, AutoCapture, SessionReplay } = window.Statsig;
+  <!-- <script>
+    const { StatsigClient, runStatsigAutoCapture, runStatsigSessionReplay } = window.Statsig;
     
     const client = new StatsigClient(
       'client-rfLvYGag3eyU0jYW5zcIJTQip7GXxSrhOFN69IGMjvq', 
       { userID: 'a-user' }
     );
 
-    new SessionReplay(client);
-    new AutoCapture(client);
+    runStatsigSessionReplay(client);
+    runStatsigAutoCapture(client);
 
     client.initializeAsync().catch((err) => {
       console.error(err);
     });
-  </script>
+  </script> -->
   <!-- <script src="assets/statsig-web-analytics.min.js?sdkKey=client-rfLvYGag3eyU0jYW5zcIJTQip7GXxSrhOFN69IGMjvq"></script> -->
   <!-- <script src="https://cdn.jsdelivr.net/npm/@statsig/js-client@0.0.1-beta.12/build/statsig-js-client.min.js"></script> -->
 </head>

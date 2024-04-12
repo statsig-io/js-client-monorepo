@@ -12,6 +12,12 @@ import {
 
 const MAX_REPLAY_PAYLOAD_BYTES = 2048;
 
+export function runStatsigSessionReplay(
+  client: PrecomputedEvaluationsInterface,
+): void {
+  new SessionReplay(client);
+}
+
 export class SessionReplay {
   private _replayer: SessionReplayClient;
   private _sessionData: ReplaySessionData | null = null;
@@ -19,6 +25,12 @@ export class SessionReplay {
   private _sessionID = '';
 
   constructor(private _client: PrecomputedEvaluationsInterface) {
+    const { sdkKey } = _client.getContext();
+    __STATSIG__ = __STATSIG__ ?? {};
+    const instances = __STATSIG__.srInstances ?? {};
+    instances[sdkKey] = this;
+    __STATSIG__.srInstances = instances;
+
     this._replayer = new SessionReplayClient();
     this._client.on('pre_shutdown', () => this._shutdown());
     this._client.on('values_updated', () => this._attemptToStartRecording());

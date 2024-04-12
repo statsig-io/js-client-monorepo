@@ -66,12 +66,15 @@ const client = new StatsigClient(DEMO_CLIENT_KEY, { userID: 'a-user' });
     );
   });
 
+  console.warn('------ DO NOT BE FOOLED -------');
+  console.warn('The following is a test for Error Boundary');
   client.dataAdapter.getDataSync = 1;
   client.updateUserSync({ userID: 'b-user' });
 
   // SDK Exception
   test('logged to sdk_exception', () =>
     requests[3].url.startsWith('https://statsigapi.net/v1/sdk_exception'));
+  console.warn('------ DO NOT BE FOOLED -------');
 
   clearTimeout(timeout);
   test('test timeout', () => true);
