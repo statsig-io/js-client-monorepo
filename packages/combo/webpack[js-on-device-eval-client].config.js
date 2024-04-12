@@ -1,12 +1,12 @@
 const { createStatsigWebpackBundle } = require('./statsig-webpack-bundler');
 
 module.exports = createStatsigWebpackBundle({
-  bundleFile: 'js-client+web-analytics',
-  maxByteSize: 45_000,
+  bundleFile: 'js-on-device-eval-client',
+  maxByteSize: 48_000,
   dependencies: [
     '@statsig/client-core',
-    '@statsig/js-client',
-    '@statsig/web-analytics',
+    '@statsig/js-on-device-eval-client',
+    '@statsig/sha256',
   ],
-  client: 'js-client',
+  client: 'js-on-device-eval-client',
 });

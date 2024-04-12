@@ -5,7 +5,10 @@ const minifier = require('../../tools/scripts/webpack-minifier');
 const DEP_MAP = {
   '@statsig/client-core': '../../dist/packages/client-core',
   '@statsig/js-client': '../../dist/packages/js-client',
+  '@statsig/js-on-device-eval-client':
+    '../../dist/packages/js-on-device-eval-client',
   '@statsig/session-replay': '../../dist/packages/session-replay',
+  '@statsig/sha256': '../../dist/packages/sha256',
   '@statsig/web-analytics': '../../dist/packages/web-analytics',
   rrweb: '../../packages/session-replay/node_modules/rrweb',
 };
@@ -19,7 +22,12 @@ const DEP_MAP = {
  * @param {string[]} args.dependencies - An array of dependency names to include in the bundle, limited to 'foo', 'bar', and 'boo'.
  * @returns {Promise<string>} A promise resolving to the path of the generated bundle file if successful, or rejecting with an error if the process fails.
  */
-function createStatsigWebpackBundle({ bundleFile, maxByteSize, dependencies }) {
+function createStatsigWebpackBundle({
+  bundleFile,
+  maxByteSize,
+  dependencies,
+  client,
+}) {
   const alias = {};
 
   Object.values(dependencies ?? []).forEach((dep) => {
@@ -60,7 +68,11 @@ function createStatsigWebpackBundle({ bundleFile, maxByteSize, dependencies }) {
             commonjs: 'Statsig',
           },
         },
-        path: path.resolve(__dirname, '../../dist/packages/combo/build'),
+        path: path.resolve(
+          __dirname,
+          '../../dist/packages/combo/build',
+          client,
+        ),
         libraryExport: 'default',
         globalObject: 'this',
       },

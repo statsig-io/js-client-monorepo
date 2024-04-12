@@ -10,11 +10,19 @@
         "^build",
         "build-webpack-js-client+session-replay+web-analytics",
         "build-webpack-js-client+web-analytics",
-        "build-webpack-js-client"
+        "build-webpack-js-client",
+        "build-webpack-js-on-device-eval-client"
       ]
     },
     "copy-js-min-bundles": {
-      "command": "cp -r dist/packages/combo/build dist/packages/js-client/build",
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "cp -r dist/packages/combo/build/js-client dist/packages/js-client/build",
+          "cp -r dist/packages/combo/build/js-on-device-eval-client dist/packages/js-on-device-eval-client/build"
+        ],
+        "parallel": true
+      },
       "dependsOn": ["build"]
     },
     "build-ts": {
@@ -73,6 +81,21 @@
         "webpackConfig": "packages/combo/webpack[js-client].config.js"
       },
       "dependsOn": ["build-ts", "js-client:build"]
+    },
+
+    "build-webpack-js-on-device-eval-client": {
+      "executor": "@nx/webpack:webpack",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
+      "options": {
+        "statsJson": true,
+        "verbose": true,
+        "outputPath": "overridden in webpack config",
+        "main": "overridden in webpack config",
+        "tsConfig": "packages/combo/tsconfig.lib.json",
+        "webpackConfig": "packages/combo/webpack[js-on-device-eval-client].config.js"
+      },
+      "dependsOn": ["build-ts", "js-on-device-eval-client:build"]
     },
     "lint": {
       "executor": "@nx/eslint:lint"

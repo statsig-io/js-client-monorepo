@@ -6,11 +6,11 @@
   "targets": {
     "build": {
       "command": ":",
-      "dependsOn": ["^build", "build-ts", "copy-js-min-bundles"]
+      "dependsOn": ["^build", "build-ts"]
     },
     "publish": {
       "command": "ts-node ./tools/scripts/publish.ts js-client",
-      "dependsOn": ["statsig-combo:build", "verify-min-files"]
+      "dependsOn": ["statsig-combo:copy-js-min-bundles", "verify-min-files"]
     },
     "lint": {
       "executor": "@nx/eslint:lint",

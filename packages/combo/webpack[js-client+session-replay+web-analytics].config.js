@@ -10,4 +10,5 @@ module.exports = createStatsigWebpackBundle({
     '@statsig/session-replay',
     'rrweb',
   ],
+  client: 'js-client',
 });
