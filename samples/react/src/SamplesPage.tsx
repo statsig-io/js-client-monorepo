@@ -13,6 +13,9 @@ const SAMPLES = [
   // Precomputed Evaluations Client
   () => import('./samples/precomputed-client/sample-precomp-initialize'),
   () => import('./samples/precomputed-client/sample-precomp-basic'),
+  () => import('./samples/precomputed-client/sample-precomp-basic-html'),
+  () =>
+    import('./samples/precomputed-client/sample-precomp-session-replay-html'),
   () => import('./samples/precomputed-client/sample-precomp-check-gate'),
   () => import('./samples/precomputed-client/sample-precomp-get-config'),
   () => import('./samples/precomputed-client/sample-precomp-get-layer'),
@@ -21,10 +24,23 @@ const SAMPLES = [
   () => import('./samples/precomputed-client/sample-precomp-bootstrap'),
   () => import('./samples/precomputed-client/sample-precomp-get-data-adapter'),
 
+  // On Device Eval
+  () => import('./samples/OnDeviceClientBasic'),
+  () => import('./samples/on-device-eval-client/sample-on-device-basic'),
+  () => import('./samples/on-device-eval-client/sample-on-device-basic-html'),
+  () => import('./samples/on-device-eval-client/sample-on-device-initialize'),
+  () =>
+    import('./samples/on-device-eval-client/sample-on-device-initialize-html'),
+  () => import('./samples/on-device-eval-client/sample-on-device-check-gate'),
+  () => import('./samples/on-device-eval-client/sample-on-device-get-config'),
+  () => import('./samples/on-device-eval-client/sample-on-device-get-layer'),
+  () => import('./samples/on-device-eval-client/sample-on-device-log-event'),
+
   // React
   () => import('./samples/react-precomp/sample-react-login'),
 
-  () => import('./samples/OnDeviceClientBasic'),
+  // React Native
+  () => import('./samples/react-native/react-native-on-device-eval'),
 ];
 
 type Snippet = {
