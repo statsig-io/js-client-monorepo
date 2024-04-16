@@ -43,6 +43,13 @@ export default class StatsigClient
   private _store: EvaluationStore;
   private _user: StatsigUser;
 
+  /**
+   * StatsigClient constuctor
+   *
+   * @param {string} sdkKey A Statsig client SDK key. eg "client-xyz123..."
+   * @param {StatsigUser} user StatsigUser object containing various attributes related to a user.
+   * @param {StatsigOptions | null} options StatsigOptions, used to customize the behavior of the SDK.
+   */
   constructor(
     sdkKey: string,
     user: StatsigUser,
@@ -66,7 +73,15 @@ export default class StatsigClient
     this._user = user;
   }
 
-  public static instance(sdkKey?: string): StatsigClient | undefined {
+  /**
+   * Retrieves an instance of the StatsigClient based on the provided SDK key.
+   *  If no SDK key is provided, the method returns the most recently created instance of the StatsigClient.
+   *  The method ensures that each unique SDK key corresponds to a single instance of StatsigClient, effectively implementing a singleton pattern for each key.
+   *
+   * @param {string} [sdkKey] - Optional. The SDK key used to identify a specific instance of the StatsigClient. If omitted, the method returns the last created instance.
+   * @returns {StatsigClient|undefined} Returns the StatsigClient instance associated with the given SDK key, or undefined if no instance is associated with the key or if no key is provided and no instances exist.
+   */
+  static instance(sdkKey?: string): StatsigClient | undefined {
     __STATSIG__ = __STATSIG__ ?? {};
     if (sdkKey == null) {
       return __STATSIG__.lastInstance as StatsigClient | undefined;
@@ -74,14 +89,38 @@ export default class StatsigClient
     return __STATSIG__.instances?.[sdkKey] as StatsigClient | undefined;
   }
 
+  /**
+   * Initializes the StatsigClient using cached values. This method sets up the client synchronously by utilizing previously cached values.
+   * After initialization, cache values are updated in the background for future use, either in subsequent sessions or when `updateUser` is called.
+   * This is useful for quickly starting with the last-known-good configurations while refreshing data to keep settings up-to-date.
+   *
+   * @see {@link initializeAsync} for the asynchronous version of this method.
+   */
   initializeSync(): void {
     this.updateUserSync(this._user);
   }
 
+  /**
+   * Initializes the StatsigClient asynchronously by first using cached values and then updating to the latest values from the network.
+   * Once the network values are fetched, they replace the existing cached values. If this method's promise is not awaited,
+   * there might be a transition from cached to network values during the session, which can affect consistency.
+   * This method is useful when it's acceptable to begin with potentially stale data and switch to the latest configuration as it becomes available.
+   *
+   * @returns {Promise<void>} A promise that resolves once the client is fully initialized with the latest values from the network.
+   * @see {@link initializeSync} for the synchronous version of this method.
+   */
   initializeAsync(): Promise<void> {
     return this.updateUserAsync(this._user);
   }
 
+  /**
+   * Synchronously updates the user in the Statsig client and switches the internal state to use cached values for the newly specified user.
+   * After the initial switch to cached values, this method updates these values in the background, preparing them for future sessions or subsequent calls to updateUser.
+   * This method ensures the client is quickly ready with available data.
+   *
+   * @param {StatsigUser} user - The new StatsigUser for which the client should update its internal state.
+   * @see {@link updateUserAsync} for the asynchronous version of this method.
+   */
   updateUserSync(user: StatsigUser): void {
     this._resetForUser(user);
 
@@ -94,6 +133,16 @@ export default class StatsigClient
     this._runPostUpdate(result ?? null, this._user);
   }
 
+  /**
+   * Asynchronously updates the user in the Statsig client by initially using cached values and then fetching the latest values from the network.
+   * When the latest values are fetched, they replace the cached values. If the promise returned by this method is not awaited,
+   * the client's state may shift from cached to updated network values during the session, potentially affecting consistency.
+   * This method is best used in scenarios where up-to-date configuration is critical and initial delays are acceptable.
+   *
+   * @param {StatsigUser} user - The new StatsigUser for which the client should update its internal state.
+   * @returns {Promise<void>} A promise that resolves once the client is fully updated with the latest network values.
+   * @see {@link updateUserSync} for the synchronous version of this method.
+   */
   async updateUserAsync(user: StatsigUser): Promise<void> {
     this._resetForUser(user);
 
@@ -115,10 +164,12 @@ export default class StatsigClient
     this._setStatus('Ready', result);
   }
 
-  checkGate(name: string, options?: FeatureGateEvaluationOptions): boolean {
-    return this.getFeatureGate(name, options).value;
-  }
-
+  /**
+   * Retrieves a synchronous context containing data currently being used by the SDK. Represented as a {@link PrecomputedEvaluationsContext} object.
+   *
+   * @returns {PrecomputedEvaluationsContext} The current synchronous context for the this StatsigClient instance.
+   * @see {@link getAsyncContext} for the asynchronous version of the context that includes more information.
+   */
   getContext(): PrecomputedEvaluationsContext {
     return {
       sdkKey: this._sdkKey,
@@ -128,6 +179,12 @@ export default class StatsigClient
     };
   }
 
+  /**
+   * Asynchronously retrieves a context similar to that provided by {@link getContext}, but with additional properties fetched asynchronously, such as session and stable IDs. This is useful for situations where these IDs are required and are not immediately available.
+   *
+   * @returns {PrecomputedEvaluationsAsyncContext} An object containing the current values.
+   * @see {@link getContext} for the synchronous version of the context that this function extends.
+   */
   async getAsyncContext(): Promise<PrecomputedEvaluationsAsyncContext> {
     return {
       ...this.getContext(),
@@ -136,6 +193,24 @@ export default class StatsigClient
     };
   }
 
+  /**
+   * Retrieves the value of a feature gate for the current user, represented as a simple boolean.
+   *
+   * @param {string} name - The name of the feature gate to retrieve.
+   * @param {FeatureGateEvaluationOptions} [options] - Optional. Additional options to customize the method call.
+   * @returns {boolean} - The boolean value representing the gate's current evaluation results for the user.
+   */
+  checkGate(name: string, options?: FeatureGateEvaluationOptions): boolean {
+    return this.getFeatureGate(name, options).value;
+  }
+
+  /**
+   * Retrieves the value of a feature gate for the current user, represented as a {@link FeatureGate} object.
+   *
+   * @param {string} name - The name of the feature gate to retrieve.
+   * @param {FeatureGateEvaluationOptions} [options] - Optional. Additional options to customize the method call.
+   * @returns {FeatureGate} - The {@link FeatureGate} object representing the gate's current evaluation results for the user.
+   */
   getFeatureGate(
     name: string,
     options?: FeatureGateEvaluationOptions,
@@ -163,6 +238,13 @@ export default class StatsigClient
     return result;
   }
 
+  /**
+   * Retrieves the value of a dynamic config for the current user.
+   *
+   * @param {string} name The name of the dynamic config to get.
+   * @param {DynamicConfigEvaluationOptions} [options] - Optional. Additional options to customize the method call.
+   * @returns {DynamicConfig} - The {@link DynamicConfig} object representing the dynamic configs's current evaluation results for the user.
+   */
   getDynamicConfig(
     name: string,
     options?: DynamicConfigEvaluationOptions,
@@ -172,6 +254,13 @@ export default class StatsigClient
     return dynamicConfig;
   }
 
+  /**
+   * Retrieves the value of a experiment for the current user.
+   *
+   * @param {string} name The name of the experiment to get.
+   * @param {ExperimentEvaluationOptions} [options] - Optional. Additional options to customize the method call.
+   * @returns {Experiment} - The {@link Experiment} object representing the experiments's current evaluation results for the user.
+   */
   getExperiment(
     name: string,
     options?: ExperimentEvaluationOptions,
@@ -181,6 +270,13 @@ export default class StatsigClient
     return experiment;
   }
 
+  /**
+   * Retrieves the value of a layer for the current user.
+   *
+   * @param {string} name The name of the layer to get.
+   * @param {LayerEvaluationOptions} [options] - Optional. Additional options to customize the method call.
+   * @returns {Layer} - The {@link Layer} object representing the layers's current evaluation results for the user.
+   */
   getLayer(name: string, options?: LayerEvaluationOptions): Layer {
     const hash = DJB2(name);
 
@@ -209,6 +305,13 @@ export default class StatsigClient
     return result;
   }
 
+  /**
+   * Logs an event to the internal logging system. This function allows logging by either passing a fully formed event object or by specifying the event name with optional value and metadata.
+   *
+   * @param {StatsigEvent|string} eventOrName - The event object conforming to the StatsigEvent interface, or the name of the event as a string.
+   * @param {string|number} value - Optional. The value associated with the event, which can be a string or a number. This parameter is ignored if the first parameter is a StatsigEvent object.
+   * @param {Record<string, string>} metadata - Optional. A key-value record containing metadata about the event. This is also ignored if the first parameter is an event object.
+   */
   logEvent(
     eventOrName: StatsigEvent | string,
     value?: string | number,
