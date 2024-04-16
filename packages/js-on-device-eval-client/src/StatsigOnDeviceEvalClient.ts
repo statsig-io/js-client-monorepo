@@ -174,7 +174,21 @@ export default class StatsigOnDeviceEvalClient
     return layer;
   }
 
-  logEvent(event: StatsigEvent, user: StatsigUser): void {
+  logEvent(
+    eventOrName: StatsigEvent | string,
+    user: StatsigUser,
+    value?: string | number,
+    metadata?: Record<string, string>,
+  ): void {
+    const event =
+      typeof eventOrName === 'string'
+        ? {
+            eventName: eventOrName,
+            value,
+            metadata,
+          }
+        : eventOrName;
+
     this._logger.enqueue({ ...event, user, time: Date.now() });
   }
 

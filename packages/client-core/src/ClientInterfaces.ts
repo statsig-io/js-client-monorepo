@@ -53,6 +53,12 @@ export interface OnDeviceEvaluationsInterface
     options?: LayerEvaluationOptions,
   ): Layer;
   logEvent(event: StatsigEvent, user: StatsigUser): void;
+  logEvent(
+    eventName: string,
+    user: StatsigUser,
+    value?: string | number,
+    metadata?: Record<string, string>,
+  ): void;
 }
 
 export type PrecomputedEvaluationsContext = {
@@ -90,6 +96,11 @@ export interface PrecomputedEvaluationsInterface
   ): Experiment;
   getLayer(name: string, options?: LayerEvaluationOptions): Layer;
   logEvent(event: StatsigEvent): void;
+  logEvent(
+    eventName: string,
+    value?: string | number,
+    metadata?: Record<string, string>,
+  ): void;
 }
 
 export type StatsigClientInterface =

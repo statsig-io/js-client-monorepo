@@ -21,6 +21,7 @@ function useBootstrappedClient(
   const client = useMemo(() => {
     const client = new StatsigClient(sdkKey, user);
     client.dataAdapter.setData(values, user);
+
     client.initializeSync();
     return client;
   }, [sdkKey, user, values]);

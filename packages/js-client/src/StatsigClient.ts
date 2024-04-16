@@ -215,7 +215,20 @@ export default class StatsigClient
     };
   }
 
-  logEvent(event: StatsigEvent): void {
+  logEvent(
+    eventOrName: StatsigEvent | string,
+    value?: string | number,
+    metadata?: Record<string, string>,
+  ): void {
+    const event =
+      typeof eventOrName === 'string'
+        ? {
+            eventName: eventOrName,
+            value,
+            metadata,
+          }
+        : eventOrName;
+
     this._logger.enqueue({ ...event, user: this._user, time: Date.now() });
   }
 
