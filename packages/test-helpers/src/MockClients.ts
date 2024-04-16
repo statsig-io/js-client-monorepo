@@ -1,10 +1,5 @@
 import { jest } from '@jest/globals';
 
-import {
-  OnDeviceEvaluationsInterface,
-  PrecomputedEvaluationsInterface,
-} from '@statsig/client-core';
-
 function getBaseMock<T>(): T {
   return {
     loadingStatus: 'Uninitialized',
@@ -26,8 +21,7 @@ function getBaseMock<T>(): T {
 }
 
 export abstract class MockRemoteServerEvalClient {
-  static create(): jest.MockedObject<PrecomputedEvaluationsInterface> &
-    PrecomputedEvaluationsInterface {
+  static create(): jest.MockedObject<any> {
     return {
       ...getBaseMock(),
       updateUserSync: jest.fn(),
@@ -37,8 +31,7 @@ export abstract class MockRemoteServerEvalClient {
 }
 
 export abstract class MockOnDeviceEvalClient {
-  static create(): jest.Mocked<OnDeviceEvaluationsInterface> &
-    OnDeviceEvaluationsInterface {
+  static create(): jest.Mocked<any> {
     return {
       ...getBaseMock(),
     };

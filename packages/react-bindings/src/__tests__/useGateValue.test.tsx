@@ -22,7 +22,7 @@ describe('useGateValue', () => {
   let onStatusChange: StatsigClientEventCallback<StatsigClientEventName>;
 
   beforeEach(() => {
-    client = MockRemoteServerEvalClient.create() as any;
+    client = MockRemoteServerEvalClient.create();
     client.shutdown.mockReturnValue(Promise.resolve());
     client.checkGate.mockReturnValue(true);
     client.on.mockImplementation((event, callback) => {

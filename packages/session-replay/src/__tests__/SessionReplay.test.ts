@@ -14,7 +14,7 @@ describe('Session Replay', () => {
   let shutdownListener: StatsigClientEventCallback<StatsigClientEventName>;
 
   beforeAll(() => {
-    client = MockRemoteServerEvalClient.create() as any;
+    client = MockRemoteServerEvalClient.create();
     client.flush.mockResolvedValue();
     client.on.mockImplementation((name, listener) => {
       if (name === 'pre_shutdown') {

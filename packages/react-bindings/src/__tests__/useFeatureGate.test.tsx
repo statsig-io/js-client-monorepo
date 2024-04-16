@@ -6,6 +6,7 @@ import { MockRemoteServerEvalClient } from 'statsig-test-helpers';
 import {
   PrecomputedEvaluationsInterface,
   StatsigClientEventCallback,
+  StatsigClientEventName,
 } from '@statsig/client-core';
 
 import { StatsigProvider } from '../StatsigProvider';
@@ -18,7 +19,7 @@ const GateComponent = () => {
 
 describe('useFeatureGate', () => {
   let client: jest.Mocked<PrecomputedEvaluationsInterface>;
-  let onStatusChange: StatsigClientEventCallback;
+  let onStatusChange: StatsigClientEventCallback<StatsigClientEventName>;
 
   beforeEach(() => {
     client = MockRemoteServerEvalClient.create();

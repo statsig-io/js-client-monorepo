@@ -1,10 +1,9 @@
 import fetchMock from 'jest-fetch-mock';
-import { InitResponseString } from 'statsig-test-helpers';
+import { InitResponseString, MockLocalStorage } from 'statsig-test-helpers';
 
 import { DataAdapterCachePrefix } from '@statsig/client-core';
 
 import { StatsigEvaluationsDataAdapter } from '../StatsigEvaluationsDataAdapter';
-import { MockLocalStorage } from './MockLocalStorage';
 
 describe('Cache Eviction', () => {
   let storageMock: MockLocalStorage;

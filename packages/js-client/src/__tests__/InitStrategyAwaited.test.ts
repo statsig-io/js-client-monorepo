@@ -1,8 +1,7 @@
 import fetchMock from 'jest-fetch-mock';
-import { InitResponseString } from 'statsig-test-helpers';
+import { InitResponseString, MockLocalStorage } from 'statsig-test-helpers';
 
 import StatsigClient from '../StatsigClient';
-import { MockLocalStorage } from './MockLocalStorage';
 
 describe('Init Strategy - Awaited', () => {
   const sdkKey = 'client-key';

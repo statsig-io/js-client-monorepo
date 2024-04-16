@@ -1,29 +1,15 @@
+import {
+  CreateTestPromise,
+  MockLocalStorage,
+  TestPromise,
+} from 'statsig-test-helpers';
+
 import { DJB2 } from '../Hashing';
 import { SessionID } from '../SessionID';
-import { MockLocalStorage } from './MockLocalStorage';
+import { Storage } from '../StorageProvider';
 
 const UUID_V4_REGEX =
   /^[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-4[0-9A-Fa-f]{3}-[89ABab][0-9A-Fa-f]{3}-[0-9A-Fa-f]{12}/;
-
-type TestPromise<T> = Promise<T> & {
-  resolve: (value: T | PromiseLike<T>) => void;
-  reject: (reason: T | Error) => void;
-};
-
-function CreateTestPromise<T>(): TestPromise<T> {
-  let resolver: any;
-  let rejector: any;
-
-  const promise = new Promise((resolve, reject) => {
-    resolver = resolve;
-    rejector = reject;
-  }) as unknown as TestPromise<T>;
-
-  promise.resolve = resolver;
-  promise.reject = rejector;
-
-  return promise as unknown as TestPromise<T>;
-}
 
 async function getSessionIDFromIsolatedModule(sdkKey: string): Promise<string> {
   let result: string | null = null;
@@ -259,28 +245,44 @@ describe('SessionID', () => {
     let calls = 0;
     let firstReqPromise: TestPromise<string | null>;
     let secondReqPromise: TestPromise<string | null>;
+
     beforeAll(async () => {
       storageMock.clear();
       firstReqPromise = CreateTestPromise<string | null>();
       secondReqPromise = CreateTestPromise<string | null>();
-      storageMock.getItem = () => {
-        if (calls++ === 0) {
-          return firstReqPromise;
-        }
-        return secondReqPromise;
-      };
-      storageMock.setItem = (key, value) => {
-        data[key] = value;
-      };
+
+      const inMemoryStore = {};
+
+      Storage.setProvider({
+        getProviderName: () => 'JestStorage',
+        getAllKeys: () => Promise.resolve(Object.keys(inMemoryStore)),
+        getItem: async (_key: string) => {
+          if (calls++ === 0) {
+            return firstReqPromise;
+          }
+          return secondReqPromise;
+        },
+        setItem: (key: string, value: string) => {
+          data[key] = value;
+          return Promise.resolve();
+        },
+        removeItem: (key: string) => {
+          delete data[key];
+          return Promise.resolve();
+        },
+      });
     });
 
     it('gets the same session id', async () => {
       const sessionID = SessionID.get(SDK_KEY).catch(() => 'error');
       const sessionID2 = SessionID.get(SDK_KEY).catch(() => 'error');
+
       secondReqPromise.resolve(null);
       firstReqPromise.resolve(null);
+
       const val1 = await sessionID;
       const val2 = await sessionID2;
+
       expect(val1).toEqual(val2);
     });
   });

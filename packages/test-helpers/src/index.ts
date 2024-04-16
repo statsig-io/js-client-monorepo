@@ -3,6 +3,7 @@ import * as InitResponse from './data/initialize.json';
 
 export * from './Matchers';
 export * from './MockClients';
+export * from './MockLocalStorage';
 export * from './TestPromise';
 
 const InitResponseString = JSON.stringify(InitResponse);

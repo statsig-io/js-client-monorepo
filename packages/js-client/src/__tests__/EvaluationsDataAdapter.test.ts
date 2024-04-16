@@ -1,10 +1,9 @@
 import fetchMock from 'jest-fetch-mock';
-import { InitResponseString } from 'statsig-test-helpers';
+import { InitResponseString, MockLocalStorage } from 'statsig-test-helpers';
 
 import { DataAdapterResult, Log } from '@statsig/client-core';
 
 import { StatsigEvaluationsDataAdapter } from '../StatsigEvaluationsDataAdapter';
-import { MockLocalStorage } from './MockLocalStorage';
 
 describe('Evaluations Data Adapter', () => {
   const sdkKey = 'client-key';

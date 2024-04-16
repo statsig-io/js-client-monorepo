@@ -433,9 +433,6 @@ importers:
       '@jest/globals':
         specifier: 29.7.0
         version: 29.7.0
-      '@statsig/client-core':
-        specifier: 0.0.1-beta.25
-        version: link:../client-core
 
   packages/web-analytics:
     dependencies:

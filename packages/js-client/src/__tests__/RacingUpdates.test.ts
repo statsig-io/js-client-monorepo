@@ -2,11 +2,11 @@ import fetchMock from 'jest-fetch-mock';
 import {
   CreateTestPromise,
   InitResponseString,
+  MockLocalStorage,
   TestPromise,
 } from 'statsig-test-helpers';
 
 import StatsigClient from '../StatsigClient';
-import { MockLocalStorage } from './MockLocalStorage';
 
 const FIRST_RESPONSE = () =>
   new Response(getResponseWithConfigValue({ isFirst: true }), { headers: {} });

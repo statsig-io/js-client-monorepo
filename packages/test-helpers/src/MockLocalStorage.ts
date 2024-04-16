@@ -1,6 +1,5 @@
 const actualLocalStorage = window.localStorage;
 
-// todo: move to test-helpers (break circular dep)
 export class MockLocalStorage {
   data: Record<string, string> = {};
 

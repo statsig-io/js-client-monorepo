@@ -1,9 +1,10 @@
+import { MockLocalStorage } from 'statsig-test-helpers';
+
 import { DataAdapterCore } from '../DataAdapterCore';
 import { StatsigClientBase } from '../StatsigClientBase';
 import { SpecsDataAdapter } from '../StatsigDataAdapter';
 import { StatsigOptionsCommon } from '../StatsigOptionsCommon';
 import { StatsigUser } from '../StatsigUser';
-import { MockLocalStorage } from './MockLocalStorage';
 
 class TestClient extends StatsigClientBase<SpecsDataAdapter> {}
 

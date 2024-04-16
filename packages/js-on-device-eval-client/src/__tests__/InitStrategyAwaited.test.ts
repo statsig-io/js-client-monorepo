@@ -1,8 +1,7 @@
 import fetchMock from 'jest-fetch-mock';
+import { DcsResponseString, MockLocalStorage } from 'statsig-test-helpers';
 
 import StatsigOnDeviceEvalClient from '../StatsigOnDeviceEvalClient';
-import { MockLocalStorage } from './MockLocalStorage';
-import DcsResponse from './dcs_response.json';
 
 describe('Init Strategy - Awaited', () => {
   const sdkKey = 'client-key';
@@ -16,7 +15,7 @@ describe('Init Strategy - Awaited', () => {
     storageMock.clear();
 
     fetchMock.enableMocks();
-    fetchMock.mockResponse(JSON.stringify(DcsResponse));
+    fetchMock.mockResponse(DcsResponseString);
 
     client = new StatsigOnDeviceEvalClient(sdkKey);
 

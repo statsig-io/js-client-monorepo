@@ -23,7 +23,8 @@
           {
             "ignoredDependencies": [
               "@react-native-async-storage/async-storage",
-              "jest-fetch-mock"
+              "jest-fetch-mock",
+              "statsig-test-helpers"
             ]
           }
         ]

@@ -2,7 +2,10 @@ import { act, render, screen, waitFor } from '@testing-library/react';
 import * as React from 'react';
 import { MockRemoteServerEvalClient } from 'statsig-test-helpers';
 
-import { StatsigClientEventCallback } from '@statsig/client-core';
+import {
+  PrecomputedEvaluationsInterface,
+  StatsigClientEventCallback,
+} from '@statsig/client-core';
 
 import { StatsigProvider } from '../StatsigProvider';
 
@@ -10,7 +13,8 @@ describe('StatsigProvider', () => {
   let onStatusChange: StatsigClientEventCallback<any>;
 
   it('renders children', async () => {
-    const client = MockRemoteServerEvalClient.create();
+    const client: jest.Mocked<PrecomputedEvaluationsInterface> =
+      MockRemoteServerEvalClient.create();
     client.shutdown.mockReturnValue(Promise.resolve());
 
     client.on.mockImplementation((event, callback) => {
