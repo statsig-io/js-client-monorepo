@@ -202,6 +202,12 @@ describe('SessionID', () => {
       }, thirdSDKKey);
     });
 
+    afterAll(() => {
+      storageMock.clear();
+      jest.runOnlyPendingTimers();
+      jest.useRealTimers();
+    });
+
     it('calls correct emit function for first key', async () => {
       await SessionID.get(firstSDKKey);
       jest.advanceTimersByTime(30 * 60 * 1000);
@@ -237,6 +243,42 @@ describe('SessionID', () => {
       jest.advanceTimersByTime(10 * 60 * 1000);
       expect(thridCalled).toBe(true);
       thridCalled = false;
+    });
+  });
+
+  describe('test age timeout resetting', () => {
+    let firstCalled = false;
+    const sdkKey = 'client-key-age';
+    const storageKey = `statsig.session_id.${DJB2(sdkKey)}`;
+
+    beforeEach(async () => {
+      storageMock.clear();
+      Object.defineProperty(global, 'performance', {
+        writable: true,
+      });
+
+      jest.useFakeTimers();
+      storageMock.data[storageKey] = JSON.stringify({
+        sessionID: '1',
+        startTime: Date.now() - 1000 * 60 * 60 * 4 + 1000 * 60,
+        lastUpdate: Date.now(),
+      });
+      SessionID._setEmitFunction(() => {
+        firstCalled = true;
+      }, sdkKey);
+    });
+
+    afterEach(() => {
+      storageMock.clear();
+      jest.runOnlyPendingTimers();
+      jest.useRealTimers();
+    });
+
+    it('calls correct emit function after age timeout', async () => {
+      await SessionID.get(sdkKey);
+      jest.advanceTimersByTime(2 * 60 * 1000);
+      expect(firstCalled).toBe(true);
+      firstCalled = false;
     });
   });
 

@@ -70,7 +70,6 @@ export class SessionReplay {
   }
 
   private _attemptToStartRecording() {
-    this._shutdown(); // Flush and end the previous session if any
     const values = this._client.getContext().values;
 
     if (values?.can_record_session !== true) {
@@ -81,6 +80,10 @@ export class SessionReplay {
     const sampling = values.session_recording_rate ?? 0;
     if (Math.random() >= sampling) {
       this._shutdown();
+      return;
+    }
+
+    if (this._replayer.isRecording()) {
       return;
     }
 
@@ -95,7 +98,6 @@ export class SessionReplay {
     if (this._events.length === 0 || this._sessionData == null) {
       return;
     }
-
     const payload = JSON.stringify(this._events);
     this._flush(payload, this._sessionData);
   }
@@ -106,6 +108,14 @@ export class SessionReplay {
     }
     const data = this._sessionData;
     const payload = JSON.stringify(this._events);
+    this._logRecordingEvent(payload, data, sessionID);
+  }
+
+  private _logRecordingEvent(
+    payload: string,
+    data: ReplaySessionData,
+    sessionID: string,
+  ) {
     const { sdkVersion } = StatsigMetadataProvider.get();
     this._client.logEvent({
       eventName: 'statsig::session_recording',
@@ -118,29 +128,17 @@ export class SessionReplay {
         session_replay_sdk_version: sdkVersion,
       },
     });
+    this._events = [];
   }
 
   private _flush(payload: string, data: ReplaySessionData) {
-    const { sdkVersion } = StatsigMetadataProvider.get();
     this._client
       .getAsyncContext()
       .then((context) => {
-        this._client.logEvent({
-          eventName: 'statsig::session_recording',
-          value: context.sessionID,
-          metadata: {
-            session_start_ts: String(data.startTime),
-            session_end_ts: String(data.endTime),
-            clicks_captured_cumulative: String(data.clickCount),
-            rrweb_events: payload,
-            session_replay_sdk_version: sdkVersion,
-          },
-        });
+        this._logRecordingEvent(payload, data, context.sessionID);
       })
       .catch((err) => {
         Log.error(err);
       });
-
-    this._events = [];
   }
 }

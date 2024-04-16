@@ -31,7 +31,6 @@ export const SessionID = {
   _getPromise: async (sdkKey: string): Promise<string> => {
     let session = SESSION_ID_MAP[sdkKey];
     const now = Date.now();
-    let sessionChanged = false;
 
     if (session == null) {
       let tempSession = await _loadFromStorage(sdkKey);
@@ -41,7 +40,6 @@ export const SessionID = {
           startTime: now,
           lastUpdate: now,
         };
-        sessionChanged = true;
       }
       session = tempSession;
       SESSION_ID_MAP[sdkKey] = session;
@@ -61,7 +59,6 @@ export const SessionID = {
     ) {
       session.sessionID = getUUID();
       session.startTime = now;
-      sessionChanged = true;
     }
 
     session.lastUpdate = now;
@@ -73,13 +70,11 @@ export const SessionID = {
       MAX_SESSION_IDLE_TIME,
     );
 
-    if (sessionChanged) {
-      sessionState.ageTimeoutID = SessionID._resetTimeout(
-        sessionState,
-        sessionState.ageTimeoutID,
-        MAX_SESSION_AGE,
-      );
-    }
+    sessionState.ageTimeoutID = SessionID._resetTimeout(
+      sessionState,
+      sessionState.ageTimeoutID,
+      MAX_SESSION_AGE - (now - session.startTime),
+    );
     SESSION_ID_MAP[sdkKey] = session;
     SESSION_STATE_MAP[sdkKey] = sessionState;
     PROMISE_MAP[sdkKey] = null;

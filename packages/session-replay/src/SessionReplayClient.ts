@@ -74,6 +74,10 @@ export class SessionReplayClient {
       this._stopFn = undefined;
     }
   }
+
+  public isRecording(): boolean {
+    return this._stopFn != null;
+  }
 }
 
 function _isClickEvent(event: eventWithTime) {
