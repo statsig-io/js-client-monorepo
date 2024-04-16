@@ -3,7 +3,6 @@ import { Log } from './Log';
 import { NetworkCore } from './NetworkCore';
 import { StatsigClientEmitEventFunc } from './StatsigClientBase';
 import { StatsigEventInternal, isExposureEvent } from './StatsigEvent';
-import { StatsigMetadataProvider } from './StatsigMetadata';
 import { StatsigOptionsCommon } from './StatsigOptionsCommon';
 import {
   Storage,
@@ -34,9 +33,8 @@ type SendEventsResponse = {
 };
 
 type StatsigEventExtras = {
-  statsigMetadata: {
-    sdkType: string;
-    sdkVersion: string;
+  statsigMetadata?: {
+    currentPage?: string;
   };
 };
 
@@ -296,11 +294,15 @@ export class EventLogger {
       delete event.user.privateAttributes;
     }
 
-    const { sdkType, sdkVersion } = StatsigMetadataProvider.get();
+    const extras: StatsigEventExtras = {};
+    const currentPage = this._getCurrentPageUrl();
+    if (currentPage) {
+      extras.statsigMetadata = { currentPage };
+    }
 
     this._queue.push({
       ...event,
-      ...{ statsigMetadata: { sdkType, sdkVersion } },
+      ...extras,
     });
   }
 
@@ -319,5 +321,21 @@ export class EventLogger {
     });
 
     this._nonExposedChecks = {};
+  }
+
+  private _getCurrentPageUrl(): string | undefined {
+    if (this._options?.includeCurrentPageUrlWithEvents === false) {
+      return;
+    }
+
+    if (typeof window === 'undefined' || typeof window.location !== 'object') {
+      return;
+    }
+
+    try {
+      return window.location.href.split(/[?#]/)[0];
+    } catch {
+      return;
+    }
   }
 }

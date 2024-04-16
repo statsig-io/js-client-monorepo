@@ -120,7 +120,8 @@
       "$_setEmitFunction": "Te",
       "$_sessionID": "ke",
       "$_flushWithSessionID": "Ce",
-      "$_unchangedStyles": "Ee"
+      "$_unchangedStyles": "Ee",
+      "$_getCurrentPageUrl": "Me"
     }
   }
 }

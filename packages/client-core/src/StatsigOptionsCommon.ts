@@ -83,6 +83,13 @@ export type StatsigOptionsCommon = StatsigRuntimeMutableOptions & {
    * returned to the caller of a check api (checkGate/getExperiment etc).
    */
   overrideAdapter?: OverrideAdapter;
+
+  /**
+   * (Web only) Should the 'current page' url be included with logged events.
+   *
+   * default: true
+   */
+  includeCurrentPageUrlWithEvents?: boolean;
 };
 
 export type StatsigEnvironment = {
