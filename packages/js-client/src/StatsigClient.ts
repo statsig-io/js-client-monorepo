@@ -19,12 +19,13 @@ import {
   StatsigClientBase,
   StatsigEvent,
   StatsigUser,
+  _makeDynamicConfig,
+  _makeFeatureGate,
+  _makeLayer,
+  _mergeOverride,
   createConfigExposure,
   createGateExposure,
   createLayerParameterExposure,
-  makeDynamicConfig,
-  makeFeatureGate,
-  makeLayer,
   monitorClass,
   normalizeUser,
 } from '@statsig/client-core';
@@ -142,7 +143,7 @@ export default class StatsigClient
     const hash = DJB2(name);
 
     const { evaluation, details } = this._store.getGate(hash);
-    const gate = makeFeatureGate(name, details, evaluation);
+    const gate = _makeFeatureGate(name, details, evaluation);
     const overridden = this._overrideAdapter?.getGateOverride?.(
       gate,
       this._user,
@@ -184,7 +185,7 @@ export default class StatsigClient
     const hash = DJB2(name);
 
     const { evaluation, details } = this._store.getLayer(hash);
-    const layer = makeLayer(name, details, evaluation);
+    const layer = _makeLayer(name, details, evaluation);
 
     const overridden = this._overrideAdapter?.getLayerOverride?.(
       layer,
@@ -192,27 +193,20 @@ export default class StatsigClient
       options,
     );
 
-    const result = overridden ?? layer;
-    this._emit({ name: 'layer_evaluation', layer: result });
-
-    return {
-      ...result,
-      getValue: (param) => {
-        if (!(param in result._value)) {
-          return null;
-        }
-
-        const exposure = createLayerParameterExposure(
-          this._user,
-          result,
-          param,
+    const result = _mergeOverride(
+      layer,
+      overridden,
+      overridden?.__value ?? layer.__value,
+      (param: string) => {
+        this._enqueueExposure(
+          name,
+          createLayerParameterExposure(this._user, result, param),
+          options,
         );
-
-        this._enqueueExposure(name, exposure, options);
-
-        return result._value[param] ?? null;
       },
-    };
+    );
+    this._emit({ name: 'layer_evaluation', layer: result });
+    return result;
   }
 
   logEvent(
@@ -256,7 +250,7 @@ export default class StatsigClient
     const hash = DJB2(name);
     const { evaluation, details } = this._store.getConfig(hash);
 
-    const config = makeDynamicConfig(name, details, evaluation);
+    const config = _makeDynamicConfig(name, details, evaluation);
 
     const overridden =
       kind === 'experiment'

@@ -4,8 +4,8 @@ import {
   ExperimentEvaluationOptions,
   OverrideAdapter,
   StatsigUser,
+  _makeDynamicConfig,
   getUnitIDFromUser,
-  makeDynamicConfig,
 } from '@statsig/client-core';
 
 import {
@@ -84,7 +84,7 @@ export class UserPersistentOverrideAdapter implements OverrideAdapter {
       lcut: time,
     };
 
-    return makeDynamicConfig(name, details, {
+    return _makeDynamicConfig(name, details, {
       // from sticky
       value,
       secondary_exposures,

@@ -14,12 +14,12 @@ import {
   StatsigClientBase,
   StatsigEvent,
   StatsigUser,
+  _makeDynamicConfig,
+  _makeFeatureGate,
+  _makeLayer,
   createConfigExposure,
   createGateExposure,
   createLayerParameterExposure,
-  makeDynamicConfig,
-  makeFeatureGate,
-  makeLayer,
   monitorClass,
   normalizeUser,
 } from '@statsig/client-core';
@@ -115,7 +115,7 @@ export default class StatsigOnDeviceEvalClient
     user = normalizeUser(user, this._options.environment);
     const { evaluation, details } = this._evaluator.evaluateGate(name, user);
 
-    const gate = makeFeatureGate(name, details, evaluation);
+    const gate = _makeFeatureGate(name, details, evaluation);
 
     this._enqueueExposure(name, createGateExposure(user, gate), options);
 
@@ -157,16 +157,12 @@ export default class StatsigOnDeviceEvalClient
     user = normalizeUser(user, this._options.environment);
     const { evaluation, details } = this._evaluator.evaluateLayer(name, user);
 
-    const layer = makeLayer(name, details, evaluation, (param: string) => {
-      if (evaluation && param in evaluation.value) {
-        this._enqueueExposure(
-          name,
-          createLayerParameterExposure(user, layer, param),
-          options,
-        );
-      }
-
-      return evaluation?.value?.[param] ?? null;
+    const layer = _makeLayer(name, details, evaluation, (param: string) => {
+      this._enqueueExposure(
+        name,
+        createLayerParameterExposure(user, layer, param),
+        options,
+      );
     });
 
     this._emit({ name: 'layer_evaluation', layer });
@@ -202,25 +198,19 @@ export default class StatsigOnDeviceEvalClient
     kind: 'experiment' | 'dynamic_config',
     name: string,
     user: StatsigUser,
-    options?: DynamicConfigEvaluationOptions | ExperimentEvaluationOptions,
+    opts?: DynamicConfigEvaluationOptions | ExperimentEvaluationOptions,
   ): DynamicConfig {
     user = normalizeUser(user, this._options.environment);
     const { evaluation, details } = this._evaluator.evaluateConfig(name, user);
-    const config = makeDynamicConfig(name, details, evaluation);
+    const config = _makeDynamicConfig(name, details, evaluation);
 
     const overridden =
       kind === 'experiment'
-        ? this._overrideAdapter?.getExperimentOverride?.(config, user, options)
-        : this._overrideAdapter?.getDynamicConfigOverride?.(
-            config,
-            user,
-            options,
-          );
+        ? this._overrideAdapter?.getExperimentOverride?.(config, user, opts)
+        : this._overrideAdapter?.getDynamicConfigOverride?.(config, user, opts);
 
     const result = overridden ?? config;
-
-    this._enqueueExposure(name, createConfigExposure(user, result), options);
-
+    this._enqueueExposure(name, createConfigExposure(user, result), opts);
     return result;
   }
 }

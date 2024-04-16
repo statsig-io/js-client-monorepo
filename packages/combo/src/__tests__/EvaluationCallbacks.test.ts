@@ -83,6 +83,7 @@ describe('Client Evaluations Callback', () => {
           dynamicConfig: {
             name: 'a_dynamic_config',
             ruleID: 'default',
+            groupName: null,
             details: {
               lcut: 123456,
               reason: 'Network:Recognized',
@@ -93,6 +94,7 @@ describe('Client Evaluations Callback', () => {
               green: '#0000FF',
               red: '#FF0000',
             },
+            get: anyFunction(),
             __evaluation: anyObject(),
           },
         },
@@ -107,6 +109,7 @@ describe('Client Evaluations Callback', () => {
           experiment: {
             name: 'an_experiment',
             ruleID: '49CGlTB7z97PEdqJapQplA',
+            groupName: null,
             details: {
               lcut: 123456,
               reason: 'Network:Recognized',
@@ -115,6 +118,7 @@ describe('Client Evaluations Callback', () => {
             value: {
               a_string: 'Experiment Test Value',
             },
+            get: anyFunction(),
             __evaluation: anyObject(),
           },
         },
@@ -129,13 +133,14 @@ describe('Client Evaluations Callback', () => {
           layer: {
             name: 'a_layer',
             ruleID: '49CGlTB7z97PEdqJapQplA',
+            groupName: 'Test',
             details: {
               lcut: 123456,
               reason: 'Network:Recognized',
               receivedAt: anyNumber(),
             },
-            getValue: anyFunction(),
-            _value: anyObject(),
+            get: anyFunction(),
+            __value: anyObject(),
             __evaluation: anyObject(),
           },
         },

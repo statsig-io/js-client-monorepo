@@ -124,7 +124,7 @@ describe('Local Overrides - StatsigClient', () => {
 
       overrideAdapter.overrideLayer('a_layer', { a_string: 'foo' });
       layer = client.getLayer('a_layer');
-      layerValue = layer.getValue('a_string');
+      layerValue = layer.get('a_string');
 
       void client.flush();
     });
@@ -141,7 +141,7 @@ describe('Local Overrides - StatsigClient', () => {
       const emission = emissions[0] as any;
       expect(emission.name).toBe('layer_evaluation');
       expect(emission.layer.details.reason).toBe('LocalOverride');
-      expect(emission.layer._value).toEqual({ a_string: 'foo' });
+      expect(emission.layer.__value).toEqual({ a_string: 'foo' });
     });
 
     it('logged an event with reason set to "LocalOverride"', () => {

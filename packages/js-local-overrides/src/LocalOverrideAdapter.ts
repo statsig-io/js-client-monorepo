@@ -78,7 +78,7 @@ export class LocalOverrideAdapter implements OverrideAdapter {
 
     return {
       ...current,
-      _value: overridden,
+      __value: overridden,
       details: { ...current.details, reason: LOCAL_OVERRIDE_REASON },
     };
   }

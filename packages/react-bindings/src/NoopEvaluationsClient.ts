@@ -7,9 +7,9 @@ import {
   OnDeviceEvaluationsInterface,
   PrecomputedEvaluationsInterface,
   SpecsDataAdapter,
-  makeDynamicConfig,
-  makeFeatureGate,
-  makeLayer,
+  _makeDynamicConfig,
+  _makeFeatureGate,
+  _makeLayer,
 } from '@statsig/client-core';
 
 const _noop = (): void => {
@@ -26,11 +26,11 @@ const _defaultEvaluation = <T>(type: 'gate' | 'config' | 'layer') => {
 
     switch (type) {
       case 'gate':
-        return makeFeatureGate(name, NOOP_DETAILS, null) as T;
+        return _makeFeatureGate(name, NOOP_DETAILS, null) as T;
       case 'config':
-        return makeDynamicConfig(name, NOOP_DETAILS, null) as T;
+        return _makeDynamicConfig(name, NOOP_DETAILS, null) as T;
       case 'layer':
-        return makeLayer(name, NOOP_DETAILS, null) as T;
+        return _makeLayer(name, NOOP_DETAILS, null) as T;
     }
   };
 };

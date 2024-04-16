@@ -1,17 +1,17 @@
 import {
-  makeDynamicConfig,
-  makeFeatureGate,
-  makeLayer,
+  _makeDynamicConfig,
+  _makeFeatureGate,
+  _makeLayer,
 } from '@statsig/client-core';
 
 import { LocalOverrideAdapter } from '../LocalOverrideAdapter';
 
 describe('Local Overrides', () => {
   const user = { userID: 'a-user' };
-  const gate = makeFeatureGate('a_gate', { reason: '' }, null);
-  const dynamicConfig = makeDynamicConfig('a_config', { reason: '' }, null);
-  const experiment = makeDynamicConfig('an_experiment', { reason: '' }, null);
-  const layer = makeLayer('a_layer', { reason: '' }, null);
+  const gate = _makeFeatureGate('a_gate', { reason: '' }, null);
+  const dynamicConfig = _makeDynamicConfig('a_config', { reason: '' }, null);
+  const experiment = _makeDynamicConfig('an_experiment', { reason: '' }, null);
+  const layer = _makeLayer('a_layer', { reason: '' }, null);
 
   let provider: LocalOverrideAdapter;
 
@@ -40,6 +40,6 @@ describe('Local Overrides', () => {
   it('returns overidden layer', () => {
     provider.overrideLayer(layer.name, { layer_key: 'value' });
     const overridden = provider.getLayerOverride(layer, user);
-    expect(overridden?._value).toEqual({ layer_key: 'value' });
+    expect(overridden?.__value).toEqual({ layer_key: 'value' });
   });
 });

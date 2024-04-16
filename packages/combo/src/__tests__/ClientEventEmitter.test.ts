@@ -32,6 +32,9 @@ describe('Client Event Emitting', () => {
       calls++;
     };
 
+    (console as any).error = () => {
+      // noop
+    };
     const logSpy = jest.spyOn(Log, 'error');
 
     client.on('*', badCallback);

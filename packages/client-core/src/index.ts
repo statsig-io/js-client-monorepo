@@ -25,6 +25,7 @@ export * from './StatsigDataAdapter';
 export * from './StatsigEvent';
 export * from './StatsigMetadata';
 export * from './StatsigOptionsCommon';
+export * from './StatsigTypeFactories';
 export * from './StatsigTypes';
 export * from './StatsigUser';
 export * from './StorageProvider';

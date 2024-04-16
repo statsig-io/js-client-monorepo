@@ -8,8 +8,8 @@ export default async function Sample(): Promise<void> {
 
 const layer = myStatsigClient.getLayer("user_promo_experiments");
 
-const promoTitle = layer.getValue("title") ?? "Welcome to Statsig!";
-const discount = layer.getValue("discount") ?? 0.1;
+const promoTitle = layer.get("title") ?? "Welcome to Statsig!";
+const discount = layer.get("discount") ?? 0.1;
 // </snippet>
 
 viaGetExperiment()

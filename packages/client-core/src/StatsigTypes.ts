@@ -1,5 +1,4 @@
 import {
-  DynamicConfigEvaluation,
   EvaluationDetails,
   ExperimentEvaluation,
   GateEvaluation,
@@ -7,87 +6,52 @@ import {
 } from './EvaluationTypes';
 import { Flatten } from './UtitlityTypes';
 
-const DEFAULT_RULE = 'default';
+export type TypedGet = <T = unknown>(
+  key: string,
+  fallback?: T,
+) => TypedReturn<T>;
 
-type CommonFields = {
-  readonly name: string;
-  readonly ruleID: string;
-  readonly details: EvaluationDetails;
-};
+// prettier-ignore
+export type TypedReturn<T = unknown> = 
+    T extends string ? string
+  : T extends number ? number
+  : T extends boolean ? boolean
+  : T extends Array<unknown> ? Array<unknown>
+  : T extends object ? object
+  : unknown;
 
 export type SpecType = 'gate' | 'dynamic_config' | 'experiment' | 'layer';
 
-export type FeatureGate = Flatten<
-  CommonFields & {
-    readonly value: boolean;
-    readonly __evaluation: GateEvaluation | null;
-  }
->;
+export type FeatureGate = Flatten<{
+  readonly name: string;
+  readonly ruleID: string;
+  readonly details: EvaluationDetails;
+  readonly value: boolean;
+  readonly __evaluation: GateEvaluation | null;
+}>;
 
-export type DynamicConfig = Flatten<
-  CommonFields & {
-    readonly value: Record<string, unknown>;
-    readonly __evaluation: DynamicConfigEvaluation | null;
-  }
->;
+export type Experiment = Flatten<{
+  readonly name: string;
+  readonly ruleID: string;
+  readonly details: EvaluationDetails;
+  readonly value: Record<string, unknown>;
+  readonly groupName: string | null;
+  readonly __evaluation: ExperimentEvaluation | null;
+  readonly get: TypedGet;
+}>;
 
-export type Experiment = Flatten<
-  CommonFields & {
-    readonly value: Record<string, unknown>;
-    readonly __evaluation: ExperimentEvaluation | null;
-  }
->;
+export type DynamicConfig = Flatten<Experiment>;
 
-export type Layer = Flatten<
-  CommonFields & {
-    readonly getValue: (parameterName: string) => unknown;
-    readonly _value: Record<string, unknown>;
-    readonly __evaluation: LayerEvaluation | null;
-  }
->;
+export type Layer = Flatten<{
+  readonly name: string;
+  readonly ruleID: string;
+  readonly details: EvaluationDetails;
+  readonly groupName: string | null;
+  readonly __value: Record<string, unknown>;
+  readonly __evaluation: LayerEvaluation | null;
+  readonly get: TypedGet;
+}>;
 
-export type AnyConfig = FeatureGate | DynamicConfig | Experiment | Layer;
+export type AnyConfigBasedStatsigType = DynamicConfig | Experiment | Layer;
 
-export function makeFeatureGate(
-  name: string,
-  details: EvaluationDetails,
-  evaluation: GateEvaluation | null,
-): FeatureGate {
-  return {
-    name,
-    details,
-    ruleID: evaluation?.rule_id ?? DEFAULT_RULE,
-    value: evaluation?.value === true,
-    __evaluation: evaluation,
-  };
-}
-
-export function makeDynamicConfig(
-  name: string,
-  details: EvaluationDetails,
-  evaluation: DynamicConfigEvaluation | null,
-): DynamicConfig {
-  return {
-    name,
-    details,
-    ruleID: evaluation?.rule_id ?? DEFAULT_RULE,
-    value: evaluation?.value ?? {},
-    __evaluation: evaluation,
-  };
-}
-
-export function makeLayer(
-  name: string,
-  details: EvaluationDetails,
-  evaluation: LayerEvaluation | null,
-  getValue?: (param: string) => unknown,
-): Layer {
-  return {
-    name,
-    details,
-    getValue: getValue ?? ((): unknown => undefined),
-    ruleID: evaluation?.rule_id ?? DEFAULT_RULE,
-    _value: evaluation?.value ?? {},
-    __evaluation: evaluation,
-  };
-}
+export type AnyStatsigType = FeatureGate | AnyConfigBasedStatsigType;

@@ -8,6 +8,7 @@ import {
   StatsigContext,
   StatsigProvider,
   useFeatureGate,
+  useStatsigClient,
 } from '@statsig/react-bindings';
 import { SessionReplay } from '@statsig/session-replay';
 
@@ -35,6 +36,7 @@ function useClientWithSessionReplay(
 }
 
 function Content() {
+  const client = useStatsigClient();
   const { value, details } = useFeatureGate('a_gate');
   const { renderVersion } = useContext(StatsigContext);
 
@@ -44,7 +46,10 @@ function Content() {
       <div>
         a_gate: {value ? 'Passing' : 'Failing'} ({details.reason})
       </div>
-      <button id="a-button" onClick={() => console.log('clicked')}>
+      <button
+        id="a-button"
+        onClick={() => client.logEvent({ eventName: 'clicked_button_a' })}
+      >
         Click Me
       </button>
     </div>
