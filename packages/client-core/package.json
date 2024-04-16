@@ -1,6 +1,6 @@
 {
   "name": "@statsig/client-core",
-  "version": "0.0.1-beta.26",
+  "version": "0.0.1-beta.27",
   "dependencies": {},
   "type": "commonjs",
   "main": "./src/index.js",

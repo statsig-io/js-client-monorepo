@@ -229,6 +229,9 @@ describe('SessionID', () => {
 
     it('timer resets after each call', async () => {
       await SessionID.get(thirdSDKKey);
+
+      expect(1).toBe(2);
+
       jest.advanceTimersByTime(10 * 60 * 1000);
       expect(thridCalled).toBe(false);
       await SessionID.get(thirdSDKKey);
