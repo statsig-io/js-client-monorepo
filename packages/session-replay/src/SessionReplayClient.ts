@@ -1,5 +1,6 @@
-import { eventWithTime } from '@rrweb/types';
-import { EventType, IncrementalSource, MouseInteractions, record } from 'rrweb';
+import type { eventWithTime, listenerHandler } from '@rrweb/types';
+import { EventType, IncrementalSource, MouseInteractions } from '@rrweb/types';
+import * as rrweb from 'rrweb';
 
 import { Flatten } from '@statsig/client-core';
 
@@ -65,7 +66,7 @@ export class SessionReplayClient {
       }
     };
 
-    this._stopFn = record({ emit });
+    this._stopFn = _minifiedAwareRecord(emit);
   }
 
   public stop(): void {
@@ -78,6 +79,17 @@ export class SessionReplayClient {
   public isRecording(): boolean {
     return this._stopFn != null;
   }
+}
+
+/**
+ * We do a simple concat of rrweb during minification.
+ * This function ensures we handle both "npm" and "<script ..>" install options.
+ */
+function _minifiedAwareRecord(
+  emit: (event: eventWithTime) => void,
+): listenerHandler | undefined {
+  const record = typeof rrweb === 'function' ? rrweb : rrweb.record;
+  return record({ emit });
 }
 
 function _isClickEvent(event: eventWithTime) {

@@ -10,7 +10,7 @@ const DEP_MAP = {
   '@statsig/session-replay': '../../dist/packages/session-replay',
   '@statsig/sha256': '../../dist/packages/sha256',
   '@statsig/web-analytics': '../../dist/packages/web-analytics',
-  rrweb: '../../packages/session-replay/node_modules/rrweb',
+  '@rrweb/types': '../../packages/session-replay/node_modules/@rrweb/types',
 };
 
 /**
@@ -27,6 +27,8 @@ function createStatsigWebpackBundle({
   maxByteSize,
   dependencies,
   client,
+  externals,
+  plugins,
 }) {
   const alias = {};
 
@@ -57,7 +59,7 @@ function createStatsigWebpackBundle({
         alias,
         extensions: ['.js'],
       },
-      externals: [],
+      externals,
       output: {
         filename: `statsig-${bundleFile}.min.js`,
         library: {
@@ -84,6 +86,7 @@ function createStatsigWebpackBundle({
         minimize: true,
         minimizer: [minifier],
       },
+      plugins,
     };
   });
 }
