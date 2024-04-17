@@ -3,7 +3,7 @@
   "$schema": "node_modules/nx/schemas/project-schema.json",
   "targets": {
     "publish-all": {
-      "command": "npx nx run-many --parallel=3 --target=publish",
+      "command": "npx nx run-many --parallel=3 --target=publish --skip-nx-cache",
       "dependsOn": ["sync-version"]
     },
     "sync-version": {
