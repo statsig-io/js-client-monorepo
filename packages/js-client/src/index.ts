@@ -16,6 +16,7 @@ __STATSIG__ = {
   ...(__STATSIG__ ?? {}),
   StatsigEvaluationsDataAdapter,
   StatsigClient,
+  instance: StatsigClient.instance,
 };
 
 export default __STATSIG__;
