@@ -103,7 +103,26 @@
       "$_downloadConfigSpecsUrl": "ce",
       "$_getSpecs": "de",
       "$_evaluator": "he",
-      "$_getOutputs": "ve"
+      "$_getOutputs": "ve",
+      "$_sessionData": "fe",
+      "$_events": "pe",
+      "$_sessionID": "me",
+      "$_replayer": "ye",
+      "$_shutdown": "ge",
+      "$_attemptToStartRecording": "be",
+      "$_flushWithSessionID": "we",
+      "$_onRecordingEvent": "Se",
+      "$_flush": "_e",
+      "$_startTimestamp": "Oe",
+      "$_endTimestamp": "ke",
+      "$_clickCount": "Te",
+      "$_stopCallback": "Ie",
+      "$_stopFn": "Ce",
+      "$_mirror": "Ee",
+      "$_cssText": "xe",
+      "$_unchangedStyles": "Me",
+      "$_unserializedId": "Ae",
+      "$_machine": "je"
     }
   }
 }

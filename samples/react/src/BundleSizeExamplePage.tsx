@@ -49,13 +49,18 @@ export default function BundleSizeExamplePage(): ReactNode {
   return (
     <>
       <BundleDetails
-        title="Precomputed Evaluations"
-        url="https://cdn.jsdelivr.net/npm/@statsig/js-client@latest/build/js-client.min.js"
+        title="@statsig/js-client"
+        url="https://cdn.jsdelivr.net/npm/@statsig/js-client@latest/build/statsig-js-client.min.js"
       />
 
       <BundleDetails
-        title="On Device Evaluations"
-        url="https://cdn.jsdelivr.net/npm/@statsig/js-on-device-eval-client@latest/build/js-on-device-eval-client.min.js"
+        title="@statsig/js-on-device-eval-client"
+        url="https://cdn.jsdelivr.net/npm/@statsig/js-on-device-eval-client@latest/build/statsig-js-on-device-eval-client.min.js"
+      />
+
+      <BundleDetails
+        title="@statsig/js-client+web-analytics+session-replay"
+        url="https://cdn.jsdelivr.net/npm/@statsig/js-client@latest/build/statsig-js-client+session-replay+web-analytics.min.js"
       />
     </>
   );
