@@ -2,6 +2,7 @@
 import './$_StatsigGlobal';
 import { EventLogger } from './EventLogger';
 import { Log } from './Log';
+import { SDK_VERSION } from './StatsigMetadata';
 import { Storage } from './StorageProvider';
 import { getUUID } from './UUID';
 
@@ -43,4 +44,5 @@ __STATSIG__ = {
   Log,
   getUUID,
   Storage,
+  SDK_VERSION,
 };
