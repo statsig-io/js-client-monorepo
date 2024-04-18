@@ -13,7 +13,7 @@ export class VisibilityChangeObserver {
   }
 
   static add(listener: VisibilityChangeListener): void {
-    this._listeners.push(listener);
+    this._listeners.unshift(listener);
   }
 
   static remove(listener: VisibilityChangeListener): void {

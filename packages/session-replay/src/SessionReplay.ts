@@ -2,6 +2,8 @@ import {
   Log,
   PrecomputedEvaluationsInterface,
   StatsigMetadataProvider,
+  Visibility,
+  VisibilityChangeObserver,
 } from '@statsig/client-core';
 
 import {
@@ -48,6 +50,8 @@ export class SessionReplay {
         });
     });
 
+    VisibilityChangeObserver.add(this);
+
     this._client
       .getAsyncContext()
       .then((context) => {
@@ -59,13 +63,22 @@ export class SessionReplay {
       });
   }
 
+  onVisibilityChanged(visibility: Visibility): void {
+    if (visibility === 'background') {
+      this._flushWithSessionID(this._sessionID);
+      this._client.flush().catch((e) => {
+        Log.error(e);
+      });
+    }
+  }
+
   private _onRecordingEvent(event: ReplayEvent, data: ReplaySessionData) {
     this._sessionData = data;
     this._events.push(event);
 
     const payload = JSON.stringify(this._events);
     if (payload.length > MAX_REPLAY_PAYLOAD_BYTES) {
-      this._flush(payload, data);
+      this._flushAndRefreshSessionID();
     }
   }
 
@@ -73,12 +86,6 @@ export class SessionReplay {
     const values = this._client.getContext().values;
 
     if (values?.can_record_session !== true) {
-      this._shutdown();
-      return;
-    }
-
-    const sampling = values.session_recording_rate ?? 0;
-    if (Math.random() >= sampling) {
       this._shutdown();
       return;
     }
@@ -98,25 +105,23 @@ export class SessionReplay {
     if (this._events.length === 0 || this._sessionData == null) {
       return;
     }
-    const payload = JSON.stringify(this._events);
-    this._flush(payload, this._sessionData);
+    this._flushAndRefreshSessionID();
   }
 
   private _flushWithSessionID(sessionID: string) {
     if (this._events.length === 0 || this._sessionData == null) {
       return;
     }
-    const data = this._sessionData;
-    const payload = JSON.stringify(this._events);
-    this._logRecordingEvent(payload, data, sessionID);
+    this._logRecordingEvent(sessionID);
   }
 
-  private _logRecordingEvent(
-    payload: string,
-    data: ReplaySessionData,
-    sessionID: string,
-  ) {
+  private _logRecordingEvent(sessionID: string) {
     const { sdkVersion } = StatsigMetadataProvider.get();
+    const data = this._sessionData;
+    if (data === null || this._events.length === 0) {
+      return;
+    }
+    const payload = JSON.stringify(this._events);
     this._client.logEvent({
       eventName: 'statsig::session_recording',
       value: sessionID,
@@ -131,11 +136,11 @@ export class SessionReplay {
     this._events = [];
   }
 
-  private _flush(payload: string, data: ReplaySessionData) {
+  private _flushAndRefreshSessionID() {
     this._client
       .getAsyncContext()
       .then((context) => {
-        this._logRecordingEvent(payload, data, context.sessionID);
+        this._logRecordingEvent(context.sessionID);
       })
       .catch((err) => {
         Log.error(err);
