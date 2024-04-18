@@ -1,4 +1,4 @@
-export const SDK_VERSION = '0.0.1-beta.28';
+export const SDK_VERSION = '0.0.1-beta.29';
 
 export type StatsigMetadata = {
   readonly [key: string]: string | undefined;
