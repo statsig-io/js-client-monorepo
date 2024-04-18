@@ -8,10 +8,7 @@ type StatsigUserPrimitives =
   | Array<string>
   | undefined;
 
-export type StatsigUser = (
-  | { userID: string }
-  | { customIDs: Record<string, string> }
-) & {
+export type StatsigUser = {
   userID?: string;
   customIDs?: Record<string, string>;
   email?: string;

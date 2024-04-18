@@ -37,7 +37,11 @@ export default async function Sample(): Promise<void> {
       // <snippet>
   const { StatsigClient, runStatsigAutoCapture, runStatsigSessionReplay } = window.Statsig;
 
-  const client = new StatsigClient(YOUR_CLIENT_KEY, { userID: 'a-user' });
+  
+  const client = new StatsigClient(
+    YOUR_CLIENT_KEY,       // put your client sdk key here - "client-XXXX"
+    { userID: 'optional' } // set a userID here if you have one
+  ); 
 
   runStatsigAutoCapture(client);
   runStatsigSessionReplay(client);
