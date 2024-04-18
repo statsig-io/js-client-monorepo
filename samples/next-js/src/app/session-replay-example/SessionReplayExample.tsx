@@ -2,7 +2,11 @@
 
 import { useContext, useEffect, useMemo } from 'react';
 
-import { StatsigClientEvent, StatsigUser } from '@statsig/client-core';
+import {
+  LogLevel,
+  StatsigClientEvent,
+  StatsigUser,
+} from '@statsig/client-core';
 import { StatsigClient } from '@statsig/js-client';
 import {
   StatsigContext,
@@ -10,7 +14,8 @@ import {
   useFeatureGate,
   useStatsigClient,
 } from '@statsig/react-bindings';
-import { SessionReplay } from '@statsig/session-replay';
+import { runStatsigSessionReplay } from '@statsig/session-replay';
+import { runStatsigAutoCapture } from '@statsig/web-analytics';
 
 import { DEMO_CLIENT_KEY } from '../../utils/constants';
 
@@ -22,14 +27,18 @@ function useClientWithSessionReplay(
   values: string,
 ): StatsigClient {
   const { client } = useMemo(() => {
-    const client = new StatsigClient(sdkKey, user);
+    const client = new StatsigClient(sdkKey, user, {
+      logLevel: LogLevel.Debug,
+    });
     client.dataAdapter.setData(values, user);
     client.initializeAsync().catch((err) => {
       console.error(err);
     });
 
-    const replayer = new SessionReplay(client);
-    return { client, replayer };
+    runStatsigSessionReplay(client);
+    runStatsigAutoCapture(client);
+
+    return { client };
   }, [sdkKey, user, values]);
 
   return client;
@@ -48,7 +57,10 @@ function Content() {
       </div>
       <button
         id="a-button"
-        onClick={() => client.logEvent({ eventName: 'clicked_button_a' })}
+        onClick={() => {
+          client.logEvent({ eventName: 'clicked_button_a' });
+          console.log('click');
+        }}
       >
         Click Me
       </button>
@@ -66,8 +78,10 @@ export default function SessionReplayExample({
   const client = useClientWithSessionReplay(DEMO_CLIENT_KEY, user, values);
 
   useEffect(() => {
-    const onClientEvent = (event: StatsigClientEvent) =>
+    const onClientEvent = (event: StatsigClientEvent) => {
       console.log('StatsigClientEvent', event);
+    };
+
     client.on('*', onClientEvent);
     return () => client.off('*', onClientEvent);
   }, [client]);

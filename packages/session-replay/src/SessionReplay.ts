@@ -1,9 +1,11 @@
 import {
+  ErrorBoundary,
   Log,
   PrecomputedEvaluationsInterface,
   StatsigMetadataProvider,
   Visibility,
   VisibilityChangeObserver,
+  monitorClass,
 } from '@statsig/client-core';
 
 import {
@@ -21,6 +23,7 @@ export function runStatsigSessionReplay(
 }
 
 export class SessionReplay {
+  private _errorBoundary: ErrorBoundary;
   private _replayer: SessionReplayClient;
   private _sessionData: ReplaySessionData | null = null;
   private _events: ReplayEvent[] = [];
@@ -28,6 +31,9 @@ export class SessionReplay {
 
   constructor(private _client: PrecomputedEvaluationsInterface) {
     const { sdkKey } = _client.getContext();
+    this._errorBoundary = new ErrorBoundary(sdkKey);
+    monitorClass(this._errorBoundary, this);
+
     __STATSIG__ = __STATSIG__ ?? {};
     const instances = __STATSIG__.srInstances ?? {};
     instances[sdkKey] = this;

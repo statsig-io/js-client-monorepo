@@ -1,5 +1,4 @@
 import type { eventWithTime, listenerHandler } from '@rrweb/types';
-import { EventType, IncrementalSource, MouseInteractions } from '@rrweb/types';
 import * as rrweb from 'rrweb';
 
 import { Flatten } from '@statsig/client-core';
@@ -93,9 +92,11 @@ function _minifiedAwareRecord(
 }
 
 function _isClickEvent(event: eventWithTime) {
+  // we use the raw number so we can support the minified rrweb file.
   return (
-    event.type === EventType.IncrementalSnapshot &&
-    event.data.source === IncrementalSource.MouseInteraction &&
-    event.data.type === MouseInteractions.Click
+    event.type === 3 && // rrweb.EventType.IncrementalSnapshot &&
+    event.data.source === 2 && // rrweb.IncrementalSource.MouseInteraction &&
+    (event.data.type === 2 /* rrweb.MouseInteractions.Click */ ||
+      event.data.type === 4) /* rrweb.MouseInteractions.DbClick */
   );
 }

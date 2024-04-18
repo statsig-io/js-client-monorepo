@@ -118,7 +118,16 @@
       "$_endTimestamp": "Te",
       "$_clickCount": "Ie",
       "$_stopCallback": "Ae",
-      "$_stopFn": "Me"
+      "$_stopFn": "Me",
+      "$_flushAndRefreshSessionID": "xe",
+      "$_getDocumentSafe": "De",
+      "$_getWindowSafe": "Ee",
+      "$_registerEventHandler": "Ge",
+      "$_getTargetNode": "Ne",
+      "$_gatherEventData": "ke",
+      "$_getSafeUrl": "Pe",
+      "$_getSanitizedPageUrl": "Re",
+      "$_getWebSessionId": "Ce"
     }
   }
 }

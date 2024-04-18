@@ -1,14 +1,16 @@
-import { Log } from '@statsig/client-core';
+import { ErrorBoundary, Log, monitorClass } from '@statsig/client-core';
 import { StatsigClient } from '@statsig/js-client';
 
 import {
-  gatherEventData,
-  getSafeUrl,
-  getSanitizedPageUrl,
-  getTargetNode,
-  getWebSessionId,
-  registerEventHandler,
-  shouldLogEvent,
+  _gatherEventData,
+  _getDocumentSafe,
+  _getSafeUrl,
+  _getSanitizedPageUrl,
+  _getTargetNode,
+  _getWebSessionId,
+  _getWindowSafe,
+  _registerEventHandler,
+  _shouldLogEvent,
 } from './Utils';
 
 export function runStatsigAutoCapture(client: StatsigClient): void {
@@ -16,19 +18,23 @@ export function runStatsigAutoCapture(client: StatsigClient): void {
 }
 
 export class AutoCapture {
+  private _errorBoundary: ErrorBoundary;
   private _startTime = Date.now();
   private _deepestScroll = 0;
 
   constructor(private _client: StatsigClient) {
     const { sdkKey } = _client.getContext();
+    this._errorBoundary = new ErrorBoundary(sdkKey);
+    monitorClass(this._errorBoundary, this);
 
     __STATSIG__ = __STATSIG__ ?? {};
     const instances = __STATSIG__.acInstances ?? {};
     instances[sdkKey] = this;
     __STATSIG__.acInstances = instances;
 
-    if (typeof document !== 'undefined' && document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', () => this._initialize());
+    const doc = _getDocumentSafe();
+    if (doc?.readyState === 'loading') {
+      doc.addEventListener('DOMContentLoaded', () => this._initialize());
       return;
     }
 
@@ -36,21 +42,21 @@ export class AutoCapture {
   }
 
   private _addEventHandlers(): void {
-    if (typeof window === 'undefined' || typeof document === 'undefined') {
+    const win = _getWindowSafe();
+    const doc = _getDocumentSafe();
+    if (!win || !doc) {
       return;
     }
 
     const eventHandler = (event: Event) => {
-      this._autoLogEvent(event || window.event);
+      this._autoLogEvent(event || win.event);
     };
 
-    registerEventHandler(document, 'click', eventHandler);
-    registerEventHandler(document, 'submit', eventHandler);
-    registerEventHandler(window, 'error', eventHandler);
-    registerEventHandler(window, 'beforeunload', () =>
-      this._pageUnloadHandler(),
-    );
-    registerEventHandler(window, 'scroll', () => this._scrollEventHandler());
+    _registerEventHandler(doc, 'click', eventHandler);
+    _registerEventHandler(doc, 'submit', eventHandler);
+    _registerEventHandler(win, 'error', eventHandler);
+    _registerEventHandler(win, 'beforeunload', () => this._pageUnloadHandler());
+    _registerEventHandler(win, 'scroll', () => this._scrollEventHandler());
   }
 
   private _autoLogEvent(event: Event) {
@@ -60,19 +66,19 @@ export class AutoCapture {
       return;
     }
 
-    const target = getTargetNode(event);
+    const target = _getTargetNode(event);
     if (!target) {
       return;
     }
 
-    if (!shouldLogEvent(event, target)) {
+    if (!_shouldLogEvent(event, target)) {
       return;
     }
 
     if (eventType === 'submit') {
       eventType = 'form_submit';
     }
-    const { value, metadata } = gatherEventData(target);
+    const { value, metadata } = _gatherEventData(target);
     this._enqueueAutoCapture(eventType, value, metadata);
   }
 
@@ -108,27 +114,28 @@ export class AutoCapture {
 
   private _logPageView() {
     setTimeout(() => {
-      const url = getSafeUrl();
-      this._logAutoCaptureImmediately('page_view', getSanitizedPageUrl(), {
-        title: document?.title,
+      const url = _getSafeUrl();
+      this._logAutoCaptureImmediately('page_view', _getSanitizedPageUrl(), {
+        title: _getDocumentSafe()?.title,
         queryParams: Object.fromEntries(url.searchParams),
       });
     }, 1);
   }
 
   private _logPerformance() {
+    const win = _getWindowSafe();
+
     if (
-      typeof window === 'undefined' ||
-      typeof window.performance === 'undefined' ||
-      typeof window.performance.getEntriesByType !== 'function' ||
-      typeof window.performance.getEntriesByName !== 'function'
+      typeof win?.performance === 'undefined' ||
+      typeof win.performance.getEntriesByType !== 'function' ||
+      typeof win.performance.getEntriesByName !== 'function'
     ) {
       return;
     }
 
     setTimeout(() => {
       const metadata: Record<string, unknown> = {};
-      const navEntries = window.performance.getEntriesByType('navigation');
+      const navEntries = win.performance.getEntriesByType('navigation');
       if (
         navEntries &&
         navEntries.length > 0 &&
@@ -142,7 +149,7 @@ export class AutoCapture {
         metadata['transfer_bytes'] = nav.transferSize;
       }
 
-      const fpEntries = window.performance.getEntriesByName(
+      const fpEntries = win.performance.getEntriesByName(
         'first-contentful-paint',
       );
 
@@ -154,12 +161,12 @@ export class AutoCapture {
         metadata['first_contentful_paint_time_ms'] = fpEntries[0].startTime;
       }
 
-      this._enqueueAutoCapture('performance', getSanitizedPageUrl(), metadata);
+      this._enqueueAutoCapture('performance', _getSanitizedPageUrl(), metadata);
     }, 1);
   }
 
   private _pageUnloadHandler() {
-    this._logAutoCaptureImmediately('page_view_end', getSanitizedPageUrl(), {
+    this._logAutoCaptureImmediately('page_view_end', _getSanitizedPageUrl(), {
       scrollDepth: this._deepestScroll,
       pageViewLength: Date.now() - this._startTime,
     });
@@ -174,8 +181,8 @@ export class AutoCapture {
       eventName: `auto_capture::${name}`,
       value,
       metadata: {
-        sessionId: getWebSessionId(this._client.getContext().sdkKey),
-        page_url: window?.location?.href || '',
+        sessionId: _getWebSessionId(this._client.getContext().sdkKey),
+        page_url: _getWindowSafe()?.location?.href ?? '',
         ...metadata,
       },
     };
@@ -196,15 +203,14 @@ export class AutoCapture {
   }
 
   private _scrollEventHandler() {
-    const scrollHeight = document.body.scrollHeight || 1;
+    const scrollHeight = _getDocumentSafe()?.body.scrollHeight ?? 1;
+    const win = _getWindowSafe();
+    const scrollY = win?.scrollY ?? 1;
+    const innerHeight = win?.innerHeight ?? 1;
+
     this._deepestScroll = Math.max(
       this._deepestScroll,
-      Math.min(
-        100,
-        Math.round(
-          ((window.scrollY + window.innerHeight) / scrollHeight) * 100,
-        ),
-      ),
+      Math.min(100, Math.round(((scrollY + innerHeight) / scrollHeight) * 100)),
     );
   }
 }

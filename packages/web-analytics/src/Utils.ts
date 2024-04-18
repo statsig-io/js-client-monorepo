@@ -5,7 +5,16 @@ const MAX_SESSION_AGE = 4 * 60 * 60 * 1000; // 4 hours
 
 const globals: Record<string, string> = {};
 
-export function gatherEventData(target: Element): {
+export function _getDocumentSafe(): Document | null {
+  const win = _getWindowSafe();
+  return win?.document ?? null;
+}
+
+export function _getWindowSafe(): Window | null {
+  return typeof window !== 'undefined' ? window : null;
+}
+
+export function _gatherEventData(target: Element): {
   value: string;
   metadata: Record<string, string | null>;
 } {
@@ -40,7 +49,7 @@ export function gatherEventData(target: Element): {
   return { value, metadata };
 }
 
-export function getTargetNode(e: Event): Element | null {
+export function _getTargetNode(e: Event): Element | null {
   if (!e) {
     return null;
   }
@@ -57,7 +66,7 @@ export function getTargetNode(e: Event): Element | null {
   return target as Element;
 }
 
-export function shouldLogEvent(e: Event, el: Element): boolean {
+export function _shouldLogEvent(e: Event, el: Element): boolean {
   if (!e || !el || el.nodeType !== 1) {
     return false;
   }
@@ -88,8 +97,8 @@ export function shouldLogEvent(e: Event, el: Element): boolean {
   }
 }
 
-export function getSafeUrl(): URL {
-  const href = window?.location?.href || '';
+export function _getSafeUrl(): URL {
+  const href = _getWindowSafe()?.location?.href ?? '';
   let url: URL;
   try {
     url = new URL(href);
@@ -99,7 +108,7 @@ export function getSafeUrl(): URL {
   return url;
 }
 
-export function getWebSessionId(sdkKey: string): string {
+export function _getWebSessionId(sdkKey: string): string {
   const key = `statsig.web_analytics.session.${DJB2(sdkKey)}`;
   const json = _getLocalValue(key);
   const now = Date.now();
@@ -126,12 +135,12 @@ export function getWebSessionId(sdkKey: string): string {
   return session.id;
 }
 
-export function getSanitizedPageUrl(): string {
-  const url = window?.location?.href?.split(/[?#]/)[0];
+export function _getSanitizedPageUrl(): string {
+  const url = _getWindowSafe()?.location?.href?.split(/[?#]/)[0];
   return url || '';
 }
 
-export function registerEventHandler(
+export function _registerEventHandler(
   element: Document | Window,
   eventType: string,
   handler: (event: Event) => void,
@@ -164,17 +173,19 @@ function _getAnchorNodeInHierarchy(node: Element | null): Element | null {
 }
 
 function _setLocalValue(key: string, value: string): void {
-  if (window && window.localStorage) {
-    window.localStorage.setItem(key, value);
+  const win = _getWindowSafe();
+  if (win && win.localStorage) {
+    win.localStorage.setItem(key, value);
   } else {
     globals[key] = value;
-    Log.error('Statsig Web AutoCapture: No window.localStorage');
+    Log.error('AutoCapture: No window.localStorage');
   }
 }
 
 function _getLocalValue(key: string): string | null {
-  if (window && window.localStorage) {
-    return window.localStorage.getItem(key);
+  const win = _getWindowSafe();
+  if (win && win.localStorage) {
+    return win.localStorage.getItem(key);
   }
   return globals[key];
 }

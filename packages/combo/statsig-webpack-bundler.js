@@ -10,7 +10,6 @@ const DEP_MAP = {
   '@statsig/session-replay': '../../dist/packages/session-replay',
   '@statsig/sha256': '../../dist/packages/sha256',
   '@statsig/web-analytics': '../../dist/packages/web-analytics',
-  '@rrweb/types': '../../packages/session-replay/node_modules/@rrweb/types',
 };
 
 /**
