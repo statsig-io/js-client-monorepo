@@ -20,7 +20,7 @@ export function StatsigProvider({
       setRenderVersion((v) => v + 1);
     };
 
-    client.on('values_updated', onValuesUpdated);
+    client.__on('values_updated', onValuesUpdated);
 
     return () => {
       client.shutdown().catch((error) => {

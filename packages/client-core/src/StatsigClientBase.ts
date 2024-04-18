@@ -31,6 +31,10 @@ type EventListenersMap = {
   [K in StatsigClientEventName]: StatsigClientEventCallback<K>[];
 };
 
+type InternalStatsigClientEventCallback = object & {
+  __isInternal: true;
+};
+
 export type StatsigClientEmitEventFunc = (event: StatsigClientEvent) => void;
 
 export type StatsigContext = {
@@ -165,6 +169,14 @@ export abstract class StatsigClientBase<
     }
   }
 
+  __on<T extends StatsigClientEventName>(
+    event: T,
+    listener: StatsigClientEventCallback<T>,
+  ): void {
+    (listener as InternalStatsigClientEventCallback).__isInternal = true;
+    this.on(event, listener);
+  }
+
   protected _emit(event: StatsigClientEvent): void {
     const barrier = (
       listener: StatsigClientEventCallback<typeof event.name>,
@@ -172,6 +184,13 @@ export abstract class StatsigClientBase<
       try {
         listener(event);
       } catch (error) {
+        if (
+          (listener as InternalStatsigClientEventCallback).__isInternal === true
+        ) {
+          this._errorBoundary.logError(`_emit:${event.name}`, error);
+          return;
+        }
+
         Log.error(
           `An error occurred in a StatsigClientEvent listener. This is not an issue with Statsig.`,
           event,

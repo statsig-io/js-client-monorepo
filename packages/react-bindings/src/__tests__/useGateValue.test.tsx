@@ -25,7 +25,7 @@ describe('useGateValue', () => {
     client = MockRemoteServerEvalClient.create();
     client.shutdown.mockReturnValue(Promise.resolve());
     client.checkGate.mockReturnValue(true);
-    client.on.mockImplementation((event, callback) => {
+    client.__on.mockImplementation((event, callback) => {
       if (event === 'values_updated') {
         onStatusChange = callback;
       }

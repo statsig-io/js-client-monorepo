@@ -62,7 +62,16 @@ export interface StatsigClientEventEmitterInterface {
     event: T,
     listener: StatsigClientEventCallback<T>,
   ): void;
+
   off<T extends StatsigClientEventName>(
+    event: T,
+    listener: StatsigClientEventCallback<T>,
+  ): void;
+
+  /**
+   * (Statsig Use Only) - Same as .on() but logs errors to sdk_exception
+   */
+  __on<T extends StatsigClientEventName>(
     event: T,
     listener: StatsigClientEventCallback<T>,
   ): void;

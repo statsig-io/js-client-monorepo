@@ -16,7 +16,7 @@ describe('Session Replay', () => {
   beforeAll(() => {
     client = MockRemoteServerEvalClient.create();
     client.flush.mockResolvedValue();
-    client.on.mockImplementation((name, listener) => {
+    client.__on.mockImplementation((name, listener) => {
       if (name === 'pre_shutdown') {
         shutdownListener = listener;
       }
@@ -33,7 +33,7 @@ describe('Session Replay', () => {
   });
 
   it('subscribes to pre_shutdown', () => {
-    expect(client.on).toHaveBeenCalledWith('pre_shutdown', anyFunction());
+    expect(client.__on).toHaveBeenCalledWith('pre_shutdown', anyFunction());
   });
 
   it('sets isRecordingSession to true', () => {

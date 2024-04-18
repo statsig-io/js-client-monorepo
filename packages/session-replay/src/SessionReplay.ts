@@ -32,9 +32,9 @@ export class SessionReplay {
     __STATSIG__.srInstances = instances;
 
     this._replayer = new SessionReplayClient();
-    this._client.on('pre_shutdown', () => this._shutdown());
-    this._client.on('values_updated', () => this._attemptToStartRecording());
-    this._client.on('session_expired', () => {
+    this._client.__on('pre_shutdown', () => this._shutdown());
+    this._client.__on('values_updated', () => this._attemptToStartRecording());
+    this._client.__on('session_expired', () => {
       this._replayer.stop();
       StatsigMetadataProvider.add({ isRecordingSession: 'false' });
       this._flushWithSessionID(this._sessionID);

@@ -78,6 +78,7 @@ const _client: OnDeviceEvaluationsInterface &
   logEvent: _noop,
   on: _noop,
   off: _noop,
+  __on: _noop,
   dataAdapter: _noopDataAdapter,
 };
 

@@ -25,7 +25,7 @@ describe('useFeatureGate', () => {
     client = MockRemoteServerEvalClient.create();
     client.shutdown.mockReturnValue(Promise.resolve());
     client.getFeatureGate.mockReturnValue({ value: true } as any);
-    client.on.mockImplementation((event, callback) => {
+    client.__on.mockImplementation((event, callback) => {
       if (event === 'values_updated') {
         onStatusChange = callback;
       }
