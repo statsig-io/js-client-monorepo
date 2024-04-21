@@ -1,6 +1,6 @@
 import { ReactNode, useEffect, useState } from 'react';
 
-import { Log, StatsigClientInterface } from '@statsig/client-core';
+import { Log, SDKType, StatsigClientInterface } from '@statsig/client-core';
 
 import StatsigContext from './StatsigContext';
 
@@ -19,6 +19,8 @@ export function StatsigProvider({
     const onValuesUpdated = () => {
       setRenderVersion((v) => v + 1);
     };
+
+    SDKType._setBindingType('react');
 
     client.__on('values_updated', onValuesUpdated);
 

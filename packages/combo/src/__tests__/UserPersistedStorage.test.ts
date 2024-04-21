@@ -1,7 +1,7 @@
 import fetchMock from 'jest-fetch-mock';
-import { DownloadConfigSpecsResponse } from 'packages/js-on-device-eval-client/src/SpecStore';
 import { DcsResponseString, anyNumber } from 'statsig-test-helpers';
 
+import { DownloadConfigSpecsResponse } from '@statsig/client-core';
 import { StatsigOnDeviceEvalClient } from '@statsig/js-on-device-eval-client';
 import {
   UserPersistedValues,

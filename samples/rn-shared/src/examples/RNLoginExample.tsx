@@ -25,7 +25,7 @@ function Content() {
       <Text>
         third_gate: {gate.value ? 'Pass' : 'Fail'} ({gate.details.reason})
       </Text>
-      <Text>{JSON.stringify(client.getCurrentUser())}</Text>
+      <Text>{JSON.stringify(client.getContext().user)}</Text>
       <Button
         title="Logout"
         onPress={() => {

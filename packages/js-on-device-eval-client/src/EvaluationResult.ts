@@ -3,9 +3,8 @@ import {
   GateEvaluation,
   LayerEvaluation,
   SecondaryExposure,
+  Spec,
 } from '@statsig/client-core';
-
-import { Spec } from './SpecStore';
 
 export type EvaluationResult = {
   readonly unsupported: boolean;

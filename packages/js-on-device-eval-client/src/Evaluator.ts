@@ -4,6 +4,9 @@ import {
   GateEvaluation,
   LayerEvaluation,
   SecondaryExposure,
+  Spec,
+  SpecCondition,
+  SpecRule,
   StatsigUserInternal,
   getUnitIDFromUser,
 } from '@statsig/client-core';
@@ -17,13 +20,7 @@ import {
   resultToGateEval,
   resultToLayerEval,
 } from './EvaluationResult';
-import SpecStore, {
-  Spec,
-  SpecAndSourceInfo,
-  SpecCondition,
-  SpecKind,
-  SpecRule,
-} from './SpecStore';
+import SpecStore, { SpecAndSourceInfo, SpecKind } from './SpecStore';
 
 const CONDITION_SEGMENT_COUNT = 10 * 1000;
 const USER_BUCKET_COUNT = 1000;

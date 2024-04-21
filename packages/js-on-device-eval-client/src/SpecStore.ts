@@ -1,53 +1,10 @@
 import {
   DataAdapterResult,
   DataSource,
+  DownloadConfigSpecsResponse,
+  Spec,
   typedJsonParse,
 } from '@statsig/client-core';
-
-export type SpecCondition = {
-  type: string;
-  targetValue: unknown;
-  operator: string | null;
-  field: string | null;
-  additionalValues: Record<string, unknown> | null;
-  idType: string;
-};
-
-export type SpecRule = {
-  name: string;
-  passPercentage: number;
-  conditions: SpecCondition[];
-  returnValue: unknown;
-  id: string;
-  salt: string;
-  idType: string;
-  configDelegate: string | null;
-  isExperimentGroup?: boolean;
-  groupName?: string;
-};
-
-export type Spec = {
-  name: string;
-  type: string;
-  salt: string;
-  defaultValue: unknown;
-  enabled: boolean;
-  idType: string;
-  rules: SpecRule[];
-  entity: string;
-  explicitParameters: string[] | null;
-  hasSharedParams: boolean;
-  isActive?: boolean;
-  targetAppIDs?: string[];
-};
-
-export type DownloadConfigSpecsResponse = {
-  feature_gates: Spec[];
-  dynamic_configs: Spec[];
-  layer_configs: Spec[];
-  time: number;
-  has_updates: boolean;
-};
 
 export type SpecAndSourceInfo = {
   spec: Spec | null;
@@ -58,23 +15,31 @@ export type SpecAndSourceInfo = {
 
 export type SpecKind = 'gate' | 'config' | 'layer';
 
+function _parseResponse(values: string): DownloadConfigSpecsResponse | null {
+  return typedJsonParse<DownloadConfigSpecsResponse>(
+    values,
+    'has_updates',
+    'Failed to parse DownloadConfigSpecsResponse',
+  );
+}
+
 export default class SpecStore {
+  private _rawValues: string | null = null;
   private _values: DownloadConfigSpecsResponse | null = null;
   private _source: DataSource = 'Uninitialized';
   private _lcut = 0;
   private _receivedAt = 0;
+
+  getValues(): DownloadConfigSpecsResponse | null {
+    return this._rawValues ? _parseResponse(this._rawValues) : null;
+  }
 
   setValuesFromDataAdapter(result: DataAdapterResult | null): void {
     if (!result) {
       return;
     }
 
-    const values = typedJsonParse<DownloadConfigSpecsResponse>(
-      result.data,
-      'has_updates',
-      'Failed to parse DownloadConfigSpecsResponse',
-    );
-
+    const values = _parseResponse(result.data);
     if (values?.has_updates !== true) {
       return;
     }
@@ -83,10 +48,12 @@ export default class SpecStore {
     this._receivedAt = result.receivedAt;
     this._source = result.source;
     this._values = values;
+    this._rawValues = result.data;
   }
 
   reset(): void {
     this._values = null;
+    this._rawValues = null;
     this._source = 'Loading';
   }
 

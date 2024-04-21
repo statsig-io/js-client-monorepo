@@ -2,6 +2,7 @@ import {
   ErrorBoundary,
   Log,
   PrecomputedEvaluationsInterface,
+  SDK_VERSION,
   StatsigMetadataProvider,
   Visibility,
   VisibilityChangeObserver,
@@ -122,7 +123,6 @@ export class SessionReplay {
   }
 
   private _logRecordingEvent(sessionID: string) {
-    const { sdkVersion } = StatsigMetadataProvider.get();
     const data = this._sessionData;
     if (data === null || this._events.length === 0) {
       return;
@@ -136,7 +136,7 @@ export class SessionReplay {
         session_end_ts: String(data.endTime),
         clicks_captured_cumulative: String(data.clickCount),
         rrweb_events: payload,
-        session_replay_sdk_version: sdkVersion,
+        session_replay_sdk_version: SDK_VERSION,
       },
     });
     this._events = [];

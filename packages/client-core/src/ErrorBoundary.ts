@@ -1,4 +1,5 @@
 import { Log } from './Log';
+import { SDKType } from './SDKType';
 import { StatsigClientEmitEventFunc } from './StatsigClientBase';
 import { StatsigMetadataProvider } from './StatsigMetadata';
 
@@ -50,20 +51,21 @@ export class ErrorBoundary {
 
         this._seen.add(name);
 
+        const sdkType = SDKType._get(this._sdkKey);
         const statsigMetadata = StatsigMetadataProvider.get();
         const info = isError ? unwrapped.stack : _getDescription(unwrapped);
         const body = JSON.stringify({
           tag,
           exception: name,
           info,
-          ...statsigMetadata,
+          ...{ ...statsigMetadata, sdkType },
         });
 
         await fetch(EXCEPTION_ENDPOINT, {
           method: 'POST',
           headers: {
             'STATSIG-API-KEY': this._sdkKey,
-            'STATSIG-SDK-TYPE': String(statsigMetadata.sdkType),
+            'STATSIG-SDK-TYPE': String(sdkType),
             'STATSIG-SDK-VERSION': String(statsigMetadata.sdkVersion),
             'Content-Type': 'application/json',
           },

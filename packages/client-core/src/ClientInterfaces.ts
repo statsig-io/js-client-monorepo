@@ -1,3 +1,4 @@
+import { DownloadConfigSpecsResponse } from './DownloadConfigSpecsResponse';
 import {
   DynamicConfigEvaluationOptions,
   ExperimentEvaluationOptions,
@@ -14,6 +15,7 @@ import {
 } from './StatsigOptionsCommon';
 import { DynamicConfig, Experiment, FeatureGate, Layer } from './StatsigTypes';
 import { StatsigUser } from './StatsigUser';
+import { Flatten } from './UtitlityTypes';
 
 export interface StatsigClientCommonInterface
   extends StatsigClientEventEmitterInterface {
@@ -24,9 +26,28 @@ export interface StatsigClientCommonInterface
   updateRuntimeOptions(options: StatsigRuntimeMutableOptions): void;
 }
 
+export type CommonContext = {
+  sdkKey: string;
+  options: StatsigOptionsCommon;
+};
+
+export type AsyncCommonContext = {
+  sessionID: string;
+  stableID: string;
+};
+
+export type OnDeviceEvaluationsContext = CommonContext & {
+  values: DownloadConfigSpecsResponse | null;
+};
+
+export type OnDeviceEvaluationsAsyncContext = OnDeviceEvaluationsContext &
+  AsyncCommonContext;
+
 export interface OnDeviceEvaluationsInterface
   extends StatsigClientCommonInterface {
   readonly dataAdapter: SpecsDataAdapter;
+  getAsyncContext(): Promise<OnDeviceEvaluationsAsyncContext>;
+  getContext(): OnDeviceEvaluationsContext;
   checkGate(
     name: string,
     user: StatsigUser,
@@ -61,17 +82,16 @@ export interface OnDeviceEvaluationsInterface
   ): void;
 }
 
-export type PrecomputedEvaluationsContext = {
-  sdkKey: string;
-  options: StatsigOptionsCommon;
-  values: InitializeResponseWithUpdates | null;
-  user: StatsigUser;
-};
+export type PrecomputedEvaluationsContext = Flatten<
+  CommonContext & {
+    values: InitializeResponseWithUpdates | null;
+    user: StatsigUser;
+  }
+>;
 
-export type PrecomputedEvaluationsAsyncContext = {
-  sessionID: string;
-  stableID: string;
-} & PrecomputedEvaluationsContext;
+export type PrecomputedEvaluationsAsyncContext = Flatten<
+  AsyncCommonContext & PrecomputedEvaluationsContext
+>;
 
 export interface PrecomputedEvaluationsInterface
   extends StatsigClientCommonInterface {

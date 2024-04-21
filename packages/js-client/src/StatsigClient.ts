@@ -14,6 +14,7 @@ import {
   PrecomputedEvaluationsAsyncContext,
   PrecomputedEvaluationsContext,
   PrecomputedEvaluationsInterface,
+  SDKType,
   SessionID,
   StableID,
   StatsigClientBase,
@@ -33,7 +34,6 @@ import {
 import EvaluationStore from './EvaluationStore';
 import Network from './Network';
 import { StatsigEvaluationsDataAdapter } from './StatsigEvaluationsDataAdapter';
-import './StatsigMetadataAdditions';
 import type { StatsigOptions } from './StatsigOptions';
 
 export default class StatsigClient
@@ -55,6 +55,7 @@ export default class StatsigClient
     user: StatsigUser,
     options: StatsigOptions | null = null,
   ) {
+    SDKType._setClientType(sdkKey, 'javascript-client');
     const network = new Network(options, (e) => {
       this._emit(e);
     });

@@ -10,14 +10,22 @@ import {
 
 export type StatsigAsyncCacheWarming = {
   result: Promise<void>;
+  isResolved: boolean;
 };
 
 export function warmCachingFromAsyncStorage(
   client: StatsigClientInterface,
 ): StatsigAsyncCacheWarming {
-  return {
-    result: _loadCacheAsync(client.dataAdapter),
+  const output: StatsigAsyncCacheWarming = {
+    result: Promise.resolve(),
+    isResolved: false,
   };
+
+  output.result = _loadCacheAsync(client.dataAdapter).finally(() => {
+    output.isResolved = true;
+  });
+
+  return output;
 }
 
 async function _loadCacheAsync(

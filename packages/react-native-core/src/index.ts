@@ -14,5 +14,8 @@ AppState.addEventListener('change', (nextAppState) =>
   ),
 );
 
+export type { StatsigProviderWithCacheWarmingProps } from './StatsigProviderWithCacheWarming';
+export { StatsigProviderWithCacheWarming } from './StatsigProviderWithCacheWarming';
+
 export * from './AsyncStorageWarming';
 export * from './StatsigProviderWithCacheWarming';

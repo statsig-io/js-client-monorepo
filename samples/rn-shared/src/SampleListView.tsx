@@ -8,12 +8,13 @@ import {
 } from 'react-native';
 
 import { RNBootstrapExample } from './examples/RNBootstrapExample';
+import { RNEventStream } from './examples/RNEventStream';
 import { RNLoginExample } from './examples/RNLoginExample';
 
 const fruits = [
   { name: 'Bootstrapping' },
   { name: 'Login Flow' },
-  { name: 'Login Flo2w' },
+  { name: 'Client Event Stream' },
 ];
 
 export function SampleListView(): React.ReactNode {
@@ -32,6 +33,9 @@ export function SampleListView(): React.ReactNode {
 
             case 'Login Flow':
               return <RNLoginExample onBackPress={onBackPress} />;
+
+            case 'Client Event Stream':
+              return <RNEventStream onBackPress={onBackPress} />;
 
             default:
               return (

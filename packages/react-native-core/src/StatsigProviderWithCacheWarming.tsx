@@ -12,18 +12,22 @@ export type StatsigProviderWithCacheWarmingProps = StatsigProviderProps & {
 export function StatsigProviderWithCacheWarming(
   props: StatsigProviderWithCacheWarmingProps,
 ): JSX.Element | null {
-  const [isWarmed, setIsWarmed] = useState(false);
+  const [isWarmed, setIsWarmed] = useState(props.cacheWarming.isResolved);
 
   useEffect(() => {
+    if (isWarmed) {
+      return;
+    }
+
     props.cacheWarming.result
       .catch((e) => {
-        Log.error('An error occurred while warming the Statsig client', e);
+        Log.error('Statig cache warming error', e);
       })
       .finally(() => {
         props.client.initializeSync();
         setIsWarmed(true);
       });
-  }, [props.client, props.cacheWarming.result]);
+  }, [props.client, props.cacheWarming.result, isWarmed]);
 
   if (!isWarmed) {
     return null;

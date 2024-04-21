@@ -1,6 +1,6 @@
-import { useMemo } from 'react';
+import { useEffect } from 'react';
 
-import { StatsigMetadataProvider } from '@statsig/client-core';
+import { SDKType, StatsigMetadataProvider } from '@statsig/client-core';
 import type { StatsigProviderWithCacheWarmingProps } from '@statsig/react-native-core';
 import { StatsigProviderWithCacheWarming } from '@statsig/react-native-core';
 
@@ -9,7 +9,8 @@ import { GetStatsigMetadataAdditions } from './StatsigMetadataAdditions';
 type Props = StatsigProviderWithCacheWarmingProps;
 
 export function StatsigProviderRN(props: Props): JSX.Element | null {
-  useMemo(() => {
+  useEffect(() => {
+    SDKType._setBindingType('rn');
     StatsigMetadataProvider.add(GetStatsigMetadataAdditions());
   }, []);
 

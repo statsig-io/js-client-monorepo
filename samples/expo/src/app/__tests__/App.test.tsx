@@ -39,6 +39,7 @@ describe('App', () => {
       receivedAt: 1234,
     });
   });
+
   test(
     'renders correctly',
     async () => {

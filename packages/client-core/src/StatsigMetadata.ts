@@ -6,7 +6,6 @@ export type StatsigMetadata = {
   readonly deviceModel?: string;
   readonly deviceModelName?: string;
   readonly locale?: string;
-  readonly sdkType: string;
   readonly sdkVersion: string;
   readonly stableID?: string;
   readonly systemName?: string;

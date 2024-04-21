@@ -1,5 +1,6 @@
 import {
   DataAdapterResult,
+  DownloadConfigSpecsResponse,
   DynamicConfig,
   DynamicConfigEvaluationOptions,
   Experiment,
@@ -9,8 +10,13 @@ import {
   Layer,
   LayerEvaluationOptions,
   Log,
+  OnDeviceEvaluationsAsyncContext,
+  OnDeviceEvaluationsContext,
   OnDeviceEvaluationsInterface,
+  SDKType,
+  SessionID,
   SpecsDataAdapter,
+  StableID,
   StatsigClientBase,
   StatsigEvent,
   StatsigUser,
@@ -26,7 +32,7 @@ import {
 
 import Evaluator from './Evaluator';
 import Network from './Network';
-import SpecStore, { DownloadConfigSpecsResponse } from './SpecStore';
+import SpecStore from './SpecStore';
 import { StatsigOptions } from './StatsigOptions';
 import { StatsigSpecsDataAdapter } from './StatsigSpecsDataAdapter';
 
@@ -44,7 +50,9 @@ export default class StatsigOnDeviceEvalClient
   private _evaluator: Evaluator;
 
   constructor(sdkKey: string, options: StatsigOptions | null = null) {
+    SDKType._setClientType(sdkKey, 'js-on-device-eval-client');
     const network = new Network(options);
+
     super(
       sdkKey,
       options?.dataAdapter ?? new StatsigSpecsDataAdapter(),
@@ -97,6 +105,22 @@ export default class StatsigOnDeviceEvalClient
     return __STATSIG__.instances?.[sdkKey] as
       | StatsigOnDeviceEvalClient
       | undefined;
+  }
+
+  getContext(): OnDeviceEvaluationsContext {
+    return {
+      sdkKey: this._sdkKey,
+      options: this._options,
+      values: this._store.getValues(),
+    };
+  }
+
+  async getAsyncContext(): Promise<OnDeviceEvaluationsAsyncContext> {
+    return {
+      ...this.getContext(),
+      sessionID: await SessionID.get(this._sdkKey),
+      stableID: await StableID.get(this._sdkKey),
+    };
   }
 
   checkGate(

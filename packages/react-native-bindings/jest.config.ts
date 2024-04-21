@@ -4,7 +4,8 @@ export default {
   preset: '../../jest.preset.js',
   transform: {
     '^.+\\.[tj]s$': ['ts-jest', { tsconfig: '<rootDir>/tsconfig.spec.json' }],
+    '^.+\\.[tj]sx?$': ['babel-jest', { presets: ['@nx/react/babel'] }],
   },
-  moduleFileExtensions: ['ts', 'js', 'html'],
+  moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx'],
   coverageDirectory: '../../coverage/packages/react-native-bindings',
 };

@@ -1,9 +1,10 @@
 import { Diagnostics } from './Diagnostics';
 import { Log } from './Log';
+import { SDKType } from './SDKType';
 import { SessionID } from './SessionID';
 import { StableID } from './StableID';
 import { StatsigClientEmitEventFunc } from './StatsigClientBase';
-import { StatsigMetadataProvider } from './StatsigMetadata';
+import { SDK_VERSION, StatsigMetadataProvider } from './StatsigMetadata';
 import { StatsigOptionsCommon } from './StatsigOptionsCommon';
 
 const DEFAULT_TIMEOUT_MS = 10_000;
@@ -48,7 +49,7 @@ export class NetworkCore {
     return this._sendRequest({ method: 'POST', body, ...args });
   }
 
-  async get(args: RequestArgs): Promise<NetworkResponse | null> {
+  get(args: RequestArgs): Promise<NetworkResponse | null> {
     return this._sendRequest({ method: 'GET', ...args });
   }
 
@@ -129,12 +130,10 @@ export class NetworkCore {
   }
 
   private async _getPopulatedURL(args: RequestArgs): Promise<string> {
-    const metadata = StatsigMetadataProvider.get();
-
     const params = {
       k: args.sdkKey,
-      st: metadata.sdkType,
-      sv: metadata.sdkVersion,
+      st: SDKType._get(args.sdkKey),
+      sv: SDK_VERSION,
       t: String(Date.now()),
       sid: await SessionID.get(args.sdkKey),
       ...args.params,
@@ -150,15 +149,18 @@ export class NetworkCore {
   }
 
   private async _getPopulatedBody(args: RequestArgsWithData): Promise<string> {
-    const { data } = args;
-    const stableID = await StableID.get(args.sdkKey);
-    const sessionID = await SessionID.get(args.sdkKey);
+    const { data, sdkKey } = args;
+    const stableID = await StableID.get(sdkKey);
+    const sessionID = await SessionID.get(sdkKey);
+    const sdkType = SDKType._get(sdkKey);
+
     return JSON.stringify({
       ...data,
       statsigMetadata: {
         ...StatsigMetadataProvider.get(),
         stableID,
         sessionID,
+        sdkType,
       },
     });
   }

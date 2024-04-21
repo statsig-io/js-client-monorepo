@@ -22,7 +22,7 @@ const MAX_SESSION_IDLE_TIME = 30 * 60 * 1000; // 30 minutes
 const MAX_SESSION_AGE = 4 * 60 * 60 * 1000; // 4 hours
 
 export const SessionID = {
-  get: async (sdkKey: string): Promise<string> => {
+  get: (sdkKey: string): Promise<string> => {
     if (PROMISE_MAP[sdkKey] != null) {
       return PROMISE_MAP[sdkKey] as Promise<string>;
     }

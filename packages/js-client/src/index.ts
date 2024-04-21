@@ -1,6 +1,5 @@
 import StatsigClient from './StatsigClient';
 import { StatsigEvaluationsDataAdapter } from './StatsigEvaluationsDataAdapter';
-import './StatsigMetadataAdditions';
 import type { StatsigOptions } from './StatsigOptions';
 
 export type {

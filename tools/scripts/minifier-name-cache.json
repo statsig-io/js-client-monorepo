@@ -127,7 +127,10 @@
       "$_gatherEventData": "ke",
       "$_getSafeUrl": "Pe",
       "$_getSanitizedPageUrl": "Re",
-      "$_getWebSessionId": "Ce"
+      "$_getWebSessionId": "Ce",
+      "$_get": "Fe",
+      "$_setClientType": "Le",
+      "$_setBindingType": "Ue"
     }
   }
 }

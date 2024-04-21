@@ -85,6 +85,7 @@
           }
         ],
         "eqeqeq": ["warn", "smart"]
+        // "require-await": "error"
       }
     },
     // Javascript

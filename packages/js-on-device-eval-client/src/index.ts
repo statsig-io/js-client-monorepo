@@ -1,4 +1,3 @@
-import './StatsigMetadataAdditions';
 import StatsigOnDeviceEvalClient from './StatsigOnDeviceEvalClient';
 import type { StatsigOptions } from './StatsigOptions';
 import { StatsigSpecsDataAdapter } from './StatsigSpecsDataAdapter';
