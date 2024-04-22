@@ -60,6 +60,13 @@
     "include-min-libs": {
       "command": "pnpm copy-min-libs",
       "dependsOn": ["statsig-combo:copy-js-min-bundles"]
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "samples/web-minified/jest.config.ts"
+      }
     }
   }
 }
