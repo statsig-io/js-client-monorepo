@@ -146,7 +146,7 @@ function createStatsigWebpackBundle({
           analyzerMode: 'disabled',
           openAnalyzer: false,
           generateStatsFile: true,
-          statsFilename: `${bundleFile}-stats.json`,
+          statsFilename: `../stats/${bundleFile}.json`,
         }),
       ],
     };
