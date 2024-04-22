@@ -87,7 +87,11 @@ export class SessionReplay {
 
     const payload = JSON.stringify(this._events);
     if (payload.length > MAX_REPLAY_PAYLOAD_BYTES) {
-      this._flushAndRefreshSessionID();
+      if (VisibilityChangeObserver.isCurrentlyVisible()) {
+        this._flushAndRefreshSessionID();
+      } else {
+        this._flushWithSessionID(this._sessionID);
+      }
     }
   }
 
