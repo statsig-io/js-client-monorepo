@@ -148,7 +148,8 @@
       "$_downloadConfigSpecsUrl": "en",
       "$_getSpecs": "nn",
       "$_evaluator": "rn",
-      "$_getOutputs": "sn"
+      "$_getOutputs": "sn",
+      "$_attemptToEncodeString": "t"
     }
   }
 }

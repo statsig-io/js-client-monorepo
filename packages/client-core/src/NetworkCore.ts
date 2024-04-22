@@ -1,5 +1,7 @@
+import './$_StatsigGlobal';
 import { Diagnostics } from './Diagnostics';
 import { Log } from './Log';
+import { NetworkParam } from './NetworkParams';
 import { SDKType } from './SDKType';
 import { SessionID } from './SessionID';
 import { StableID } from './StableID';
@@ -22,6 +24,7 @@ type RequestArgs = {
 
 type RequestArgsWithData = RequestArgs & {
   data: Record<string, unknown>;
+  isStatsigEncodable?: boolean;
 };
 
 type RequestArgsInternal = RequestArgs & {
@@ -47,7 +50,11 @@ export class NetworkCore {
 
   async post(args: RequestArgsWithData): Promise<NetworkResponse | null> {
     const body = await this._getPopulatedBody(args);
-    return this._sendRequest({ method: 'POST', body, ...args });
+    return this._sendRequest({
+      method: 'POST',
+      body: this._attemptToEncodeString(args, body),
+      ...args,
+    });
   }
 
   get(args: RequestArgs): Promise<NetworkResponse | null> {
@@ -132,11 +139,11 @@ export class NetworkCore {
 
   private async _getPopulatedURL(args: RequestArgs): Promise<string> {
     const params = {
-      k: args.sdkKey,
-      st: SDKType._get(args.sdkKey),
-      sv: SDK_VERSION,
-      t: String(Date.now()),
-      sid: await SessionID.get(args.sdkKey),
+      [NetworkParam.SdkKey]: args.sdkKey,
+      [NetworkParam.SdkType]: SDKType._get(args.sdkKey),
+      [NetworkParam.SdkVersion]: SDK_VERSION,
+      [NetworkParam.Time]: String(Date.now()),
+      [NetworkParam.SessionID]: await SessionID.get(args.sdkKey),
       ...args.params,
     };
 
@@ -164,6 +171,28 @@ export class NetworkCore {
         sdkType,
       },
     });
+  }
+
+  private _attemptToEncodeString(
+    args: RequestArgsWithData,
+    input: string,
+  ): string {
+    if (
+      __STATSIG__?.['no-encode'] != null ||
+      this._options?.disableStatsigEncoding ||
+      !args.isStatsigEncodable ||
+      typeof window === 'undefined' ||
+      !window.btoa
+    ) {
+      return input;
+    }
+
+    args.params = {
+      ...(args.params ?? {}),
+      [NetworkParam.StatsigEncoded]: '1',
+    };
+
+    return window.btoa(input).split('').reverse().join('') ?? input;
   }
 }
 

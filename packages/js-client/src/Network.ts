@@ -79,6 +79,7 @@ export default class StatsigNetwork extends NetworkCore {
       url: this._initializeUrl,
       data,
       retries: 2,
+      isStatsigEncodable: true,
     });
 
     if (response?.code === 204) {

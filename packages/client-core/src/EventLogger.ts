@@ -2,6 +2,7 @@ import { DJB2 } from './Hashing';
 import { Log } from './Log';
 import { NetworkCore } from './NetworkCore';
 import { NetworkDefault } from './NetworkDefaults';
+import { NetworkParam } from './NetworkParams';
 import { StatsigClientEmitEventFunc } from './StatsigClientBase';
 import { StatsigEventInternal, _isExposureEvent } from './StatsigEvent';
 import {
@@ -230,8 +231,7 @@ export class EventLogger {
       url: this._logEventUrl,
       retries: 3,
       params: {
-        // ec = Event Count
-        ec: String(events.length),
+        [NetworkParam.EventCount]: String(events.length),
       },
     });
 

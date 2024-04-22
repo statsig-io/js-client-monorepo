@@ -9,4 +9,22 @@ export * from './TestPromise';
 const InitResponseString = JSON.stringify(InitResponse);
 const DcsResponseString = JSON.stringify(DcsResponse);
 
-export { InitResponse, InitResponseString, DcsResponse, DcsResponseString };
+const noop = (): void => {
+  // noop
+};
+
+const nullthrows = <T>(input: T | undefined | null): T => {
+  if (input == null) {
+    throw '[Statsig Test]: Unexpected null value';
+  }
+  return input;
+};
+
+export {
+  InitResponse,
+  InitResponseString,
+  DcsResponse,
+  DcsResponseString,
+  noop,
+  nullthrows,
+};

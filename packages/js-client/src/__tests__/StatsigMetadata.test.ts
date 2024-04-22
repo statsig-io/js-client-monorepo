@@ -7,6 +7,7 @@ describe('StatsigMetadata', () => {
   let body: Record<string, unknown>;
 
   beforeAll(async () => {
+    __STATSIG__ = { 'no-encode': 1 };
     fetchMock.mockResponse('{}');
 
     const client = new StatsigClient('', { userID: '' });
