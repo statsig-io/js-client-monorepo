@@ -31,6 +31,8 @@ function test(name, action) {
   addResult(name, pass);
 }
 
-module.exports = {
-  test,
-};
+if (typeof module !== 'undefined') {
+  module.exports = {
+    test,
+  };
+}

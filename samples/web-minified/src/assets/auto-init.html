@@ -1,0 +1,55 @@
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+
+    <script src="helpers.js"></script>
+    <script>
+      window.__requests = [];
+
+      const actual = fetch;
+      window.fetch = (url, args) => {
+        __requests.push({ url, args });
+        return actual(url, args);
+      };
+    </script>
+
+    <script src="statsig-js-client+session-replay+web-analytics.min.js?sdkKey=client-rfLvYGag3eyU0jYW5zcIJTQip7GXxSrhOFN69IGMjvq"></script>
+
+    <script>
+      setTimeout(async () => {
+        const timeout = setTimeout(() => {
+          test('test timeout', () => false);
+        }, 5000);
+
+        test('creates /initialize request', () =>
+          __requests[0].url.startsWith(
+            'https://featuregates.org/v1/initialize?k=',
+          ));
+
+        const events = __requests
+          .filter((req) => req.url.startsWith('https://events.statsig'))
+          .flatMap((req) => JSON.parse(req.args.body).events);
+
+        test('logged the auto_capture::page_view event', () => {
+          return !!events.find(
+            (e) => e.eventName === 'auto_capture::page_view',
+          );
+        });
+
+        test('logged a statsig::session_recording event', () => {
+          return !!events.find(
+            (e) => e.eventName === 'statsig::session_recording',
+          );
+        });
+
+        clearTimeout(timeout);
+        test('all passed within timeout', () => true);
+      }, 1000);
+    </script>
+  </head>
+  <body>
+    <h1>AutoInit Test</h1>
+  </body>
+</html>

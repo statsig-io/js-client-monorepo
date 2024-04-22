@@ -89,6 +89,12 @@ export abstract class StatsigClientBase<
 
     const statsigGlobal = __STATSIG__ ?? {};
     const instances = statsigGlobal.instances ?? {};
+    if (instances[sdkKey] != null) {
+      Log.warn(
+        'Creating multiple Statsig clients with the same SDK key can lead to unexpected behavior. Multi-instance support requires different SDK keys.',
+      );
+    }
+
     const inst = this as unknown as StatsigClientInterface;
     instances[sdkKey] = inst;
     statsigGlobal.lastInstance = inst;

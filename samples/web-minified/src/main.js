@@ -1,4 +1,4 @@
-import { test } from './helpers';
+import { test } from './assets/helpers';
 
 const { StatsigClient } = window.Statsig;
 
