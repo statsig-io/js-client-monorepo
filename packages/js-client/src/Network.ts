@@ -1,6 +1,7 @@
 import {
   InitializeResponse,
   NetworkCore,
+  NetworkDefault,
   StatsigClientEmitEventFunc,
   StatsigUser,
   _getOverridableUrl,
@@ -9,9 +10,6 @@ import {
 
 import { resolveDeltasResponse } from './EvaluationResponseDeltas';
 import { StatsigOptions } from './StatsigOptions';
-
-const DEFAULT_API = 'https://api.statsig.com/v1';
-const DEFAULT_ENDPOINT = '/initialize';
 
 type EvaluationsFetchArgs = {
   hash: 'djb2' | 'sha256' | 'none';
@@ -30,11 +28,12 @@ export default class StatsigNetwork extends NetworkCore {
   ) {
     super(options, emitter);
 
+    const config = options?.networkConfig;
     this._initializeUrl = _getOverridableUrl(
-      options?.initializeUrl,
-      options?.api,
-      DEFAULT_ENDPOINT,
-      DEFAULT_API,
+      config?.initializeUrl,
+      config?.api,
+      '/initialize',
+      NetworkDefault.initializeApi,
     );
   }
 

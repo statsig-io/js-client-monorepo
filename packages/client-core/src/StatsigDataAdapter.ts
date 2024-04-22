@@ -1,4 +1,4 @@
-import { StatsigOptionsCommon } from './StatsigOptionsCommon';
+import { AnyStatsigOptions } from './StatsigOptionsCommon';
 import { StatsigUser } from './StatsigUser';
 
 export type DataSource =
@@ -37,10 +37,7 @@ type DataAdapterCommon = {
    * @param {string} sdkKey The SDK key being used by the Statsig client.
    * @param {StatsigOptionsCommon | null} options The StatsigOptions being used by the Statsig client.
    */
-  readonly attach: (
-    sdkKey: string,
-    options: StatsigOptionsCommon | null,
-  ) => void;
+  readonly attach: (sdkKey: string, options: AnyStatsigOptions | null) => void;
 
   /**
    * (Internal Use Only) - Used by \@statsig/react-native-bindings to prime the cache from AsyncStorage

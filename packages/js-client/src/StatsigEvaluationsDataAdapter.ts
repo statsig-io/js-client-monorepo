@@ -1,7 +1,7 @@
 import {
+  AnyStatsigOptions,
   DataAdapterCore,
   EvaluationsDataAdapter,
-  StatsigOptionsCommon,
   StatsigUser,
 } from '@statsig/client-core';
 
@@ -17,7 +17,7 @@ export class StatsigEvaluationsDataAdapter
     super('EvaluationsDataAdapter', 'evaluations');
   }
 
-  override attach(sdkKey: string, options: StatsigOptionsCommon | null): void {
+  override attach(sdkKey: string, options: AnyStatsigOptions | null): void {
     super.attach(sdkKey, options);
     this._network = new Network(options ?? {});
   }

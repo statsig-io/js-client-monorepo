@@ -1,9 +1,10 @@
-import { NetworkCore, _getOverridableUrl } from '@statsig/client-core';
+import {
+  NetworkCore,
+  NetworkDefault,
+  _getOverridableUrl,
+} from '@statsig/client-core';
 
 import { StatsigOptions } from './StatsigOptions';
-
-const DEFAULT_API = 'https://api.statsigcdn.com/v1';
-const DEFAULT_ENDPOINT = '/download_config_specs';
 
 export default class StatsigNetwork extends NetworkCore {
   private _downloadConfigSpecsUrl: string;
@@ -11,11 +12,12 @@ export default class StatsigNetwork extends NetworkCore {
   constructor(options: StatsigOptions | null = null) {
     super(options);
 
+    const config = options?.networkConfig;
     this._downloadConfigSpecsUrl = _getOverridableUrl(
-      options?.downloadConfigSpecsUrl,
-      options?.api,
-      DEFAULT_ENDPOINT,
-      DEFAULT_API,
+      config?.downloadConfigSpecsUrl,
+      config?.api,
+      '/download_config_specs',
+      NetworkDefault.specsApi,
     );
   }
 

@@ -1,9 +1,13 @@
 import { DJB2 } from './Hashing';
 import { Log } from './Log';
 import { NetworkCore } from './NetworkCore';
+import { NetworkDefault } from './NetworkDefaults';
 import { StatsigClientEmitEventFunc } from './StatsigClientBase';
 import { StatsigEventInternal, _isExposureEvent } from './StatsigEvent';
-import { StatsigOptionsCommon } from './StatsigOptionsCommon';
+import {
+  NetworkConfigCommon,
+  StatsigOptionsCommon,
+} from './StatsigOptionsCommon';
 import {
   Storage,
   _getObjectFromStorage,
@@ -24,9 +28,6 @@ const MAX_DEDUPER_KEYS = 1000;
 const DEDUPER_WINDOW_DURATION_MS = 60_000;
 const MAX_FAILED_LOGS = 500;
 
-const DEFAULT_API = 'https://api.statsig.com/v1';
-const DEFAULT_ENDPOINT = '/rgstr';
-const DEFAULT_BEACON_ENDPOINT = '/log_event_beacon';
 const QUICK_FLUSH_WINDOW_MS = 200;
 
 type SendEventsResponse = {
@@ -57,7 +58,7 @@ export class EventLogger {
     private _sdkKey: string,
     private _emitter: StatsigClientEmitEventFunc,
     private _network: NetworkCore,
-    private _options: StatsigOptionsCommon | null,
+    private _options: StatsigOptionsCommon<NetworkConfigCommon> | null,
   ) {
     this._isLoggingDisabled = _options?.disableLogging === true;
     this._maxQueueSize = _options?.loggingBufferMaxSize ?? DEFAULT_QUEUE_SIZE;
@@ -66,18 +67,19 @@ export class EventLogger {
       _options?.loggingIntervalMs ?? DEFAULT_FLUSH_INTERVAL_MS;
     this._flushTimer = setInterval(() => this._flushAndForget(), flushInterval);
 
+    const config = _options?.networkConfig;
     this._logEventUrl = _getOverridableUrl(
-      _options?.logEventUrl,
-      _options?.api,
-      DEFAULT_ENDPOINT,
-      DEFAULT_API,
+      config?.logEventUrl,
+      config?.api,
+      '/rgstr',
+      NetworkDefault.eventsApi,
     );
 
     this._logEventBeaconUrl = _getOverridableUrl(
-      _options?.logEventBeaconUrl,
-      _options?.api,
-      DEFAULT_BEACON_ENDPOINT,
-      DEFAULT_API,
+      config?.logEventBeaconUrl,
+      config?.api,
+      '/log_event_beacon',
+      NetworkDefault.eventsApi,
     );
 
     _subscribeToVisiblityChanged(this._onVisibilityChanged.bind(this));

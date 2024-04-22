@@ -54,17 +54,17 @@ describe('Url Overriding', () => {
       );
 
       expect(fetchMock.mock.calls[1][0]).toContain(
-        'https://api.statsig.com/v1/rgstr?k=',
+        'https://events.statsigapi.net/v1/rgstr?k=',
       );
 
       expect(sendBeaconMock.mock.calls[0][0]).toContain(
-        'https://api.statsig.com/v1/log_event_beacon?k=',
+        'https://events.statsigapi.net/v1/log_event_beacon?k=',
       );
     });
 
     it('works for api overrides', async () => {
       const api = 'http://my-server';
-      await run({ api });
+      await run({ networkConfig: { api } });
 
       expect(fetchMock.mock.calls[0][0]).toContain(
         `${api}/download_config_specs?k=`,
@@ -81,7 +81,13 @@ describe('Url Overriding', () => {
       const downloadConfigSpecsUrl = 'http://dcs-only/dcs';
       const logEventUrl = 'http://log-only/log_event';
       const logEventBeaconUrl = 'http://log-beacon-only/le_beacon';
-      await run({ downloadConfigSpecsUrl, logEventBeaconUrl, logEventUrl });
+      await run({
+        networkConfig: {
+          downloadConfigSpecsUrl,
+          logEventBeaconUrl,
+          logEventUrl,
+        },
+      });
 
       expect(fetchMock.mock.calls[0][0]).toContain(
         `${downloadConfigSpecsUrl}?k=`,
@@ -121,17 +127,17 @@ describe('Url Overriding', () => {
       );
 
       expect(fetchMock.mock.calls[1][0]).toContain(
-        'https://api.statsig.com/v1/rgstr?k=',
+        'https://events.statsigapi.net/v1/rgstr?k=',
       );
 
       expect(sendBeaconMock.mock.calls[0][0]).toContain(
-        'https://api.statsig.com/v1/log_event_beacon?k=',
+        'https://events.statsigapi.net/v1/log_event_beacon?k=',
       );
     });
 
     it('works for api overrides', async () => {
       const api = 'http://my-server';
-      await run({ api });
+      await run({ networkConfig: { api } });
 
       expect(fetchMock.mock.calls[0][0]).toContain(`${api}/initialize?k=`);
 
@@ -146,7 +152,9 @@ describe('Url Overriding', () => {
       const initializeUrl = 'http://init-only/init';
       const logEventUrl = 'http://log-only/log_event';
       const logEventBeaconUrl = 'http://log-beacon-only/le_beacon';
-      await run({ initializeUrl, logEventBeaconUrl, logEventUrl });
+      await run({
+        networkConfig: { initializeUrl, logEventBeaconUrl, logEventUrl },
+      });
 
       expect(fetchMock.mock.calls[0][0]).toContain(`${initializeUrl}?k=`);
 

@@ -5,7 +5,7 @@ import {
   DataAdapterCachePrefix,
   DataAdapterResult,
 } from './StatsigDataAdapter';
-import { StatsigOptionsCommon } from './StatsigOptionsCommon';
+import { AnyStatsigOptions } from './StatsigOptionsCommon';
 import { StatsigUser, getUserStorageKey } from './StatsigUser';
 import {
   Storage,
@@ -30,7 +30,7 @@ export abstract class DataAdapterCore {
     this._lastModifiedStoreKey = `statsig.last_modified_time.${_cacheSuffix}`;
   }
 
-  attach(sdkKey: string, _options: StatsigOptionsCommon | null): void {
+  attach(sdkKey: string, _options: AnyStatsigOptions | null): void {
     this._sdkKey = sdkKey;
     this._errorBoundary = new ErrorBoundary(sdkKey);
     monitorClass(this._errorBoundary, this);

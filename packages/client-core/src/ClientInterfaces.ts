@@ -10,7 +10,7 @@ import { StatsigClientEventEmitterInterface } from './StatsigClientEventEmitter'
 import { EvaluationsDataAdapter, SpecsDataAdapter } from './StatsigDataAdapter';
 import { StatsigEvent } from './StatsigEvent';
 import {
-  StatsigOptionsCommon,
+  AnyStatsigOptions,
   StatsigRuntimeMutableOptions,
 } from './StatsigOptionsCommon';
 import { DynamicConfig, Experiment, FeatureGate, Layer } from './StatsigTypes';
@@ -28,7 +28,7 @@ export interface StatsigClientCommonInterface
 
 export type CommonContext = {
   sdkKey: string;
-  options: StatsigOptionsCommon;
+  options: AnyStatsigOptions;
 };
 
 export type AsyncCommonContext = {

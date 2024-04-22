@@ -18,6 +18,7 @@ export * from './InitializeResponse';
 export * from './Log';
 export * from './Monitoring';
 export * from './NetworkCore';
+export * from './NetworkDefaults';
 export * from './OverrideAdapter';
 export * from './SafeJs';
 export * from './SDKType';

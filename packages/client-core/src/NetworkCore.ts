@@ -5,7 +5,7 @@ import { SessionID } from './SessionID';
 import { StableID } from './StableID';
 import { StatsigClientEmitEventFunc } from './StatsigClientBase';
 import { SDK_VERSION, StatsigMetadataProvider } from './StatsigMetadata';
-import { StatsigOptionsCommon } from './StatsigOptionsCommon';
+import { AnyStatsigOptions } from './StatsigOptionsCommon';
 
 const DEFAULT_TIMEOUT_MS = 10_000;
 
@@ -38,10 +38,11 @@ export class NetworkCore {
   private readonly _timeout: number;
 
   constructor(
-    private _options: StatsigOptionsCommon | null,
+    private _options: AnyStatsigOptions | null,
     private _emitter?: StatsigClientEmitEventFunc,
   ) {
-    this._timeout = _options?.networkTimeoutMs ?? DEFAULT_TIMEOUT_MS;
+    this._timeout =
+      _options?.networkConfig?.networkTimeoutMs ?? DEFAULT_TIMEOUT_MS;
   }
 
   async post(args: RequestArgsWithData): Promise<NetworkResponse | null> {

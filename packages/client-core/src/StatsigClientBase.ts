@@ -23,7 +23,7 @@ import {
 } from './StatsigDataAdapter';
 import { StatsigEventInternal } from './StatsigEvent';
 import {
-  StatsigOptionsCommon,
+  AnyStatsigOptions,
   StatsigRuntimeMutableOptions,
 } from './StatsigOptionsCommon';
 import { Storage } from './StorageProvider';
@@ -40,7 +40,7 @@ export type StatsigClientEmitEventFunc = (event: StatsigClientEvent) => void;
 
 export type StatsigContext = {
   sdkKey: string;
-  options: StatsigOptionsCommon;
+  options: AnyStatsigOptions;
   sessionID: string;
   values: unknown;
 };
@@ -53,7 +53,7 @@ export abstract class StatsigClientBase<
   readonly dataAdapter: TAdapter;
 
   protected readonly _sdkKey: string;
-  protected readonly _options: StatsigOptionsCommon;
+  protected readonly _options: AnyStatsigOptions;
   protected readonly _errorBoundary: ErrorBoundary;
   protected readonly _logger: EventLogger;
   protected readonly _overrideAdapter: OverrideAdapter | null;
@@ -64,7 +64,7 @@ export abstract class StatsigClientBase<
     sdkKey: string,
     adapter: TAdapter,
     network: NetworkCore,
-    options: StatsigOptionsCommon | null,
+    options: AnyStatsigOptions | null,
   ) {
     this._sdkKey = sdkKey;
     this._options = options ?? {};

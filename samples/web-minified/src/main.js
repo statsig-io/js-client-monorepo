@@ -60,7 +60,7 @@ const client = new StatsigClient(DEMO_CLIENT_KEY, { userID: 'a-user' });
     const request = requests[2];
     const events = JSON.parse(request.args.body).events;
     return (
-      request.url.startsWith('https://api.statsig.com/v1/rgstr?k=') &&
+      request.url.includes('/v1/rgstr?k=') &&
       events[0].eventName === 'statsig::gate_exposure' &&
       events[1].eventName === 'statsig::config_exposure'
     );

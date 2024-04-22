@@ -21,7 +21,9 @@ function useProxiedClient(
 ): StatsigClient {
   const client = useMemo(() => {
     const client = new StatsigClient(sdkKey, user, {
-      api: 'http://localhost:4200/api/statsig',
+      networkConfig: {
+        api: 'http://localhost:4200/api/statsig',
+      },
     });
     client.dataAdapter.setData(values, user);
     client.initializeSync();

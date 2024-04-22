@@ -3,7 +3,6 @@ import { MockLocalStorage } from 'statsig-test-helpers';
 import { DataAdapterCore } from '../DataAdapterCore';
 import { StatsigClientBase } from '../StatsigClientBase';
 import { SpecsDataAdapter } from '../StatsigDataAdapter';
-import { StatsigOptionsCommon } from '../StatsigOptionsCommon';
 import { StatsigUser } from '../StatsigUser';
 
 class TestClient extends StatsigClientBase<SpecsDataAdapter> {}
@@ -36,7 +35,7 @@ describe('Toggle Storage', () => {
   });
 
   describe('when disabled', () => {
-    const options: StatsigOptionsCommon = {
+    const options = {
       disableStorage: true,
     };
 
