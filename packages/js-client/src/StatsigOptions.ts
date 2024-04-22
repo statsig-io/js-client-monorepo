@@ -10,7 +10,7 @@ type UrlOverrideOptions = Flatten<
     /**
      * The URL used to fetch the latest evaluations for a given user. Takes precedence over {@link StatsigOptionsCommon.api}.
      *
-     * default: `https://api.statsig.com/v1/initialize`
+     * default: `https://featuregates.org/v1/initialize`
      */
     initializeUrl?: string;
   }

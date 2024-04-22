@@ -27,7 +27,7 @@ describe('Minified StatsigClient', () => {
 
   it('hits initialize', () => {
     const [url] = fetchMock.mock.calls[0];
-    expect(url).toContain('https://api.statsig.com/v1/initialize');
+    expect(url).toContain('https://featuregates.org/v1/initialize');
   });
 
   it('gets gate results', () => {

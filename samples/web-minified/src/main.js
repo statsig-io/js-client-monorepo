@@ -30,7 +30,7 @@ const client = new StatsigClient(DEMO_CLIENT_KEY, { userID: 'a-user' });
 
   // Network
   test('creates /initialize request', () =>
-    requests[0].url.startsWith('https://api.statsig.com/v1/initialize?k='));
+    requests[0].url.startsWith('https://featuregates.org/v1/initialize?k='));
 
   // StatsigClientEventEmitter
   test('values_updated client event', () => {

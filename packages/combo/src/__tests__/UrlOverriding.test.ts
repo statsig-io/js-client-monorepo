@@ -123,7 +123,7 @@ describe('Url Overriding', () => {
       await run({});
 
       expect(fetchMock.mock.calls[0][0]).toContain(
-        'https://api.statsig.com/v1/initialize?k=',
+        'https://featuregates.org/v1/initialize?k=',
       );
 
       expect(fetchMock.mock.calls[1][0]).toContain(

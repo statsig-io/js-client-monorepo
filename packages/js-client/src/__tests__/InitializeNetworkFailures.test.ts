@@ -50,7 +50,7 @@ describe('Initialize Network Failure', () => {
     it('tries to call /initialize 3 times', () => {
       expect(fetchMock.mock.calls).toHaveLength(3);
       expect(fetchMock.mock.calls[0][0]).toContain(
-        'https://api.statsig.com/v1/initialize',
+        'https://featuregates.org/v1/initialize',
       );
     });
 
@@ -83,7 +83,7 @@ describe('Initialize Network Failure', () => {
     it('tries to call /initialize 3 times', () => {
       expect(fetchMock.mock.calls).toHaveLength(3);
       expect(fetchMock.mock.calls[0][0]).toContain(
-        'https://api.statsig.com/v1/initialize',
+        'https://featuregates.org/v1/initialize',
       );
     });
   });

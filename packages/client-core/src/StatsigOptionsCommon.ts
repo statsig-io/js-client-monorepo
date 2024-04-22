@@ -26,14 +26,14 @@ export type NetworkConfigCommon = {
   /**
    * The URL used to flush queued events via a POST request. Takes precedence over {@link StatsigOptionsCommon.api}.
    *
-   * default: `https://api.statsig.com/v1/initialize`
+   * default: `https://featuregates.org/v1/initialize`
    */
   logEventUrl?: string;
 
   /**
    * The URL used to flush queued events via {@link window.navigator.sendBeacon} (web only). Takes precedence over {@link StatsigOptionsCommon.api}.
    *
-   * default: `https://api.statsig.com/v1/initialize`
+   * default: `https://featuregates.org/v1/initialize`
    */
   logEventBeaconUrl?: string;
 

@@ -1,4 +1,5 @@
 import { Log } from './Log';
+import { NetworkDefault } from './NetworkDefaults';
 
 const SUPPORTS_PERFORMANCE_API =
   typeof performance !== 'undefined' && typeof performance.mark !== 'undefined';
@@ -36,8 +37,11 @@ export abstract class Diagnostics {
   static flush(): void {
     const resources = performance
       .getEntriesByType('resource')
-      .filter((resource) =>
-        resource.name.startsWith('https://api.statsig.com'),
+      .filter(
+        (resource) =>
+          resource.name.startsWith(NetworkDefault.initializeApi) ||
+          resource.name.startsWith(NetworkDefault.specsApi) ||
+          resource.name.startsWith(NetworkDefault.eventsApi),
       );
 
     const payload = {

@@ -37,7 +37,7 @@ describe('Init Strategy - Awaited', () => {
   it('calls /initialize from network', () => {
     expect(fetchMock.mock.calls).toHaveLength(1);
     expect(fetchMock.mock.calls[0][0]).toContain(
-      'https://api.statsig.com/v1/initialize',
+      'https://featuregates.org/v1/initialize',
     );
   });
 

@@ -6,6 +6,7 @@ import {
   StatsigMetadataProvider,
   Visibility,
   _getStatsigGlobal,
+  _isCurrentlyVisible,
   _subscribeToVisiblityChanged,
   monitorClass,
 } from '@statsig/client-core';
@@ -87,7 +88,7 @@ export class SessionReplay {
 
     const payload = JSON.stringify(this._events);
     if (payload.length > MAX_REPLAY_PAYLOAD_BYTES) {
-      if (VisibilityChangeObserver.isCurrentlyVisible()) {
+      if (_isCurrentlyVisible()) {
         this._flushAndRefreshSessionID();
       } else {
         this._flushWithSessionID(this._sessionID);
