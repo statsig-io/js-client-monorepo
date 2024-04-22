@@ -5,7 +5,8 @@ import {
   SDK_VERSION,
   StatsigMetadataProvider,
   Visibility,
-  VisibilityChangeObserver,
+  _getStatsigGlobal,
+  _subscribeToVisiblityChanged,
   monitorClass,
 } from '@statsig/client-core';
 
@@ -35,10 +36,11 @@ export class SessionReplay {
     this._errorBoundary = new ErrorBoundary(sdkKey);
     monitorClass(this._errorBoundary, this);
 
-    __STATSIG__ = __STATSIG__ ?? {};
-    const instances = __STATSIG__.srInstances ?? {};
-    instances[sdkKey] = this;
-    __STATSIG__.srInstances = instances;
+    const statsigGlobal = _getStatsigGlobal();
+    statsigGlobal.srInstances = {
+      ...statsigGlobal.srInstances,
+      [sdkKey]: this,
+    };
 
     this._replayer = new SessionReplayClient();
     this._client.__on('pre_shutdown', () => this._shutdown());
@@ -57,7 +59,7 @@ export class SessionReplay {
         });
     });
 
-    VisibilityChangeObserver.add(this);
+    _subscribeToVisiblityChanged(this._onVisibilityChanged.bind(this));
 
     this._client
       .getAsyncContext()
@@ -70,7 +72,7 @@ export class SessionReplay {
       });
   }
 
-  onVisibilityChanged(visibility: Visibility): void {
+  private _onVisibilityChanged(visibility: Visibility): void {
     if (visibility === 'background') {
       this._flushWithSessionID(this._sessionID);
       this._client.flush().catch((e) => {

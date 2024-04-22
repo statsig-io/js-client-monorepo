@@ -19,13 +19,13 @@ const CONFIG_EXPOSURE_NAME = 'statsig::config_exposure';
 const GATE_EXPOSURE_NAME = 'statsig::gate_exposure';
 const LAYER_EXPOSURE_NAME = 'statsig::layer_exposure';
 
-function createExposure(
+const _createExposure = (
   eventName: string,
   user: StatsigUser,
   details: EvaluationDetails,
   metadata: Record<string, string>,
   secondaryExposures: SecondaryExposure[],
-) {
+) => {
   return {
     eventName,
     user,
@@ -34,17 +34,19 @@ function createExposure(
     secondaryExposures,
     time: Date.now(),
   };
-}
+};
 
-export function isExposureEvent({ eventName }: StatsigEventInternal): boolean {
+export const _isExposureEvent = ({
+  eventName,
+}: StatsigEventInternal): boolean => {
   return eventName === GATE_EXPOSURE_NAME || eventName === CONFIG_EXPOSURE_NAME;
-}
+};
 
-export function createGateExposure(
+export const _createGateExposure = (
   user: StatsigUser,
   gate: FeatureGate,
-): StatsigEventInternal {
-  return createExposure(
+): StatsigEventInternal => {
+  return _createExposure(
     GATE_EXPOSURE_NAME,
     user,
     gate.details,
@@ -55,13 +57,13 @@ export function createGateExposure(
     },
     gate.__evaluation?.secondary_exposures ?? [],
   );
-}
+};
 
-export function createConfigExposure(
+export const _createConfigExposure = (
   user: StatsigUser,
   config: DynamicConfig,
-): StatsigEventInternal {
-  return createExposure(
+): StatsigEventInternal => {
+  return _createExposure(
     CONFIG_EXPOSURE_NAME,
     user,
     config.details,
@@ -71,13 +73,13 @@ export function createConfigExposure(
     },
     config.__evaluation?.secondary_exposures ?? [],
   );
-}
+};
 
-export function createLayerParameterExposure(
+export const _createLayerParameterExposure = (
   user: StatsigUser,
   layer: Layer,
   parameterName: string,
-): StatsigEventInternal {
+): StatsigEventInternal => {
   const evaluation = layer.__evaluation;
   const isExplicit =
     evaluation?.explicit_parameters?.includes(parameterName) === true;
@@ -89,7 +91,7 @@ export function createLayerParameterExposure(
     secondaryExposures = evaluation.secondary_exposures;
   }
 
-  return createExposure(
+  return _createExposure(
     LAYER_EXPOSURE_NAME,
     user,
     layer.details,
@@ -102,12 +104,12 @@ export function createLayerParameterExposure(
     },
     secondaryExposures,
   );
-}
+};
 
-function _addEvaluationDetailsToMetadata(
+const _addEvaluationDetailsToMetadata = (
   details: EvaluationDetails,
   metadata: Record<string, string>,
-): Record<string, string> {
+): Record<string, string> => {
   metadata['reason'] = details.reason;
 
   if (details.lcut) {
@@ -119,4 +121,4 @@ function _addEvaluationDetailsToMetadata(
   }
 
   return metadata;
-}
+};

@@ -1,18 +1,15 @@
-import { DJB2, Log, getUUID, typedJsonParse } from '@statsig/client-core';
+import {
+  DJB2,
+  Log,
+  _getWindowSafe,
+  getUUID,
+  typedJsonParse,
+} from '@statsig/client-core';
 
 const MAX_SESSION_IDLE_TIME = 10 * 60 * 1000; // 10 minutes
 const MAX_SESSION_AGE = 4 * 60 * 60 * 1000; // 4 hours
 
 const globals: Record<string, string> = {};
-
-export function _getDocumentSafe(): Document | null {
-  const win = _getWindowSafe();
-  return win?.document ?? null;
-}
-
-export function _getWindowSafe(): Window | null {
-  return typeof window !== 'undefined' ? window : null;
-}
 
 export function _gatherEventData(target: Element): {
   value: string;

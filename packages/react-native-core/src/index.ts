@@ -1,15 +1,18 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { AppState } from 'react-native';
 
-import { Storage, VisibilityChangeObserver } from '@statsig/client-core';
+import { Storage, _notifyVisibilityChanged } from '@statsig/client-core';
 
-Storage.setProvider({
-  ...AsyncStorage,
-  getProviderName: () => 'AsyncStorage',
+Storage._setProvider({
+  _getProviderName: () => 'AsyncStorage',
+  _getItem: (key) => AsyncStorage.getItem(key),
+  _setItem: (key: string, value: string) => AsyncStorage.setItem(key, value),
+  _removeItem: (key: string) => AsyncStorage.removeItem(key),
+  _getAllKeys: () => AsyncStorage.getAllKeys(),
 });
 
 AppState.addEventListener('change', (nextAppState) =>
-  VisibilityChangeObserver.notify(
+  _notifyVisibilityChanged(
     nextAppState === 'active' ? 'foreground' : 'background',
   ),
 );

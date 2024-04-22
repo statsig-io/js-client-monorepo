@@ -1,6 +1,8 @@
 const { composePlugins, withNx, withWeb } = require('@nx/webpack');
 const path = require('path');
 const minifier = require('../../tools/scripts/webpack-minifier');
+const BundleAnalyzerPlugin =
+  require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 const DEP_MAP = {
   '@statsig/client-core': '../../dist/packages/client-core',
@@ -11,6 +13,60 @@ const DEP_MAP = {
   '@statsig/sha256': '../../dist/packages/sha256',
   '@statsig/web-analytics': '../../dist/packages/web-analytics',
 };
+
+class StatsigPostProcessPlugin {
+  name = 'StatsigPostProcessPlugin';
+
+  constructor(options) {
+    this.options = options || {};
+  }
+
+  apply(compiler) {
+    compiler.hooks.thisCompilation.tap(this.name, (compilation) => {
+      compilation.hooks.processAssets.tap(
+        {
+          name: this.name,
+          stage: compilation.constructor.PROCESS_ASSETS_STAGE_REPORT,
+        },
+        (assets) => {
+          const filename = `statsig-${this.options.bundleFile}.min.js`;
+          const asset = assets[filename];
+          if (!asset) {
+            throw `[${this.name}]: Could not find file ${filename}`;
+          }
+
+          const source = asset.source();
+          const parts = source.split('"use strict";');
+          const tailIndex = parts.length - 1;
+
+          const hoistedFunctions = [
+            'var $Q=(e)=>Object.defineProperty(e,"__esModule",{value:!0});',
+            'var $P = (a,b) => Object.assign(a,b);',
+          ].join('');
+
+          const sourceUsingHositedFunctions = parts[tailIndex]
+            // __esModule replace
+            .replaceAll(
+              'Object.defineProperty(e,"__esModule",{value:!0})',
+              '$Q(e)',
+            )
+            // Object.assign replace
+            .replaceAll('Object.assign(', '$P(');
+
+          parts[tailIndex] =
+            `${hoistedFunctions}${sourceUsingHositedFunctions}`;
+
+          const edited = parts.join('"use strict";');
+
+          assets[filename] = {
+            source: () => edited,
+            size: () => edited.length,
+          };
+        },
+      );
+    });
+  }
+}
 
 /**
  * Creates a Statsig Webpack bundle with size optimizations.
@@ -39,13 +95,8 @@ function createStatsigWebpackBundle({
     alias[dep] = path.resolve(__dirname, DEP_MAP[dep]);
   });
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  return composePlugins(withNx(), withWeb(), (_config) => {
+  return composePlugins(withNx(), withWeb(), () => {
     return {
-      // Uncomment if you want to use webpack-bundle-analyzer
-      // plugins: config.plugins.filter(
-      //   (x) => x.constructor.name === 'StatsJsonPlugin',
-      // ),
       stats: {
         assets: true,
         modules: false,
@@ -82,10 +133,22 @@ function createStatsigWebpackBundle({
         hints: 'error',
       },
       optimization: {
+        concatenateModules: true,
+        removeAvailableModules: true,
+        mergeDuplicateChunks: true,
         minimize: true,
         minimizer: [minifier],
       },
-      plugins,
+      plugins: [
+        ...(plugins ?? []),
+        new StatsigPostProcessPlugin({ bundleFile }),
+        new BundleAnalyzerPlugin({
+          analyzerMode: 'disabled',
+          openAnalyzer: false,
+          generateStatsFile: true,
+          statsFilename: `${bundleFile}-stats.json`,
+        }),
+      ],
     };
   });
 }

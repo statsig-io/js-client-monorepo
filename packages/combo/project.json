@@ -106,6 +106,10 @@
       "options": {
         "jestConfig": "packages/combo/jest.config.ts"
       }
+    },
+    "analyze-js-client": {
+      "command": "pnpm exec webpack-bundle-analyzer dist/packages/combo/build/js-client/js-client-stats.json",
+      "dependsOn": ["build-webpack-js-client"]
     }
   },
   "tags": []

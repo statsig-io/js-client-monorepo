@@ -31,7 +31,7 @@ export function warmCachingFromAsyncStorage(
 async function _loadCacheAsync(
   adapter: EvaluationsDataAdapter | SpecsDataAdapter,
 ): Promise<void> {
-  const keys = await Storage.getAllKeys();
+  const keys = await Storage._getAllKeys();
   const results: Record<string, DataAdapterResult> = {};
 
   await Promise.all(
@@ -40,7 +40,7 @@ async function _loadCacheAsync(
         return;
       }
 
-      const cache = await Storage.getItem(key);
+      const cache = await Storage._getItem(key);
       if (!cache) {
         return;
       }

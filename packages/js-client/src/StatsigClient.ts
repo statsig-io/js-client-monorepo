@@ -20,13 +20,14 @@ import {
   StatsigClientBase,
   StatsigEvent,
   StatsigUser,
+  _createConfigExposure,
+  _createGateExposure,
+  _createLayerParameterExposure,
+  _getStatsigGlobal,
   _makeDynamicConfig,
   _makeFeatureGate,
   _makeLayer,
   _mergeOverride,
-  createConfigExposure,
-  createGateExposure,
-  createLayerParameterExposure,
   monitorClass,
   normalizeUser,
 } from '@statsig/client-core';
@@ -83,11 +84,10 @@ export default class StatsigClient
    * @returns {StatsigClient|undefined} Returns the StatsigClient instance associated with the given SDK key, or undefined if no instance is associated with the key or if no key is provided and no instances exist.
    */
   static instance(sdkKey?: string): StatsigClient | undefined {
-    __STATSIG__ = __STATSIG__ ?? {};
-    if (sdkKey == null) {
-      return __STATSIG__.lastInstance as StatsigClient | undefined;
-    }
-    return __STATSIG__.instances?.[sdkKey] as StatsigClient | undefined;
+    const sGlobal = _getStatsigGlobal();
+    return (
+      sdkKey ? sGlobal.instances?.[sdkKey] : sGlobal.lastInstance
+    ) as StatsigClient;
   }
 
   /**
@@ -230,7 +230,7 @@ export default class StatsigClient
 
     this._enqueueExposure(
       name,
-      createGateExposure(this._user, result),
+      _createGateExposure(this._user, result),
       options,
     );
 
@@ -297,7 +297,7 @@ export default class StatsigClient
       (param: string) => {
         this._enqueueExposure(
           name,
-          createLayerParameterExposure(this._user, result, param),
+          _createLayerParameterExposure(this._user, result, param),
           options,
         );
       },
@@ -373,7 +373,7 @@ export default class StatsigClient
 
     this._enqueueExposure(
       name,
-      createConfigExposure(this._user, result),
+      _createConfigExposure(this._user, result),
       options,
     );
 

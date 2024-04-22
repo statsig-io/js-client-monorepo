@@ -1,4 +1,5 @@
 import {
+  AnyEvaluation,
   DynamicConfigEvaluation,
   EvaluationDetails,
   GateEvaluation,
@@ -15,18 +16,27 @@ import {
 
 const DEFAULT_RULE = 'default';
 
+function _makeEvaluation<T, U extends AnyEvaluation>(
+  name: string,
+  details: EvaluationDetails,
+  evaluation: U | null,
+  value: T,
+) {
+  return {
+    name,
+    details,
+    ruleID: evaluation?.rule_id ?? DEFAULT_RULE,
+    __evaluation: evaluation,
+    value,
+  };
+}
+
 export function _makeFeatureGate(
   name: string,
   details: EvaluationDetails,
   evaluation: GateEvaluation | null,
 ): FeatureGate {
-  return {
-    name,
-    details,
-    ruleID: evaluation?.rule_id ?? DEFAULT_RULE,
-    value: evaluation?.value === true,
-    __evaluation: evaluation,
-  };
+  return _makeEvaluation(name, details, evaluation, evaluation?.value === true);
 }
 
 export function _makeDynamicConfig(
@@ -35,13 +45,9 @@ export function _makeDynamicConfig(
   evaluation: DynamicConfigEvaluation | null,
 ): DynamicConfig {
   return {
-    name,
-    details,
-    value: evaluation?.value ?? {},
-    ruleID: evaluation?.rule_id ?? DEFAULT_RULE,
+    ..._makeEvaluation(name, details, evaluation, evaluation?.value ?? {}),
     groupName: null,
     get: _makeTypedGet(evaluation?.value),
-    __evaluation: evaluation,
   };
 }
 
@@ -52,13 +58,10 @@ export function _makeLayer(
   exposeFunc?: (param: string) => void,
 ): Layer {
   return {
-    name,
-    details,
+    ..._makeEvaluation(name, details, evaluation, undefined),
     get: _makeTypedGet(evaluation?.value, exposeFunc),
-    ruleID: evaluation?.rule_id ?? DEFAULT_RULE,
     groupName: evaluation?.group_name ?? null,
     __value: evaluation?.value ?? {},
-    __evaluation: evaluation,
   };
 }
 

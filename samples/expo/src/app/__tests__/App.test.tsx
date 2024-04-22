@@ -20,15 +20,15 @@ const storage = {
   },
 };
 
-Storage.setProvider({
-  getProviderName: () => 'JestStorage',
-  getAllKeys: () => Promise.resolve(Object.keys(inMemoryStore)),
-  getItemSync: (key: string) => storage.getItem(key),
-  getItem: (key: string) => Promise.resolve(storage.getItem(key)),
+Storage._setProvider({
+  _getProviderName: () => 'JestStorage',
+  _getAllKeys: () => Promise.resolve(Object.keys(inMemoryStore)),
+  _getItemSync: (key: string) => storage.getItem(key),
+  _getItem: (key: string) => Promise.resolve(storage.getItem(key)),
   // getItem: (key: string) => Promise.reject(key),
-  setItem: (key: string, value: string) =>
+  _setItem: (key: string, value: string) =>
     Promise.resolve(storage.setItem(key, value)),
-  removeItem: (key: string) => Promise.resolve(storage.removeItem(key)),
+  _removeItem: (key: string) => Promise.resolve(storage.removeItem(key)),
 });
 
 describe('App', () => {

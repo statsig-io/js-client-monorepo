@@ -4,7 +4,7 @@ const SDK_KEY = 'client-sdk-key';
 
 let alreadyCalled = false;
 jest.mock('../StorageProvider', () => ({
-  getObjectFromStorage: async () => {
+  _getObjectFromStorage: async () => {
     if (alreadyCalled) {
       throw 'This should not be called';
     }

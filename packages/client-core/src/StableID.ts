@@ -1,6 +1,6 @@
 import { DJB2 } from './Hashing';
 import { Log } from './Log';
-import { getObjectFromStorage, setObjectInStorage } from './StorageProvider';
+import { _getObjectFromStorage, _setObjectInStorage } from './StorageProvider';
 import { getUUID } from './UUID';
 
 const PROMISE_MAP: Record<string, Promise<string>> = {};
@@ -35,12 +35,12 @@ function _getStableIDStorageKey(sdkKey: string): string {
 function _persistToStorage(stableID: string, sdkKey: string) {
   const storageKey = _getStableIDStorageKey(sdkKey);
 
-  setObjectInStorage(storageKey, stableID).catch(() => {
+  _setObjectInStorage(storageKey, stableID).catch(() => {
     Log.warn('Failed to save StableID');
   });
 }
 
 function _loadFromStorage(sdkKey: string) {
   const storageKey = _getStableIDStorageKey(sdkKey);
-  return getObjectFromStorage<string>(storageKey);
+  return _getObjectFromStorage<string>(storageKey);
 }

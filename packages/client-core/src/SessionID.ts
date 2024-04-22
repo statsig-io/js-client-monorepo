@@ -1,6 +1,6 @@
 import { DJB2 } from './Hashing';
 import { Log } from './Log';
-import { getObjectFromStorage, setObjectInStorage } from './StorageProvider';
+import { _getObjectFromStorage, _setObjectInStorage } from './StorageProvider';
 import { getUUID } from './UUID';
 
 type SessionData = {
@@ -106,12 +106,12 @@ function _getSessionIDStorageKey(sdkKey: string): string {
 function _persistToStorage(session: SessionData, sdkKey: string) {
   const storageKey = _getSessionIDStorageKey(sdkKey);
 
-  setObjectInStorage(storageKey, session).catch(() => {
+  _setObjectInStorage(storageKey, session).catch(() => {
     Log.warn('Failed to save SessionID');
   });
 }
 
 function _loadFromStorage(sdkKey: string) {
   const storageKey = _getSessionIDStorageKey(sdkKey);
-  return getObjectFromStorage<SessionData>(storageKey);
+  return _getObjectFromStorage<SessionData>(storageKey);
 }

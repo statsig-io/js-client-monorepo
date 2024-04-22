@@ -2,19 +2,20 @@ import { DJB2 } from './Hashing';
 import { Log } from './Log';
 import { NetworkCore } from './NetworkCore';
 import { StatsigClientEmitEventFunc } from './StatsigClientBase';
-import { StatsigEventInternal, isExposureEvent } from './StatsigEvent';
+import { StatsigEventInternal, _isExposureEvent } from './StatsigEvent';
 import { StatsigOptionsCommon } from './StatsigOptionsCommon';
 import {
   Storage,
-  getObjectFromStorage,
-  setObjectInStorage,
+  _getObjectFromStorage,
+  _setObjectInStorage,
 } from './StorageProvider';
 import { typedJsonParse } from './TypedJsonParse';
 import { _getOverridableUrl } from './UrlOverrides';
 import {
   Visibility,
-  VisibilityChangeObserver,
-} from './VisibilityChangeObserver';
+  _isCurrentlyVisible,
+  _subscribeToVisiblityChanged,
+} from './VisibilityObserving';
 
 const DEFAULT_QUEUE_SIZE = 50;
 const DEFAULT_FLUSH_INTERVAL_MS = 10_000;
@@ -79,7 +80,7 @@ export class EventLogger {
       DEFAULT_API,
     );
 
-    VisibilityChangeObserver.add(this);
+    _subscribeToVisiblityChanged(this._onVisibilityChanged.bind(this));
 
     this._retryFailedLogs();
   }
@@ -111,12 +112,6 @@ export class EventLogger {
     this._lastExposureTimeMap = {};
   }
 
-  onVisibilityChanged(visibility: Visibility): void {
-    if (visibility === 'background') {
-      this._flushAndForget();
-    }
-  }
-
   async shutdown(): Promise<void> {
     if (this._flushTimer) {
       clearInterval(this._flushTimer);
@@ -139,6 +134,12 @@ export class EventLogger {
     await this._sendEvents(events);
   }
 
+  private _onVisibilityChanged(visibility: Visibility): void {
+    if (visibility === 'background') {
+      this._flushAndForget();
+    }
+  }
+
   /**
    * We 'Quick Flush' following the very first event enqueued
    * within the quick flush window
@@ -157,7 +158,7 @@ export class EventLogger {
   }
 
   private _shouldLogEvent(event: StatsigEventInternal): boolean {
-    if (!isExposureEvent(event)) {
+    if (!_isExposureEvent(event)) {
       return true;
     }
 
@@ -196,7 +197,7 @@ export class EventLogger {
     }
 
     try {
-      const isInForeground = VisibilityChangeObserver.isCurrentlyVisible();
+      const isInForeground = _isCurrentlyVisible();
 
       const response =
         !isInForeground && this._network.isBeaconSupported()
@@ -264,7 +265,7 @@ export class EventLogger {
 
     const storageKey = this._getStorageKey();
 
-    setObjectInStorage(storageKey, events).catch(() => {
+    _setObjectInStorage(storageKey, events).catch(() => {
       Log.warn('Unable to save failed logs to storage');
     });
   }
@@ -272,12 +273,12 @@ export class EventLogger {
   private _retryFailedLogs() {
     const storageKey = this._getStorageKey();
     (async () => {
-      const events = await getObjectFromStorage<EventQueue>(storageKey);
+      const events = await _getObjectFromStorage<EventQueue>(storageKey);
       if (!events) {
         return;
       }
 
-      await Storage.removeItem(storageKey);
+      await Storage._removeItem(storageKey);
       await this._sendEvents(events);
     })().catch(() => {
       Log.warn('Failed to flush stored logs');

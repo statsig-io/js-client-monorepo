@@ -1,14 +1,18 @@
-import { ErrorBoundary, Log, monitorClass } from '@statsig/client-core';
+import {
+  ErrorBoundary,
+  Log,
+  _getDocumentSafe,
+  _getWindowSafe,
+  monitorClass,
+} from '@statsig/client-core';
 import { StatsigClient } from '@statsig/js-client';
 
 import {
   _gatherEventData,
-  _getDocumentSafe,
   _getSafeUrl,
   _getSanitizedPageUrl,
   _getTargetNode,
   _getWebSessionId,
-  _getWindowSafe,
   _registerEventHandler,
   _shouldLogEvent,
 } from './Utils';

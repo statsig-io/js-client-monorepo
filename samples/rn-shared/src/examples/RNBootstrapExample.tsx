@@ -27,8 +27,8 @@ function Content() {
 
 export function RNBootstrapExample({ onBackPress }: Props): React.ReactNode {
   const onClearCachePress = () => {
-    Storage.getAllKeys()
-      .then((keys) => keys.map((key) => Storage.removeItem(key)))
+    Storage._getAllKeys()
+      .then((keys) => keys.map((key) => Storage._removeItem(key)))
       .catch((e) => {
         // eslint-disable-next-line no-console
         console.error(e);

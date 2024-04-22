@@ -9,8 +9,8 @@ import { StatsigOptionsCommon } from './StatsigOptionsCommon';
 import { StatsigUser, getUserStorageKey } from './StatsigUser';
 import {
   Storage,
-  getObjectFromStorage,
-  setObjectInStorage,
+  _getObjectFromStorage,
+  _setObjectInStorage,
 } from './StorageProvider';
 import { typedJsonParse } from './TypedJsonParse';
 
@@ -170,7 +170,7 @@ export abstract class DataAdapterCore {
   }
 
   private _loadFromCache(cacheKey: string): DataAdapterResult | null {
-    const cache = Storage.getItemSync?.(cacheKey);
+    const cache = Storage._getItemSync?.(cacheKey);
     if (cache == null) {
       return null;
     }
@@ -188,20 +188,23 @@ export abstract class DataAdapterCore {
     cacheKey: string,
     result: DataAdapterResult,
   ): Promise<void> {
-    await Storage.setItem(cacheKey, JSON.stringify(result));
+    await Storage._setItem(cacheKey, JSON.stringify(result));
     await this._runLocalStorageCacheEviction(cacheKey);
   }
 
   private async _runLocalStorageCacheEviction(cacheKey: string): Promise<void> {
     const lastModifiedTimeMap =
-      (await getObjectFromStorage<Record<string, number>>(
+      (await _getObjectFromStorage<Record<string, number>>(
         this._lastModifiedStoreKey,
       )) ?? {};
     lastModifiedTimeMap[cacheKey] = Date.now();
 
     const entries = Object.entries(lastModifiedTimeMap);
     if (entries.length <= CACHE_LIMIT) {
-      await setObjectInStorage(this._lastModifiedStoreKey, lastModifiedTimeMap);
+      await _setObjectInStorage(
+        this._lastModifiedStoreKey,
+        lastModifiedTimeMap,
+      );
       return;
     }
 
@@ -210,7 +213,7 @@ export abstract class DataAdapterCore {
     });
 
     delete lastModifiedTimeMap[oldest[0]];
-    await Storage.removeItem(oldest[0]);
-    await setObjectInStorage(this._lastModifiedStoreKey, lastModifiedTimeMap);
+    await Storage._removeItem(oldest[0]);
+    await _setObjectInStorage(this._lastModifiedStoreKey, lastModifiedTimeMap);
   }
 }

@@ -9,6 +9,7 @@ import { OverrideAdapter } from './OverrideAdapter';
 import { SessionID } from './SessionID';
 import { StableID } from './StableID';
 import {
+  AnyStatsigClientEventListener,
   StatsigClientEvent,
   StatsigClientEventCallback,
   StatsigClientEventEmitterInterface,
@@ -68,7 +69,7 @@ export abstract class StatsigClientBase<
     this._sdkKey = sdkKey;
     this._options = options ?? {};
 
-    options?.disableStorage && Storage.setDisabled(true);
+    options?.disableStorage && Storage._setDisabled(true);
     options?.overrideStableID &&
       StableID.setOverride(options.overrideStableID, sdkKey);
 
@@ -86,12 +87,13 @@ export abstract class StatsigClientBase<
     }, sdkKey);
     this._errorBoundary = new ErrorBoundary(sdkKey);
 
-    __STATSIG__ = __STATSIG__ ?? {};
-    const instances = __STATSIG__.instances ?? {};
+    const statsigGlobal = __STATSIG__ ?? {};
+    const instances = statsigGlobal.instances ?? {};
     const inst = this as unknown as StatsigClientInterface;
     instances[sdkKey] = inst;
-    __STATSIG__.instances = instances;
-    __STATSIG__.lastInstance = inst;
+    statsigGlobal.lastInstance = inst;
+    statsigGlobal.instances = instances;
+    __STATSIG__ = statsigGlobal;
 
     this.dataAdapter = adapter;
     this.dataAdapter.attach(sdkKey, options);
@@ -110,7 +112,7 @@ export abstract class StatsigClientBase<
 
     if (options.disableStorage != null) {
       this._options.disableStorage = options.disableStorage;
-      Storage.setDisabled(options.disableStorage);
+      Storage._setDisabled(options.disableStorage);
     }
   }
 
@@ -178,9 +180,7 @@ export abstract class StatsigClientBase<
   }
 
   protected _emit(event: StatsigClientEvent): void {
-    const barrier = (
-      listener: StatsigClientEventCallback<typeof event.name>,
-    ) => {
+    const barrier = (listener: AnyStatsigClientEventListener) => {
       try {
         listener(event);
       } catch (error) {
@@ -200,7 +200,7 @@ export abstract class StatsigClientBase<
 
     if (this._listeners[event.name]) {
       this._listeners[event.name].forEach((l) =>
-        barrier(l as StatsigClientEventCallback<typeof event.name>),
+        barrier(l as AnyStatsigClientEventListener),
       );
     }
 

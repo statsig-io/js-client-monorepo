@@ -19,6 +19,7 @@ export * from './Log';
 export * from './Monitoring';
 export * from './NetworkCore';
 export * from './OverrideAdapter';
+export * from './SafeJs';
 export * from './SDKType';
 export * from './SessionID';
 export * from './StableID';
@@ -36,7 +37,7 @@ export * from './TypedJsonParse';
 export * from './UrlOverrides';
 export * from './UtitlityTypes';
 export * from './UUID';
-export * from './VisibilityChangeObserver';
+export * from './VisibilityObserving';
 
 export { EventLogger, Storage, Log };
 

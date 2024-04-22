@@ -24,7 +24,8 @@
             "ignoredDependencies": [
               "jest-fetch-mock",
               "statsig-test-helpers",
-              "@nx/webpack"
+              "@nx/webpack",
+              "webpack-bundle-analyzer"
             ]
           }
         ]

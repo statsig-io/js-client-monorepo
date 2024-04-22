@@ -1,4 +1,4 @@
-export function DJB2(value: string): string {
+export const DJB2 = (value: string): string => {
   let hash = 0;
   for (let i = 0; i < value.length; i++) {
     const character = value.charCodeAt(i);
@@ -6,15 +6,15 @@ export function DJB2(value: string): string {
     hash = hash & hash; // Convert to 32bit integer
   }
   return String(hash >>> 0);
-}
+};
 
-export function DJB2Object(value: Record<string, unknown> | null): string {
+export const DJB2Object = (value: Record<string, unknown> | null): string => {
   return DJB2(JSON.stringify(_getSortedObject(value)));
-}
+};
 
-function _getSortedObject(
+const _getSortedObject = (
   object: Record<string, unknown> | null,
-): Record<string, unknown> | null {
+): Record<string, unknown> | null => {
   if (object == null) {
     return null;
   }
@@ -29,4 +29,4 @@ function _getSortedObject(
     sortedObject[key] = value;
   });
   return sortedObject;
-}
+};

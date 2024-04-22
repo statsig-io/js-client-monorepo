@@ -20,12 +20,12 @@ import {
   StatsigClientBase,
   StatsigEvent,
   StatsigUser,
+  _createConfigExposure,
+  _createGateExposure,
+  _createLayerParameterExposure,
   _makeDynamicConfig,
   _makeFeatureGate,
   _makeLayer,
-  createConfigExposure,
-  createGateExposure,
-  createLayerParameterExposure,
   monitorClass,
   normalizeUser,
 } from '@statsig/client-core';
@@ -98,11 +98,10 @@ export default class StatsigOnDeviceEvalClient
   public static instance(
     sdkKey?: string,
   ): StatsigOnDeviceEvalClient | undefined {
-    __STATSIG__ = __STATSIG__ ?? {};
     if (sdkKey == null) {
-      return __STATSIG__.lastInstance as StatsigOnDeviceEvalClient | undefined;
+      return __STATSIG__?.lastInstance as StatsigOnDeviceEvalClient | undefined;
     }
-    return __STATSIG__.instances?.[sdkKey] as
+    return __STATSIG__?.instances?.[sdkKey] as
       | StatsigOnDeviceEvalClient
       | undefined;
   }
@@ -141,7 +140,7 @@ export default class StatsigOnDeviceEvalClient
 
     const gate = _makeFeatureGate(name, details, evaluation);
 
-    this._enqueueExposure(name, createGateExposure(user, gate), options);
+    this._enqueueExposure(name, _createGateExposure(user, gate), options);
 
     this._emit({ name: 'gate_evaluation', gate });
 
@@ -184,7 +183,7 @@ export default class StatsigOnDeviceEvalClient
     const layer = _makeLayer(name, details, evaluation, (param: string) => {
       this._enqueueExposure(
         name,
-        createLayerParameterExposure(user, layer, param),
+        _createLayerParameterExposure(user, layer, param),
         options,
       );
     });
@@ -234,7 +233,7 @@ export default class StatsigOnDeviceEvalClient
         : this._overrideAdapter?.getDynamicConfigOverride?.(config, user, opts);
 
     const result = overridden ?? config;
-    this._enqueueExposure(name, createConfigExposure(user, result), opts);
+    this._enqueueExposure(name, _createConfigExposure(user, result), opts);
     return result;
   }
 }

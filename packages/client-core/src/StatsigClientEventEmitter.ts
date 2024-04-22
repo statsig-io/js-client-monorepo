@@ -47,6 +47,9 @@ export type StatsigClientEvent = Flatten<
   }[keyof EventNameToEventDataMap]
 >;
 
+export type AnyStatsigClientEventListener =
+  StatsigClientEventCallback<StatsigClientEventName>;
+
 export type StatsigClientEventName = StatsigClientEvent['name'] | '*';
 
 export type StatsigClientEventCallback<T extends StatsigClientEventName> = (
