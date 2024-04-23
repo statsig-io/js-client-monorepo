@@ -8,11 +8,10 @@ import { STATSIG_CLIENT_KEY as YOUR_CLIENT_KEY } from '../../Contants';
 // prettier-ignore
 export default async function Sample(): Promise<void> {
 // <snippet>
-const user = { userID: 'a-user' };
-const client = new StatsigClient(YOUR_CLIENT_KEY, user);
+const client = new StatsigClient(YOUR_CLIENT_KEY, { userID: 'a-user' });
 client.initializeSync();
 
-// then later, at some other point in your code base
+// then later, at some other location in your code base
 if (StatsigClient.instance().checkGate('a_gate')) {
   // show new  feature
 }

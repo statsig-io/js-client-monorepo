@@ -4,13 +4,13 @@ import { OverrideAdapter } from './OverrideAdapter';
 /** Options that can be set at init and updated during runtime. */
 export type StatsigRuntimeMutableOptions = {
   /**
-   * Prevents writing anything to storage.
-   * Note: caching will not work if storage is disabled
+   * Prevents sending any events over the network.
    */
   disableLogging?: boolean;
 
   /**
    * Prevents writing anything to storage.
+   *
    * Note: caching will not work if storage is disabled
    */
   disableStorage?: boolean;

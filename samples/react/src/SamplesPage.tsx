@@ -26,6 +26,8 @@ const SAMPLES = [
   () => import('./samples/precomputed-client/sample-precomp-prefetch'),
   () =>
     import('./samples/precomputed-client/sample-precomp-evaluation-details'),
+  () => import('./samples/precomputed-client/sample-precomp-static-instance'),
+  () => import('./samples/precomputed-client/sample-precomp-gdpr'),
 
   // On Device Eval
   () => import('./samples/OnDeviceClientBasic'),
