@@ -22,10 +22,6 @@ const onLogsFlushed = (event: StatsigClientEvent<'logs_flushed'>) => {
   console.log("Logs", event.events);
 };
 
-myStatsigClient.on('logs_flushed', (event) => {
-  console.log("Statsig Logs", event.events);
-});
-
 // subscribe to an individual StatsigClientEvent
 myStatsigClient.on('logs_flushed', onLogsFlushed);
 
