@@ -1,6 +1,7 @@
 import fetchMock from 'jest-fetch-mock';
 import { anyNumber, anyObject } from 'statsig-test-helpers';
 
+import { StatsigGlobal } from '@statsig/client-core';
 import { StatsigClient } from '@statsig/js-client';
 import { StatsigOnDeviceEvalClient } from '@statsig/js-on-device-eval-client';
 
@@ -49,6 +50,7 @@ describe('Non Exposed Checks', () => {
     ],
   ])('%s', (_title, action) => {
     beforeAll(async () => {
+      __STATSIG__ = {} as StatsigGlobal;
       fetchMock.enableMocks();
       await action();
     });

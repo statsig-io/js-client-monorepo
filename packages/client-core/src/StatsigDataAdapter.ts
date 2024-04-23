@@ -1,4 +1,7 @@
-import { AnyStatsigOptions } from './StatsigOptionsCommon';
+import type {
+  AnyStatsigOptions,
+  NetworkConfigCommon,
+} from './StatsigOptionsCommon';
 import { StatsigUser } from './StatsigUser';
 
 export type DataSource =
@@ -17,13 +20,23 @@ export type DataAdapterResult = {
   readonly receivedAt: number;
 };
 
+export type DataAdapterAsyncOptions = {
+  /**
+   * The maximum amount of time (in milliseconds) this operation is permitted to run.
+   * If the timeout is hit, null is returned but any in-flight requests are kept alive with results going to cache for future updates.
+   *
+   * Note: If no timeout is given, the {@link NetworkConfigCommon.networkTimeoutMs|StatsigOptions.networkConfig.networkTimeoutMs} is used.
+   */
+  readonly timeoutMs?: NetworkConfigCommon['networkTimeoutMs'];
+};
+
 export const DataAdapterCachePrefix = 'statsig.cached';
 
 /**
  * Describes a type that is used during intialize/update operations of a Statsig client.
  *
  * See below to find the default adapters, but know that it is possible to create your
- * own StatsigDataAdapter and provide it via {@link StatsigOptionsCommon.dataAdapter}.
+ * own StatsigDataAdapter and provide it via {@link AnyStatsigOptions.dataAdapter}.
  *
  * Defaults:
  *
@@ -69,6 +82,7 @@ export type EvaluationsDataAdapter = DataAdapterCommon & {
   readonly getDataAsync: (
     current: DataAdapterResult | null,
     user: StatsigUser,
+    options?: DataAdapterAsyncOptions,
   ) => Promise<DataAdapterResult | null>;
 
   /**
@@ -76,7 +90,10 @@ export type EvaluationsDataAdapter = DataAdapterCommon & {
    *
    * @param {StatsigUser} user The StatsigUser to get data for.
    */
-  readonly prefetchData: (user: StatsigUser) => Promise<void>;
+  readonly prefetchData: (
+    user: StatsigUser,
+    options?: DataAdapterAsyncOptions,
+  ) => Promise<void>;
 
   /**
    * Manually set evaluations data for the given user.
@@ -102,12 +119,13 @@ export type SpecsDataAdapter = DataAdapterCommon & {
    */
   readonly getDataAsync: (
     current: DataAdapterResult | null,
+    options?: DataAdapterAsyncOptions,
   ) => Promise<DataAdapterResult | null>;
 
   /**
    * Manually trigger a fetch for new specs data.
    */
-  readonly prefetchData: () => Promise<void>;
+  readonly prefetchData: (options?: DataAdapterAsyncOptions) => Promise<void>;
 
   /**
    * Manually set specs data (Bootstrap).

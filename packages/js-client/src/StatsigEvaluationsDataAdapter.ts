@@ -1,6 +1,8 @@
 import {
   AnyStatsigOptions,
+  DataAdapterAsyncOptions,
   DataAdapterCore,
+  DataAdapterResult,
   EvaluationsDataAdapter,
   StatsigUser,
 } from '@statsig/client-core';
@@ -20,6 +22,21 @@ export class StatsigEvaluationsDataAdapter
   override attach(sdkKey: string, options: AnyStatsigOptions | null): void {
     super.attach(sdkKey, options);
     this._network = new Network(options ?? {});
+  }
+
+  getDataAsync(
+    current: DataAdapterResult | null,
+    user: StatsigUser,
+    options?: DataAdapterAsyncOptions,
+  ): Promise<DataAdapterResult | null> {
+    return this._getDataAsyncImpl(current, user, options);
+  }
+
+  prefetchData(
+    user: StatsigUser,
+    options?: DataAdapterAsyncOptions,
+  ): Promise<void> {
+    return this._prefetchDataImpl(user, options);
   }
 
   protected override async _fetchFromNetwork(

@@ -2,6 +2,7 @@ import { ErrorBoundary } from './ErrorBoundary';
 import { Log } from './Log';
 import { monitorClass } from './Monitoring';
 import {
+  DataAdapterAsyncOptions,
   DataAdapterCachePrefix,
   DataAdapterResult,
 } from './StatsigDataAdapter';
@@ -53,36 +54,6 @@ export abstract class DataAdapterCore {
     return null;
   }
 
-  async getDataAsync(
-    current: DataAdapterResult | null,
-    user?: StatsigUser,
-  ): Promise<DataAdapterResult | null> {
-    const cache = current ?? this.getDataSync(user);
-    const latest = await this._fetchLatest(cache?.data ?? null, user);
-
-    const cacheKey = this._getCacheKey(user);
-    if (latest) {
-      this._addToInMemoryCache(cacheKey, latest);
-    }
-
-    if (
-      latest?.source === 'Network' ||
-      latest?.source === 'NetworkNotModified'
-    ) {
-      await this._writeToCache(cacheKey, latest);
-    }
-
-    return latest;
-  }
-
-  async prefetchData(user?: StatsigUser | undefined): Promise<void> {
-    const cacheKey = this._getCacheKey(user);
-    const result = await this.getDataAsync(null, user);
-    if (result) {
-      this._addToInMemoryCache(cacheKey, { ...result, source: 'Prefetch' });
-    }
-  }
-
   setData(data: string, user?: StatsigUser): void {
     const cacheKey = this._getCacheKey(user);
     this._addToInMemoryCache(cacheKey, {
@@ -101,6 +72,38 @@ export abstract class DataAdapterCore {
     this._inMemoryCache = { ...this._inMemoryCache, ...cache };
   }
 
+  protected async _getDataAsyncImpl(
+    current: DataAdapterResult | null,
+    user?: StatsigUser,
+    options?: DataAdapterAsyncOptions,
+  ): Promise<DataAdapterResult | null> {
+    const cache = current ?? this.getDataSync(user);
+
+    const ops = [this._fetchLatest(cache?.data ?? null, user)];
+
+    if (options?.timeoutMs) {
+      ops.push(
+        new Promise((r) => setTimeout(r, options.timeoutMs)).then(() => {
+          Log.debug('Fetching latest value timed out');
+          return null;
+        }),
+      );
+    }
+
+    return await Promise.race(ops);
+  }
+
+  protected async _prefetchDataImpl(
+    user?: StatsigUser,
+    options?: DataAdapterAsyncOptions,
+  ): Promise<void> {
+    const cacheKey = this._getCacheKey(user);
+    const result = await this._getDataAsyncImpl(null, user, options);
+    if (result) {
+      this._addToInMemoryCache(cacheKey, { ...result, source: 'Prefetch' });
+    }
+  }
+
   protected abstract _fetchFromNetwork(
     current: string | null,
     user?: StatsigUser,
@@ -108,9 +111,10 @@ export abstract class DataAdapterCore {
 
   private async _fetchLatest(
     current: string | null,
-    user?: StatsigUser,
+    user: StatsigUser | undefined,
   ): Promise<DataAdapterResult | null> {
     const latest = await this._fetchFromNetwork(current, user);
+
     if (!latest) {
       Log.debug('No response returned for latest value');
       return null;
@@ -122,19 +126,26 @@ export abstract class DataAdapterCore {
       'Failure while attempting to persist latest value',
     );
 
-    if (current && response?.has_updates === false) {
-      return {
+    let result: DataAdapterResult | null = null;
+    if (response?.has_updates === true) {
+      result = { source: 'Network', data: latest, receivedAt: Date.now() };
+    } else if (current && response?.has_updates === false) {
+      result = {
         source: 'NetworkNotModified',
         data: current,
         receivedAt: Date.now(),
       };
     }
 
-    if (response?.has_updates !== true) {
+    if (!result) {
       return null;
     }
 
-    return { source: 'Network', data: latest, receivedAt: Date.now() };
+    const cacheKey = this._getCacheKey(user);
+    this._addToInMemoryCache(cacheKey, result);
+    await this._writeToCache(cacheKey, result);
+
+    return result;
   }
 
   protected _getSdkKey(): string {

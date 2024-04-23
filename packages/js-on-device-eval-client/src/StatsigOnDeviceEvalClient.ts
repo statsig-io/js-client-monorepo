@@ -1,4 +1,5 @@
 import {
+  DataAdapterAsyncOptions,
   DataAdapterResult,
   DownloadConfigSpecsResponse,
   DynamicConfig,
@@ -43,6 +44,8 @@ declare global {
   }
 }
 
+type AsyncOptions = DataAdapterAsyncOptions;
+
 export default class StatsigOnDeviceEvalClient
   extends StatsigClientBase<SpecsDataAdapter>
   implements OnDeviceEvaluationsInterface
@@ -79,6 +82,14 @@ export default class StatsigOnDeviceEvalClient
   }
 
   initializeSync(): void {
+    this.updateSync();
+  }
+
+  async initializeAsync(options?: AsyncOptions): Promise<void> {
+    return this.updateAsync(options);
+  }
+
+  updateSync(): void {
     this._store.reset();
 
     const result = this.dataAdapter.getDataSync();
@@ -91,7 +102,7 @@ export default class StatsigOnDeviceEvalClient
     this._runPostUpdate(result);
   }
 
-  async initializeAsync(): Promise<void> {
+  async updateAsync(options?: AsyncOptions): Promise<void> {
     this._store.reset();
 
     this._setStatus('Loading', null);
@@ -99,7 +110,7 @@ export default class StatsigOnDeviceEvalClient
     let result = this.dataAdapter.getDataSync();
     this._store.setValuesFromDataAdapter(result);
 
-    result = await this.dataAdapter.getDataAsync(result);
+    result = await this.dataAdapter.getDataAsync(result, options);
     this._store.setValuesFromDataAdapter(result);
 
     this._store.finalize();

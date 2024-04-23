@@ -1,6 +1,6 @@
 import fetchMock from 'jest-fetch-mock';
 
-import { _notifyVisibilityChanged } from '@statsig/client-core';
+import { StatsigGlobal, _notifyVisibilityChanged } from '@statsig/client-core';
 import { StatsigClient, StatsigOptions } from '@statsig/js-client';
 import {
   StatsigOptions as OnDeviceEvalStatsigOptions,
@@ -24,6 +24,7 @@ describe('Url Overriding', () => {
   });
 
   beforeEach(() => {
+    __STATSIG__ = {} as StatsigGlobal;
     fetchMock.mock.calls = [];
     sendBeaconMock.mock.calls = [];
   });

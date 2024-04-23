@@ -2,12 +2,16 @@ import { MockLocalStorage } from 'statsig-test-helpers';
 
 import { DataAdapterCore } from '../DataAdapterCore';
 import { StatsigClientBase } from '../StatsigClientBase';
-import { SpecsDataAdapter } from '../StatsigDataAdapter';
+import {
+  DataAdapterAsyncOptions,
+  DataAdapterResult,
+  SpecsDataAdapter,
+} from '../StatsigDataAdapter';
 import { StatsigUser } from '../StatsigUser';
 
 class TestClient extends StatsigClientBase<SpecsDataAdapter> {}
 
-class TestDataAdapter extends DataAdapterCore {
+class TestDataAdapter extends DataAdapterCore implements SpecsDataAdapter {
   protected override _fetchFromNetwork(
     _current: string | null,
     _user?: StatsigUser | undefined,
@@ -17,6 +21,17 @@ class TestDataAdapter extends DataAdapterCore {
 
   constructor() {
     super('', '');
+  }
+
+  getDataAsync(
+    current: DataAdapterResult | null,
+    options?: DataAdapterAsyncOptions | undefined,
+  ): Promise<DataAdapterResult | null> {
+    return this._getDataAsyncImpl(current, undefined, options);
+  }
+
+  prefetchData(options?: DataAdapterAsyncOptions | undefined): Promise<void> {
+    return this._prefetchDataImpl(undefined, options);
   }
 }
 

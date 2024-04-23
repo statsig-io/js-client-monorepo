@@ -1,7 +1,10 @@
 import fetchMock from 'jest-fetch-mock';
 import { DcsResponseString, anyNumber } from 'statsig-test-helpers';
 
-import { DownloadConfigSpecsResponse } from '@statsig/client-core';
+import {
+  DownloadConfigSpecsResponse,
+  StatsigGlobal,
+} from '@statsig/client-core';
 import { StatsigOnDeviceEvalClient } from '@statsig/js-on-device-eval-client';
 import {
   UserPersistedValues,
@@ -54,6 +57,7 @@ describe('User Persisted Storage', () => {
 
   beforeEach(() => {
     fetchMock.enableMocks();
+    __STATSIG__ = {} as StatsigGlobal;
 
     storage = new MockUserPersistentStorage();
     adapter = new UserPersistentOverrideAdapter(storage);

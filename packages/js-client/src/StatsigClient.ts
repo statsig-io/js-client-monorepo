@@ -1,5 +1,6 @@
 import {
   DJB2,
+  DataAdapterAsyncOptions,
   DataAdapterResult,
   DynamicConfig,
   DynamicConfigEvaluationOptions,
@@ -36,6 +37,8 @@ import EvaluationStore from './EvaluationStore';
 import Network from './Network';
 import { StatsigEvaluationsDataAdapter } from './StatsigEvaluationsDataAdapter';
 import type { StatsigOptions } from './StatsigOptions';
+
+type AsyncOptions = DataAdapterAsyncOptions;
 
 export default class StatsigClient
   extends StatsigClientBase<EvaluationsDataAdapter>
@@ -110,11 +113,12 @@ export default class StatsigClient
    * there might be a transition from cached to network values during the session, which can affect consistency.
    * This method is useful when it's acceptable to begin with potentially stale data and switch to the latest configuration as it becomes available.
    *
-   * @returns {Promise<void>} A promise that resolves once the client is fully initialized with the latest values from the network.
+   * @param {AsyncOptions} [options] - Optional. Additional options to customize the method call.
+   * @returns {Promise<void>} A promise that resolves once the client is fully initialized with the latest values from the network or a timeout (if set) is hit.
    * @see {@link initializeSync} for the synchronous version of this method.
    */
-  initializeAsync(): Promise<void> {
-    return this.updateUserAsync(this._user);
+  initializeAsync(options?: AsyncOptions): Promise<void> {
+    return this.updateUserAsync(this._user, options);
   }
 
   /**
@@ -144,10 +148,14 @@ export default class StatsigClient
    * This method is best used in scenarios where up-to-date configuration is critical and initial delays are acceptable.
    *
    * @param {StatsigUser} user - The new StatsigUser for which the client should update its internal state.
-   * @returns {Promise<void>} A promise that resolves once the client is fully updated with the latest network values.
+   * @param {AsyncOptions} [options] - Optional. Additional options to customize the method call.
+   * @returns {Promise<void>} A promise that resolves once the client is fully updated with the latest values from the network or a timeout (if set) is hit.
    * @see {@link updateUserSync} for the synchronous version of this method.
    */
-  async updateUserAsync(user: StatsigUser): Promise<void> {
+  async updateUserAsync(
+    user: StatsigUser,
+    options?: AsyncOptions,
+  ): Promise<void> {
     this._resetForUser(user);
 
     const initiator = this._user;
@@ -157,7 +165,7 @@ export default class StatsigClient
 
     this._store.setValuesFromDataAdapter(result);
 
-    result = await this.dataAdapter.getDataAsync(result, initiator);
+    result = await this.dataAdapter.getDataAsync(result, initiator, options);
 
     // ensure the user hasn't changed while we were waiting
     if (initiator === this._user) {

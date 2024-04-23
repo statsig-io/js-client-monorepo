@@ -25,7 +25,7 @@ describe('Client Evaluations Callback', () => {
         fetchMock.mockResponse(
           JSON.stringify({ ...DcsResponse, time: 123456 }),
         );
-        return new StatsigOnDeviceEvalClient('client-key');
+        return new StatsigOnDeviceEvalClient('client-on-device');
       },
     ],
     [
@@ -34,7 +34,7 @@ describe('Client Evaluations Callback', () => {
         fetchMock.mockResponse(
           JSON.stringify({ ...InitResponse, time: 123456 }),
         );
-        return new StatsigClient('client-key', user);
+        return new StatsigClient('client-precomp', user);
       },
     ],
   ])('%s', (_title, factory) => {

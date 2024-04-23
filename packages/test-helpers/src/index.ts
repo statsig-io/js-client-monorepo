@@ -1,3 +1,7 @@
+import {
+  getDcsResponseWithConfigValue,
+  getInitializeResponseWithConfigValue,
+} from './ResponseBuilder';
 import * as DcsResponse from './data/dcs_response.json';
 import * as InitResponse from './data/initialize.json';
 
@@ -9,7 +13,7 @@ export * from './TestPromise';
 const InitResponseString = JSON.stringify(InitResponse);
 const DcsResponseString = JSON.stringify(DcsResponse);
 
-const noop = (): void => {
+const noop = (..._args: unknown[]): void => {
   // noop
 };
 
@@ -25,6 +29,8 @@ export {
   InitResponseString,
   DcsResponse,
   DcsResponseString,
+  getDcsResponseWithConfigValue,
+  getInitializeResponseWithConfigValue,
   noop,
   nullthrows,
 };
