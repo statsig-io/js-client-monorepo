@@ -23,6 +23,7 @@ import {
   _createConfigExposure,
   _createGateExposure,
   _createLayerParameterExposure,
+  _getStatsigGlobal,
   _makeDynamicConfig,
   _makeFeatureGate,
   _makeLayer,
@@ -48,6 +49,16 @@ export default class StatsigOnDeviceEvalClient
 {
   private _store: SpecStore;
   private _evaluator: Evaluator;
+
+  static instance(sdkKey?: string): StatsigOnDeviceEvalClient {
+    const instance = _getStatsigGlobal().instance(sdkKey);
+    if (instance instanceof StatsigOnDeviceEvalClient) {
+      return instance;
+    }
+
+    Log.warn('Unable to find StatsigOnDeviceEvalClient instance');
+    return new StatsigOnDeviceEvalClient(sdkKey ?? '');
+  }
 
   constructor(sdkKey: string, options: StatsigOptions | null = null) {
     SDKType._setClientType(sdkKey, 'js-on-device-eval-client');
@@ -93,17 +104,6 @@ export default class StatsigOnDeviceEvalClient
 
     this._store.finalize();
     this._setStatus('Ready', result);
-  }
-
-  public static instance(
-    sdkKey?: string,
-  ): StatsigOnDeviceEvalClient | undefined {
-    if (sdkKey == null) {
-      return __STATSIG__?.lastInstance as StatsigOnDeviceEvalClient | undefined;
-    }
-    return __STATSIG__?.instances?.[sdkKey] as
-      | StatsigOnDeviceEvalClient
-      | undefined;
   }
 
   getContext(): OnDeviceEvaluationsContext {

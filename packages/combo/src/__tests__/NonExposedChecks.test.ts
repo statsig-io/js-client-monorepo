@@ -9,7 +9,7 @@ describe('Non Exposed Checks', () => {
     [
       'StatsigClient',
       async () => {
-        const client = new StatsigClient('', { userID: 'a-user' });
+        const client = new StatsigClient('client-key', { userID: 'a-user' });
         client.initializeSync();
 
         // 2 checks
@@ -30,7 +30,7 @@ describe('Non Exposed Checks', () => {
       'StatsigOnDeviceEvalClient',
       async () => {
         const user = { userID: 'a-user' };
-        const client = new StatsigOnDeviceEvalClient('');
+        const client = new StatsigOnDeviceEvalClient('client-key');
         client.initializeSync();
 
         // 2 checks

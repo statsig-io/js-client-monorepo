@@ -41,7 +41,7 @@ describe('Toggle Storage', () => {
 
     beforeEach(() => {
       storageMock.clear();
-      client = new TestClient('', adapter, jest.fn() as any, options);
+      client = new TestClient('client-key', adapter, jest.fn() as any, options);
     });
 
     it('does not write to local storage', async () => {
@@ -60,7 +60,7 @@ describe('Toggle Storage', () => {
   describe('when enabled', () => {
     beforeEach(() => {
       storageMock.clear();
-      client = new TestClient('', adapter, jest.fn() as any, null);
+      client = new TestClient('client-key', adapter, jest.fn() as any, null);
     });
 
     it('writes to local storage', async () => {

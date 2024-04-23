@@ -58,7 +58,7 @@ describe('User Persisted Storage', () => {
     storage = new MockUserPersistentStorage();
     adapter = new UserPersistentOverrideAdapter(storage);
 
-    client = new StatsigOnDeviceEvalClient('', {
+    client = new StatsigOnDeviceEvalClient('client-key', {
       overrideAdapter: adapter,
     });
 

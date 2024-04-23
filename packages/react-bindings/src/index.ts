@@ -1,3 +1,5 @@
+import { StatsigGlobal } from '@statsig/client-core';
+
 import StatsigContext from './StatsigContext';
 import { StatsigProvider, StatsigProviderProps } from './StatsigProvider';
 import useDynamicConfig from './useDynamicConfig';
@@ -35,4 +37,4 @@ __STATSIG__ = {
   useLayer,
   useStatsigOnDeviceEvalClient,
   useStatsigClient,
-};
+} as StatsigGlobal;

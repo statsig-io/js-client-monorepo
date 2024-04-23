@@ -21,7 +21,7 @@ describe('Local Overrides - StatsigClient', () => {
     fetchMock.mockResponse('{}');
 
     overrideAdapter = new LocalOverrideAdapter();
-    client = new StatsigClient('', user, { overrideAdapter });
+    client = new StatsigClient('client-key', user, { overrideAdapter });
 
     client.on('*', (event) => {
       if (event.name.endsWith('_evaluation')) {

@@ -1,4 +1,5 @@
 import './$_StatsigGlobal';
+import { _getStatsigGlobal } from './$_StatsigGlobal';
 import { StatsigClientInterface } from './ClientInterfaces';
 import { ErrorBoundary } from './ErrorBoundary';
 import { EvaluationOptionsCommon } from './EvaluationOptions';
@@ -87,7 +88,7 @@ export abstract class StatsigClientBase<
     }, sdkKey);
     this._errorBoundary = new ErrorBoundary(sdkKey);
 
-    const statsigGlobal = __STATSIG__ ?? {};
+    const statsigGlobal = _getStatsigGlobal();
     const instances = statsigGlobal.instances ?? {};
     if (instances[sdkKey] != null) {
       Log.warn(

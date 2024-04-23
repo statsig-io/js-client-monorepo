@@ -1,5 +1,6 @@
 /** Statsig Global should go first */
 import './$_StatsigGlobal';
+import { StatsigGlobal } from './$_StatsigGlobal';
 import { EventLogger } from './EventLogger';
 import { Log } from './Log';
 import { SDK_VERSION } from './StatsigMetadata';
@@ -50,4 +51,4 @@ __STATSIG__ = {
   getUUID,
   Storage,
   SDK_VERSION,
-};
+} as StatsigGlobal;

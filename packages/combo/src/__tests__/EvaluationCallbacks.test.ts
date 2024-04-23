@@ -10,6 +10,7 @@ import {
 import {
   AnyStatsigClientEvent,
   StatsigClientInterface,
+  StatsigGlobal,
 } from '@statsig/client-core';
 import { StatsigClient } from '@statsig/js-client';
 import { StatsigOnDeviceEvalClient } from '@statsig/js-on-device-eval-client';
@@ -24,7 +25,7 @@ describe('Client Evaluations Callback', () => {
         fetchMock.mockResponse(
           JSON.stringify({ ...DcsResponse, time: 123456 }),
         );
-        return new StatsigOnDeviceEvalClient('');
+        return new StatsigOnDeviceEvalClient('client-key');
       },
     ],
     [
@@ -33,7 +34,7 @@ describe('Client Evaluations Callback', () => {
         fetchMock.mockResponse(
           JSON.stringify({ ...InitResponse, time: 123456 }),
         );
-        return new StatsigClient('', user);
+        return new StatsigClient('client-key', user);
       },
     ],
   ])('%s', (_title, factory) => {
@@ -41,6 +42,7 @@ describe('Client Evaluations Callback', () => {
     let events: AnyStatsigClientEvent[] = [];
 
     beforeEach(async () => {
+      __STATSIG__ = {} as StatsigGlobal;
       fetchMock.enableMocks();
 
       events = [];

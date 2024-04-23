@@ -1,3 +1,5 @@
+import { StatsigGlobal } from '@statsig/client-core';
+
 import StatsigClient from './StatsigClient';
 import { StatsigEvaluationsDataAdapter } from './StatsigEvaluationsDataAdapter';
 import type { StatsigOptions } from './StatsigOptions';
@@ -15,7 +17,6 @@ __STATSIG__ = {
   ...(__STATSIG__ ?? {}),
   StatsigEvaluationsDataAdapter,
   StatsigClient,
-  instance: StatsigClient.instance,
-};
+} as StatsigGlobal;
 
-export default __STATSIG__;
+export default __STATSIG__ as StatsigGlobal;

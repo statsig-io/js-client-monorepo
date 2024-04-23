@@ -16,7 +16,7 @@ describe('Event Emitter Error Logs', () => {
   beforeAll(() => {
     fetchMock.enableMocks();
 
-    client = new StatsigClient('', { userID: '' });
+    client = new StatsigClient('client-key', { userID: '' });
 
     logSpy = jest.spyOn(console, 'error').mockImplementation(() => {
       // noop

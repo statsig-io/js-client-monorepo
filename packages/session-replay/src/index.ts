@@ -1,3 +1,5 @@
+import { StatsigGlobal } from '@statsig/client-core';
+
 import { SessionReplay, runStatsigSessionReplay } from './SessionReplay';
 import { SessionReplayClient } from './SessionReplayClient';
 
@@ -12,4 +14,4 @@ __STATSIG__ = {
   SessionReplayClient,
   SessionReplay,
   runStatsigSessionReplay,
-};
+} as StatsigGlobal;

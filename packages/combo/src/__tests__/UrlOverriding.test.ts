@@ -32,7 +32,7 @@ describe('Url Overriding', () => {
     const run = async (options: OnDeviceEvalStatsigOptions) => {
       _notifyVisibilityChanged('foreground');
 
-      const client = new StatsigOnDeviceEvalClient('', options);
+      const client = new StatsigOnDeviceEvalClient('client-key', options);
       // /download_config_specs
       await client.initializeAsync();
 
@@ -105,7 +105,7 @@ describe('Url Overriding', () => {
     const run = async (options: StatsigOptions) => {
       _notifyVisibilityChanged('foreground');
 
-      const client = new StatsigClient('', user, options);
+      const client = new StatsigClient('client-key', user, options);
       // /initialize
       await client.initializeAsync();
 

@@ -2,6 +2,7 @@ import {
   ErrorBoundary,
   Log,
   _getDocumentSafe,
+  _getStatsigGlobal,
   _getWindowSafe,
   monitorClass,
 } from '@statsig/client-core';
@@ -31,7 +32,7 @@ export class AutoCapture {
     this._errorBoundary = new ErrorBoundary(sdkKey);
     monitorClass(this._errorBoundary, this);
 
-    __STATSIG__ = __STATSIG__ ?? {};
+    __STATSIG__ = _getStatsigGlobal();
     const instances = __STATSIG__.acInstances ?? {};
     instances[sdkKey] = this;
     __STATSIG__.acInstances = instances;

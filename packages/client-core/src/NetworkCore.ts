@@ -69,6 +69,10 @@ export class NetworkCore {
   }
 
   async beacon(args: RequestArgsWithData): Promise<boolean> {
+    if (!_ensureValidSdkKey(args)) {
+      return false;
+    }
+
     const url = await this._getPopulatedURL(args);
     const body = await this._getPopulatedBody(args);
     return navigator.sendBeacon(url, body);
@@ -77,6 +81,10 @@ export class NetworkCore {
   private async _sendRequest(
     args: RequestArgsInternal,
   ): Promise<NetworkResponse | null> {
+    if (!_ensureValidSdkKey(args)) {
+      return null;
+    }
+
     const { method, body, retries } = args;
 
     const controller = new AbortController();
@@ -195,6 +203,14 @@ export class NetworkCore {
     return window.btoa(input).split('').reverse().join('') ?? input;
   }
 }
+
+const _ensureValidSdkKey = (args: RequestArgs) => {
+  if (!args.sdkKey) {
+    Log.warn('Unable to make request without an SDK key');
+    return false;
+  }
+  return true;
+};
 
 function _getErrorMessage(
   controller: AbortController,

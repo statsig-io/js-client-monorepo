@@ -149,7 +149,9 @@
       "$_getSpecs": "nn",
       "$_evaluator": "rn",
       "$_getOutputs": "sn",
-      "$_attemptToEncodeString": "t"
+      "$_attemptToEncodeString": "t",
+      "$_shouldDropExposure": "k",
+      "$_getInstance": "st"
     }
   }
 }

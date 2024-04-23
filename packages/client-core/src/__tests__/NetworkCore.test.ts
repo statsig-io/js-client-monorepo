@@ -1,4 +1,5 @@
 import 'jest-fetch-mock';
+import { anyString } from 'statsig-test-helpers';
 
 import { Log, LogLevel } from '../Log';
 import { NetworkCore } from '../NetworkCore';
@@ -9,6 +10,7 @@ const urlActual = URL;
 const urlSpy = jest.fn();
 
 describe('Network Core', () => {
+  const sdkKey = 'a-key';
   const data = { foo: 'bar' };
   const url = 'http://localhost';
   const network = new NetworkCore(null);
@@ -28,7 +30,7 @@ describe('Network Core', () => {
       fetchMock.mockClear();
       fetchMock.mockResponseOnce(JSON.stringify({ result: '12345' }));
 
-      await network.post({ sdkKey: '', url, data });
+      await network.post({ sdkKey, url, data });
       body = JSON.parse(fetchMock.mock.calls[0]?.[1]?.body?.toString() ?? '{}');
     });
 
@@ -54,7 +56,7 @@ describe('Network Core', () => {
       const spy = jest.fn();
       navigator.sendBeacon = spy;
 
-      await network.beacon({ sdkKey: '', url, data });
+      await network.beacon({ sdkKey, url, data });
       body = JSON.parse(spy.mock.calls[0]?.[1] ?? '{}');
     });
 
@@ -72,7 +74,7 @@ describe('Network Core', () => {
       fetchMock.mockClear();
       fetchMock.mockReject(new Error('Lost Connection'));
 
-      await network.post({ sdkKey: '', url, data: {}, retries: 2 });
+      await network.post({ sdkKey, url, data: {}, retries: 2 });
     });
 
     it('make 1 initial and then 2 retries', () => {
@@ -85,11 +87,32 @@ describe('Network Core', () => {
       fetchMock.mockClear();
       fetchMock.mockResponse('', { status: 500 });
 
-      await network.post({ sdkKey: '', url, data: {}, retries: 2 });
+      await network.post({ sdkKey, url, data: {}, retries: 2 });
     });
 
     it('make 1 initial and then 2 retries', () => {
       expect(fetchMock).toHaveBeenCalledTimes(3);
+    });
+  });
+
+  describe('Empty Keys', () => {
+    let logSpy: jest.SpyInstance;
+
+    beforeAll(async () => {
+      logSpy = jest.spyOn(Log, 'warn');
+
+      fetchMock.mockClear();
+      fetchMock.mockResponse('', { status: 401 });
+
+      await network.post({ sdkKey: '', url, data: {}, retries: 2 });
+    });
+
+    it('does not make any requests', () => {
+      expect(fetchMock).not.toHaveBeenCalled();
+    });
+
+    it('logs a warning', () => {
+      expect(logSpy).toHaveBeenCalledWith(anyString());
     });
   });
 });

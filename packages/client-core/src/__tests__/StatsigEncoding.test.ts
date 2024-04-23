@@ -2,6 +2,7 @@ import 'jest-fetch-mock';
 import { noop, nullthrows } from 'statsig-test-helpers';
 import { URLSearchParams } from 'url';
 
+import { StatsigGlobal } from '../$_StatsigGlobal';
 import { NetworkCore } from '../NetworkCore';
 
 describe('Statsig Encoding', () => {
@@ -58,7 +59,7 @@ describe('Statsig Encoding', () => {
     ],
   ])('%s', (_title, setup, args) => {
     beforeAll(async () => {
-      __STATSIG__ = {};
+      __STATSIG__ = {} as StatsigGlobal;
       fetchMock.mockClear();
 
       setup();
