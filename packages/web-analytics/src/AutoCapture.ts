@@ -4,6 +4,7 @@ import {
   _getDocumentSafe,
   _getStatsigGlobal,
   _getWindowSafe,
+  _isBrowserEnv,
   monitorClass,
 } from '@statsig/client-core';
 import { StatsigClient } from '@statsig/js-client';
@@ -13,7 +14,6 @@ import {
   _getSafeUrl,
   _getSanitizedPageUrl,
   _getTargetNode,
-  _getWebSessionId,
   _registerEventHandler,
   _shouldLogEvent,
 } from './Utils';
@@ -32,12 +32,15 @@ export class AutoCapture {
     this._errorBoundary = new ErrorBoundary(sdkKey);
     monitorClass(this._errorBoundary, this);
 
-    __STATSIG__ = _getStatsigGlobal();
-    const instances = __STATSIG__.acInstances ?? {};
-    instances[sdkKey] = this;
-    __STATSIG__.acInstances = instances;
-
     const doc = _getDocumentSafe();
+
+    if (_isBrowserEnv()) {
+      __STATSIG__ = _getStatsigGlobal();
+      const instances = __STATSIG__.acInstances ?? {};
+      instances[sdkKey] = this;
+      __STATSIG__.acInstances = instances;
+    }
+
     if (doc?.readyState === 'loading') {
       doc.addEventListener('DOMContentLoaded', () => this._initialize());
       return;
@@ -182,18 +185,23 @@ export class AutoCapture {
     value: string,
     metadata: Record<string, unknown>,
   ) {
-    const event = {
-      eventName: `auto_capture::${name}`,
-      value,
-      metadata: {
-        sessionId: _getWebSessionId(this._client.getContext().sdkKey),
-        page_url: _getWindowSafe()?.location?.href ?? '',
-        ...metadata,
-      },
-    };
+    this._getSessionIdFromClient()
+      .then((sessionID) => {
+        const event = {
+          eventName: `auto_capture::${name}`,
+          value,
+          metadata: {
+            sessionID,
+            page_url: _getWindowSafe()?.location?.href ?? '',
+            ...metadata,
+          },
+        };
 
-    this._client.logEvent(event);
-    Log.debug('Enqueued Event', event);
+        this._client.logEvent(event);
+      })
+      .catch((err) => {
+        this._errorBoundary.logError('AC::enqueue', err);
+      });
   }
 
   private _logAutoCaptureImmediately(
@@ -217,5 +225,10 @@ export class AutoCapture {
       this._deepestScroll,
       Math.min(100, Math.round(((scrollY + innerHeight) / scrollHeight) * 100)),
     );
+  }
+
+  private async _getSessionIdFromClient() {
+    const x = await this._client.getAsyncContext();
+    return x.sessionID;
   }
 }

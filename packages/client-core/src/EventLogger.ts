@@ -3,6 +3,7 @@ import { Log } from './Log';
 import { NetworkCore } from './NetworkCore';
 import { NetworkDefault } from './NetworkDefaults';
 import { NetworkParam } from './NetworkParams';
+import { _getCurrentPageUrlSafe } from './SafeJs';
 import { StatsigClientEmitEventFunc } from './StatsigClientBase';
 import { StatsigEventInternal, _isExposureEvent } from './StatsigEvent';
 import {
@@ -331,14 +332,6 @@ export class EventLogger {
       return;
     }
 
-    if (typeof window === 'undefined' || typeof window.location !== 'object') {
-      return;
-    }
-
-    try {
-      return window.location.href.split(/[?#]/)[0];
-    } catch {
-      return;
-    }
+    return _getCurrentPageUrlSafe();
   }
 }

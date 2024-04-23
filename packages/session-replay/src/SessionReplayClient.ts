@@ -1,7 +1,7 @@
 import type { eventWithTime, listenerHandler } from '@rrweb/types';
 import * as rrweb from 'rrweb';
 
-import { Flatten } from '@statsig/client-core';
+import { Flatten, _getDocumentSafe } from '@statsig/client-core';
 
 const TIMEOUT_MS = 1000 * 60 * 60 * 4; // 4 hours
 
@@ -24,7 +24,7 @@ export class SessionReplayClient {
     callback: (latest: ReplayEvent, data: ReplaySessionData) => void,
     stopCallback?: () => void,
   ): void {
-    if (typeof window === 'undefined') {
+    if (_getDocumentSafe() == null) {
       return;
     }
 

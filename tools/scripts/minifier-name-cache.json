@@ -152,7 +152,10 @@
       "$_downloadConfigSpecsUrl": "nn",
       "$_getSpecs": "rn",
       "$_evaluator": "sn",
-      "$_getOutputs": "un"
+      "$_getOutputs": "un",
+      "$_getCurrentPageUrlSafe": "ln",
+      "$_isBrowserEnv": "an",
+      "$_getSessionIdFromClient": "cn"
     }
   }
 }

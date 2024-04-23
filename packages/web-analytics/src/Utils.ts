@@ -1,15 +1,4 @@
-import {
-  DJB2,
-  Log,
-  _getWindowSafe,
-  getUUID,
-  typedJsonParse,
-} from '@statsig/client-core';
-
-const MAX_SESSION_IDLE_TIME = 10 * 60 * 1000; // 10 minutes
-const MAX_SESSION_AGE = 4 * 60 * 60 * 1000; // 4 hours
-
-const globals: Record<string, string> = {};
+import { _getCurrentPageUrlSafe, _getWindowSafe } from '@statsig/client-core';
 
 export function _gatherEventData(target: Element): {
   value: string;
@@ -105,36 +94,8 @@ export function _getSafeUrl(): URL {
   return url;
 }
 
-export function _getWebSessionId(sdkKey: string): string {
-  const key = `statsig.web_analytics.session.${DJB2(sdkKey)}`;
-  const json = _getLocalValue(key);
-  const now = Date.now();
-
-  let session = json
-    ? typedJsonParse<WebSession>(
-        json,
-        'lastAccessedTime',
-        'Failed to parse WebSession',
-      )
-    : null;
-
-  if (
-    !session ||
-    now - session.startTime > MAX_SESSION_AGE ||
-    now - session.lastAccessedTime > MAX_SESSION_IDLE_TIME
-  ) {
-    session = _createNewSession();
-  }
-
-  session.lastAccessedTime = now;
-  _setLocalValue(key, JSON.stringify(session));
-
-  return session.id;
-}
-
 export function _getSanitizedPageUrl(): string {
-  const url = _getWindowSafe()?.location?.href?.split(/[?#]/)[0];
-  return url || '';
+  return _getCurrentPageUrlSafe() || '';
 }
 
 export function _registerEventHandler(
@@ -167,37 +128,4 @@ function _getAnchorNodeInHierarchy(node: Element | null): Element | null {
   }
 
   return null;
-}
-
-function _setLocalValue(key: string, value: string): void {
-  const win = _getWindowSafe();
-  if (win && win.localStorage) {
-    win.localStorage.setItem(key, value);
-  } else {
-    globals[key] = value;
-    Log.error('AutoCapture: No window.localStorage');
-  }
-}
-
-function _getLocalValue(key: string): string | null {
-  const win = _getWindowSafe();
-  if (win && win.localStorage) {
-    return win.localStorage.getItem(key);
-  }
-  return globals[key];
-}
-
-type WebSession = {
-  id: string;
-  startTime: number;
-  lastAccessedTime: number;
-};
-
-function _createNewSession(): WebSession {
-  const now = Date.now();
-  return {
-    id: getUUID(),
-    startTime: now,
-    lastAccessedTime: now,
-  };
 }

@@ -7,6 +7,7 @@ import { EventLogger } from './EventLogger';
 import { Log, LogLevel } from './Log';
 import { NetworkCore } from './NetworkCore';
 import { OverrideAdapter } from './OverrideAdapter';
+import { _isBrowserEnv } from './SafeJs';
 import { SessionID } from './SessionID';
 import { StableID } from './StableID';
 import {
@@ -90,7 +91,8 @@ export abstract class StatsigClientBase<
 
     const statsigGlobal = _getStatsigGlobal();
     const instances = statsigGlobal.instances ?? {};
-    if (instances[sdkKey] != null) {
+
+    if (instances[sdkKey] != null && _isBrowserEnv()) {
       Log.warn(
         'Creating multiple Statsig clients with the same SDK key can lead to unexpected behavior. Multi-instance support requires different SDK keys.',
       );

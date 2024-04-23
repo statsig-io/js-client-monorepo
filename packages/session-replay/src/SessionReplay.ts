@@ -1,11 +1,11 @@
 import {
   ErrorBoundary,
-  Log,
   PrecomputedEvaluationsInterface,
   SDK_VERSION,
   StatsigMetadataProvider,
   Visibility,
   _getStatsigGlobal,
+  _isBrowserEnv,
   _isCurrentlyVisible,
   _subscribeToVisiblityChanged,
   monitorClass,
@@ -30,54 +30,42 @@ export class SessionReplay {
   private _replayer: SessionReplayClient;
   private _sessionData: ReplaySessionData | null = null;
   private _events: ReplayEvent[] = [];
-  private _sessionID = '';
+  private _currentSessionID: Promise<string>;
 
   constructor(private _client: PrecomputedEvaluationsInterface) {
     const { sdkKey } = _client.getContext();
     this._errorBoundary = new ErrorBoundary(sdkKey);
     monitorClass(this._errorBoundary, this);
 
-    const statsigGlobal = _getStatsigGlobal();
-    statsigGlobal.srInstances = {
-      ...statsigGlobal.srInstances,
-      [sdkKey]: this,
-    };
+    if (_isBrowserEnv()) {
+      const statsigGlobal = _getStatsigGlobal();
+      statsigGlobal.srInstances = {
+        ...statsigGlobal.srInstances,
+        [sdkKey]: this,
+      };
+    }
+
+    this._currentSessionID = this._getSessionIdFromClient();
 
     this._replayer = new SessionReplayClient();
     this._client.__on('pre_shutdown', () => this._shutdown());
     this._client.__on('values_updated', () => this._attemptToStartRecording());
-    this._client.__on('session_expired', () => {
+    _client.on('session_expired', () => {
       this._replayer.stop();
       StatsigMetadataProvider.add({ isRecordingSession: 'false' });
-      this._flushWithSessionID(this._sessionID);
-      this._client
-        .getAsyncContext()
-        .then((context) => {
-          this._sessionID = context.sessionID;
-        })
-        .catch((err) => {
-          Log.error(err);
-        });
+      this._logRecording();
+      this._currentSessionID = this._getSessionIdFromClient();
     });
 
     _subscribeToVisiblityChanged(this._onVisibilityChanged.bind(this));
-
-    this._client
-      .getAsyncContext()
-      .then((context) => {
-        this._sessionID = context.sessionID;
-        this._attemptToStartRecording();
-      })
-      .catch((err) => {
-        Log.error(err);
-      });
+    this._attemptToStartRecording();
   }
 
   private _onVisibilityChanged(visibility: Visibility): void {
     if (visibility === 'background') {
-      this._flushWithSessionID(this._sessionID);
+      this._logRecording();
       this._client.flush().catch((e) => {
-        Log.error(e);
+        this._errorBoundary.logError('SR::visibility', e);
       });
     }
   }
@@ -89,9 +77,9 @@ export class SessionReplay {
     const payload = JSON.stringify(this._events);
     if (payload.length > MAX_REPLAY_PAYLOAD_BYTES) {
       if (_isCurrentlyVisible()) {
-        this._flushAndRefreshSessionID();
+        this._bumpSessionIdleTimerAndLogRecording();
       } else {
-        this._flushWithSessionID(this._sessionID);
+        this._logRecording();
       }
     }
   }
@@ -119,21 +107,27 @@ export class SessionReplay {
     if (this._events.length === 0 || this._sessionData == null) {
       return;
     }
-    this._flushAndRefreshSessionID();
+    this._bumpSessionIdleTimerAndLogRecording();
   }
 
-  private _flushWithSessionID(sessionID: string) {
+  private _logRecording() {
     if (this._events.length === 0 || this._sessionData == null) {
       return;
     }
-    this._logRecordingEvent(sessionID);
+
+    this._currentSessionID
+      .then((sessionID) => this._logRecordingWithSessionID(sessionID))
+      .catch((err) => {
+        this._errorBoundary.logError('SR::flush', err);
+      });
   }
 
-  private _logRecordingEvent(sessionID: string) {
+  private _logRecordingWithSessionID(sessionID: string) {
     const data = this._sessionData;
     if (data === null || this._events.length === 0) {
       return;
     }
+
     const payload = JSON.stringify(this._events);
     this._client.logEvent({
       eventName: 'statsig::session_recording',
@@ -146,17 +140,17 @@ export class SessionReplay {
         session_replay_sdk_version: SDK_VERSION,
       },
     });
+
     this._events = [];
   }
 
-  private _flushAndRefreshSessionID() {
-    this._client
-      .getAsyncContext()
-      .then((context) => {
-        this._logRecordingEvent(context.sessionID);
-      })
-      .catch((err) => {
-        Log.error(err);
-      });
+  private _bumpSessionIdleTimerAndLogRecording() {
+    this._currentSessionID = this._getSessionIdFromClient();
+    this._logRecording();
+  }
+
+  private async _getSessionIdFromClient() {
+    const ctx = await this._client.getAsyncContext();
+    return ctx.sessionID;
   }
 }

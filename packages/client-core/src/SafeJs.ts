@@ -7,6 +7,10 @@ export const _getDocumentSafe = (): Document | null => {
   return win?.document ?? null;
 };
 
+export const _isBrowserEnv = (): boolean => {
+  return _getDocumentSafe() != null;
+};
+
 export const _addWindowEventListenerSafe = (
   key: string,
   listener: () => void,
@@ -24,5 +28,13 @@ export const _addDocumentEventListenerSafe = (
   const doc = _getDocumentSafe();
   if (typeof doc?.addEventListener === 'function') {
     doc.addEventListener(key, listener);
+  }
+};
+
+export const _getCurrentPageUrlSafe = (): string | undefined => {
+  try {
+    return _getWindowSafe()?.location.href.split(/[?#]/)[0];
+  } catch {
+    return;
   }
 };
