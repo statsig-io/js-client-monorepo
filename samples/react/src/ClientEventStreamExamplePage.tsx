@@ -1,7 +1,7 @@
 import { Box, Button, Typography } from '@mui/material';
 import { ReactNode, useEffect, useState } from 'react';
 
-import { StatsigClientEvent } from '@statsig/client-core';
+import { AnyStatsigClientEvent } from '@statsig/client-core';
 import { StatsigClient } from '@statsig/js-client';
 import { StatsigProvider } from '@statsig/react-bindings';
 
@@ -11,7 +11,7 @@ const user = { userID: 'a-user' };
 
 const client = new StatsigClient(DEMO_CLIENT_KEY, user, {});
 
-function Content({ events }: { events: StatsigClientEvent[] }) {
+function Content({ events }: { events: AnyStatsigClientEvent[] }) {
   return (
     <Box
       display="flex"
@@ -62,10 +62,10 @@ function Content({ events }: { events: StatsigClientEvent[] }) {
 }
 
 export default function ClientEventStreamExample(): ReactNode {
-  const [events, setEvents] = useState<StatsigClientEvent[]>([]);
+  const [events, setEvents] = useState<AnyStatsigClientEvent[]>([]);
 
   useEffect(() => {
-    const onFlush = (event: StatsigClientEvent) => {
+    const onFlush = (event: AnyStatsigClientEvent) => {
       setEvents((old) => [...old, event]);
     };
 

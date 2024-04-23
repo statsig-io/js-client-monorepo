@@ -3,8 +3,8 @@
 import { useContext, useEffect, useMemo } from 'react';
 
 import {
+  AnyStatsigClientEvent,
   LogLevel,
-  StatsigClientEvent,
   StatsigUser,
 } from '@statsig/client-core';
 import { StatsigClient } from '@statsig/js-client';
@@ -78,7 +78,7 @@ export default function SessionReplayExample({
   const client = useClientWithSessionReplay(DEMO_CLIENT_KEY, user, values);
 
   useEffect(() => {
-    const onClientEvent = (event: StatsigClientEvent) => {
+    const onClientEvent = (event: AnyStatsigClientEvent) => {
       console.log('StatsigClientEvent', event);
     };
 

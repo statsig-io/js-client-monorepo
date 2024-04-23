@@ -1,14 +1,14 @@
 import { InitResponseString } from 'statsig-test-helpers';
 
-import { Log, StatsigClientEvent } from '@statsig/client-core';
+import { AnyStatsigClientEvent, Log } from '@statsig/client-core';
 import { StatsigClient } from '@statsig/js-client';
 
 describe('Client Event Emitting', () => {
   const user = { userID: 'a-user' };
 
   let client: StatsigClient;
-  let wildcardEvents: StatsigClientEvent[];
-  let gateEvalEvents: StatsigClientEvent[];
+  let wildcardEvents: AnyStatsigClientEvent[];
+  let gateEvalEvents: AnyStatsigClientEvent[];
 
   beforeEach(() => {
     wildcardEvents = [];

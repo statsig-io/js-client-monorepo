@@ -1,10 +1,10 @@
 import fetchMock from 'jest-fetch-mock';
 
 import {
+  AnyStatsigClientEvent,
   DynamicConfig,
   FeatureGate,
   Layer,
-  StatsigClientEvent,
 } from '@statsig/client-core';
 import { StatsigClient } from '@statsig/js-client';
 import { LocalOverrideAdapter } from '@statsig/js-local-overrides';
@@ -14,7 +14,7 @@ describe('Local Overrides - StatsigClient', () => {
 
   let client: StatsigClient;
   let overrideAdapter: LocalOverrideAdapter;
-  let emissions: StatsigClientEvent[];
+  let emissions: AnyStatsigClientEvent[];
 
   beforeAll(() => {
     fetchMock.enableMocks();

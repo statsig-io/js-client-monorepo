@@ -9,8 +9,8 @@ import { OverrideAdapter } from './OverrideAdapter';
 import { SessionID } from './SessionID';
 import { StableID } from './StableID';
 import {
+  AnyStatsigClientEvent,
   AnyStatsigClientEventListener,
-  StatsigClientEvent,
   StatsigClientEventCallback,
   StatsigClientEventEmitterInterface,
   StatsigClientEventName,
@@ -36,7 +36,7 @@ type InternalStatsigClientEventCallback = object & {
   __isInternal: true;
 };
 
-export type StatsigClientEmitEventFunc = (event: StatsigClientEvent) => void;
+export type StatsigClientEmitEventFunc = (event: AnyStatsigClientEvent) => void;
 
 export type StatsigContext = {
   sdkKey: string;
@@ -185,7 +185,7 @@ export abstract class StatsigClientBase<
     this.on(event, listener);
   }
 
-  protected _emit(event: StatsigClientEvent): void {
+  protected _emit(event: AnyStatsigClientEvent): void {
     const barrier = (listener: AnyStatsigClientEventListener) => {
       try {
         listener(event);

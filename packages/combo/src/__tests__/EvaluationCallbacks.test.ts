@@ -8,7 +8,7 @@ import {
 } from 'statsig-test-helpers';
 
 import {
-  StatsigClientEvent,
+  AnyStatsigClientEvent,
   StatsigClientInterface,
 } from '@statsig/client-core';
 import { StatsigClient } from '@statsig/js-client';
@@ -38,7 +38,7 @@ describe('Client Evaluations Callback', () => {
     ],
   ])('%s', (_title, factory) => {
     let client: StatsigClientInterface;
-    let events: StatsigClientEvent[] = [];
+    let events: AnyStatsigClientEvent[] = [];
 
     beforeEach(async () => {
       fetchMock.enableMocks();

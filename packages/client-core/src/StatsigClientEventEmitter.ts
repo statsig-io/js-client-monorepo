@@ -39,7 +39,7 @@ type EventNameToEventDataMap = {
  *
  * `layer_evaluation` - Fired when any layer is checked from the Statsig client.
  */
-export type StatsigClientEvent = Flatten<
+export type AnyStatsigClientEvent = Flatten<
   {
     [K in keyof EventNameToEventDataMap]: {
       name: K;
@@ -47,15 +47,15 @@ export type StatsigClientEvent = Flatten<
   }[keyof EventNameToEventDataMap]
 >;
 
+export type StatsigClientEvent<T> = Extract<AnyStatsigClientEvent, { name: T }>;
+
 export type AnyStatsigClientEventListener =
   StatsigClientEventCallback<StatsigClientEventName>;
 
-export type StatsigClientEventName = StatsigClientEvent['name'] | '*';
+export type StatsigClientEventName = AnyStatsigClientEvent['name'] | '*';
 
 export type StatsigClientEventCallback<T extends StatsigClientEventName> = (
-  event: T extends '*'
-    ? StatsigClientEvent
-    : Extract<StatsigClientEvent, { name: T }>,
+  event: T extends '*' ? AnyStatsigClientEvent : StatsigClientEvent<T>,
 ) => void;
 
 export interface StatsigClientEventEmitterInterface {

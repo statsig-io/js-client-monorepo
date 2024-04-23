@@ -3,7 +3,7 @@
 import { useContext, useEffect, useMemo } from 'react';
 import { StatsigUser } from 'statsig-node';
 
-import { StatsigClientEvent } from '@statsig/client-core';
+import { AnyStatsigClientEvent } from '@statsig/client-core';
 import { StatsigClient } from '@statsig/js-client';
 import {
   StatsigContext,
@@ -12,6 +12,8 @@ import {
 } from '@statsig/react-bindings';
 
 import { DEMO_CLIENT_KEY } from '../../utils/constants';
+
+/* eslint-disable no-console */
 
 function useBootstrappedClient(
   sdkKey: string,
@@ -53,13 +55,10 @@ export default function BootstrapExample({
   const client = useBootstrappedClient(DEMO_CLIENT_KEY, user, values);
 
   useEffect(() => {
-    // eslint-disable-next-line no-console
-    const onClientEvent = (event: StatsigClientEvent) => console.log(event);
-    client.on('*', onClientEvent);
-    client.on('logs_flushed', (event) => {
-      event.events.unshift();
-    });
-    return () => client.off('*', onClientEvent);
+    const onAnyClientEvent = (event: AnyStatsigClientEvent) =>
+      console.log(event);
+    client.on('*', onAnyClientEvent);
+    return () => client.off('*', onAnyClientEvent);
   }, [client]);
 
   return (
