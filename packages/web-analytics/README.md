@@ -1,11 +1,7 @@
-# web-analytics
+# Statsig Web Analytics
 
-This library was generated with [Nx](https://nx.dev).
+Web analytics lets you track and watch key measures for your website easily. It is different from product analytics because it's simpler and more direct, making it great for marketers, web site maintainers, or anyone familiar with tools like Google Analytics.
 
-## Building
+## Getting Started
 
-Run `nx build web-analytics` to build the library.
-
-## Running unit tests
-
-Run `nx test web-analytics` to execute the unit tests via [Jest](https://jestjs.io).
+Read through the [Documentation](https://docs.statsig.com/webanalytics/overview) or check out the [Samples](https://github.com/statsig-io/js-client-monorepo/tree/main/samples).
