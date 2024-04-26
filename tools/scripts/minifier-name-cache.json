@@ -155,7 +155,11 @@
       "$_getOutputs": "un",
       "$_getCurrentPageUrlSafe": "ln",
       "$_isBrowserEnv": "an",
-      "$_getSessionIdFromClient": "cn"
+      "$_getSessionIdFromClient": "cn",
+      "$_currentSessionID": "dn",
+      "$_logRecording": "hn",
+      "$_bumpSessionIdleTimerAndLogRecording": "vn",
+      "$_logRecordingWithSessionID": "_n"
     }
   }
 }

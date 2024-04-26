@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "statsig-test-helpers",
-  "version": "0.0.1-beta.31",
+  "version": "0.0.1-beta.32",
   "dependencies": {
     "@jest/globals": "29.7.0"
   },
