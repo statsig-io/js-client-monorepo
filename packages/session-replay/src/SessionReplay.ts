@@ -56,7 +56,12 @@ export class SessionReplay {
       this._currentSessionID = this._getSessionIdFromClient();
     });
 
-    _subscribeToVisiblityChanged(this._onVisibilityChanged.bind(this));
+    _subscribeToVisiblityChanged((vis) => {
+      const inst = __STATSIG__?.srInstances?.[sdkKey];
+      if (inst instanceof SessionReplay) {
+        inst._onVisibilityChanged(vis);
+      }
+    });
     this._attemptToStartRecording();
   }
 

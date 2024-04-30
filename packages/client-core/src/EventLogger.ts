@@ -18,7 +18,6 @@ import {
 import { typedJsonParse } from './TypedJsonParse';
 import { _getOverridableUrl } from './UrlOverrides';
 import {
-  Visibility,
   _isCurrentlyVisible,
   _subscribeToVisiblityChanged,
 } from './VisibilityObserving';
@@ -31,6 +30,7 @@ const DEDUPER_WINDOW_DURATION_MS = 60_000;
 const MAX_FAILED_LOGS = 500;
 
 const QUICK_FLUSH_WINDOW_MS = 200;
+const EVENT_LOGGER_MAP: Record<string, EventLogger> = {};
 
 type SendEventsResponse = {
   success: boolean;
@@ -44,9 +44,15 @@ type StatsigEventExtras = {
 
 type EventQueue = (StatsigEventInternal & StatsigEventExtras)[];
 
+const _safeFlushAndForget = (sdkKey: string) => {
+  EVENT_LOGGER_MAP[sdkKey]?.flush().catch(() => {
+    // noop
+  });
+};
+
 export class EventLogger {
   private _queue: EventQueue = [];
-  private _flushTimer: ReturnType<typeof setInterval> | null;
+  private _flushTimer: ReturnType<typeof setInterval> | null | undefined;
   private _lastExposureTimeMap: Record<string, number> = {};
   private _nonExposedChecks: Record<string, number> = {};
   private _maxQueueSize: number;
@@ -62,12 +68,22 @@ export class EventLogger {
     private _network: NetworkCore,
     private _options: StatsigOptionsCommon<NetworkConfigCommon> | null,
   ) {
+    EVENT_LOGGER_MAP[_sdkKey] = this;
     this._isLoggingDisabled = _options?.disableLogging === true;
     this._maxQueueSize = _options?.loggingBufferMaxSize ?? DEFAULT_QUEUE_SIZE;
 
     const flushInterval =
       _options?.loggingIntervalMs ?? DEFAULT_FLUSH_INTERVAL_MS;
-    this._flushTimer = setInterval(() => this._flushAndForget(), flushInterval);
+    const intervalId = setInterval(() => {
+      const logger = EVENT_LOGGER_MAP[_sdkKey];
+      if (!logger) {
+        clearInterval(intervalId);
+        return;
+      }
+
+      _safeFlushAndForget(_sdkKey);
+    }, flushInterval);
+    this._flushTimer = intervalId;
 
     const config = _options?.networkConfig;
     this._logEventUrl = _getOverridableUrl(
@@ -84,7 +100,11 @@ export class EventLogger {
       NetworkDefault.eventsApi,
     );
 
-    _subscribeToVisiblityChanged(this._onVisibilityChanged.bind(this));
+    _subscribeToVisiblityChanged((visibility) => {
+      if (visibility === 'background') {
+        _safeFlushAndForget(_sdkKey);
+      }
+    });
 
     this._retryFailedLogs();
   }
@@ -103,7 +123,7 @@ export class EventLogger {
     this._quickFlushIfNeeded();
 
     if (this._queue.length > this._maxQueueSize) {
-      this._flushAndForget();
+      _safeFlushAndForget(this._sdkKey);
     }
   }
 
@@ -138,12 +158,6 @@ export class EventLogger {
     await this._sendEvents(events);
   }
 
-  private _onVisibilityChanged(visibility: Visibility): void {
-    if (visibility === 'background') {
-      this._flushAndForget();
-    }
-  }
-
   /**
    * We 'Quick Flush' following the very first event enqueued
    * within the quick flush window
@@ -158,7 +172,7 @@ export class EventLogger {
       return;
     }
 
-    setTimeout(() => this._flushAndForget(), QUICK_FLUSH_WINDOW_MS);
+    setTimeout(() => _safeFlushAndForget(this._sdkKey), QUICK_FLUSH_WINDOW_MS);
   }
 
   private _shouldLogEvent(event: StatsigEventInternal): boolean {
@@ -186,12 +200,6 @@ export class EventLogger {
 
     this._lastExposureTimeMap[key] = now;
     return true;
-  }
-
-  private _flushAndForget() {
-    this.flush().catch(() => {
-      // noop
-    });
   }
 
   private async _sendEvents(events: EventQueue): Promise<void> {

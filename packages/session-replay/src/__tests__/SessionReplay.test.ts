@@ -5,6 +5,7 @@ import {
   StatsigClientEventCallback,
   StatsigClientEventName,
   StatsigMetadataProvider,
+  _notifyVisibilityChanged,
 } from '@statsig/client-core';
 
 import { SessionReplay } from '../SessionReplay';
@@ -37,6 +38,12 @@ describe('Session Replay', () => {
   it('sets isRecordingSession to true', () => {
     const metadata = StatsigMetadataProvider.get() as any;
     expect(metadata.isRecordingSession).toBe('true');
+  });
+
+  it('adds events on backgrounding', () => {
+    client.flush.mock.calls = [];
+    _notifyVisibilityChanged('background');
+    expect(client.flush).toHaveBeenCalled();
   });
 
   describe('when shutdown', () => {
