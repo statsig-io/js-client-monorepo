@@ -114,10 +114,7 @@ export class NetworkCore {
       }
 
       const text = await response.text();
-      Diagnostics.mark('_sendRequest:response-received', {
-        status: response.status,
-        contentLength: response.headers.get('content-length'),
-      });
+      Diagnostics.mark();
 
       return {
         body: text,
@@ -125,11 +122,7 @@ export class NetworkCore {
       };
     } catch (error) {
       const errorMessage = _getErrorMessage(controller, error);
-      Diagnostics.mark('_sendRequest:error', {
-        error: errorMessage,
-        status: response?.status,
-        contentLength: response?.headers.get('content-length'),
-      });
+      Diagnostics.mark();
 
       if (!retries || retries <= 0) {
         this._emitter?.({ name: 'error', error });

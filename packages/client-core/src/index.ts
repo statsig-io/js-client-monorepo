@@ -17,7 +17,6 @@ export * from './EvaluationTypes';
 export * from './Hashing';
 export * from './InitializeResponse';
 export * from './Log';
-export * from './Monitoring';
 export * from './NetworkParams';
 export * from './NetworkCore';
 export * from './NetworkDefaults';

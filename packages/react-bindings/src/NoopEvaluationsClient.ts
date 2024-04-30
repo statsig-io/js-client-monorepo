@@ -1,5 +1,6 @@
 import {
   DynamicConfig,
+  ErrorBoundary,
   EvaluationsDataAdapter,
   Experiment,
   FeatureGate,
@@ -49,6 +50,7 @@ const context = {
   options: {},
   values: null,
   user: { userID: '' },
+  errorBoundary: {} as ErrorBoundary,
 };
 
 const _client: OnDeviceEvaluationsInterface &

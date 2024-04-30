@@ -1,4 +1,5 @@
 import { DownloadConfigSpecsResponse } from './DownloadConfigSpecsResponse';
+import { ErrorBoundary } from './ErrorBoundary';
 import {
   DynamicConfigEvaluationOptions,
   ExperimentEvaluationOptions,
@@ -29,6 +30,7 @@ export interface StatsigClientCommonInterface
 export type CommonContext = {
   sdkKey: string;
   options: AnyStatsigOptions;
+  errorBoundary: ErrorBoundary;
 };
 
 export type AsyncCommonContext = {

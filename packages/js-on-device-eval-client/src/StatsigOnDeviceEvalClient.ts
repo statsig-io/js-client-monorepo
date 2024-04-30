@@ -28,7 +28,6 @@ import {
   _makeDynamicConfig,
   _makeFeatureGate,
   _makeLayer,
-  monitorClass,
   normalizeUser,
 } from '@statsig/client-core';
 
@@ -73,9 +72,6 @@ export default class StatsigOnDeviceEvalClient
       network,
       options,
     );
-
-    monitorClass(this._errorBoundary, this);
-    monitorClass(this._errorBoundary, network);
 
     this._store = new SpecStore();
     this._evaluator = new Evaluator(this._store);
@@ -122,6 +118,7 @@ export default class StatsigOnDeviceEvalClient
       sdkKey: this._sdkKey,
       options: this._options,
       values: this._store.getValues(),
+      errorBoundary: this._errorBoundary,
     };
   }
 

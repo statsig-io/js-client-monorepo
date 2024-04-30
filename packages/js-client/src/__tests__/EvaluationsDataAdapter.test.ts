@@ -114,15 +114,5 @@ describe('Evaluations Data Adapter', () => {
 
       expect(errorResult).toBeNull();
     });
-
-    it('hits error boundary', async () => {
-      (adapter as any).getDataSync = () => {
-        throw new Error('Test');
-      };
-      await adapter.prefetchData({ userID: 'a' });
-      expect(fetchMock.mock.calls[1][0]).toBe(
-        'https://statsigapi.net/v1/sdk_exception',
-      );
-    });
   });
 });

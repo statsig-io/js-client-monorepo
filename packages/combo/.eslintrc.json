@@ -25,7 +25,8 @@
               "jest-fetch-mock",
               "statsig-test-helpers",
               "@nx/webpack",
-              "webpack-bundle-analyzer"
+              "webpack-bundle-analyzer",
+              "typescript"
             ]
           }
         ]

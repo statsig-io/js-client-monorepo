@@ -23,7 +23,18 @@ describe('Client Error Boundary', () => {
   });
 
   it('catches errors', () => {
-    (client as any)._logger = 1;
     expect(() => client.checkGate('test_public')).not.toThrow();
+  });
+
+  it('data adapter hits error boundary', async () => {
+    const adapter = client.dataAdapter;
+    (adapter as any).getDataSync = () => {
+      throw new Error('Test');
+    };
+
+    await adapter.prefetchData({ userID: 'a' });
+    expect(fetchMock.mock.calls[1][0]).toBe(
+      'https://statsigapi.net/v1/sdk_exception',
+    );
   });
 });

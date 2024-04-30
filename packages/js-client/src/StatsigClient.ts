@@ -29,7 +29,6 @@ import {
   _makeFeatureGate,
   _makeLayer,
   _mergeOverride,
-  monitorClass,
   normalizeUser,
 } from '@statsig/client-core';
 
@@ -88,9 +87,6 @@ export default class StatsigClient
       network,
       options,
     );
-
-    monitorClass(this._errorBoundary, this);
-    monitorClass(this._errorBoundary, network);
 
     this._store = new EvaluationStore();
     this._user = user;
@@ -188,6 +184,7 @@ export default class StatsigClient
       options: this._options,
       values: this._store.getValues(),
       user: JSON.parse(JSON.stringify(this._user)) as StatsigUser,
+      errorBoundary: this._errorBoundary,
     };
   }
 

@@ -8,21 +8,40 @@ export const EXCEPTION_ENDPOINT = 'https://statsigapi.net/v1/sdk_exception';
 export class ErrorBoundary {
   private _seen = new Set<string>();
 
-  constructor(private _sdkKey: string) {}
+  constructor(
+    private _sdkKey: string,
+    private _emitter?: StatsigClientEmitEventFunc,
+  ) {}
 
-  capture(
-    tag: string,
-    task: () => unknown,
-    emitter?: StatsigClientEmitEventFunc,
-  ): unknown {
+  wrap(instance: unknown): void {
+    try {
+      const obj = instance as Record<string, unknown>;
+
+      _getAllInstanceMethodNames(obj).forEach((name) => {
+        const original = obj[name] as (...args: unknown[]) => unknown;
+        if ('$EB' in original) {
+          return;
+        }
+
+        obj[name] = (...args: unknown[]) => {
+          return this.capture(name, () => original.apply(instance, args));
+        };
+        (obj[name] as { $EB: boolean }).$EB = true;
+      });
+    } catch (err) {
+      this._onError('eb:wrap', err);
+    }
+  }
+
+  capture(tag: string, task: () => unknown): unknown {
     try {
       const res = task();
       if (res && res instanceof Promise) {
-        return res.catch((err) => this._onError(tag, err, emitter));
+        return res.catch((err) => this._onError(tag, err));
       }
       return res;
     } catch (error) {
-      this._onError(tag, error, emitter);
+      this._onError(tag, error);
       return null;
     }
   }
@@ -31,11 +50,7 @@ export class ErrorBoundary {
     this._onError(tag, error);
   }
 
-  private _onError(
-    tag: string,
-    error: unknown,
-    emitter?: StatsigClientEmitEventFunc,
-  ) {
+  private _onError(tag: string, error: unknown) {
     try {
       Log.warn(`Caught error in ${tag}`, { error });
 
@@ -72,7 +87,7 @@ export class ErrorBoundary {
           body,
         });
 
-        emitter?.({ name: 'error', error });
+        this._emitter?.({ name: 'error', error });
       };
 
       impl()
@@ -94,4 +109,20 @@ function _getDescription(obj: unknown): string {
   } catch {
     return '[Statsig] Failed to get string for error.';
   }
+}
+
+function _getAllInstanceMethodNames(
+  instance: Record<string, unknown>,
+): string[] {
+  const names = new Set<string>();
+
+  let proto = Object.getPrototypeOf(instance) as Record<string, unknown>;
+  while (proto && proto !== Object.prototype) {
+    Object.getOwnPropertyNames(proto)
+      .filter((prop) => typeof proto?.[prop] === 'function')
+      .forEach((name) => names.add(name));
+    proto = Object.getPrototypeOf(proto) as Record<string, unknown>;
+  }
+
+  return Array.from(names);
 }

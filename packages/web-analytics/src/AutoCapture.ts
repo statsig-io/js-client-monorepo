@@ -5,7 +5,6 @@ import {
   _getStatsigGlobal,
   _getWindowSafe,
   _isBrowserEnv,
-  monitorClass,
 } from '@statsig/client-core';
 import { StatsigClient } from '@statsig/js-client';
 
@@ -28,9 +27,9 @@ export class AutoCapture {
   private _deepestScroll = 0;
 
   constructor(private _client: StatsigClient) {
-    const { sdkKey } = _client.getContext();
-    this._errorBoundary = new ErrorBoundary(sdkKey);
-    monitorClass(this._errorBoundary, this);
+    const { sdkKey, errorBoundary } = _client.getContext();
+    this._errorBoundary = errorBoundary;
+    this._errorBoundary.wrap(this);
 
     const doc = _getDocumentSafe();
 

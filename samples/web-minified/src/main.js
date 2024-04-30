@@ -13,7 +13,11 @@ window.fetch = (url, args) => {
   return actual(url, args);
 };
 
-const client = new StatsigClient(DEMO_CLIENT_KEY, { userID: 'a-user' });
+const client = new StatsigClient(
+  DEMO_CLIENT_KEY,
+  { userID: 'a-user' },
+  { logLevel: 4 },
+);
 
 (async () => {
   const timeout = setTimeout(() => {
@@ -22,7 +26,7 @@ const client = new StatsigClient(DEMO_CLIENT_KEY, { userID: 'a-user' });
   await client.initializeAsync(); // prime cache
 
   client.on('*', (event) => {
-    console.log('Client event', event);
+    console.log('Emitted Event', event);
     emissions.push(event);
   });
 

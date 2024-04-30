@@ -1,6 +1,5 @@
 import { ErrorBoundary } from './ErrorBoundary';
 import { Log } from './Log';
-import { monitorClass } from './Monitoring';
 import {
   DataAdapterAsyncOptions,
   DataAdapterCachePrefix,
@@ -34,7 +33,6 @@ export abstract class DataAdapterCore {
   attach(sdkKey: string, _options: AnyStatsigOptions | null): void {
     this._sdkKey = sdkKey;
     this._errorBoundary = new ErrorBoundary(sdkKey);
-    monitorClass(this._errorBoundary, this);
   }
 
   getDataSync(user?: StatsigUser | undefined): DataAdapterResult | null {

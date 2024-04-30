@@ -4,7 +4,7 @@ import { StatsigClientInterface } from './ClientInterfaces';
 import { ErrorBoundary } from './ErrorBoundary';
 import { EvaluationOptionsCommon } from './EvaluationOptions';
 import { EventLogger } from './EventLogger';
-import { Log, LogLevel } from './Log';
+import { Log } from './Log';
 import { NetworkCore } from './NetworkCore';
 import { OverrideAdapter } from './OverrideAdapter';
 import { _isBrowserEnv } from './SafeJs';
@@ -68,29 +68,29 @@ export abstract class StatsigClientBase<
     network: NetworkCore,
     options: AnyStatsigOptions | null,
   ) {
-    this._sdkKey = sdkKey;
-    this._options = options ?? {};
+    const emitter = this._emit.bind(this);
+    const statsigGlobal = _getStatsigGlobal();
+    const instances = statsigGlobal.instances ?? {};
+    const inst = this as unknown as StatsigClientInterface;
 
+    options?.logLevel && (Log.level = options?.logLevel);
     options?.disableStorage && Storage._setDisabled(true);
     options?.overrideStableID &&
       StableID.setOverride(options.overrideStableID, sdkKey);
 
-    Log.level = options?.logLevel ?? LogLevel.Warn;
+    this._errorBoundary = new ErrorBoundary(sdkKey, emitter);
+    this._errorBoundary.wrap(this);
+    this._errorBoundary.wrap(network);
+    this._errorBoundary.wrap(adapter);
 
+    this._sdkKey = sdkKey;
+    this._options = options ?? {};
     this._overrideAdapter = options?.overrideAdapter ?? null;
-    this._logger = new EventLogger(
-      sdkKey,
-      this._emit.bind(this),
-      network,
-      options,
-    );
+    this._logger = new EventLogger(sdkKey, emitter, network, options);
+
     SessionID._setEmitFunction(() => {
       this._emit({ name: 'session_expired' });
     }, sdkKey);
-    this._errorBoundary = new ErrorBoundary(sdkKey);
-
-    const statsigGlobal = _getStatsigGlobal();
-    const instances = statsigGlobal.instances ?? {};
 
     if (instances[sdkKey] != null && _isBrowserEnv()) {
       Log.warn(
@@ -98,7 +98,6 @@ export abstract class StatsigClientBase<
       );
     }
 
-    const inst = this as unknown as StatsigClientInterface;
     instances[sdkKey] = inst;
     statsigGlobal.lastInstance = inst;
     statsigGlobal.instances = instances;
