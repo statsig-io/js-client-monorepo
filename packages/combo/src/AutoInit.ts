@@ -6,6 +6,10 @@ type InitArgs = {
   client: StatsigClient;
 };
 
+function _getParam(name: string, params: URLSearchParams): string | null {
+  return params.get(name) ?? params.get(name.toLowerCase());
+}
+
 export abstract class AutoInit {
   static attempt(action: (args: InitArgs) => void): void {
     try {
@@ -23,11 +27,9 @@ export abstract class AutoInit {
         return;
       }
 
-      let sdkKey: string | null = null;
-
       const url = new URL(srcUrl, baseUrl);
       const params = url.searchParams;
-      sdkKey = params.get('sdkkey') ?? params.get('sdkKey');
+      const sdkKey = _getParam('sdkKey', params) ?? _getParam('apiKey', params);
 
       if (!sdkKey) {
         return;
