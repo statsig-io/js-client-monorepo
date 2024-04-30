@@ -33,11 +33,11 @@ jobs:
       - uses: ./.github/actions/setup-action
       - run: pnpm run build
 
-      - uses: andresz1/size-limit-action@v1
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          skip_step: install
-          build_script: noop
+      # - uses: andresz1/size-limit-action@v1
+      #   with:
+      #     github_token: ${{ secrets.GITHUB_TOKEN }}
+      #     skip_step: install
+      #     build_script: noop
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
