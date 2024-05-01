@@ -139,7 +139,22 @@
       "$_downloadConfigSpecsUrl": "qe",
       "$_getSpecs": "ze",
       "$_evaluator": "Be",
-      "$_getOutputs": "Je"
+      "$_getOutputs": "Je",
+      "$_sessionData": "$e",
+      "$_events": "He",
+      "$_currentSessionID": "We",
+      "$_replayer": "Ye",
+      "$_shutdown": "Qe",
+      "$_attemptToStartRecording": "Xe",
+      "$_logRecording": "Ze",
+      "$_onRecordingEvent": "ti",
+      "$_bumpSessionIdleTimerAndLogRecording": "ei",
+      "$_logRecordingWithSessionID": "ii",
+      "$_startTimestamp": "ni",
+      "$_endTimestamp": "si",
+      "$_clickCount": "oi",
+      "$_stopCallback": "ri",
+      "$_stopFn": "ui"
     }
   }
 }
