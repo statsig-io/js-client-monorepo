@@ -49,20 +49,26 @@ export class SessionReplay {
     this._replayer = new SessionReplayClient();
     this._client.__on('pre_shutdown', () => this._shutdown());
     this._client.__on('values_updated', () => this._attemptToStartRecording());
-    _client.on('session_expired', () => {
+    this._client.on('session_expired', () => {
       this._replayer.stop();
       StatsigMetadataProvider.add({ isRecordingSession: 'false' });
       this._logRecording();
       this._currentSessionID = this._getSessionIdFromClient();
     });
 
+    this._subscribeToVisibilityChanged();
+    this._attemptToStartRecording();
+  }
+
+  private _subscribeToVisibilityChanged() {
+    // Note: this exists as a separate function to ensure closure scope only contains `sdkKey`
+    const { sdkKey } = this._client.getContext();
     _subscribeToVisiblityChanged((vis) => {
       const inst = __STATSIG__?.srInstances?.[sdkKey];
       if (inst instanceof SessionReplay) {
         inst._onVisibilityChanged(vis);
       }
     });
-    this._attemptToStartRecording();
   }
 
   private _onVisibilityChanged(visibility: Visibility): void {
