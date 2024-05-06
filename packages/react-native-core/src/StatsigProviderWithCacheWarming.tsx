@@ -16,6 +16,9 @@ export function StatsigProviderWithCacheWarming(
 
   useEffect(() => {
     if (isWarmed) {
+      if (props.client.loadingStatus === 'Uninitialized') {
+        props.client.initializeSync();
+      }
       return;
     }
 
