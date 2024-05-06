@@ -1,36 +1,47 @@
-import { useContext, useMemo } from 'react';
+import { useCallback, useContext, useMemo } from 'react';
 
 import { StatsigUser } from '@statsig/client-core';
 
 import StatsigContext from './StatsigContext';
 import { useStatsigClient } from './useStatsigClient';
 
+type UpdaterArg = StatsigUser | ((previous: StatsigUser) => StatsigUser);
+type UpdaterFunc<T> = (updated: UpdaterArg) => T;
+type SyncUpdateFunc = UpdaterFunc<void>;
+type AsyncUpdateFunc = UpdaterFunc<Promise<void>>;
+
 export type UseStatsigUserResult = {
   user: StatsigUser;
-  updateUserSync: (fn: (prevState: StatsigUser) => StatsigUser) => void;
-  updateUserAsync: (
-    fn: (prevState: StatsigUser) => StatsigUser,
-  ) => Promise<void>;
+  updateUserSync: SyncUpdateFunc;
+  updateUserAsync: AsyncUpdateFunc;
 };
 
 export function useStatsigUser(): UseStatsigUserResult {
-  const client = useStatsigClient();
+  const { client } = useStatsigClient();
   const { renderVersion } = useContext(StatsigContext);
+
+  const deps = [client, renderVersion];
 
   const memoUser = useMemo(() => {
     const context = client.getContext();
     return context.user;
-  }, [client, renderVersion]);
+  }, deps);
 
   return {
     user: memoUser,
-    updateUserSync: (fn: (prevState: StatsigUser) => StatsigUser) => {
-      const user = fn(memoUser);
-      client.updateUserSync(user);
-    },
-    updateUserAsync: (fn: (prevState: StatsigUser) => StatsigUser) => {
-      const user = fn(memoUser);
-      return client.updateUserAsync(user);
-    },
+    updateUserSync: useCallback((arg): void => {
+      if (typeof arg === 'function') {
+        arg = arg(memoUser);
+      }
+
+      client.updateUserSync(arg);
+    }, deps),
+    updateUserAsync: useCallback((arg) => {
+      if (typeof arg === 'function') {
+        arg = arg(memoUser);
+      }
+
+      return client.updateUserAsync(arg);
+    }, deps),
   };
 }

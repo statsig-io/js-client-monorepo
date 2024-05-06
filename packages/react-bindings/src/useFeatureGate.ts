@@ -34,7 +34,7 @@ export default function (
       `useFeatureGate hook failed to find a valid Statsig client for gate '${gateName}'.`,
     );
     return NoopEvaluationsClient.getFeatureGate(gateName, options);
-  }, [gateName, renderVersion, options]);
+  }, [gateName, client, renderVersion, options]);
 
   return gate;
 }

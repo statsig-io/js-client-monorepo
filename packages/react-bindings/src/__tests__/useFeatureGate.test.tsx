@@ -1,56 +1,55 @@
 import '@testing-library/jest-dom';
-import { act, render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import * as React from 'react';
 import { MockRemoteServerEvalClient } from 'statsig-test-helpers';
 
-import {
-  PrecomputedEvaluationsInterface,
-  StatsigClientEventCallback,
-  StatsigClientEventName,
-} from '@statsig/client-core';
+import { PrecomputedEvaluationsInterface } from '@statsig/client-core';
 
 import { StatsigProvider } from '../StatsigProvider';
 import useFeatureGate from '../useFeatureGate';
+import { useStatsigClient } from '../useStatsigClient';
 
-const GateComponent = () => {
+const UseFeatureGateComponent = () => {
   const { value } = useFeatureGate('a_gate');
-  return <div data-testid="gate-value">{String(value)}</div>;
+  return <div data-testid="use-feature-gate">{String(value)}</div>;
+};
+
+const GetFeatureGateComponent = () => {
+  const { getFeatureGate } = useStatsigClient();
+  return (
+    <div data-testid="get-feature-gate">
+      {String(getFeatureGate('a_gate').value)}
+    </div>
+  );
 };
 
 describe('useFeatureGate', () => {
   let client: jest.Mocked<PrecomputedEvaluationsInterface>;
-  let onStatusChange: StatsigClientEventCallback<StatsigClientEventName>;
 
   beforeEach(() => {
     client = MockRemoteServerEvalClient.create();
     client.shutdown.mockReturnValue(Promise.resolve());
     client.getFeatureGate.mockReturnValue({ value: true } as any);
-    client.__on.mockImplementation((event, callback) => {
-      if (event === 'values_updated') {
-        onStatusChange = callback;
-      }
-    });
+    (client.loadingStatus as any) = 'Ready';
 
     render(
       <StatsigProvider client={client}>
-        <GateComponent />
+        <UseFeatureGateComponent />
+        <GetFeatureGateComponent />
       </StatsigProvider>,
     );
   });
 
-  it('does not render before the init promise resolves', () => {
-    expect(screen.queryByTestId('gate-value')).toBeNull();
+  it('gets the correct value for getFeatureGate', async () => {
+    await waitFor(() => {
+      const gateValue = screen.queryByTestId('get-feature-gate');
+      expect(gateValue).toHaveTextContent('true');
+    });
   });
 
-  it('renders the gate value', async () => {
-    act(() => {
-      (client.loadingStatus as any) = 'Ready';
-      onStatusChange({ event: 'values_updated', status: 'Ready' });
-    });
-
+  it('gets the correct value for useFeatureGate', async () => {
     await waitFor(() => {
-      const gateValue = screen.queryByTestId('gate-value');
-      expect(gateValue).toBeInTheDocument();
+      const gateValue = screen.queryByTestId('use-feature-gate');
       expect(gateValue).toHaveTextContent('true');
     });
   });

@@ -34,5 +34,5 @@ export default function (
       `useDynamicConfig hook failed to find a valid Statsig client for dynamic config '${configName}'.`,
     );
     return NoopEvaluationsClient.getDynamicConfig(configName, options);
-  }, [configName, renderVersion, options]);
+  }, [configName, client, renderVersion, options]);
 }

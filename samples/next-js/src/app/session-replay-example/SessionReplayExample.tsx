@@ -45,7 +45,7 @@ function useClientWithSessionReplay(
 }
 
 function Content() {
-  const client = useStatsigClient();
+  const { client } = useStatsigClient();
   const { value, details } = useFeatureGate('a_gate');
   const { renderVersion } = useContext(StatsigContext);
 

@@ -31,7 +31,7 @@ export default function (layerName: string, options?: UseLayerOptions): Layer {
       `useLayer hook failed to find a valid Statsig client for layer '${layerName}'.`,
     );
     return NoopEvaluationsClient.getLayer(layerName, options);
-  }, [layerName, renderVersion, options]);
+  }, [layerName, client, renderVersion, options]);
 
   return layer;
 }

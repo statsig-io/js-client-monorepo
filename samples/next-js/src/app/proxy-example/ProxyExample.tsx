@@ -47,7 +47,7 @@ function UserDisplay() {
 
 function Content() {
   const { value, details } = useFeatureGate('a_gate');
-  const client = useStatsigClient();
+  const { client } = useStatsigClient();
 
   return (
     <div style={{ padding: 16 }}>

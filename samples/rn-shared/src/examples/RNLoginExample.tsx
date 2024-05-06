@@ -18,7 +18,7 @@ type Props = {
 
 function Content() {
   const gate = useFeatureGate('third_gate'); // gate passes with non-empty email
-  const client = useStatsigClient();
+  const { client } = useStatsigClient();
 
   return (
     <>

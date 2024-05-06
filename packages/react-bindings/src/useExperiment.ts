@@ -34,5 +34,5 @@ export default function (
       `useExperiment hook failed to find a valid Statsig client for experiment '${experimentName}'.`,
     );
     return NoopEvaluationsClient.getExperiment(experimentName, options);
-  }, [experimentName, renderVersion, options]);
+  }, [experimentName, client, renderVersion, options]);
 }
