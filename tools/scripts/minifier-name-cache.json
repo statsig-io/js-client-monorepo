@@ -154,7 +154,8 @@
       "$_endTimestamp": "si",
       "$_clickCount": "oi",
       "$_stopCallback": "ri",
-      "$_stopFn": "ui"
+      "$_stopFn": "ui",
+      "$_subscribeToVisibilityChanged": "li"
     }
   }
 }

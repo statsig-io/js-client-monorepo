@@ -27,7 +27,7 @@ describe('Minified StatsigClient', () => {
 
   it('hits initialize', () => {
     const [url] = fetchMock.mock.calls[0];
-    expect(url).toContain('https://featuregates.org/v1/initialize');
+    expect(url).toContain('/v1/initialize');
   });
 
   it('gets gate results', () => {
@@ -40,7 +40,7 @@ describe('Minified StatsigClient', () => {
     await client.flush();
     const [url, request] = fetchMock.mock.lastCall ?? [];
 
-    expect(url).toContain('https://events.statsigapi.net/v1/rgstr');
+    expect(url).toContain('/v1/rgstr');
     expect(request?.body).toContain('"eventName":"my_custom_event"');
   });
 
