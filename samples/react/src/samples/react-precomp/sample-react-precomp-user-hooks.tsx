@@ -1,5 +1,9 @@
+// <snippet>
 import { useStatsigUser } from '@statsig/react-bindings';
 
+// •••
+
+// </snippet>
 export default async function Sample(): Promise<void> {
   App();
 }
