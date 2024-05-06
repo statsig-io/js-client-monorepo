@@ -1,9 +1,6 @@
-# [Statsig](https://statsig.com/) &middot; [![GitHub license](https://img.shields.io/badge/license-ISC-blue.svg)](https://github.com/statsig-io/js-client-monorepo/blob/main/LICENSE) [![npm version](https://img.shields.io/npm/v/@statsig/js-client.svg?style=flat)](https://www.npmjs.com/package/@statsig/js-client) [![slack](https://img.shields.io/badge/slack-statsig-brightgreen.svg?logo=slack)](https://statsig.com/community)
+# [Statsig](https://statsig.com/?ref=gh_jsm) &middot; [![GitHub license](https://img.shields.io/badge/license-ISC-blue.svg)](https://github.com/statsig-io/js-client-monorepo/blob/main/LICENSE) [![npm version](https://img.shields.io/npm/v/@statsig/js-client.svg?style=flat)](https://www.npmjs.com/package/@statsig/js-client) [![slack](https://img.shields.io/badge/slack-statsig-brightgreen.svg?logo=slack)](https://statsig.com/community?ref=gh_jsm)
 
-> [!IMPORTANT]
-> This version of the SDK is still in beta. The non-beta version can be found [here](https://github.com/statsig-io/js-client).
-
-Statsig helps you move faster with feature gates (feature flags), and/or dynamic configs. It also allows you to run A/B/n tests to validate your new features and understand their impact on your KPIs. If you're new to Statsig, check out our product and create an account at statsig.com.
+Statsig helps you move faster with feature gates (feature flags), and/or dynamic configs. It also allows you to run A/B/n tests to validate your new features and understand their impact on your KPIs. If you're new to Statsig, check out our product and create an account at [statsig.com](https://www.statsig.com/?ref=gh_jsm).
 
 ## Variants
 
@@ -18,8 +15,8 @@ Statsig helps you move faster with feature gates (feature flags), and/or dynamic
 
 ## Getting Started
 
-Read through the [Documentation](https://docs.statsig.com/client/javascript-sdk) or check out the [Samples](samples/).
+Read through the [Documentation](https://docs.statsig.com/client/javascript-sdk?ref=gh_jsm) or check out the [Samples](samples/).
 
 ## Community
 
-If you need any assitance or just have a question, feel free to reach out to us on [Slack](https://statsig.com/community).
+If you need any assitance or just have a question, feel free to reach out to us on [Slack](https://statsig.com/community?ref=gh_jsm).
