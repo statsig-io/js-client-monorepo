@@ -14,6 +14,7 @@ App();
 const myStatsigClient = new StatsigClient(YOUR_CLIENT_KEY, {
   userID: 'a-user',
 });
+myStatsigClient.initializeSync();
 
 function Content() {
   const gate = useFeatureGate('a_gate');
