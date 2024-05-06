@@ -1,7 +1,7 @@
 import './$_StatsigGlobal';
 import { Diagnostics } from './Diagnostics';
 import { Log } from './Log';
-import { NetworkParam } from './NetworkParams';
+import { NetworkParam } from './NetworkConfig';
 import { SDKType } from './SDKType';
 import { SessionID } from './SessionID';
 import { StableID } from './StableID';

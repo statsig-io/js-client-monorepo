@@ -1,8 +1,7 @@
 import { DJB2 } from './Hashing';
 import { Log } from './Log';
+import { NetworkDefault, NetworkParam } from './NetworkConfig';
 import { NetworkCore } from './NetworkCore';
-import { NetworkDefault } from './NetworkDefaults';
-import { NetworkParam } from './NetworkParams';
 import { _getCurrentPageUrlSafe } from './SafeJs';
 import { StatsigClientEmitEventFunc } from './StatsigClientBase';
 import { StatsigEventInternal, _isExposureEvent } from './StatsigEvent';

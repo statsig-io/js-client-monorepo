@@ -66,7 +66,7 @@ describe('Local Overrides - StatsigClient', () => {
 
     it('logged an event with reason set to "LocalOverride"', () => {
       const [url, payload] = fetchMock.mock.calls[0];
-      expect(url).toContain('https://events.statsigapi.net/v1/rgstr');
+      expect(url).toContain('https://prodregistryv2.org/v1/rgstr');
 
       const body = JSON.parse(String(payload?.body)) as any;
       const event = body.events[0];
@@ -105,7 +105,7 @@ describe('Local Overrides - StatsigClient', () => {
 
     it('logged an event with reason set to "LocalOverride"', () => {
       const [url, payload] = fetchMock.mock.calls[0];
-      expect(url).toContain('https://events.statsigapi.net/v1/rgstr');
+      expect(url).toContain('https://prodregistryv2.org/v1/rgstr');
 
       const body = JSON.parse(String(payload?.body)) as any;
       const event = body.events[0];
@@ -146,7 +146,7 @@ describe('Local Overrides - StatsigClient', () => {
 
     it('logged an event with reason set to "LocalOverride"', () => {
       const [url, payload] = fetchMock.mock.calls[0];
-      expect(url).toContain('https://events.statsigapi.net/v1/rgstr');
+      expect(url).toContain('https://prodregistryv2.org/v1/rgstr');
 
       const body = JSON.parse(String(payload?.body)) as any;
       const event = body.events[0];

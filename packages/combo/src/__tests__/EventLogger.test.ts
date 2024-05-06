@@ -34,7 +34,7 @@ describe('Event Logger', () => {
     await timeout(2);
 
     expect(fetchMock.mock.calls[0]).toEqual([
-      anyStringContaining('https://events.statsigapi.net/v1/rgstr'),
+      anyStringContaining('/v1/rgstr'),
       anyObject(),
     ]);
 
@@ -42,7 +42,7 @@ describe('Event Logger', () => {
     await timeout(2);
 
     expect(fetchMock.mock.calls[1]).toEqual([
-      anyStringContaining('https://events.statsigapi.net/v1/rgstr'),
+      anyStringContaining('/v1/rgstr'),
       anyObject(),
     ]);
   });
@@ -56,7 +56,7 @@ describe('Event Logger', () => {
     await timeout(1);
 
     expect(fetchMock.mock.calls[0]).toEqual([
-      anyStringContaining('https://events.statsigapi.net/v1/rgstr'),
+      anyStringContaining('/v1/rgstr'),
       anyObject(),
     ]);
   });

@@ -51,15 +51,15 @@ describe('Url Overriding', () => {
       await run({});
 
       expect(fetchMock.mock.calls[0][0]).toContain(
-        'https://api.statsigcdn.com/v1/download_config_specs?k=',
+        'https://assetsconfigcdn.org/v1/download_config_specs?k=',
       );
 
       expect(fetchMock.mock.calls[1][0]).toContain(
-        'https://events.statsigapi.net/v1/rgstr?k=',
+        'https://prodregistryv2.org/v1/rgstr?k=',
       );
 
       expect(sendBeaconMock.mock.calls[0][0]).toContain(
-        'https://events.statsigapi.net/v1/log_event_beacon?k=',
+        'https://prodregistryv2.org/v1/log_event_beacon?k=',
       );
     });
 
@@ -124,15 +124,15 @@ describe('Url Overriding', () => {
       await run({});
 
       expect(fetchMock.mock.calls[0][0]).toContain(
-        'https://featuregates.org/v1/initialize?k=',
+        'https://featureassets.org/v1/initialize?k=',
       );
 
       expect(fetchMock.mock.calls[1][0]).toContain(
-        'https://events.statsigapi.net/v1/rgstr?k=',
+        'https://prodregistryv2.org/v1/rgstr?k=',
       );
 
       expect(sendBeaconMock.mock.calls[0][0]).toContain(
-        'https://events.statsigapi.net/v1/log_event_beacon?k=',
+        'https://prodregistryv2.org/v1/log_event_beacon?k=',
       );
     });
 

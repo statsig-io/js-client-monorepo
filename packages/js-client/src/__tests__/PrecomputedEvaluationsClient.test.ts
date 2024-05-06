@@ -19,7 +19,7 @@ describe('StatsigClient', () => {
     expect(fetchMock).toHaveBeenCalledTimes(1);
     expect(fetchMock).toHaveBeenCalledWith(
       expect.stringContaining(
-        'https://featuregates.org/v1/initialize?k=client-key&st=javascript-client',
+        'https://featureassets.org/v1/initialize?k=client-key&st=javascript-client',
       ),
       expect.any(Object),
     );

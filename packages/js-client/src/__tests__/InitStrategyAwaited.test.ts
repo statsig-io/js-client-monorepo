@@ -36,9 +36,7 @@ describe('Init Strategy - Awaited', () => {
 
   it('calls /initialize from network', () => {
     expect(fetchMock.mock.calls).toHaveLength(1);
-    expect(fetchMock.mock.calls[0][0]).toContain(
-      'https://featuregates.org/v1/initialize',
-    );
+    expect(fetchMock.mock.calls[0][0]).toContain('/v1/initialize');
   });
 
   it('writes nothing to storage', () => {
