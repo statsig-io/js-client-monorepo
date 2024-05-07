@@ -12,6 +12,7 @@ import { SessionID } from '../SessionID';
 import { Storage } from '../StorageProvider';
 
 const MAX_SESSION_AGE = 4 * 60 * 60 * 1000; // 4 hours
+const MAX_SESSION_IDLE_TIME = 30 * 60 * 1000; // 30 minutes
 
 const UUID_V4_REGEX =
   /^[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-4[0-9A-Fa-f]{3}-[89ABab][0-9A-Fa-f]{3}-[0-9A-Fa-f]{12}/;
@@ -134,7 +135,7 @@ describe('SessionID', () => {
         lastUpdate: Date.now(),
       });
 
-      sessionID = await SessionID.get(SDK_KEY);
+      sessionID = await getSessionIDIgnoringInMemoryCache(SDK_KEY);
     });
 
     it('does not match what is in storage', async () => {
@@ -146,7 +147,7 @@ describe('SessionID', () => {
     });
 
     it('returns the new value when queried again', async () => {
-      const again = await SessionID.get(SDK_KEY);
+      const again = await getSessionIDIgnoringInMemoryCache(SDK_KEY);
       expect(again).toBe(sessionID);
     });
   });
@@ -210,6 +211,48 @@ describe('SessionID', () => {
 
       expect(client.$emt).toHaveBeenCalledTimes(1);
       expect(client.$emt).toHaveBeenCalledWith({ name: 'session_expired' });
+    });
+  });
+
+  describe('test idle timeout resetting', () => {
+    let client: jest.Mocked<PrecomputedEvaluationsInterface>;
+
+    beforeEach(async () => {
+      storageMock.clear();
+
+      jest.useFakeTimers();
+      storageMock.data[STORAGE_KEY] = JSON.stringify({
+        sessionID: '1',
+        startTime: Date.now(),
+        lastUpdate: Date.now(),
+      });
+
+      client = MockRemoteServerEvalClient.create();
+      __STATSIG__ = { instance: () => client };
+    });
+
+    afterEach(() => {
+      storageMock.clear();
+      jest.runOnlyPendingTimers();
+      jest.useRealTimers();
+    });
+
+    it('calls emit function after idle timeout', async () => {
+      await SessionID.get(SDK_KEY);
+      jest.advanceTimersByTime(MAX_SESSION_IDLE_TIME + 1);
+
+      expect(client.$emt).toHaveBeenCalledTimes(1);
+      expect(client.$emt).toHaveBeenCalledWith({ name: 'session_expired' });
+    });
+
+    it('resets the timeout with each call', async () => {
+      for (let i = 0; i < 5; i++) {
+        // eslint-disable-next-line no-await-in-loop
+        await SessionID.get(SDK_KEY);
+        jest.advanceTimersByTime(MAX_SESSION_IDLE_TIME / 2);
+      }
+
+      expect(client.$emt).not.toHaveBeenCalled();
     });
   });
 

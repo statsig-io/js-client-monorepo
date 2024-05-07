@@ -67,7 +67,6 @@ function _bumpSession(session: StatsigSession): StatsigSession {
 
   data.lastUpdate = now;
   _persistToStorage(data, session.sdkKey);
-  session.data = data;
 
   clearTimeout(session.idleTimeoutID);
   clearTimeout(session.ageTimeoutID);
@@ -75,12 +74,13 @@ function _bumpSession(session: StatsigSession): StatsigSession {
   const lifetime = now - data.startTime;
   const sdkKey = session.sdkKey;
 
-  return {
-    data,
+  session.idleTimeoutID = _createSessionTimeout(sdkKey, MAX_SESSION_IDLE_TIME);
+  session.ageTimeoutID = _createSessionTimeout(
     sdkKey,
-    // idleTimeoutID: _createSessionTimeout(sdkKey, MAX_SESSION_IDLE_TIME),
-    ageTimeoutID: _createSessionTimeout(sdkKey, MAX_SESSION_AGE - lifetime),
-  };
+    MAX_SESSION_AGE - lifetime,
+  );
+
+  return session;
 }
 
 function _createSessionTimeout(
