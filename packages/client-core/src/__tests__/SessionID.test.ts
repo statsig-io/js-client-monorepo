@@ -1,23 +1,27 @@
 import {
   CreateTestPromise,
   MockLocalStorage,
+  MockRemoteServerEvalClient,
   TestPromise,
 } from 'statsig-test-helpers';
 
+import '../$_StatsigGlobal';
+import { PrecomputedEvaluationsInterface } from '../ClientInterfaces';
 import { DJB2 } from '../Hashing';
 import { SessionID } from '../SessionID';
 import { Storage } from '../StorageProvider';
 
+const MAX_SESSION_AGE = 4 * 60 * 60 * 1000; // 4 hours
+
 const UUID_V4_REGEX =
   /^[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-4[0-9A-Fa-f]{3}-[89ABab][0-9A-Fa-f]{3}-[0-9A-Fa-f]{12}/;
 
-async function getSessionIDFromIsolatedModule(sdkKey: string): Promise<string> {
+async function getSessionIDIgnoringInMemoryCache(
+  sdkKey: string,
+): Promise<string> {
   let result: string | null = null;
   await jest.isolateModulesAsync(async () => {
     const s = (await import('../SessionID')).SessionID;
-    s._setEmitFunction(() => {
-      return;
-    }, sdkKey);
     result = await s.get(sdkKey);
   });
 
@@ -26,6 +30,10 @@ async function getSessionIDFromIsolatedModule(sdkKey: string): Promise<string> {
 const SDK_KEY = 'client-sdk-key';
 const STORAGE_KEY = `statsig.session_id.${DJB2(SDK_KEY)}`;
 
+Object.defineProperty(global, 'performance', {
+  writable: true,
+});
+
 describe('SessionID', () => {
   let storageMock: MockLocalStorage;
 
@@ -33,15 +41,19 @@ describe('SessionID', () => {
     storageMock = MockLocalStorage.enabledMockStorage();
   });
 
+  it('generates random ids', async () => {
+    const first = await SessionID.get('first');
+    const second = await SessionID.get('second');
+
+    expect(first).not.toBe(second);
+  });
+
   describe('when storage is empty', () => {
     let sessionID: string;
 
     beforeAll(async () => {
       storageMock.clear();
-      SessionID._setEmitFunction(() => {
-        return;
-      }, SDK_KEY);
-      sessionID = await getSessionIDFromIsolatedModule(SDK_KEY);
+      sessionID = await SessionID.get(SDK_KEY);
     });
 
     it('generates a new ID when none is set in storage', async () => {
@@ -68,10 +80,11 @@ describe('SessionID', () => {
       storageMock.clear();
       storageMock.data[STORAGE_KEY] = JSON.stringify({
         sessionID: existingSessionID,
-        startTime: Date.now() - 1000 * 60 * 60,
-        lastUpdate: Date.now() - 1000 * 60,
+        startTime: Date.now(),
+        lastUpdate: Date.now(),
       });
-      sessionID = await getSessionIDFromIsolatedModule(SDK_KEY);
+
+      sessionID = await getSessionIDIgnoringInMemoryCache(SDK_KEY);
     });
 
     it('matches what is in storage', async () => {
@@ -79,22 +92,14 @@ describe('SessionID', () => {
     });
 
     it('still has the same value in storage', async () => {
-      const found = (await storageMock.getItem(STORAGE_KEY)) ?? 'ERROR';
+      const found = storageMock.data[STORAGE_KEY];
       expect(JSON.parse(found).sessionID).toBe(existingSessionID);
     });
 
     it('returns the same value when queried again', async () => {
-      const again = await getSessionIDFromIsolatedModule(SDK_KEY);
+      const again = await getSessionIDIgnoringInMemoryCache(SDK_KEY);
       expect(again).toBe(existingSessionID);
     });
-  });
-
-  it('generates random ids', async () => {
-    const first = await getSessionIDFromIsolatedModule(SDK_KEY);
-    storageMock.clear();
-    const second = await getSessionIDFromIsolatedModule(SDK_KEY);
-
-    expect(first).not.toBe(second);
   });
 
   describe('when using different sdk keys', () => {
@@ -103,8 +108,8 @@ describe('SessionID', () => {
 
     beforeEach(async () => {
       storageMock.clear();
-      first = await getSessionIDFromIsolatedModule('client-key-first');
-      second = await getSessionIDFromIsolatedModule('client-key-second');
+      first = await getSessionIDIgnoringInMemoryCache('client-key-first');
+      second = await getSessionIDIgnoringInMemoryCache('client-key-second');
     });
 
     it('generates different results', async () => {
@@ -128,7 +133,8 @@ describe('SessionID', () => {
         startTime: 0,
         lastUpdate: Date.now(),
       });
-      sessionID = await getSessionIDFromIsolatedModule(SDK_KEY);
+
+      sessionID = await SessionID.get(SDK_KEY);
     });
 
     it('does not match what is in storage', async () => {
@@ -136,12 +142,11 @@ describe('SessionID', () => {
     });
 
     it('has the new value in storage', async () => {
-      const found = (await storageMock.getItem(STORAGE_KEY)) ?? 'ERROR';
-      expect(JSON.parse(found).sessionID).toBe(sessionID);
+      expect(storageMock.data[STORAGE_KEY]).toContain(sessionID);
     });
 
     it('returns the new value when queried again', async () => {
-      const again = await getSessionIDFromIsolatedModule(SDK_KEY);
+      const again = await SessionID.get(SDK_KEY);
       expect(again).toBe(sessionID);
     });
   });
@@ -155,10 +160,11 @@ describe('SessionID', () => {
       storageMock.clear();
       storageMock.data[STORAGE_KEY] = JSON.stringify({
         sessionID: existingSessionID,
-        startTime: Date.now() - 1000 * 60 * 60,
-        lastUpdate: Date.now() - 1000 * 60 * 60,
+        startTime: Date.now(),
+        lastUpdate: 0,
       });
-      sessionID = await getSessionIDFromIsolatedModule(SDK_KEY);
+
+      sessionID = await SessionID.get(SDK_KEY);
     });
 
     it('does not match what is in storage', async () => {
@@ -166,106 +172,30 @@ describe('SessionID', () => {
     });
 
     it('has the new value in storage', async () => {
-      const found = (await storageMock.getItem(STORAGE_KEY)) ?? 'ERROR';
-      expect(JSON.parse(found).sessionID).toBe(sessionID);
+      expect(storageMock.data[STORAGE_KEY]).toContain(sessionID);
     });
 
     it('returns the new value when queried again', async () => {
-      const again = await getSessionIDFromIsolatedModule(SDK_KEY);
+      const again = await SessionID.get(SDK_KEY);
       expect(again).toBe(sessionID);
     });
   });
 
-  describe('test timeout with different keys', () => {
-    let firstCalled = false;
-    let secondCalled = false;
-    let thridCalled = false;
-    const firstSDKKey = 'client-key-first';
-    const secondSDKKey = 'client-key-second';
-    const thirdSDKKey = 'client-key-third';
-
-    beforeAll(async () => {
-      storageMock.clear();
-      Object.defineProperty(global, 'performance', {
-        writable: true,
-      });
-
-      jest.useFakeTimers();
-      SessionID._setEmitFunction(() => {
-        firstCalled = true;
-      }, firstSDKKey);
-      SessionID._setEmitFunction(() => {
-        secondCalled = true;
-      }, secondSDKKey);
-      SessionID._setEmitFunction(() => {
-        thridCalled = true;
-      }, thirdSDKKey);
-    });
-
-    afterAll(() => {
-      storageMock.clear();
-      jest.runOnlyPendingTimers();
-      jest.useRealTimers();
-    });
-
-    it('calls correct emit function for first key', async () => {
-      await SessionID.get(firstSDKKey);
-      jest.advanceTimersByTime(30 * 60 * 1000);
-      expect(firstCalled).toBe(true);
-      expect(secondCalled).toBe(false);
-      firstCalled = false;
-    });
-
-    it('calls correct emit function for second key', async () => {
-      await SessionID.get(secondSDKKey);
-      jest.advanceTimersByTime(30 * 60 * 1000);
-      expect(secondCalled).toBe(true);
-      secondCalled = false;
-    });
-
-    it('does not call emit if enough time has not passed', async () => {
-      await SessionID.get(firstSDKKey);
-      jest.advanceTimersByTime(10 * 60 * 1000);
-      expect(firstCalled).toBe(false);
-      expect(secondCalled).toBe(false);
-      jest.advanceTimersByTime(20 * 60 * 1000);
-      expect(firstCalled).toBe(true);
-      firstCalled = false;
-    });
-
-    it('timer resets after each call', async () => {
-      await SessionID.get(thirdSDKKey);
-      jest.advanceTimersByTime(10 * 60 * 1000);
-      expect(thridCalled).toBe(false);
-      await SessionID.get(thirdSDKKey);
-      jest.advanceTimersByTime(20 * 60 * 1000);
-      expect(thridCalled).toBe(false);
-      jest.advanceTimersByTime(10 * 60 * 1000);
-      expect(thridCalled).toBe(true);
-      thridCalled = false;
-    });
-  });
-
   describe('test age timeout resetting', () => {
-    let firstCalled = false;
-    const sdkKey = 'client-key-age';
-    const storageKey = `statsig.session_id.${DJB2(sdkKey)}`;
+    let client: jest.Mocked<PrecomputedEvaluationsInterface>;
 
     beforeEach(async () => {
       storageMock.clear();
-      Object.defineProperty(global, 'performance', {
-        writable: true,
-      });
 
       jest.useFakeTimers();
-      storageMock.data[storageKey] = JSON.stringify({
+      storageMock.data[STORAGE_KEY] = JSON.stringify({
         sessionID: '1',
-        startTime: Date.now() - 1000 * 60 * 60 * 4 + 1000 * 60,
+        startTime: Date.now() - (MAX_SESSION_AGE - 1),
         lastUpdate: Date.now(),
       });
-      SessionID._setEmitFunction(() => {
-        firstCalled = true;
-      }, sdkKey);
+
+      client = MockRemoteServerEvalClient.create();
+      __STATSIG__ = { instance: () => client };
     });
 
     afterEach(() => {
@@ -274,11 +204,12 @@ describe('SessionID', () => {
       jest.useRealTimers();
     });
 
-    it('calls correct emit function after age timeout', async () => {
-      await SessionID.get(sdkKey);
-      jest.advanceTimersByTime(2 * 60 * 1000);
-      expect(firstCalled).toBe(true);
-      firstCalled = false;
+    it('calls emit function after age timeout', async () => {
+      await getSessionIDIgnoringInMemoryCache(SDK_KEY);
+      jest.advanceTimersByTime(1);
+
+      expect(client.$emt).toHaveBeenCalledTimes(1);
+      expect(client.$emt).toHaveBeenCalledWith({ name: 'session_expired' });
     });
   });
 

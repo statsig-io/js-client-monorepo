@@ -34,7 +34,7 @@ const client = new StatsigClient(
 
   // Network
   test('creates /initialize request', () =>
-    requests[0].url.startsWith('https://featuregates.org/v1/initialize?k='));
+    requests[0].url.startsWith('https://featureassets.org/v1/initialize?k='));
 
   // StatsigClientEventEmitter
   test('values_updated client event', () => {

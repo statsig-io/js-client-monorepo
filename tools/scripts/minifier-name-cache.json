@@ -155,7 +155,8 @@
       "$_clickCount": "oi",
       "$_stopCallback": "ri",
       "$_stopFn": "ui",
-      "$_subscribeToVisibilityChanged": "li"
+      "$_subscribeToVisibilityChanged": "li",
+      "$_getSessionFromClient": "tn"
     }
   }
 }

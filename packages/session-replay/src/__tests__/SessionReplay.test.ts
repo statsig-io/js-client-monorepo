@@ -17,7 +17,7 @@ describe('Session Replay', () => {
   beforeAll(() => {
     client = MockRemoteServerEvalClient.create();
     client.flush.mockResolvedValue();
-    client.__on.mockImplementation((name, listener) => {
+    client.$on.mockImplementation((name, listener) => {
       if (name === 'pre_shutdown') {
         shutdownListener = listener;
       }
@@ -25,6 +25,7 @@ describe('Session Replay', () => {
     const ctx = {
       errorBoundary: { wrap: jest.fn() },
       values: { session_recording_rate: 1, can_record_session: true },
+      session: { data: { sessionID: '' } },
     } as any;
     client.getAsyncContext.mockReturnValue(Promise.resolve(ctx));
     client.getContext.mockReturnValue(ctx);
@@ -32,7 +33,7 @@ describe('Session Replay', () => {
   });
 
   it('subscribes to pre_shutdown', () => {
-    expect(client.__on).toHaveBeenCalledWith('pre_shutdown', anyFunction());
+    expect(client.$on).toHaveBeenCalledWith('pre_shutdown', anyFunction());
   });
 
   it('sets isRecordingSession to true', () => {

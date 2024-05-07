@@ -25,11 +25,11 @@
 
         test('creates /initialize request', () =>
           __requests[0].url.startsWith(
-            'https://featuregates.org/v1/initialize?k=',
+            'https://featureassets.org/v1/initialize?k=',
           ));
 
         const events = __requests
-          .filter((req) => req.url.startsWith('https://events.statsig'))
+          .filter((req) => req.url.startsWith('https://prodregistryv2.org'))
           .flatMap((req) => JSON.parse(req.args.body).events);
 
         test('logged the auto_capture::page_view event', () => {

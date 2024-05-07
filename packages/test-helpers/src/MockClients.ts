@@ -17,7 +17,8 @@ function getBaseMock<T>(): T {
     logEvent: jest.fn(),
     on: jest.fn(),
     off: jest.fn(),
-    __on: jest.fn(),
+    $on: jest.fn(),
+    $emt: jest.fn(),
   } as T;
 }
 

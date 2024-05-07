@@ -29,7 +29,7 @@ describe('Event Emitter Error Logs', () => {
       throw Err('UserError');
     });
 
-    client.__on('experiment_evaluation', () => {
+    client.$on('experiment_evaluation', () => {
       throw Err('InternalError');
     });
   });

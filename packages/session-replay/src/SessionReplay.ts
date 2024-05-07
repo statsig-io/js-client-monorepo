@@ -47,8 +47,8 @@ export class SessionReplay {
     this._currentSessionID = this._getSessionIdFromClient();
 
     this._replayer = new SessionReplayClient();
-    this._client.__on('pre_shutdown', () => this._shutdown());
-    this._client.__on('values_updated', () => this._attemptToStartRecording());
+    this._client.$on('pre_shutdown', () => this._shutdown());
+    this._client.$on('values_updated', () => this._attemptToStartRecording());
     this._client.on('session_expired', () => {
       this._replayer.stop();
       StatsigMetadataProvider.add({ isRecordingSession: 'false' });
@@ -160,7 +160,6 @@ export class SessionReplay {
   }
 
   private async _getSessionIdFromClient() {
-    const ctx = await this._client.getAsyncContext();
-    return ctx.sessionID;
+    return this._client.getAsyncContext().then((x) => x.session.data.sessionID);
   }
 }

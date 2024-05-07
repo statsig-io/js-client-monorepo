@@ -16,10 +16,10 @@ import {
   PrecomputedEvaluationsContext,
   PrecomputedEvaluationsInterface,
   SDKType,
-  SessionID,
   StableID,
   StatsigClientBase,
   StatsigEvent,
+  StatsigSession,
   StatsigUser,
   _createConfigExposure,
   _createGateExposure,
@@ -78,7 +78,7 @@ export default class StatsigClient
   ) {
     SDKType._setClientType(sdkKey, 'javascript-client');
     const network = new Network(options, (e) => {
-      this._emit(e);
+      this.$emt(e);
     });
 
     super(
@@ -197,7 +197,7 @@ export default class StatsigClient
   async getAsyncContext(): Promise<PrecomputedEvaluationsAsyncContext> {
     return {
       ...this.getContext(),
-      sessionID: await SessionID.get(this._sdkKey),
+      session: await StatsigSession.get(this._sdkKey),
       stableID: await StableID.get(this._sdkKey),
     };
   }
@@ -242,7 +242,7 @@ export default class StatsigClient
       options,
     );
 
-    this._emit({ name: 'gate_evaluation', gate: result });
+    this.$emt({ name: 'gate_evaluation', gate: result });
 
     return result;
   }
@@ -259,7 +259,7 @@ export default class StatsigClient
     options?: DynamicConfigEvaluationOptions,
   ): DynamicConfig {
     const dynamicConfig = this._getConfigImpl('dynamic_config', name, options);
-    this._emit({ name: 'dynamic_config_evaluation', dynamicConfig });
+    this.$emt({ name: 'dynamic_config_evaluation', dynamicConfig });
     return dynamicConfig;
   }
 
@@ -275,7 +275,7 @@ export default class StatsigClient
     options?: ExperimentEvaluationOptions,
   ): Experiment {
     const experiment = this._getConfigImpl('experiment', name, options);
-    this._emit({ name: 'experiment_evaluation', experiment });
+    this.$emt({ name: 'experiment_evaluation', experiment });
     return experiment;
   }
 
@@ -310,7 +310,7 @@ export default class StatsigClient
         );
       },
     );
-    this._emit({ name: 'layer_evaluation', layer: result });
+    this.$emt({ name: 'layer_evaluation', layer: result });
     return result;
   }
 

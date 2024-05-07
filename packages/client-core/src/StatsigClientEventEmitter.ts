@@ -74,8 +74,13 @@ export interface StatsigClientEventEmitterInterface {
   /**
    * (Statsig Use Only) - Same as .on() but logs errors to sdk_exception
    */
-  __on<T extends StatsigClientEventName>(
+  $on<T extends StatsigClientEventName>(
     event: T,
     listener: StatsigClientEventCallback<T>,
   ): void;
+
+  /**
+   * (Statsig Use Only) - Emit StatsigClientEvents
+   */
+  $emt(event: AnyStatsigClientEvent): void;
 }

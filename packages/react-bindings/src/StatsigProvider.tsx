@@ -22,7 +22,7 @@ export function StatsigProvider({
 
     SDKType._setBindingType('react');
 
-    client.__on('values_updated', onValuesUpdated);
+    client.$on('values_updated', onValuesUpdated);
 
     return () => {
       client.shutdown().catch((error) => {

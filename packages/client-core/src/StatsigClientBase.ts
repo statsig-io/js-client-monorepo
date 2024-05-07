@@ -8,7 +8,6 @@ import { Log } from './Log';
 import { NetworkCore } from './NetworkCore';
 import { OverrideAdapter } from './OverrideAdapter';
 import { _isBrowserEnv } from './SafeJs';
-import { SessionID } from './SessionID';
 import { StableID } from './StableID';
 import {
   AnyStatsigClientEvent,
@@ -68,7 +67,7 @@ export abstract class StatsigClientBase<
     network: NetworkCore,
     options: AnyStatsigOptions | null,
   ) {
-    const emitter = this._emit.bind(this);
+    const emitter = this.$emt.bind(this);
     const statsigGlobal = _getStatsigGlobal();
     const instances = statsigGlobal.instances ?? {};
     const inst = this as unknown as StatsigClientInterface;
@@ -87,10 +86,6 @@ export abstract class StatsigClientBase<
     this._options = options ?? {};
     this._overrideAdapter = options?.overrideAdapter ?? null;
     this._logger = new EventLogger(sdkKey, emitter, network, options);
-
-    SessionID._setEmitFunction(() => {
-      this._emit({ name: 'session_expired' });
-    }, sdkKey);
 
     if (instances[sdkKey] != null && _isBrowserEnv()) {
       Log.warn(
@@ -138,7 +133,7 @@ export abstract class StatsigClientBase<
    * @returns {Promise<void>} A promise that resolves when all shutdown procedures, including logging shutdown, have been completed.
    */
   async shutdown(): Promise<void> {
-    this._emit({ name: 'pre_shutdown' });
+    this.$emt({ name: 'pre_shutdown' });
     await this._logger.shutdown();
   }
 
@@ -179,7 +174,7 @@ export abstract class StatsigClientBase<
     }
   }
 
-  __on<T extends StatsigClientEventName>(
+  $on<T extends StatsigClientEventName>(
     event: T,
     listener: StatsigClientEventCallback<T>,
   ): void {
@@ -187,7 +182,7 @@ export abstract class StatsigClientBase<
     this.on(event, listener);
   }
 
-  protected _emit(event: AnyStatsigClientEvent): void {
+  $emt(event: AnyStatsigClientEvent): void {
     const barrier = (listener: AnyStatsigClientEventListener) => {
       try {
         listener(event);
@@ -195,7 +190,7 @@ export abstract class StatsigClientBase<
         if (
           (listener as InternalStatsigClientEventCallback).__isInternal === true
         ) {
-          this._errorBoundary.logError(`_emit:${event.name}`, error);
+          this._errorBoundary.logError(`__emit:${event.name}`, error);
           return;
         }
 
@@ -220,7 +215,7 @@ export abstract class StatsigClientBase<
     values: DataAdapterResult | null,
   ): void {
     this.loadingStatus = newStatus;
-    this._emit({ name: 'values_updated', status: newStatus, values });
+    this.$emt({ name: 'values_updated', status: newStatus, values });
   }
 
   protected _enqueueExposure(

@@ -15,11 +15,11 @@ import {
   OnDeviceEvaluationsContext,
   OnDeviceEvaluationsInterface,
   SDKType,
-  SessionID,
   SpecsDataAdapter,
   StableID,
   StatsigClientBase,
   StatsigEvent,
+  StatsigSession,
   StatsigUser,
   _createConfigExposure,
   _createGateExposure,
@@ -125,7 +125,7 @@ export default class StatsigOnDeviceEvalClient
   async getAsyncContext(): Promise<OnDeviceEvaluationsAsyncContext> {
     return {
       ...this.getContext(),
-      sessionID: await SessionID.get(this._sdkKey),
+      session: await StatsigSession.get(this._sdkKey),
       stableID: await StableID.get(this._sdkKey),
     };
   }
@@ -150,7 +150,7 @@ export default class StatsigOnDeviceEvalClient
 
     this._enqueueExposure(name, _createGateExposure(user, gate), options);
 
-    this._emit({ name: 'gate_evaluation', gate });
+    this.$emt({ name: 'gate_evaluation', gate });
 
     return gate;
   }
@@ -166,7 +166,7 @@ export default class StatsigOnDeviceEvalClient
       user,
       options,
     );
-    this._emit({ name: 'dynamic_config_evaluation', dynamicConfig });
+    this.$emt({ name: 'dynamic_config_evaluation', dynamicConfig });
     return dynamicConfig;
   }
 
@@ -176,7 +176,7 @@ export default class StatsigOnDeviceEvalClient
     options?: ExperimentEvaluationOptions,
   ): Experiment {
     const experiment = this._getConfigImpl('experiment', name, user, options);
-    this._emit({ name: 'experiment_evaluation', experiment });
+    this.$emt({ name: 'experiment_evaluation', experiment });
     return experiment;
   }
 
@@ -196,7 +196,7 @@ export default class StatsigOnDeviceEvalClient
       );
     });
 
-    this._emit({ name: 'layer_evaluation', layer });
+    this.$emt({ name: 'layer_evaluation', layer });
 
     return layer;
   }

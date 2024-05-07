@@ -69,7 +69,10 @@ const _client: OnDeviceEvaluationsInterface &
   }),
   getAsyncContext: async () => ({
     ...context,
-    sessionID: '',
+    session: {
+      data: { sessionID: '', startTime: 0, lastUpdate: 0 },
+      sdkKey: '',
+    },
     stableID: '',
   }),
   checkGate: () => false,
@@ -80,7 +83,8 @@ const _client: OnDeviceEvaluationsInterface &
   logEvent: _noop,
   on: _noop,
   off: _noop,
-  __on: _noop,
+  $on: _noop,
+  $emt: _noop,
   dataAdapter: _noopDataAdapter,
 };
 

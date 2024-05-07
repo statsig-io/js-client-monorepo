@@ -18,7 +18,7 @@ describe('StatsigProvider', () => {
     client = MockRemoteServerEvalClient.create();
     client.shutdown.mockReturnValue(Promise.resolve());
 
-    client.__on.mockImplementation((event, callback) => {
+    client.$on.mockImplementation((event, callback) => {
       if (event === 'values_updated') {
         onStatusChange = callback;
       }

@@ -6,7 +6,9 @@ import { StableID } from '../StableID';
 const UUID_V4_REGEX =
   /^[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-4[0-9A-Fa-f]{3}-[89ABab][0-9A-Fa-f]{3}-[0-9A-Fa-f]{12}/;
 
-async function getStableIDFromIsolatedModule(sdkKey: string): Promise<string> {
+async function getStableIDIgnoringInMemoryCache(
+  sdkKey: string,
+): Promise<string> {
   let result: string | null = null;
   await jest.isolateModulesAsync(async () => {
     const s = (await import('../StableID')).StableID;
@@ -15,6 +17,7 @@ async function getStableIDFromIsolatedModule(sdkKey: string): Promise<string> {
 
   return result ?? 'error';
 }
+
 const SDK_KEY = 'client-sdk-key';
 const STORAGE_KEY = `statsig.stable_id.${DJB2(SDK_KEY)}`;
 
@@ -30,7 +33,7 @@ describe('StableID', () => {
 
     beforeAll(async () => {
       storageMock.clear();
-      stableID = await getStableIDFromIsolatedModule(SDK_KEY);
+      stableID = await getStableIDIgnoringInMemoryCache(SDK_KEY);
     });
 
     it('generates a new ID when none is set in storage', async () => {
@@ -38,8 +41,7 @@ describe('StableID', () => {
     });
 
     it('persists to storage', async () => {
-      const found = (await storageMock.getItem(STORAGE_KEY)) ?? 'ERROR';
-      expect(JSON.parse(found)).toBe(stableID);
+      expect(storageMock.data[STORAGE_KEY]).toContain(stableID);
     });
 
     it('returns the same value when queried again', async () => {
@@ -56,7 +58,7 @@ describe('StableID', () => {
     beforeAll(async () => {
       storageMock.clear();
       storageMock.data[STORAGE_KEY] = JSON.stringify(existingStableID);
-      stableID = await getStableIDFromIsolatedModule(SDK_KEY);
+      stableID = await getStableIDIgnoringInMemoryCache(SDK_KEY);
     });
 
     it('matches what is in storage', async () => {
@@ -64,20 +66,19 @@ describe('StableID', () => {
     });
 
     it('still has the same value in storage', async () => {
-      const found = (await storageMock.getItem(STORAGE_KEY)) ?? 'ERROR';
-      expect(JSON.parse(found)).toBe(existingStableID);
+      expect(storageMock.data[STORAGE_KEY]).toContain(existingStableID);
     });
 
     it('returns the same value when queried again', async () => {
-      const again = await getStableIDFromIsolatedModule(SDK_KEY);
+      const again = await getStableIDIgnoringInMemoryCache(SDK_KEY);
       expect(again).toBe(existingStableID);
     });
   });
 
   it('generates random ids', async () => {
-    const first = await getStableIDFromIsolatedModule(SDK_KEY);
+    const first = await getStableIDIgnoringInMemoryCache(SDK_KEY);
     storageMock.clear();
-    const second = await getStableIDFromIsolatedModule(SDK_KEY);
+    const second = await getStableIDIgnoringInMemoryCache(SDK_KEY);
 
     expect(first).not.toBe(second);
   });
@@ -88,8 +89,8 @@ describe('StableID', () => {
 
     beforeEach(async () => {
       storageMock.clear();
-      first = await getStableIDFromIsolatedModule('client-key-first');
-      second = await getStableIDFromIsolatedModule('client-key-second');
+      first = await getStableIDIgnoringInMemoryCache('client-key-first');
+      second = await getStableIDIgnoringInMemoryCache('client-key-second');
     });
 
     it('generates different results', async () => {

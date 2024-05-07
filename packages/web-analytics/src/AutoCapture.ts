@@ -122,10 +122,16 @@ export class AutoCapture {
   private _logPageView() {
     setTimeout(() => {
       const url = _getSafeUrl();
-      this._logAutoCaptureImmediately('page_view', _getSanitizedPageUrl(), {
-        title: _getDocumentSafe()?.title,
-        queryParams: Object.fromEntries(url.searchParams),
-      });
+
+      this._enqueueAutoCapture(
+        'page_view',
+        _getSanitizedPageUrl(),
+        {
+          title: _getDocumentSafe()?.title,
+          queryParams: Object.fromEntries(url.searchParams),
+        },
+        { flushImmediately: true, addNewSessionMetadata: true },
+      );
     }, 1);
   }
 
@@ -173,45 +179,54 @@ export class AutoCapture {
   }
 
   private _pageUnloadHandler() {
-    this._logAutoCaptureImmediately('page_view_end', _getSanitizedPageUrl(), {
-      scrollDepth: this._deepestScroll,
-      pageViewLength: Date.now() - this._startTime,
-    });
+    this._enqueueAutoCapture(
+      'page_view_end',
+      _getSanitizedPageUrl(),
+      {
+        scrollDepth: this._deepestScroll,
+        pageViewLength: Date.now() - this._startTime,
+      },
+      { flushImmediately: true },
+    );
   }
 
   private _enqueueAutoCapture(
     name: string,
     value: string,
     metadata: Record<string, unknown>,
+    options?: { flushImmediately?: boolean; addNewSessionMetadata?: boolean },
   ) {
-    this._getSessionIdFromClient()
-      .then((sessionID) => {
+    this._getSessionFromClient()
+      .then((session) => {
+        const logMetadata: Record<string, string> = {
+          sessionID: session.data.sessionID,
+          page_url: _getWindowSafe()?.location?.href ?? '',
+          ...metadata,
+        };
+
+        if (options?.addNewSessionMetadata) {
+          logMetadata['isNewSession'] = String(
+            Math.abs(session.data.startTime - Date.now()) < 1000, // within the last second
+          );
+        }
+
         const event = {
           eventName: `auto_capture::${name}`,
           value,
-          metadata: {
-            sessionID,
-            page_url: _getWindowSafe()?.location?.href ?? '',
-            ...metadata,
-          },
+          metadata: logMetadata,
         };
 
         this._client.logEvent(event);
+
+        if (options?.flushImmediately) {
+          this._client.flush().catch((e) => {
+            Log.error(e);
+          });
+        }
       })
       .catch((err) => {
         this._errorBoundary.logError('AC::enqueue', err);
       });
-  }
-
-  private _logAutoCaptureImmediately(
-    name: string,
-    value: string,
-    metadata: Record<string, unknown>,
-  ) {
-    this._enqueueAutoCapture(name, value, metadata);
-    this._client.flush().catch((e) => {
-      Log.error(e);
-    });
   }
 
   private _scrollEventHandler() {
@@ -226,8 +241,8 @@ export class AutoCapture {
     );
   }
 
-  private async _getSessionIdFromClient() {
+  private async _getSessionFromClient() {
     const x = await this._client.getAsyncContext();
-    return x.sessionID;
+    return x.session;
   }
 }

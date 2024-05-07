@@ -7,6 +7,7 @@ import {
   LayerEvaluationOptions,
 } from './EvaluationOptions';
 import { InitializeResponseWithUpdates } from './InitializeResponse';
+import { StatsigSession } from './SessionID';
 import { StatsigClientEventEmitterInterface } from './StatsigClientEventEmitter';
 import { EvaluationsDataAdapter, SpecsDataAdapter } from './StatsigDataAdapter';
 import { StatsigEvent } from './StatsigEvent';
@@ -34,7 +35,7 @@ export type CommonContext = {
 };
 
 export type AsyncCommonContext = {
-  sessionID: string;
+  session: StatsigSession;
   stableID: string;
 };
 
