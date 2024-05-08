@@ -1,7 +1,7 @@
 import './$_StatsigGlobal';
 import { Diagnostics } from './Diagnostics';
 import { Log } from './Log';
-import { NetworkParam } from './NetworkConfig';
+import { NetworkParam, NetworkPriority } from './NetworkConfig';
 import { SDKType } from './SDKType';
 import { SessionID } from './SessionID';
 import { StableID } from './StableID';
@@ -14,6 +14,7 @@ const DEFAULT_TIMEOUT_MS = 10_000;
 type RequestArgs = {
   sdkKey: string;
   url: string;
+  priority?: NetworkPriority;
   retries?: number;
   params?: Record<string, string>;
   headers?: /* Warn: Using headers leads to preflight requests */ Record<
@@ -95,15 +96,19 @@ export class NetworkCore {
     const url = await this._getPopulatedURL(args);
 
     let response: Response | null = null;
+
     try {
-      response = await fetch(url, {
+      const config: RequestInit & { priority?: NetworkPriority } = {
         method,
         body,
         headers: {
           ...args.headers,
         },
         signal: controller.signal,
-      });
+        priority: args.priority,
+      };
+
+      response = await fetch(url, config);
       clearTimeout(handle);
 
       if (!response.ok) {

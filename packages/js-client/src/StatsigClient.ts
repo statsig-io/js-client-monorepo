@@ -342,9 +342,11 @@ export default class StatsigClient
     current: DataAdapterResult | null,
     user: StatsigUser,
   ): void {
-    this.dataAdapter.getDataAsync(current, user).catch((err) => {
-      Log.error('An error occurred after update.', err);
-    });
+    this.dataAdapter
+      .getDataAsync(current, user, { priority: 'low' })
+      .catch((err) => {
+        Log.error('An error occurred after update.', err);
+      });
   }
 
   private _resetForUser(user: StatsigUser) {

@@ -2,6 +2,7 @@ import {
   InitializeResponse,
   NetworkCore,
   NetworkDefault,
+  NetworkPriority,
   StatsigClientEmitEventFunc,
   StatsigUser,
   _getOverridableUrl,
@@ -40,6 +41,7 @@ export default class StatsigNetwork extends NetworkCore {
   async fetchEvaluations(
     sdkKey: string,
     current: string | null,
+    priority?: NetworkPriority,
     user?: StatsigUser,
   ): Promise<string | null> {
     const cache = current
@@ -66,13 +68,14 @@ export default class StatsigNetwork extends NetworkCore {
       };
     }
 
-    return this._fetchEvaluations(sdkKey, cache, data);
+    return this._fetchEvaluations(sdkKey, cache, data, priority);
   }
 
   private async _fetchEvaluations(
     sdkKey: string,
     cache: InitializeResponse | null,
     data: EvaluationsFetchArgs,
+    priority?: NetworkPriority,
   ): Promise<string | null> {
     const response = await this.post({
       sdkKey,
@@ -80,6 +83,7 @@ export default class StatsigNetwork extends NetworkCore {
       data,
       retries: 2,
       isStatsigEncodable: true,
+      priority,
     });
 
     if (response?.code === 204) {
@@ -103,10 +107,15 @@ export default class StatsigNetwork extends NetworkCore {
     }
 
     // retry without deltas
-    return this._fetchEvaluations(sdkKey, cache, {
-      ...data,
-      ...result,
-      deltasResponseRequested: false,
-    });
+    return this._fetchEvaluations(
+      sdkKey,
+      cache,
+      {
+        ...data,
+        ...result,
+        deltasResponseRequested: false,
+      },
+      priority,
+    );
   }
 }

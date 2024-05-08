@@ -4,6 +4,8 @@ export const NetworkDefault = {
   specsApi: 'https://assetsconfigcdn.org/v1' as const,
 };
 
+export type NetworkPriority = 'high' | 'low' | 'auto';
+
 export enum NetworkParam {
   EventCount = 'ec',
   SdkKey = 'k',

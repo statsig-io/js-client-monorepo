@@ -77,7 +77,9 @@ export abstract class DataAdapterCore {
   ): Promise<DataAdapterResult | null> {
     const cache = current ?? this.getDataSync(user);
 
-    const ops = [this._fetchLatest(cache?.data ?? null, user)];
+    const ops = [
+      this._fetchAndPrepFromNetwork(cache?.data ?? null, user, options),
+    ];
 
     if (options?.timeoutMs) {
       ops.push(
@@ -105,13 +107,15 @@ export abstract class DataAdapterCore {
   protected abstract _fetchFromNetwork(
     current: string | null,
     user?: StatsigUser,
+    options?: DataAdapterAsyncOptions,
   ): Promise<string | null>;
 
-  private async _fetchLatest(
+  private async _fetchAndPrepFromNetwork(
     current: string | null,
     user: StatsigUser | undefined,
+    options: DataAdapterAsyncOptions | undefined,
   ): Promise<DataAdapterResult | null> {
-    const latest = await this._fetchFromNetwork(current, user);
+    const latest = await this._fetchFromNetwork(current, user, options);
 
     if (!latest) {
       Log.debug('No response returned for latest value');

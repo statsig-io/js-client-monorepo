@@ -38,7 +38,13 @@ export class StatsigSpecsDataAdapter
   protected override async _fetchFromNetwork(
     _current: string | null,
     _user?: StatsigUser,
+    options?: DataAdapterAsyncOptions,
   ): Promise<string | null> {
-    return (await this._network?.fetchConfigSpecs(this._getSdkKey())) ?? null;
+    return (
+      (await this._network?.fetchConfigSpecs(
+        this._getSdkKey(),
+        options?.priority,
+      )) ?? null
+    );
   }
 }

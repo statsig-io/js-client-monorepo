@@ -220,7 +220,7 @@ export default class StatsigOnDeviceEvalClient
   }
 
   private _runPostUpdate(current: DataAdapterResult | null): void {
-    this.dataAdapter.getDataAsync(current).catch((err) => {
+    this.dataAdapter.getDataAsync(current, { priority: 'low' }).catch((err) => {
       Log.error('An error occurred after update.', err);
     });
   }

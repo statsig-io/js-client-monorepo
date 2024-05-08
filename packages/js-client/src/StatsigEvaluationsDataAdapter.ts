@@ -42,10 +42,12 @@ export class StatsigEvaluationsDataAdapter
   protected override async _fetchFromNetwork(
     current: string | null,
     user?: StatsigUser,
+    options?: DataAdapterAsyncOptions,
   ): Promise<string | null> {
     const result = await this._network?.fetchEvaluations(
       this._getSdkKey(),
       current,
+      options?.priority,
       user,
     );
     return result ?? null;

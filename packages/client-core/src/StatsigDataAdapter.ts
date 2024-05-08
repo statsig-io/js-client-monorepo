@@ -1,3 +1,4 @@
+import { NetworkPriority } from './NetworkConfig';
 import type {
   AnyStatsigOptions,
   NetworkConfigCommon,
@@ -28,6 +29,15 @@ export type DataAdapterAsyncOptions = {
    * Note: If no timeout is given, the {@link NetworkConfigCommon.networkTimeoutMs|StatsigOptions.networkConfig.networkTimeoutMs} is used.
    */
   readonly timeoutMs?: NetworkConfigCommon['networkTimeoutMs'];
+
+  /**
+   * The priority that should be applied to the Http request that is fired.
+   *
+   * @see https://developer.mozilla.org/en-US/docs/Web/API/fetch#priority
+   *
+   * default: 'auto'
+   */
+  readonly priority?: NetworkPriority;
 };
 
 export const DataAdapterCachePrefix = 'statsig.cached';
@@ -36,9 +46,9 @@ export const DataAdapterCachePrefix = 'statsig.cached';
  * Describes a type that is used during intialize/update operations of a Statsig client.
  *
  * See below to find the default adapters, but know that it is possible to create your
- * own StatsigDataAdapter and provide it via {@link AnyStatsigOptions.dataAdapter}.
+ * own StatsigDataAdapter and provide it via `StatsigOptions.dataAdapter`.
  *
- * Defaults:
+ * defaults:
  *
  * - {@link StatsigClient} uses {@link EvaluationsDataAdapter}
  *

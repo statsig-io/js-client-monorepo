@@ -42,7 +42,7 @@ const client = new StatsigClient(
     return (
       event.name === 'values_updated' &&
       event.status === 'Loading' &&
-      event.values.source === 'NetworkNotModified'
+      event.values?.source === 'NetworkNotModified'
     );
   });
 
