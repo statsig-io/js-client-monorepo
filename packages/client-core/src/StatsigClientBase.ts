@@ -77,7 +77,7 @@ export abstract class StatsigClientBase<
     options?.overrideStableID &&
       StableID.setOverride(options.overrideStableID, sdkKey);
 
-    this._errorBoundary = new ErrorBoundary(sdkKey, emitter);
+    this._errorBoundary = new ErrorBoundary(sdkKey, options, emitter);
     this._errorBoundary.wrap(this);
     this._errorBoundary.wrap(network);
     this._errorBoundary.wrap(adapter);

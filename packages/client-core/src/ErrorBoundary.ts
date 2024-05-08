@@ -2,6 +2,7 @@ import { Log } from './Log';
 import { SDKType } from './SDKType';
 import { StatsigClientEmitEventFunc } from './StatsigClientBase';
 import { StatsigMetadataProvider } from './StatsigMetadata';
+import { AnyStatsigOptions } from './StatsigOptionsCommon';
 
 export const EXCEPTION_ENDPOINT = 'https://statsigapi.net/v1/sdk_exception';
 
@@ -10,6 +11,7 @@ export class ErrorBoundary {
 
   constructor(
     private _sdkKey: string,
+    private _options: AnyStatsigOptions | null,
     private _emitter?: StatsigClientEmitEventFunc,
   ) {}
 
@@ -65,6 +67,11 @@ export class ErrorBoundary {
         }
 
         this._seen.add(name);
+
+        if (this._options?.networkConfig?.preventAllNetworkTraffic) {
+          this._emitter?.({ name: 'error', error });
+          return;
+        }
 
         const sdkType = SDKType._get(this._sdkKey);
         const statsigMetadata = StatsigMetadataProvider.get();

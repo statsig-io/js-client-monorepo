@@ -86,6 +86,10 @@ export class NetworkCore {
       return null;
     }
 
+    if (this._options?.networkConfig?.preventAllNetworkTraffic) {
+      return null;
+    }
+
     const { method, body, retries } = args;
 
     const controller = new AbortController();

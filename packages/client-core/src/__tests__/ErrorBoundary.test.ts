@@ -14,7 +14,7 @@ describe('Error Boundary', () => {
 
   beforeAll(() => {
     fetchMock.enableMocks();
-    eb = new ErrorBoundary('client-key');
+    eb = new ErrorBoundary('client-key', null);
 
     Log.level = LogLevel.None;
   });

@@ -1,4 +1,3 @@
-import { ErrorBoundary } from './ErrorBoundary';
 import { Log } from './Log';
 import {
   DataAdapterAsyncOptions,
@@ -17,8 +16,6 @@ import { typedJsonParse } from './TypedJsonParse';
 const CACHE_LIMIT = 10;
 
 export abstract class DataAdapterCore {
-  protected _errorBoundary: ErrorBoundary | null = null;
-
   private _sdkKey: string | null = null;
   private _inMemoryCache: Record<string, DataAdapterResult> = {};
   private _lastModifiedStoreKey: string;
@@ -32,7 +29,6 @@ export abstract class DataAdapterCore {
 
   attach(sdkKey: string, _options: AnyStatsigOptions | null): void {
     this._sdkKey = sdkKey;
-    this._errorBoundary = new ErrorBoundary(sdkKey);
   }
 
   getDataSync(user?: StatsigUser | undefined): DataAdapterResult | null {

@@ -44,6 +44,11 @@ export type NetworkConfigCommon = {
    * default: `10,000 ms` (10 seconds)
    */
   networkTimeoutMs?: number;
+
+  /**
+   * Intended for testing purposes. Prevents any network requests being made.
+   */
+  preventAllNetworkTraffic?: boolean;
 };
 
 /** Options for configuring a Statsig client. */
