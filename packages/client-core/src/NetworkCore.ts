@@ -3,6 +3,7 @@ import { Diagnostics } from './Diagnostics';
 import { Log } from './Log';
 import { NetworkParam, NetworkPriority } from './NetworkConfig';
 import { SDKType } from './SDKType';
+import { _getWindowSafe } from './SafeJs';
 import { SessionID } from './SessionID';
 import { StableID } from './StableID';
 import { StatsigClientEmitEventFunc } from './StatsigClientBase';
@@ -187,22 +188,27 @@ export class NetworkCore {
     args: RequestArgsWithData,
     input: string,
   ): string {
+    const win = _getWindowSafe();
     if (
+      !win?.btoa ||
       __STATSIG__?.['no-encode'] != null ||
       this._options?.disableStatsigEncoding ||
-      !args.isStatsigEncodable ||
-      typeof window === 'undefined' ||
-      !window.btoa
+      !args.isStatsigEncodable
     ) {
       return input;
     }
 
-    args.params = {
-      ...(args.params ?? {}),
-      [NetworkParam.StatsigEncoded]: '1',
-    };
-
-    return window.btoa(input).split('').reverse().join('') ?? input;
+    try {
+      const result = win.btoa(input).split('').reverse().join('') ?? input;
+      args.params = {
+        ...(args.params ?? {}),
+        [NetworkParam.StatsigEncoded]: '1',
+      };
+      return result;
+    } catch {
+      Log.warn('/initialize request encoding failed');
+      return input;
+    }
   }
 }
 

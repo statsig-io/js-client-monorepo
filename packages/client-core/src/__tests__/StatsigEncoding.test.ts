@@ -84,4 +84,62 @@ describe('Statsig Encoding', () => {
       expect(String(r?.body)).toContain('"key":"value"');
     });
   });
+
+  describe('window.btoa failures', () => {
+    beforeAll(async () => {
+      fetchMock.mockClear();
+    });
+
+    describe('when btoa throws', () => {
+      beforeAll(async () => {
+        window.btoa = () => {
+          throw '';
+        };
+
+        await network.post({
+          url,
+          data: { key: 'value' },
+          sdkKey,
+          isStatsigEncodable: true,
+        });
+      });
+
+      it('does not set the "se" header', async () => {
+        const [u] = fetchMock.mock.calls[0];
+        const params = new URLSearchParams(String(u));
+
+        expect(params.get('se')).toBeNull();
+      });
+
+      it('does not encode the body', async () => {
+        const actual = String(fetchMock.mock.calls[0]?.[1]?.body ?? '');
+        expect(actual).toContain('"key":"value"');
+      });
+    });
+
+    describe('when btoa is undefined', () => {
+      beforeAll(async () => {
+        (window as any).btoa = undefined;
+
+        await network.post({
+          url,
+          data: { key: 'value' },
+          sdkKey,
+          isStatsigEncodable: true,
+        });
+      });
+
+      it('does not set the "se" header', async () => {
+        const [u] = fetchMock.mock.calls[0];
+        const params = new URLSearchParams(String(u));
+
+        expect(params.get('se')).toBeNull();
+      });
+
+      it('does not encode the body', async () => {
+        const actual = String(fetchMock.mock.calls[0]?.[1]?.body ?? '');
+        expect(actual).toContain('"key":"value"');
+      });
+    });
+  });
 });
