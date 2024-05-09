@@ -41,7 +41,8 @@ class StatsigPostProcessPlugin {
 
           const hoistedFunctions = [
             'var $Q=(e)=>Object.defineProperty(e,"__esModule",{value:!0});',
-            'var $P = (a,b) => Object.assign(a,b);',
+            'var $P=(a,b)=>Object.assign(a,b);',
+            'var $A=() =>((t,r,u,l)=>{return new(u=u||Promise)(function(n,e){function i(t){try{s(l.next(t))}catch(t){e(t)}}function o(t){try{s(l.throw(t))}catch(t){e(t)}}function s(t){var e;t.done?n(t.value):((e=t.value)instanceof u?e:new u(function(t){t(e)})).then(i,o)}s((l=l.apply(t,r||[])).next())})});',
           ].join('');
 
           const sourceUsingHositedFunctions = parts[tailIndex]
@@ -51,7 +52,12 @@ class StatsigPostProcessPlugin {
               '$Q(e)',
             )
             // Object.assign replace
-            .replaceAll('Object.assign(', '$P(');
+            .replaceAll('Object.assign(', '$P(')
+            // this.__awaiter constructor
+            .replaceAll(
+              'function(t,r,u,l){return new(u=u||Promise)(function(n,e){function i(t){try{o(l.next(t))}catch(t){e(t)}}function s(t){try{o(l.throw(t))}catch(t){e(t)}}function o(t){var e;t.done?n(t.value):((e=t.value)instanceof u?e:new u(function(t){t(e)})).then(i,s)}o((l=l.apply(t,r||[])).next())})};',
+              '$A();',
+            );
 
           parts[tailIndex] =
             `${hoistedFunctions}${sourceUsingHositedFunctions}`;
