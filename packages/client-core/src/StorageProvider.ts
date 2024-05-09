@@ -17,24 +17,26 @@ type StorageProviderManagment = {
 
 const inMemoryStore: Record<string, string> = {};
 
+const _resolve = <T>(input?: unknown) => Promise.resolve<T>(input as T);
+
 const _inMemoryProvider: StorageProvider = {
   _getProviderName: () => 'InMemory',
   _getItemSync(key: string): string | null {
     return inMemoryStore[key] ?? null;
   },
   _getItem(key: string): Promise<string | null> {
-    return Promise.resolve(inMemoryStore[key] ?? null);
+    return _resolve(inMemoryStore[key] ?? null);
   },
   _setItem(key: string, value: string): Promise<void> {
     inMemoryStore[key] = value;
-    return Promise.resolve();
+    return _resolve();
   },
   _removeItem(key: string): Promise<void> {
     delete inMemoryStore[key];
-    return Promise.resolve();
+    return _resolve();
   },
   _getAllKeys(): Promise<readonly string[]> {
-    return Promise.resolve(Object.keys(inMemoryStore));
+    return _resolve(Object.keys(inMemoryStore));
   },
 };
 
@@ -47,19 +49,19 @@ try {
         return localStorage.getItem(key);
       },
       _getItem(key: string): Promise<string | null> {
-        return Promise.resolve(localStorage.getItem(key));
+        return _resolve(localStorage.getItem(key));
       },
       _setItem(key: string, value: string): Promise<void> {
         localStorage.setItem(key, value);
-        return Promise.resolve();
+        return _resolve();
       },
       _removeItem(key: string): Promise<void> {
         localStorage.removeItem(key);
-        return Promise.resolve();
+        return _resolve();
       },
       _getAllKeys(): Promise<string[]> {
         const keys = Object.keys(localStorage);
-        return Promise.resolve(keys);
+        return _resolve(keys);
       },
     };
   }
