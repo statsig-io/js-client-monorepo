@@ -42,22 +42,22 @@ class StatsigPostProcessPlugin {
           const hoistedFunctions = [
             'var $Q=(e)=>Object.defineProperty(e,"__esModule",{value:!0});',
             'var $P=(a,b)=>Object.assign(a,b);',
-            'var $A=() =>((t,r,u,l)=>{return new(u=u||Promise)(function(n,e){function i(t){try{s(l.next(t))}catch(t){e(t)}}function o(t){try{s(l.throw(t))}catch(t){e(t)}}function s(t){var e;t.done?n(t.value):((e=t.value)instanceof u?e:new u(function(t){t(e)})).then(i,o)}s((l=l.apply(t,r||[])).next())})});',
+            'var $A=()=>((t,r,u,l)=>{return new(u=u||Promise)(function(n,e){function i(t){try{s(l.next(t))}catch(t){e(t)}}function o(t){try{s(l.throw(t))}catch(t){e(t)}}function s(t){var e;t.done?n(t.value):((e=t.value)instanceof u?e:new u(function(t){t(e)})).then(i,o)}s((l=l.apply(t,r||[])).next())})});',
           ].join('');
 
-          const sourceUsingHositedFunctions = parts[tailIndex]
+          let sourceUsingHositedFunctions = parts[tailIndex]
             // __esModule replace
             .replaceAll(
               'Object.defineProperty(e,"__esModule",{value:!0})',
               '$Q(e)',
             )
             // Object.assign replace
-            .replaceAll('Object.assign(', '$P(')
-            // this.__awaiter constructor
-            .replaceAll(
-              'function(t,r,u,l){return new(u=u||Promise)(function(n,e){function i(t){try{o(l.next(t))}catch(t){e(t)}}function s(t){try{o(l.throw(t))}catch(t){e(t)}}function o(t){var e;t.done?n(t.value):((e=t.value)instanceof u?e:new u(function(t){t(e)})).then(i,s)}o((l=l.apply(t,r||[])).next())})};',
-              '$A();',
-            );
+            .replaceAll('Object.assign(', '$P(');
+
+          // const res = _replaceAwaiters(source + '');
+          sourceUsingHositedFunctions = _replaceAwaiters(
+            sourceUsingHositedFunctions,
+          );
 
           parts[tailIndex] =
             `${hoistedFunctions}${sourceUsingHositedFunctions}`;
@@ -162,3 +162,19 @@ function createStatsigWebpackBundle({
 module.exports = {
   createStatsigWebpackBundle,
 };
+
+function _replaceAwaiters(input) {
+  const pattern = /this\.__awaiter\|\|function\((.*?)\[\]\)\).next\(\)\)\}\)\}/;
+  const len =
+    'this.__awaiter||function(t,o,l,u){return new(l=l||Promise)(function(i,e){function n(t){try{r(u.next(t))}catch(t){e(t)}}function s(t){try{r(u.throw(t))}catch(t){e(t)}}function r(t){var e;t.done?i(t.value):((e=t.value)instanceof l?e:new l(function(t){t(e)})).then(n,s)}r((u=u.apply(t,o||[])).next())})}'
+      .length;
+
+  const matches = input.match(pattern);
+  for (let i = 0; i < matches.length; i++) {
+    if (matches[i].length == len) {
+      return input.replaceAll(matches[i], 'this.__awaiter||$A()');
+    }
+  }
+
+  throw "[Statsig Build]: Failed to find valid '__awaiters' to replace";
+}
