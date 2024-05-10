@@ -1,7 +1,7 @@
 import './$_StatsigGlobal';
 import { Diagnostics } from './Diagnostics';
 import { Log } from './Log';
-import { NetworkParam, NetworkPriority } from './NetworkConfig';
+import { NetworkArgs, NetworkParam, NetworkPriority } from './NetworkConfig';
 import { SDKType } from './SDKType';
 import { _getWindowSafe } from './SafeJs';
 import { SessionID } from './SessionID';
@@ -103,7 +103,7 @@ export class NetworkCore {
     let response: Response | null = null;
 
     try {
-      const config: RequestInit & { priority?: NetworkPriority } = {
+      const config: NetworkArgs = {
         method,
         body,
         headers: {
@@ -111,9 +111,11 @@ export class NetworkCore {
         },
         signal: controller.signal,
         priority: args.priority,
+        keepalive: true,
       };
 
-      response = await fetch(url, config);
+      const func = this._options?.networkConfig?.networkOverrideFunc ?? fetch;
+      response = await func(url, config);
       clearTimeout(handle);
 
       if (!response.ok) {
@@ -239,5 +241,5 @@ function _getErrorMessage(
     return `${error.name}: ${error.message}`;
   }
 
-  return null;
+  return 'Unknown Error';
 }

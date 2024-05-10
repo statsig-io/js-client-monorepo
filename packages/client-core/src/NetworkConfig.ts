@@ -6,6 +6,10 @@ export const NetworkDefault = {
 
 export type NetworkPriority = 'high' | 'low' | 'auto';
 
+export type NetworkArgs = RequestInit & {
+  priority?: NetworkPriority;
+};
+
 export enum NetworkParam {
   EventCount = 'ec',
   SdkKey = 'k',

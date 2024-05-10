@@ -83,7 +83,8 @@ export class ErrorBoundary {
           ...{ ...statsigMetadata, sdkType },
         });
 
-        await fetch(EXCEPTION_ENDPOINT, {
+        const func = this._options?.networkConfig?.networkOverrideFunc ?? fetch;
+        await func(EXCEPTION_ENDPOINT, {
           method: 'POST',
           headers: {
             'STATSIG-API-KEY': this._sdkKey,

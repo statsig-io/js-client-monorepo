@@ -1,4 +1,5 @@
 import { LogLevel } from './Log';
+import { NetworkArgs } from './NetworkConfig';
 import { OverrideAdapter } from './OverrideAdapter';
 
 /** Options that can be set at init and updated during runtime. */
@@ -49,6 +50,19 @@ export type NetworkConfigCommon = {
    * Intended for testing purposes. Prevents any network requests being made.
    */
   preventAllNetworkTraffic?: boolean;
+
+  /**
+   * Overrides the default networking layer used by the Statsig client.
+   * By default, the client use `fetch`, but overriding this
+   * you could use `axios` or raw `XMLHttpRequest`
+   *
+   * default: `Fetch API`
+   *
+   * @param {string} url Where the request is going.
+   * @param {NetworkArgs} args Configuration for the network request.
+   * @returns {Response}
+   */
+  networkOverrideFunc?: (url: string, args: NetworkArgs) => Promise<Response>;
 };
 
 /** Options for configuring a Statsig client. */

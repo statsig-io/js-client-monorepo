@@ -208,12 +208,16 @@ export class EventLogger {
     }
 
     try {
-      const isInForeground = _isCurrentlyVisible();
+      const isInBackground = !_isCurrentlyVisible();
 
-      const response =
-        !isInForeground && this._network.isBeaconSupported()
-          ? await this._sendEventsViaBeacon(events)
-          : await this._sendEventsViaPost(events);
+      const shouldUseBeacon =
+        isInBackground &&
+        this._network.isBeaconSupported() &&
+        this._options?.networkConfig?.networkOverrideFunc == null;
+
+      const response = shouldUseBeacon
+        ? await this._sendEventsViaBeacon(events)
+        : await this._sendEventsViaPost(events);
 
       if (response.success) {
         this._emitter({
