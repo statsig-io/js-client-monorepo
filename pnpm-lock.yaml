@@ -327,97 +327,97 @@ importers:
   packages/combo:
     dependencies:
       '@statsig/client-core':
-        specifier: 0.0.1-beta.39
+        specifier: 0.0.1-beta.40
         version: link:../client-core
       '@statsig/js-client':
-        specifier: 0.0.1-beta.39
+        specifier: 0.0.1-beta.40
         version: link:../js-client
       '@statsig/js-local-overrides':
-        specifier: 0.0.1-beta.39
+        specifier: 0.0.1-beta.40
         version: link:../js-local-overrides
       '@statsig/js-on-device-eval-client':
-        specifier: 0.0.1-beta.39
+        specifier: 0.0.1-beta.40
         version: link:../js-on-device-eval-client
       '@statsig/js-user-persisted-storage':
-        specifier: 0.0.1-beta.39
+        specifier: 0.0.1-beta.40
         version: link:../js-user-persisted-storage
       '@statsig/session-replay':
-        specifier: 0.0.1-beta.39
+        specifier: 0.0.1-beta.40
         version: link:../session-replay
       '@statsig/web-analytics':
-        specifier: 0.0.1-beta.39
+        specifier: 0.0.1-beta.40
         version: link:../web-analytics
 
   packages/expo-bindings:
     dependencies:
       '@statsig/client-core':
-        specifier: 0.0.1-beta.39
+        specifier: 0.0.1-beta.40
         version: link:../client-core
       '@statsig/react-bindings':
-        specifier: 0.0.1-beta.39
+        specifier: 0.0.1-beta.40
         version: link:../react-bindings
       '@statsig/react-native-core':
-        specifier: 0.0.1-beta.39
+        specifier: 0.0.1-beta.40
         version: link:../react-native-core
 
   packages/js-client:
     dependencies:
       '@statsig/client-core':
-        specifier: 0.0.1-beta.39
+        specifier: 0.0.1-beta.40
         version: link:../client-core
 
   packages/js-local-overrides:
     dependencies:
       '@statsig/client-core':
-        specifier: 0.0.1-beta.39
+        specifier: 0.0.1-beta.40
         version: link:../client-core
 
   packages/js-on-device-eval-client:
     dependencies:
       '@statsig/client-core':
-        specifier: 0.0.1-beta.39
+        specifier: 0.0.1-beta.40
         version: link:../client-core
       '@statsig/sha256':
-        specifier: 0.0.1-beta.39
+        specifier: 0.0.1-beta.40
         version: link:../sha256
 
   packages/js-user-persisted-storage:
     dependencies:
       '@statsig/client-core':
-        specifier: 0.0.1-beta.39
+        specifier: 0.0.1-beta.40
         version: link:../client-core
 
   packages/react-bindings:
     dependencies:
       '@statsig/client-core':
-        specifier: 0.0.1-beta.39
+        specifier: 0.0.1-beta.40
         version: link:../client-core
 
   packages/react-native-bindings:
     dependencies:
       '@statsig/client-core':
-        specifier: 0.0.1-beta.39
+        specifier: 0.0.1-beta.40
         version: link:../client-core
       '@statsig/react-bindings':
-        specifier: 0.0.1-beta.39
+        specifier: 0.0.1-beta.40
         version: link:../react-bindings
       '@statsig/react-native-core':
-        specifier: 0.0.1-beta.39
+        specifier: 0.0.1-beta.40
         version: link:../react-native-core
 
   packages/react-native-core:
     dependencies:
       '@statsig/client-core':
-        specifier: 0.0.1-beta.39
+        specifier: 0.0.1-beta.40
         version: link:../client-core
       '@statsig/react-bindings':
-        specifier: 0.0.1-beta.39
+        specifier: 0.0.1-beta.40
         version: link:../react-bindings
 
   packages/session-replay:
     dependencies:
       '@statsig/client-core':
-        specifier: 0.0.1-beta.39
+        specifier: 0.0.1-beta.40
         version: link:../client-core
       rrweb:
         specifier: 2.0.0-alpha.12
@@ -442,10 +442,10 @@ importers:
   packages/web-analytics:
     dependencies:
       '@statsig/client-core':
-        specifier: 0.0.1-beta.39
+        specifier: 0.0.1-beta.40
         version: link:../client-core
       '@statsig/js-client':
-        specifier: 0.0.1-beta.39
+        specifier: 0.0.1-beta.40
         version: link:../js-client
 
 packages:
@@ -9056,11 +9056,13 @@ packages:
       clean-stack: 2.2.0
       indent-string: 4.0.0
 
-  /ajv-formats@2.1.1:
+  /ajv-formats@2.1.1(ajv@8.12.0):
     resolution:
       {
         integrity: sha512-Wx0Kx52hxE7C18hkMEggYlEifqWZtYaRgouJor+WMdPnQyEK13vgEWyVNup7SoeeoLMsr4kf5h6dOW11I15MUA==,
       }
+    peerDependencies:
+      ajv: ^8.0.0
     peerDependenciesMeta:
       ajv:
         optional: true
@@ -21533,7 +21535,7 @@ packages:
     dependencies:
       '@types/json-schema': 7.0.15
       ajv: 8.12.0
-      ajv-formats: 2.1.1
+      ajv-formats: 2.1.1(ajv@8.12.0)
       ajv-keywords: 5.1.0(ajv@8.12.0)
     dev: true
 
