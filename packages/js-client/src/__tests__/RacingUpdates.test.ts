@@ -4,6 +4,7 @@ import {
   MockLocalStorage,
   TestPromise,
   getInitializeResponseWithConfigValue,
+  skipFrame,
 } from 'statsig-test-helpers';
 
 import StatsigClient from '../StatsigClient';
@@ -67,7 +68,7 @@ describe('Racing Updates', () => {
       secondReqPromise.resolve(SECOND_RESPONSE());
       firstReqPromise.resolve(FIRST_RESPONSE());
 
-      await new Promise((r) => setTimeout(r, 1)); // Next Loop
+      await skipFrame();
     });
 
     it('correctly returns the second value', () => {
@@ -87,7 +88,7 @@ describe('Racing Updates', () => {
       firstReqPromise.resolve(FIRST_RESPONSE());
       secondReqPromise.resolve(SECOND_RESPONSE());
 
-      await new Promise((r) => setTimeout(r, 1)); // Next Loop
+      await skipFrame();
     });
 
     it('correctly returns the second value', () => {

@@ -28,7 +28,7 @@ import {
   _makeDynamicConfig,
   _makeFeatureGate,
   _makeLayer,
-  normalizeUser,
+  _normalizeUser,
 } from '@statsig/client-core';
 
 import Evaluator from './Evaluator';
@@ -143,7 +143,7 @@ export default class StatsigOnDeviceEvalClient
     user: StatsigUser,
     options?: FeatureGateEvaluationOptions,
   ): FeatureGate {
-    user = normalizeUser(user, this._options.environment);
+    user = _normalizeUser(user, this._options.environment);
     const { evaluation, details } = this._evaluator.evaluateGate(name, user);
 
     const gate = _makeFeatureGate(name, details, evaluation);
@@ -185,7 +185,7 @@ export default class StatsigOnDeviceEvalClient
     user: StatsigUser,
     options?: LayerEvaluationOptions,
   ): Layer {
-    user = normalizeUser(user, this._options.environment);
+    user = _normalizeUser(user, this._options.environment);
     const { evaluation, details } = this._evaluator.evaluateLayer(name, user);
 
     const layer = _makeLayer(name, details, evaluation, (param: string) => {
@@ -231,7 +231,7 @@ export default class StatsigOnDeviceEvalClient
     user: StatsigUser,
     opts?: DynamicConfigEvaluationOptions | ExperimentEvaluationOptions,
   ): DynamicConfig {
-    user = normalizeUser(user, this._options.environment);
+    user = _normalizeUser(user, this._options.environment);
     const { evaluation, details } = this._evaluator.evaluateConfig(name, user);
     const config = _makeDynamicConfig(name, details, evaluation);
 

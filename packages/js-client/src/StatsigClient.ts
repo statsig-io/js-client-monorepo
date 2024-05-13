@@ -29,7 +29,7 @@ import {
   _makeFeatureGate,
   _makeLayer,
   _mergeOverride,
-  normalizeUser,
+  _normalizeUser,
 } from '@statsig/client-core';
 
 import EvaluationStore from './EvaluationStore';
@@ -310,6 +310,7 @@ export default class StatsigClient
         );
       },
     );
+
     this.$emt({ name: 'layer_evaluation', layer: result });
     return result;
   }
@@ -353,7 +354,7 @@ export default class StatsigClient
     this._logger.reset();
     this._store.reset();
 
-    this._user = normalizeUser(user, this._options.environment);
+    this._user = _normalizeUser(user, this._options.environment);
   }
 
   private _getConfigImpl(

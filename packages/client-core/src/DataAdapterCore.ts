@@ -5,7 +5,7 @@ import {
   DataAdapterResult,
 } from './StatsigDataAdapter';
 import { AnyStatsigOptions } from './StatsigOptionsCommon';
-import { StatsigUser, getUserStorageKey } from './StatsigUser';
+import { StatsigUser, _normalizeUser, getUserStorageKey } from './StatsigUser';
 import {
   Storage,
   _getObjectFromStorage,
@@ -19,6 +19,7 @@ export abstract class DataAdapterCore {
   private _sdkKey: string | null = null;
   private _inMemoryCache: Record<string, DataAdapterResult> = {};
   private _lastModifiedStoreKey: string;
+  private _options: AnyStatsigOptions | null = null;
 
   protected constructor(
     private _adapterName: string,
@@ -27,8 +28,9 @@ export abstract class DataAdapterCore {
     this._lastModifiedStoreKey = `statsig.last_modified_time.${_cacheSuffix}`;
   }
 
-  attach(sdkKey: string, _options: AnyStatsigOptions | null): void {
+  attach(sdkKey: string, options: AnyStatsigOptions | null): void {
     this._sdkKey = sdkKey;
+    this._options = options;
   }
 
   getDataSync(user?: StatsigUser | undefined): DataAdapterResult | null {
@@ -49,7 +51,8 @@ export abstract class DataAdapterCore {
   }
 
   setData(data: string, user?: StatsigUser): void {
-    const cacheKey = this._getCacheKey(user);
+    const normalized = user && _normalizeUser(user, this._options?.environment);
+    const cacheKey = this._getCacheKey(normalized);
     this._addToInMemoryCache(cacheKey, {
       source: 'Bootstrap',
       data,

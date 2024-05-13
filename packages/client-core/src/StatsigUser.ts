@@ -25,7 +25,7 @@ export type StatsigUserInternal = StatsigUser & {
   statsigEnvironment?: StatsigEnvironment;
 };
 
-export function normalizeUser(
+export function _normalizeUser(
   original: StatsigUser,
   environment?: StatsigEnvironment,
 ): StatsigUser {

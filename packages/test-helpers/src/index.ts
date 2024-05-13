@@ -19,10 +19,12 @@ const noop = (..._args: unknown[]): void => {
 
 const nullthrows = <T>(input: T | undefined | null): T => {
   if (input == null) {
-    throw '[Statsig Test]: Unexpected null value';
+    throw "[Statsig Test]: 'nullthrows' method encountered a null value";
   }
   return input;
 };
+
+const skipFrame = (): Promise<void> => new Promise((r) => setTimeout(r, 1));
 
 export {
   InitResponse,
@@ -33,4 +35,5 @@ export {
   getInitializeResponseWithConfigValue,
   noop,
   nullthrows,
+  skipFrame,
 };

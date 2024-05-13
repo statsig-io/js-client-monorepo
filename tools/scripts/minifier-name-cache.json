@@ -157,7 +157,8 @@
       "$_stopFn": "ui",
       "$_subscribeToVisibilityChanged": "li",
       "$_getSessionFromClient": "tn",
-      "$_fetchAndPrepFromNetwork": "en"
+      "$_fetchAndPrepFromNetwork": "en",
+      "$_normalizeUser": "nn"
     }
   }
 }
