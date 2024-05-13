@@ -1,6 +1,6 @@
 import { MockLocalStorage } from 'statsig-test-helpers';
 
-import { DJB2 } from '../Hashing';
+import { _getStorageKey } from '../CacheKey';
 import { StableID } from '../StableID';
 
 const UUID_V4_REGEX =
@@ -19,7 +19,7 @@ async function getStableIDIgnoringInMemoryCache(
 }
 
 const SDK_KEY = 'client-sdk-key';
-const STORAGE_KEY = `statsig.stable_id.${DJB2(SDK_KEY)}`;
+const STORAGE_KEY = `statsig.stable_id.${_getStorageKey(SDK_KEY)}`;
 
 describe('StableID', () => {
   let storageMock: MockLocalStorage;

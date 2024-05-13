@@ -158,7 +158,8 @@
       "$_subscribeToVisibilityChanged": "li",
       "$_getSessionFromClient": "tn",
       "$_fetchAndPrepFromNetwork": "en",
-      "$_normalizeUser": "nn"
+      "$_normalizeUser": "nn",
+      "$_getUserStorageKey": "ai"
     }
   }
 }

@@ -1,59 +1,68 @@
-import { StatsigUser, getUserStorageKey } from '../StatsigUser';
+import { _getUserStorageKey } from '../CacheKey';
+import { StatsigUser } from '../StatsigUser';
 
 const IDENTICAL_USERS: [string, StatsigUser][] = Object.entries({
-  one: {
-    custom: { arr: ['1', '2', '3'], str: 'bar' },
+  user_id_first: {
+    userID: 'a-user',
     customIDs: { a: '1', b: '2' },
-    email: 'foo',
-    privateAttributes: { num: 1, arr: [], bool: false },
   },
-  two: {
+  custom_ids_first: {
     customIDs: { a: '1', b: '2' },
-    email: 'foo',
-    custom: { str: 'bar', arr: ['1', '2', '3'] },
-    privateAttributes: { bool: false, arr: [], num: 1 },
+    userID: 'a-user',
   },
-  three: {
+  custom_ids_unordered: {
+    userID: 'a-user',
     customIDs: { b: '2', a: '1' },
-    custom: { str: 'bar', arr: ['1', '2', '3'] },
-    email: 'foo',
-    privateAttributes: { num: 1, bool: false, arr: [] },
+  },
+  with_addtional_info: {
+    userID: 'a-user',
+    customIDs: { a: '1', b: '2' },
+
+    // all below fields are not included in cache key
+    email: 'foo@bar.com',
+    ip: '1.2.3.4',
+    userAgent: 'Chrome v35',
+    country: 'NZ',
+    locale: 'en_NZ',
+    appVersion: '3.2.1',
+    custom: { is_cool: true },
+    privateAttributes: { shhh: '1' },
   },
 });
 
 const UNIQUE_USERS = Object.entries({
-  one: {
+  custom_ids_only: {
     customIDs: { a: '1', b: '2' },
   },
-  two: {
+  custom_ids_only_alt: {
+    customIDs: { a: '1', b: '3' },
+  },
+  custom_ids_only_parital: {
+    customIDs: { a: '1' },
+  },
+  user_id_only: {
     userID: 'a-user',
   },
-  three: {
-    customIDs: { b: '2', a: '1' },
-    email: 'foo',
-  },
-  four: {
+  user_id_only_alt: {
     userID: 'b-user',
   },
-  five: {
-    userID: 'b-user',
-    email: 'b@user.com',
+  user_id_and_custom_ids: {
+    userID: 'a-user',
+    customIDs: { a: '1' },
   },
-  six: {
-    userID: 'b-user',
-    email: 'b@user.com',
+  user_id_in_custom_ids: {
+    userID: 'a-user',
     customIDs: { userID: 'a-user' },
-    custom: {},
   },
 }) as unknown as [string, StatsigUser][];
 
 const SDK_KEY = 'client-key';
 
-describe('User Stroage Key', () => {
+describe('User Storage Key', () => {
   describe.each(IDENTICAL_USERS)('Identical Users', (title, left) => {
     test.each(IDENTICAL_USERS)(`${title} vs %s`, (_t, right) => {
-      const lKey = getUserStorageKey(SDK_KEY, left);
-      const rKey = getUserStorageKey(SDK_KEY, right);
+      const lKey = _getUserStorageKey(SDK_KEY, left);
+      const rKey = _getUserStorageKey(SDK_KEY, right);
       expect(lKey).toBe(rKey);
     });
   });
@@ -61,8 +70,8 @@ describe('User Stroage Key', () => {
   describe.each(UNIQUE_USERS)('Different Users', (lTitle, left) => {
     describe.each(UNIQUE_USERS)('', (rTitle, right) => {
       (rTitle === lTitle ? it.skip : it)(`${lTitle} vs ${rTitle}`, () => {
-        const lKey = getUserStorageKey(SDK_KEY, left);
-        const rKey = getUserStorageKey(SDK_KEY, right);
+        const lKey = _getUserStorageKey(SDK_KEY, left);
+        const rKey = _getUserStorageKey(SDK_KEY, right);
         expect(lKey).not.toBe(rKey);
       });
     });

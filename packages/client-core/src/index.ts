@@ -8,6 +8,7 @@ import { Storage } from './StorageProvider';
 import { getUUID } from './UUID';
 
 export * from './$_StatsigGlobal';
+export * from './CacheKey';
 export * from './ClientInterfaces';
 export * from './DataAdapterCore';
 export * from './DownloadConfigSpecsResponse';

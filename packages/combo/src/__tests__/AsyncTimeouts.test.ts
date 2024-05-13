@@ -8,7 +8,7 @@ import {
   getInitializeResponseWithConfigValue,
 } from 'statsig-test-helpers';
 
-import { StatsigGlobal } from '@statsig/client-core';
+import { StatsigGlobal, _getStorageKey } from '@statsig/client-core';
 import { StatsigClient } from '@statsig/js-client';
 import { StatsigOnDeviceEvalClient } from '@statsig/js-on-device-eval-client';
 
@@ -23,6 +23,8 @@ const DCS_RESPONSE = () =>
   });
 
 describe('Async Timeouts', () => {
+  const onDeviceCacheKey = _getStorageKey('client-key');
+
   let resolver: TestPromise<Response>;
   let storage: MockLocalStorage;
 
@@ -54,7 +56,9 @@ describe('Async Timeouts', () => {
     });
 
     it('does not write anything to cache', () => {
-      expect(storage.data['statsig.cached.specs.3615093622']).toBeUndefined();
+      expect(
+        storage.data['statsig.cached.specs.' + onDeviceCacheKey],
+      ).toBeUndefined();
     });
 
     describe('then the network comes back', () => {
@@ -69,9 +73,9 @@ describe('Async Timeouts', () => {
       });
 
       it('writes the values to cache for the next update', () => {
-        expect(storage.data['statsig.cached.specs.3615093622']).toEqual(
-          anyString(),
-        );
+        expect(
+          storage.data['statsig.cached.specs.' + onDeviceCacheKey],
+        ).toEqual(anyString());
       });
 
       describe('then we update and timeout again', () => {
@@ -97,7 +101,11 @@ describe('Async Timeouts', () => {
       __STATSIG__ = {} as StatsigGlobal;
       resetResolver();
 
-      client = new StatsigClient('client-key', {});
+      client = new StatsigClient(
+        'client-key',
+        {},
+        { customUserCacheKeyFunc: () => 'my-custom-cache' },
+      );
       await client.updateUserAsync({ userID: 'a-user' }, { timeoutMs: 1 });
     });
 
@@ -109,7 +117,7 @@ describe('Async Timeouts', () => {
 
     it('does not write anything to cache', () => {
       expect(
-        storage.data['statsig.cached.evaluations.2442570830'],
+        storage.data['statsig.cached.evaluations.my-custom-cache'],
       ).toBeUndefined();
     });
 
@@ -125,9 +133,9 @@ describe('Async Timeouts', () => {
       });
 
       it('writes the values to cache for the next update', () => {
-        expect(storage.data['statsig.cached.evaluations.2442570830']).toEqual(
-          anyString(),
-        );
+        expect(
+          storage.data['statsig.cached.evaluations.my-custom-cache'],
+        ).toEqual(anyString());
       });
     });
   });

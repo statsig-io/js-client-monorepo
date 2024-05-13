@@ -14,7 +14,7 @@ describe('Network Override', () => {
 
   const setup = async (enabled: boolean) => {
     customNetworkFunc = jest.fn().mockImplementation(() => {
-      return Promise.resolve({});
+      return Promise.resolve(new Response());
     });
 
     navigator.sendBeacon = jest.fn();

@@ -1,4 +1,3 @@
-import { DJB2Object } from './Hashing';
 import type { StatsigEnvironment } from './StatsigOptionsCommon';
 
 type StatsigUserPrimitives =
@@ -40,10 +39,6 @@ export function _normalizeUser(
   } catch (error) {
     throw new Error('User object must be convertable to JSON string.');
   }
-}
-
-export function getUserStorageKey(sdkKey: string, user?: StatsigUser): string {
-  return DJB2Object({ sdkKey, user });
 }
 
 export function getUnitIDFromUser(

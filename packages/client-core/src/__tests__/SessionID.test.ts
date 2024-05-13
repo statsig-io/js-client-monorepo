@@ -6,8 +6,8 @@ import {
 } from 'statsig-test-helpers';
 
 import '../$_StatsigGlobal';
+import { _getStorageKey } from '../CacheKey';
 import { PrecomputedEvaluationsInterface } from '../ClientInterfaces';
-import { DJB2 } from '../Hashing';
 import { SessionID } from '../SessionID';
 import { Storage } from '../StorageProvider';
 
@@ -29,7 +29,7 @@ async function getSessionIDIgnoringInMemoryCache(
   return result ?? 'error';
 }
 const SDK_KEY = 'client-sdk-key';
-const STORAGE_KEY = `statsig.session_id.${DJB2(SDK_KEY)}`;
+const STORAGE_KEY = `statsig.session_id.${_getStorageKey(SDK_KEY)}`;
 
 Object.defineProperty(global, 'performance', {
   writable: true,

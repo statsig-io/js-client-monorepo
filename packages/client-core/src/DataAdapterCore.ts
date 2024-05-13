@@ -1,11 +1,10 @@
 import { Log } from './Log';
 import {
   DataAdapterAsyncOptions,
-  DataAdapterCachePrefix,
   DataAdapterResult,
 } from './StatsigDataAdapter';
 import { AnyStatsigOptions } from './StatsigOptionsCommon';
-import { StatsigUser, _normalizeUser, getUserStorageKey } from './StatsigUser';
+import { StatsigUser, _normalizeUser } from './StatsigUser';
 import {
   Storage,
   _getObjectFromStorage,
@@ -16,14 +15,15 @@ import { typedJsonParse } from './TypedJsonParse';
 const CACHE_LIMIT = 10;
 
 export abstract class DataAdapterCore {
+  protected _options: AnyStatsigOptions | null = null;
+
   private _sdkKey: string | null = null;
   private _inMemoryCache: Record<string, DataAdapterResult> = {};
   private _lastModifiedStoreKey: string;
-  private _options: AnyStatsigOptions | null = null;
 
   protected constructor(
     private _adapterName: string,
-    private _cacheSuffix: string,
+    protected _cacheSuffix: string,
   ) {
     this._lastModifiedStoreKey = `statsig.last_modified_time.${_cacheSuffix}`;
   }
@@ -109,6 +109,8 @@ export abstract class DataAdapterCore {
     options?: DataAdapterAsyncOptions,
   ): Promise<string | null>;
 
+  protected abstract _getCacheKey(user?: StatsigUser): string;
+
   private async _fetchAndPrepFromNetwork(
     current: string | null,
     user: StatsigUser | undefined,
@@ -156,11 +158,6 @@ export abstract class DataAdapterCore {
 
     Log.error(`${this._adapterName} is not attached to a Client`);
     return '';
-  }
-
-  protected _getCacheKey(user?: StatsigUser): string {
-    const key = getUserStorageKey(this._getSdkKey(), user);
-    return `${DataAdapterCachePrefix}.${this._cacheSuffix}.${key}`;
   }
 
   protected _addToInMemoryCache(

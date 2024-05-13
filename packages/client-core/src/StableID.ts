@@ -1,4 +1,4 @@
-import { DJB2 } from './Hashing';
+import { _getStorageKey } from './CacheKey';
 import { Log } from './Log';
 import { _getObjectFromStorage, _setObjectInStorage } from './StorageProvider';
 import { getUUID } from './UUID';
@@ -29,7 +29,7 @@ export const StableID = {
 };
 
 function _getStableIDStorageKey(sdkKey: string): string {
-  return `statsig.stable_id.${DJB2(sdkKey)}`;
+  return `statsig.stable_id.${_getStorageKey(sdkKey)}`;
 }
 
 function _persistToStorage(stableID: string, sdkKey: string) {

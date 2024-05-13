@@ -1,17 +1,14 @@
 import fetchMock from 'jest-fetch-mock';
 import { DcsResponseString, MockLocalStorage } from 'statsig-test-helpers';
 
-import {
-  DataAdapterCachePrefix,
-  getUserStorageKey,
-} from '@statsig/client-core';
+import { DataAdapterCachePrefix, _getStorageKey } from '@statsig/client-core';
 
 import StatsigOnDeviceEvalClient from '../StatsigOnDeviceEvalClient';
 
 describe('Init Strategy - Delayed', () => {
   const sdkKey = 'client-key';
   const user = { userID: 'a-user' };
-  const cacheKey = `${DataAdapterCachePrefix}.specs.${getUserStorageKey(sdkKey)}`;
+  const cacheKey = `${DataAdapterCachePrefix}.specs.${_getStorageKey(sdkKey)}`;
 
   let client: StatsigOnDeviceEvalClient;
   let storageMock: MockLocalStorage;

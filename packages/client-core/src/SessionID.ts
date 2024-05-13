@@ -1,4 +1,4 @@
-import { DJB2 } from './Hashing';
+import { _getStorageKey } from './CacheKey';
 import { Log } from './Log';
 import { _getObjectFromStorage, _setObjectInStorage } from './StorageProvider';
 import { getUUID } from './UUID';
@@ -104,7 +104,7 @@ function _hasRunTooLong({ startTime }: SessionData): boolean {
 }
 
 function _getSessionIDStorageKey(sdkKey: string): string {
-  return `statsig.session_id.${DJB2(sdkKey)}`;
+  return `statsig.session_id.${_getStorageKey(sdkKey)}`;
 }
 
 function _persistToStorage(session: SessionData, sdkKey: string) {

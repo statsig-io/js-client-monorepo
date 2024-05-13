@@ -72,7 +72,7 @@ export abstract class StatsigClientBase<
     const instances = statsigGlobal.instances ?? {};
     const inst = this as unknown as StatsigClientInterface;
 
-    options?.logLevel && (Log.level = options?.logLevel);
+    options?.logLevel != null && (Log.level = options.logLevel);
     options?.disableStorage && Storage._setDisabled(true);
     options?.overrideStableID &&
       StableID.setOverride(options.overrideStableID, sdkKey);

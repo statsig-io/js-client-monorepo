@@ -40,9 +40,13 @@ describe('Racing Updates', () => {
     fetchMock.enableMocks();
     fetchMock.mockResponseOnce('{}');
 
-    client = new StatsigClient('client-key', {
-      userID: 'initial',
-    });
+    client = new StatsigClient(
+      'client-key',
+      {
+        userID: 'initial',
+      },
+      { customUserCacheKeyFunc: (_, user) => String(user.userID) },
+    );
 
     await client.initializeAsync();
 
@@ -78,8 +82,8 @@ describe('Racing Updates', () => {
 
     it('writes both values to cache', () => {
       const keys = Object.keys(storageMock.data);
-      expect(keys).toContain('statsig.cached.evaluations.2153812029');
-      expect(keys).toContain('statsig.cached.evaluations.1807619807');
+      expect(keys).toContain('statsig.cached.evaluations.first-update');
+      expect(keys).toContain('statsig.cached.evaluations.second-update');
     });
   });
 
@@ -98,8 +102,8 @@ describe('Racing Updates', () => {
 
     it('writes both values to cache', () => {
       const keys = Object.keys(storageMock.data);
-      expect(keys).toContain('statsig.cached.evaluations.2153812029');
-      expect(keys).toContain('statsig.cached.evaluations.1807619807');
+      expect(keys).toContain('statsig.cached.evaluations.first-update');
+      expect(keys).toContain('statsig.cached.evaluations.second-update');
     });
   });
 });

@@ -1,4 +1,5 @@
 import {
+  CustomCacheKeyGenerator,
   EvaluationsDataAdapter,
   Flatten,
   NetworkConfigCommon,
@@ -26,5 +27,13 @@ export type StatsigOptions = Flatten<
      * @see {@link https://docs.statsig.com/client/javascript-sdk/using-evaluations-data-adapter}
      */
     dataAdapter?: EvaluationsDataAdapter;
+
+    /**
+     * Overrides the default cache key generation. Given the SDKKey and current
+     * StatsigUser, return a key to be used for storing values related to that user.
+     *
+     * default: Cache key is a hash of the sdkKey + user.userID + user.customIDs.
+     */
+    customUserCacheKeyFunc?: CustomCacheKeyGenerator;
   }
 >;

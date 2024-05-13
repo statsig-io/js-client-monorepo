@@ -12,13 +12,6 @@ import { StatsigUser } from '../StatsigUser';
 class TestClient extends StatsigClientBase<SpecsDataAdapter> {}
 
 class TestDataAdapter extends DataAdapterCore implements SpecsDataAdapter {
-  protected override _fetchFromNetwork(
-    _current: string | null,
-    _user?: StatsigUser | undefined,
-  ): Promise<string | null> {
-    return Promise.resolve(JSON.stringify({ has_updates: true }));
-  }
-
   constructor() {
     super('', '');
   }
@@ -32,6 +25,17 @@ class TestDataAdapter extends DataAdapterCore implements SpecsDataAdapter {
 
   prefetchData(options?: DataAdapterAsyncOptions | undefined): Promise<void> {
     return this._prefetchDataImpl(undefined, options);
+  }
+
+  protected override _fetchFromNetwork(
+    _current: string | null,
+    _user?: StatsigUser | undefined,
+  ): Promise<string | null> {
+    return Promise.resolve(JSON.stringify({ has_updates: true }));
+  }
+
+  protected override _getCacheKey(): string {
+    return 'test';
   }
 }
 

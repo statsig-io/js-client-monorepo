@@ -15,6 +15,7 @@ describe('Initialize Network Bad Response', () => {
   async function initialize() {
     client = new StatsigClient(sdkKey, user, {
       logLevel: LogLevel.None,
+      customUserCacheKeyFunc: () => 'bad_response_cache_key',
     });
     await client.initializeAsync();
   }
@@ -57,7 +58,7 @@ describe('Initialize Network Bad Response', () => {
       fetchMock.mock.calls = [];
 
       storageMock.setItem(
-        `${DataAdapterCachePrefix}.evaluations.2442570830`,
+        `${DataAdapterCachePrefix}.evaluations.bad_response_cache_key`,
         JSON.stringify({
           source: 'Network',
           data: InitResponseString,

@@ -1,9 +1,11 @@
 import {
   DataAdapterAsyncOptions,
+  DataAdapterCachePrefix,
   DataAdapterCore,
   DataAdapterResult,
   SpecsDataAdapter,
   StatsigUser,
+  _getStorageKey,
 } from '@statsig/client-core';
 
 import Network from './Network';
@@ -46,5 +48,10 @@ export class StatsigSpecsDataAdapter
         options?.priority,
       )) ?? null
     );
+  }
+
+  protected override _getCacheKey(): string {
+    const key = _getStorageKey(this._getSdkKey());
+    return `${DataAdapterCachePrefix}.${this._cacheSuffix}.${key}`;
   }
 }

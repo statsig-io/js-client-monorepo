@@ -45,11 +45,15 @@ describe('Minified StatsigClient', () => {
   });
 
   it('writes to stable id to cache', () => {
-    expect(storage.data['statsig.stable_id.1101277533']).toEqual(anyString());
+    expect(storage.data['statsig.stable_id.884262860']).toEqual(anyString());
+  });
+
+  it('writes to session id to cache', () => {
+    expect(storage.data['statsig.session_id.884262860']).toEqual(anyString());
   });
 
   it('writes to values to cache', () => {
-    expect(storage.data['statsig.cached.evaluations.2442570830']).toEqual(
+    expect(storage.data['statsig.cached.evaluations.1769418430']).toEqual(
       anyString(),
     );
   });

@@ -15,6 +15,7 @@ describe('Initialize Network Failure', () => {
   async function runInitAsync() {
     client = new StatsigClient(sdkKey, user, {
       logLevel: LogLevel.None,
+      customUserCacheKeyFunc: () => 'custom_cache_key',
     });
     await client.initializeAsync();
   }
@@ -62,7 +63,7 @@ describe('Initialize Network Failure', () => {
       fetchMock.mock.calls = [];
 
       storageMock.setItem(
-        `${DataAdapterCachePrefix}.evaluations.2442570830`,
+        `${DataAdapterCachePrefix}.evaluations.custom_cache_key`,
         JSON.stringify({
           source: 'Network',
           data: InitResponseString,
