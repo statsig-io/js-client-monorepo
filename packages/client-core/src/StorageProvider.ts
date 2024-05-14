@@ -1,4 +1,5 @@
 import { Log } from './Log';
+import { _getWindowSafe } from './SafeJs';
 
 export type StorageProvider = {
   _getProviderName: () => string;
@@ -42,25 +43,26 @@ const _inMemoryProvider: StorageProvider = {
 
 let _localStorageProvider: StorageProvider | null = null;
 try {
-  if (typeof window !== 'undefined' && 'localStorage' in window) {
+  const win = _getWindowSafe();
+  if (typeof win?.localStorage?.getItem === 'function') {
     _localStorageProvider = {
       _getProviderName: () => 'LocalStorage',
       _getItemSync(key: string): string | null {
-        return localStorage.getItem(key);
+        return win.localStorage.getItem(key);
       },
       _getItem(key: string): Promise<string | null> {
-        return _resolve(localStorage.getItem(key));
+        return _resolve(win.localStorage.getItem(key));
       },
       _setItem(key: string, value: string): Promise<void> {
-        localStorage.setItem(key, value);
+        win.localStorage.setItem(key, value);
         return _resolve();
       },
       _removeItem(key: string): Promise<void> {
-        localStorage.removeItem(key);
+        win.localStorage.removeItem(key);
         return _resolve();
       },
       _getAllKeys(): Promise<string[]> {
-        const keys = Object.keys(localStorage);
+        const keys = Object.keys(win.localStorage);
         return _resolve(keys);
       },
     };
