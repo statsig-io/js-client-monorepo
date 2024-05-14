@@ -92,7 +92,6 @@
     "jest-fetch-mock": "*",
     "jest-react-native": "*",
     "lint-staged": "*",
-    "native-base": "*",
     "nx": "*",
     "prettier": "*",
     "react-native-safe-area-context": "*",
