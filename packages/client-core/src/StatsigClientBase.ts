@@ -100,6 +100,8 @@ export abstract class StatsigClientBase<
 
     this.dataAdapter = adapter;
     this.dataAdapter.attach(sdkKey, options);
+
+    this._primeReadyRipcord();
   }
 
   /**
@@ -230,4 +232,6 @@ export abstract class StatsigClientBase<
 
     this._logger.enqueue(exposure);
   }
+
+  protected abstract _primeReadyRipcord(): void;
 }

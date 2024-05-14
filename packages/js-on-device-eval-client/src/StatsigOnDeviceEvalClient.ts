@@ -92,7 +92,6 @@ export default class StatsigOnDeviceEvalClient
     this._store.setValuesFromDataAdapter(result);
 
     this._store.finalize();
-
     this._setStatus('Ready', result);
 
     this._runPostUpdate(result);
@@ -217,6 +216,17 @@ export default class StatsigOnDeviceEvalClient
         : eventOrName;
 
     this._logger.enqueue({ ...event, user, time: Date.now() });
+  }
+
+  protected override _primeReadyRipcord(): void {
+    this.$on('error', () => {
+      this.loadingStatus === 'Loading' && this._finalizeUpdate(null);
+    });
+  }
+
+  private _finalizeUpdate(values: DataAdapterResult | null) {
+    this._store.finalize();
+    this._setStatus('Ready', values);
   }
 
   private _runPostUpdate(current: DataAdapterResult | null): void {

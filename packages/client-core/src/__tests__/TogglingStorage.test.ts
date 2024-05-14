@@ -9,7 +9,11 @@ import {
 } from '../StatsigDataAdapter';
 import { StatsigUser } from '../StatsigUser';
 
-class TestClient extends StatsigClientBase<SpecsDataAdapter> {}
+class TestClient extends StatsigClientBase<SpecsDataAdapter> {
+  protected _primeReadyRipcord(): void {
+    //
+  }
+}
 
 class TestDataAdapter extends DataAdapterCore implements SpecsDataAdapter {
   constructor() {

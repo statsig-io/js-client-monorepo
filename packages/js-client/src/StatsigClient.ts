@@ -131,9 +131,7 @@ export default class StatsigClient
     const result = this.dataAdapter.getDataSync(this._user);
     this._store.setValuesFromDataAdapter(result);
 
-    this._store.finalize();
-    this._setStatus('Ready', result);
-
+    this._finalizeUpdate(result);
     this._runPostUpdate(result ?? null, this._user);
   }
 
@@ -157,19 +155,19 @@ export default class StatsigClient
     const initiator = this._user;
 
     let result = this.dataAdapter.getDataSync(initiator);
+
     this._setStatus('Loading', result);
 
     this._store.setValuesFromDataAdapter(result);
-
     result = await this.dataAdapter.getDataAsync(result, initiator, options);
 
     // ensure the user hasn't changed while we were waiting
-    if (initiator === this._user) {
-      this._store.setValuesFromDataAdapter(result);
+    if (initiator !== this._user) {
+      return;
     }
 
-    this._store.finalize();
-    this._setStatus('Ready', result);
+    this._store.setValuesFromDataAdapter(result);
+    this._finalizeUpdate(result);
   }
 
   /**
@@ -337,6 +335,17 @@ export default class StatsigClient
         : eventOrName;
 
     this._logger.enqueue({ ...event, user: this._user, time: Date.now() });
+  }
+
+  protected override _primeReadyRipcord(): void {
+    this.$on('error', () => {
+      this.loadingStatus === 'Loading' && this._finalizeUpdate(null);
+    });
+  }
+
+  private _finalizeUpdate(values: DataAdapterResult | null) {
+    this._store.finalize();
+    this._setStatus('Ready', values);
   }
 
   private _runPostUpdate(

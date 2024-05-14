@@ -158,8 +158,11 @@
       "$_subscribeToVisibilityChanged": "li",
       "$_getSessionFromClient": "tn",
       "$_fetchAndPrepFromNetwork": "en",
-      "$_normalizeUser": "nn",
-      "$_getUserStorageKey": "ai"
+      "$_readyRipcord": "ai",
+      "$_finalizeUpdate": "ci",
+      "$_primeReadyRipcord": "di",
+      "$_getUserStorageKey": "hi",
+      "$_normalizeUser": "vi"
     }
   }
 }

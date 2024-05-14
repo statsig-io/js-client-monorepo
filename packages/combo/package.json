@@ -9,7 +9,8 @@
     "@statsig/js-on-device-eval-client": "0.0.1-beta.40",
     "@statsig/js-user-persisted-storage": "0.0.1-beta.40",
     "@statsig/session-replay": "0.0.1-beta.40",
-    "@statsig/web-analytics": "0.0.1-beta.40"
+    "@statsig/web-analytics": "0.0.1-beta.40",
+    "@statsig/react-bindings": "0.0.1-beta.40"
   },
   "type": "commonjs",
   "main": "./src/index.js",
