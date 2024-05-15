@@ -25,6 +25,7 @@ import {
   _createGateExposure,
   _createLayerParameterExposure,
   _getStatsigGlobal,
+  _isBrowserEnv,
   _makeDynamicConfig,
   _makeFeatureGate,
   _makeLayer,
@@ -58,7 +59,11 @@ export default class StatsigOnDeviceEvalClient
       return instance;
     }
 
-    Log.warn('Unable to find StatsigOnDeviceEvalClient instance');
+    Log.warn(
+      _isBrowserEnv()
+        ? 'Unable to find StatsigOnDeviceEvalClient instance'
+        : 'StatsigOnDeviceEvalClient.instance is not supported in server environments',
+    );
     return new StatsigOnDeviceEvalClient(sdkKey ?? '');
   }
 

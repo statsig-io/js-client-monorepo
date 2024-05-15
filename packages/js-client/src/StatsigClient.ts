@@ -25,6 +25,7 @@ import {
   _createGateExposure,
   _createLayerParameterExposure,
   _getStatsigGlobal,
+  _isBrowserEnv,
   _makeDynamicConfig,
   _makeFeatureGate,
   _makeLayer,
@@ -60,7 +61,11 @@ export default class StatsigClient
       return instance;
     }
 
-    Log.warn('Unable to find StatsigClient instance');
+    Log.warn(
+      _isBrowserEnv()
+        ? 'Unable to find StatsigClient instance'
+        : 'StatsigClient.instance is not supported in server environments',
+    );
     return new StatsigClient(sdkKey ?? '', {});
   }
 

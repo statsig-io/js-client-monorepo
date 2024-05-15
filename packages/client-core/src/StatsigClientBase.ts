@@ -68,9 +68,6 @@ export abstract class StatsigClientBase<
     options: AnyStatsigOptions | null,
   ) {
     const emitter = this.$emt.bind(this);
-    const statsigGlobal = _getStatsigGlobal();
-    const instances = statsigGlobal.instances ?? {};
-    const inst = this as unknown as StatsigClientInterface;
 
     options?.logLevel != null && (Log.level = options.logLevel);
     options?.disableStorage && Storage._setDisabled(true);
@@ -87,16 +84,22 @@ export abstract class StatsigClientBase<
     this._overrideAdapter = options?.overrideAdapter ?? null;
     this._logger = new EventLogger(sdkKey, emitter, network, options);
 
-    if (instances[sdkKey] != null && _isBrowserEnv()) {
-      Log.warn(
-        'Creating multiple Statsig clients with the same SDK key can lead to unexpected behavior. Multi-instance support requires different SDK keys.',
-      );
-    }
+    if (_isBrowserEnv()) {
+      const statsigGlobal = _getStatsigGlobal();
+      const instances = statsigGlobal.instances ?? {};
+      const inst = this as unknown as StatsigClientInterface;
 
-    instances[sdkKey] = inst;
-    statsigGlobal.lastInstance = inst;
-    statsigGlobal.instances = instances;
-    __STATSIG__ = statsigGlobal;
+      if (instances[sdkKey] != null) {
+        Log.warn(
+          'Creating multiple Statsig clients with the same SDK key can lead to unexpected behavior. Multi-instance support requires different SDK keys.',
+        );
+      }
+
+      instances[sdkKey] = inst;
+      statsigGlobal.lastInstance = inst;
+      statsigGlobal.instances = instances;
+      __STATSIG__ = statsigGlobal;
+    }
 
     this.dataAdapter = adapter;
     this.dataAdapter.attach(sdkKey, options);

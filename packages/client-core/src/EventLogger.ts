@@ -51,7 +51,7 @@ const _safeFlushAndForget = (sdkKey: string) => {
 
 export class EventLogger {
   private _queue: EventQueue = [];
-  private _flushTimer: ReturnType<typeof setInterval> | null | undefined;
+  private _flushIntervalId: ReturnType<typeof setInterval> | null | undefined;
   private _lastExposureTimeMap: Record<string, number> = {};
   private _nonExposedChecks: Record<string, number> = {};
   private _maxQueueSize: number;
@@ -73,16 +73,16 @@ export class EventLogger {
 
     const flushInterval =
       _options?.loggingIntervalMs ?? DEFAULT_FLUSH_INTERVAL_MS;
+
     const intervalId = setInterval(() => {
       const logger = EVENT_LOGGER_MAP[_sdkKey];
-      if (!logger) {
+      if (logger._flushIntervalId !== intervalId) {
         clearInterval(intervalId);
-        return;
+      } else {
+        _safeFlushAndForget(_sdkKey);
       }
-
-      _safeFlushAndForget(_sdkKey);
     }, flushInterval);
-    this._flushTimer = intervalId;
+    this._flushIntervalId = intervalId;
 
     const config = _options?.networkConfig;
     this._logEventUrl = _getOverridableUrl(
@@ -136,9 +136,9 @@ export class EventLogger {
   }
 
   async shutdown(): Promise<void> {
-    if (this._flushTimer) {
-      clearInterval(this._flushTimer);
-      this._flushTimer = null;
+    if (this._flushIntervalId) {
+      clearInterval(this._flushIntervalId);
+      this._flushIntervalId = null;
     }
 
     await this.flush();
