@@ -6,8 +6,6 @@ import {
   _getWindowSafe,
   _isBrowserEnv,
 } from '@statsig/client-core';
-import { StatsigClient } from '@statsig/js-client';
-
 import {
   _gatherEventData,
   _getSafeUrl,
@@ -16,6 +14,8 @@ import {
   _registerEventHandler,
   _shouldLogEvent,
 } from './Utils';
+
+import { StatsigClient } from '@statsig/js-client';
 
 export function runStatsigAutoCapture(client: StatsigClient): void {
   new AutoCapture(client);
@@ -129,6 +129,7 @@ export class AutoCapture {
         {
           title: _getDocumentSafe()?.title,
           queryParams: Object.fromEntries(url.searchParams),
+          referrer: _getDocumentSafe()?.referrer || '',
         },
         { flushImmediately: true, addNewSessionMetadata: true },
       );
