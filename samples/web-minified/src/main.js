@@ -10,6 +10,9 @@ const emissions = [];
 const actual = fetch;
 window.fetch = (url, args) => {
   requests.push({ url, args });
+  if (url.includes('sdk_exception')) {
+    return null;
+  }
   return actual(url, args);
 };
 

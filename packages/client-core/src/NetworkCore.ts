@@ -9,6 +9,7 @@ import { StableID } from './StableID';
 import { StatsigClientEmitEventFunc } from './StatsigClientBase';
 import { SDK_VERSION, StatsigMetadataProvider } from './StatsigMetadata';
 import { AnyStatsigOptions } from './StatsigOptionsCommon';
+import { _isUnloading } from './VisibilityObserving';
 
 const DEFAULT_TIMEOUT_MS = 10_000;
 
@@ -101,6 +102,7 @@ export class NetworkCore {
     const url = await this._getPopulatedURL(args);
 
     let response: Response | null = null;
+    const keepalive = _isUnloading();
 
     try {
       const config: NetworkArgs = {
@@ -111,7 +113,7 @@ export class NetworkCore {
         },
         signal: controller.signal,
         priority: args.priority,
-        keepalive: true,
+        keepalive,
       };
 
       const func = this._options?.networkConfig?.networkOverrideFunc ?? fetch;
@@ -120,7 +122,7 @@ export class NetworkCore {
 
       if (!response.ok) {
         const text = await response.text().catch(() => 'No Text');
-        const err = new Error(`Failed to fetch: ${url} ${text}`);
+        const err = new Error(`NetworkError: ${url} ${text}`);
         err.name = 'NetworkError';
         throw err;
       }

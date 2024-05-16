@@ -14,7 +14,6 @@ import {
   _getObjectFromStorage,
   _setObjectInStorage,
 } from './StorageProvider';
-import { typedJsonParse } from './TypedJsonParse';
 import { _getOverridableUrl } from './UrlOverrides';
 import {
   _isCurrentlyVisible,
@@ -247,15 +246,8 @@ export class EventLogger {
       },
     });
 
-    const response = result?.body
-      ? typedJsonParse<SendEventsResponse>(
-          result.body,
-          'success',
-          'Failed to parse SendEventsResponse',
-        )
-      : null;
-
-    return { success: response?.success === true };
+    const code = result?.code ?? -1;
+    return { success: code >= 200 && code < 300 };
   }
 
   private async _sendEventsViaBeacon(

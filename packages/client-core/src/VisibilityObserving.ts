@@ -12,10 +12,13 @@ type VisibilityChangedCallback = (visibility: Visibility) => void;
 
 const LISTENERS: VisibilityChangedCallback[] = [];
 let current: Visibility = FOREGROUND;
+let isUnloading = false;
 
 export const _isCurrentlyVisible = (): boolean => {
   return current === FOREGROUND;
 };
+
+export const _isUnloading = (): boolean => isUnloading;
 
 export const _subscribeToVisiblityChanged = (
   listener: VisibilityChangedCallback,
@@ -32,15 +35,17 @@ export const _notifyVisibilityChanged = (visibility: Visibility): void => {
   LISTENERS.forEach((l) => l(visibility));
 };
 
-_addWindowEventListenerSafe('focus', () =>
-  _notifyVisibilityChanged(FOREGROUND),
-);
+_addWindowEventListenerSafe('focus', () => {
+  isUnloading = false;
+  _notifyVisibilityChanged(FOREGROUND);
+});
 
 _addWindowEventListenerSafe('blur', () => _notifyVisibilityChanged(BACKGROUND));
 
-_addWindowEventListenerSafe('beforeunload', () =>
-  _notifyVisibilityChanged(BACKGROUND),
-);
+_addWindowEventListenerSafe('beforeunload', () => {
+  isUnloading = true;
+  _notifyVisibilityChanged(BACKGROUND);
+});
 
 _addDocumentEventListenerSafe('visibilitychange', () => {
   _notifyVisibilityChanged(

@@ -1,0 +1,57 @@
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+
+    <script src="helpers.js"></script>
+    <script>
+      window.__requests = [];
+
+      const actual = fetch;
+      window.fetch = (url, args) => {
+        __requests.push({ url, args });
+        return actual(url, args);
+      };
+    </script>
+
+    <script src="statsig-js-client.min.js"></script>
+
+    <script>
+      const timeout = setTimeout(() => {
+        test('test timeout', () => false);
+      }, 5000);
+
+      const { StatsigClient } = window.Statsig;
+
+      const client = new StatsigClient(
+        'client-rfLvYGag3eyU0jYW5zcIJTQip7GXxSrhOFN69IGMjvq',
+        { userID: 'a-user' },
+        { networkConfig: { logEventUrl: 'https://httpstat.us/202/rgstr' } },
+      );
+      client.initializeSync();
+
+      const metadata = {};
+      for (let i = 0; i < 50; i++) {
+        metadata[`key-${i}`] = Math.random().toString(36).slice(-6).repeat(500);
+      }
+
+      client.logEvent('large_event', 'some_value', metadata);
+
+      setTimeout(() => {
+        const events = __requests
+          .filter((req) => req.url.startsWith('https://httpstat.us/202/rgstr'))
+          .flatMap((req) => JSON.parse(req.args.body).events);
+
+        test('logged the large_event event', () => {
+          return !!events.find((e) => e.eventName === 'large_event');
+        });
+      }, 1000);
+
+      clearTimeout(timeout);
+    </script>
+  </head>
+  <body>
+    <h1>Large Event Body Test</h1>
+  </body>
+</html>
