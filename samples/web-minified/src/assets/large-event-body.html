@@ -24,21 +24,25 @@
 
       const { StatsigClient } = window.Statsig;
 
-      const client = new StatsigClient(
-        'client-rfLvYGag3eyU0jYW5zcIJTQip7GXxSrhOFN69IGMjvq',
-        { userID: 'a-user' },
-        { networkConfig: { logEventUrl: 'https://httpstat.us/202/rgstr' } },
-      );
-      client.initializeSync();
+      (async () => {
+        const client = new StatsigClient(
+          'client-rfLvYGag3eyU0jYW5zcIJTQip7GXxSrhOFN69IGMjvq',
+          { userID: 'a-user' },
+          { networkConfig: { logEventUrl: 'https://httpstat.us/202/rgstr' } },
+        );
+        client.initializeSync();
 
-      const metadata = {};
-      for (let i = 0; i < 50; i++) {
-        metadata[`key-${i}`] = Math.random().toString(36).slice(-6).repeat(500);
-      }
+        const metadata = {};
+        for (let i = 0; i < 50; i++) {
+          metadata[`key-${i}`] = Math.random()
+            .toString(36)
+            .slice(-6)
+            .repeat(500);
+        }
 
-      client.logEvent('large_event', 'some_value', metadata);
+        client.logEvent('large_event', 'some_value', metadata);
+        await client.flush();
 
-      setTimeout(() => {
         const events = __requests
           .filter((req) => req.url.startsWith('https://httpstat.us/202/rgstr'))
           .flatMap((req) => JSON.parse(req.args.body).events);
@@ -46,9 +50,9 @@
         test('logged the large_event event', () => {
           return !!events.find((e) => e.eventName === 'large_event');
         });
-      }, 1000);
 
-      clearTimeout(timeout);
+        clearTimeout(timeout);
+      })();
     </script>
   </head>
   <body>

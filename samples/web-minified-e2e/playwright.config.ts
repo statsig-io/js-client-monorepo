@@ -2,7 +2,7 @@ import { workspaceRoot } from '@nx/devkit';
 import { nxE2EPreset } from '@nx/playwright/preset';
 import { defineConfig, devices } from '@playwright/test';
 
-const baseURL = process.env['BASE_URL'] || 'http://127.0.0.1:4200';
+const baseURL = process.env['BASE_URL'] || 'http://localhost:4200';
 
 const isRunningOnGithub = !!process.env['CI'];
 
@@ -13,8 +13,8 @@ export default defineConfig({
     trace: 'on-first-retry',
   },
   webServer: {
-    command: 'pnpm exec nx serve next-js-sample',
-    url: 'http://127.0.0.1:4200',
+    command: 'pnpm exec nx serve web-minified',
+    url: 'http://localhost:4200',
     reuseExistingServer: !isRunningOnGithub,
     cwd: workspaceRoot,
   },

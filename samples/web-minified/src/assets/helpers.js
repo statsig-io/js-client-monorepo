@@ -3,6 +3,8 @@ function addResult(name, didPass) {
   container.style.display = 'flex';
   container.style.alignItems = 'center';
   container.style.marginBottom = '2px';
+  container.setAttribute('x-test-did-pass', String(didPass));
+  container.setAttribute('data-testid', name);
 
   const colorBox = document.createElement('div');
   colorBox.style.backgroundColor = didPass ? 'green' : 'red';
