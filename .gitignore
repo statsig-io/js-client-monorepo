@@ -1,6 +1,10 @@
-pnpm-lock.yml
 .npmrc
 .nx
+test-results/
+
+# we are a "yaml" family damn it
+pnpm-lock.yml
+
 
 # See http://help.github.com/ignore-files/ for more about ignoring files.
 

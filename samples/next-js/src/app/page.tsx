@@ -1,6 +1,7 @@
 export default function Index(): JSX.Element {
   return (
     <div>
+      <h1>Samples</h1>
       <ul>
         <li>
           <button>
@@ -21,9 +22,7 @@ export default function Index(): JSX.Element {
         </li>
         <li>
           <button>
-            <a href="/session-replay-example">
-              Session Replay
-            </a>
+            <a href="/session-replay-example">Session Replay</a>
           </button>
         </li>
       </ul>

@@ -1,0 +1,18 @@
+{
+  "name": "next-js-sample-e2e",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "samples/next-js-e2e/src",
+  "targets": {
+    "e2e": {
+      "executor": "@nx/playwright:playwright",
+      "outputs": ["{workspaceRoot}/dist/.playwright/samples/next-js-e2e"],
+      "options": {
+        "config": "samples/next-js-e2e/playwright.config.ts"
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    }
+  },
+  "implicitDependencies": ["next-js-sample"]
+}
