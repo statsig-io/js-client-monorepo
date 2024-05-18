@@ -1,3 +1,7 @@
+/**
+ * @jest-environment node
+ */
+
 /* eslint-disable no-await-in-loop */
 import 'jest-fetch-mock';
 import { InitResponseString, MockLocalStorage } from 'statsig-test-helpers';

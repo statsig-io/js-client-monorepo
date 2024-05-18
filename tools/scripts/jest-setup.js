@@ -24,6 +24,8 @@ jest.mock('react-native-device-info', () =>
 //   AppState: { addEventListener: jest.fn() },
 // }));
 
-Object.defineProperty(window, 'performance', {
-  value: require('perf_hooks').performance,
-});
+if (typeof window !== 'undefined') {
+  Object.defineProperty(window, 'performance', {
+    value: require('perf_hooks').performance,
+  });
+}

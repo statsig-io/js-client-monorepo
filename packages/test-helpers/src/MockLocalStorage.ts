@@ -1,18 +1,19 @@
-const actualLocalStorage = window.localStorage;
+const win = typeof window !== 'undefined' ? window : undefined;
+const actualLocalStorage = win?.localStorage;
 
 export class MockLocalStorage {
   data: Record<string, string> = {};
 
   static enabledMockStorage(): MockLocalStorage {
     const value = new MockLocalStorage();
-    Object.defineProperty(window, 'localStorage', {
+    Object.defineProperty(global, 'localStorage', {
       value,
     });
     return value;
   }
 
   static disableMockStorage(): void {
-    Object.defineProperty(window, 'localStorage', {
+    Object.defineProperty(global, 'localStorage', {
       value: actualLocalStorage,
     });
   }

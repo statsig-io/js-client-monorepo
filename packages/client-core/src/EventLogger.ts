@@ -2,7 +2,7 @@ import { DJB2 } from './Hashing';
 import { Log } from './Log';
 import { NetworkDefault, NetworkParam } from './NetworkConfig';
 import { NetworkCore } from './NetworkCore';
-import { _getCurrentPageUrlSafe } from './SafeJs';
+import { _getCurrentPageUrlSafe, _isBrowserEnv } from './SafeJs';
 import { StatsigClientEmitEventFunc } from './StatsigClientBase';
 import { StatsigEventInternal, _isExposureEvent } from './StatsigEvent';
 import {
@@ -70,19 +70,6 @@ export class EventLogger {
     this._isLoggingDisabled = _options?.disableLogging === true;
     this._maxQueueSize = _options?.loggingBufferMaxSize ?? DEFAULT_QUEUE_SIZE;
 
-    const flushInterval =
-      _options?.loggingIntervalMs ?? DEFAULT_FLUSH_INTERVAL_MS;
-
-    const intervalId = setInterval(() => {
-      const logger = EVENT_LOGGER_MAP[_sdkKey];
-      if (logger._flushIntervalId !== intervalId) {
-        clearInterval(intervalId);
-      } else {
-        _safeFlushAndForget(_sdkKey);
-      }
-    }, flushInterval);
-    this._flushIntervalId = intervalId;
-
     const config = _options?.networkConfig;
     this._logEventUrl = _getOverridableUrl(
       config?.logEventUrl,
@@ -105,6 +92,7 @@ export class EventLogger {
     });
 
     this._retryFailedLogs();
+    this._startBackgroundFlushInterval();
   }
 
   setLoggingDisabled(isDisabled: boolean): void {
@@ -117,7 +105,6 @@ export class EventLogger {
     }
 
     this._normalizeAndAppendEvent(event);
-
     this._quickFlushIfNeeded();
 
     if (this._queue.length > this._maxQueueSize) {
@@ -307,10 +294,13 @@ export class EventLogger {
       extras.statsigMetadata = { currentPage };
     }
 
-    this._queue.push({
+    const final = {
       ...event,
       ...extras,
-    });
+    };
+
+    Log.debug('Enqueued Event:', final);
+    this._queue.push(final);
   }
 
   private _appendAndResetNonExposedChecks() {
@@ -336,5 +326,24 @@ export class EventLogger {
     }
 
     return _getCurrentPageUrlSafe();
+  }
+
+  private _startBackgroundFlushInterval() {
+    if (!_isBrowserEnv()) {
+      return; // do not run in server environments
+    }
+
+    const flushInterval =
+      this._options?.loggingIntervalMs ?? DEFAULT_FLUSH_INTERVAL_MS;
+
+    const intervalId = setInterval(() => {
+      const logger = EVENT_LOGGER_MAP[this._sdkKey];
+      if (logger._flushIntervalId !== intervalId) {
+        clearInterval(intervalId);
+      } else {
+        _safeFlushAndForget(this._sdkKey);
+      }
+    }, flushInterval);
+    this._flushIntervalId = intervalId;
   }
 }
