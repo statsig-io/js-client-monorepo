@@ -9,7 +9,10 @@ type StatsigUserPrimitives =
 
 export type StatsigUser = {
   userID?: string;
-  customIDs?: Record<string, string>;
+  customIDs?: {
+    [key: string]: string | undefined;
+    stableID?: string;
+  };
   email?: string;
   ip?: string;
   userAgent?: string;

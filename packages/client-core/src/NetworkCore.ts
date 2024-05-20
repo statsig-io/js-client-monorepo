@@ -9,6 +9,7 @@ import { StableID } from './StableID';
 import { StatsigClientEmitEventFunc } from './StatsigClientBase';
 import { SDK_VERSION, StatsigMetadataProvider } from './StatsigMetadata';
 import { AnyStatsigOptions, NetworkConfigCommon } from './StatsigOptionsCommon';
+import { Flatten } from './UtitlityTypes';
 import { _isUnloading } from './VisibilityObserving';
 
 const DEFAULT_TIMEOUT_MS = 10_000;
@@ -25,12 +26,14 @@ type RequestArgs = {
   >;
 };
 
-export type RequestArgsWithData = RequestArgs & {
-  data: Record<string, unknown>;
-  isStatsigEncodable?: boolean;
-};
+type RequestArgsWithData = Flatten<
+  RequestArgs & {
+    data: Record<string, unknown>;
+    isStatsigEncodable?: boolean;
+  }
+>;
 
-export type BeaconRequestArgs = Pick<
+type BeaconRequestArgs = Pick<
   RequestArgsWithData,
   'data' | 'sdkKey' | 'url' | 'params'
 >;

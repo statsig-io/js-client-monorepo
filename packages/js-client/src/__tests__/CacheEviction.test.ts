@@ -30,7 +30,7 @@ describe('Cache Eviction', () => {
   });
 
   it('should only have 10 entries in _inMemoryCache', () => {
-    const entries = Object.entries((adapter as any)._inMemoryCache);
+    const entries = Object.entries((adapter as any)._inMemoryCache._data);
     expect(entries.length).toBe(10);
   });
 

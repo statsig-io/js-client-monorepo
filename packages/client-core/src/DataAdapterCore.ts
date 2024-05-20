@@ -1,7 +1,9 @@
 import { Log } from './Log';
+import { StableID } from './StableID';
 import {
   DataAdapterAsyncOptions,
   DataAdapterResult,
+  DataSource,
 } from './StatsigDataAdapter';
 import { AnyStatsigOptions } from './StatsigOptionsCommon';
 import { StatsigUser, _normalizeUser } from './StatsigUser';
@@ -18,7 +20,7 @@ export abstract class DataAdapterCore {
   protected _options: AnyStatsigOptions | null = null;
 
   private _sdkKey: string | null = null;
-  private _inMemoryCache: Record<string, DataAdapterResult> = {};
+  private _inMemoryCache: InMemoryCache;
   private _lastModifiedStoreKey: string;
 
   protected constructor(
@@ -26,6 +28,7 @@ export abstract class DataAdapterCore {
     protected _cacheSuffix: string,
   ) {
     this._lastModifiedStoreKey = `statsig.last_modified_time.${_cacheSuffix}`;
+    this._inMemoryCache = new InMemoryCache();
   }
 
   attach(sdkKey: string, options: AnyStatsigOptions | null): void {
@@ -35,16 +38,16 @@ export abstract class DataAdapterCore {
 
   getDataSync(user?: StatsigUser | undefined): DataAdapterResult | null {
     const cacheKey = this._getCacheKey(user);
-    const result = this._inMemoryCache[cacheKey];
+    const inMem = this._inMemoryCache.get(cacheKey, user);
 
-    if (result) {
-      return result;
+    if (inMem) {
+      return inMem;
     }
 
     const cache = this._loadFromCache(cacheKey);
     if (cache) {
-      this._addToInMemoryCache(cacheKey, cache);
-      return this._inMemoryCache[cacheKey];
+      this._inMemoryCache.add(cacheKey, cache);
+      return this._inMemoryCache.get(cacheKey, user);
     }
 
     return null;
@@ -53,11 +56,11 @@ export abstract class DataAdapterCore {
   setData(data: string, user?: StatsigUser): void {
     const normalized = user && _normalizeUser(user, this._options?.environment);
     const cacheKey = this._getCacheKey(normalized);
-    this._addToInMemoryCache(cacheKey, {
-      source: 'Bootstrap',
-      data,
-      receivedAt: Date.now(),
-    });
+
+    this._inMemoryCache.add(
+      cacheKey,
+      _makeDataAdapterResult('Bootstrap', data, null),
+    );
   }
 
   /**
@@ -66,7 +69,7 @@ export abstract class DataAdapterCore {
    * @param {Record<string, DataAdapterResult>} cache The values to merge into _inMemoryCache
    */
   __primeInMemoryCache(cache: Record<string, DataAdapterResult>): void {
-    this._inMemoryCache = { ...this._inMemoryCache, ...cache };
+    this._inMemoryCache.merge(cache);
   }
 
   protected async _getDataAsyncImpl(
@@ -99,7 +102,7 @@ export abstract class DataAdapterCore {
     const cacheKey = this._getCacheKey(user);
     const result = await this._getDataAsyncImpl(null, user, options);
     if (result) {
-      this._addToInMemoryCache(cacheKey, { ...result, source: 'Prefetch' });
+      this._inMemoryCache.add(cacheKey, { ...result, source: 'Prefetch' });
     }
   }
 
@@ -129,23 +132,20 @@ export abstract class DataAdapterCore {
       'Failure while attempting to persist latest value',
     );
 
+    const sdkKey = this._getSdkKey();
+    const stableID = await StableID.get(sdkKey);
+
     let result: DataAdapterResult | null = null;
     if (response?.has_updates === true) {
-      result = { source: 'Network', data: latest, receivedAt: Date.now() };
+      result = _makeDataAdapterResult('Network', latest, stableID);
     } else if (current && response?.has_updates === false) {
-      result = {
-        source: 'NetworkNotModified',
-        data: current,
-        receivedAt: Date.now(),
-      };
-    }
-
-    if (!result) {
+      result = _makeDataAdapterResult('NetworkNotModified', current, stableID);
+    } else {
       return null;
     }
 
     const cacheKey = this._getCacheKey(user);
-    this._addToInMemoryCache(cacheKey, result);
+    this._inMemoryCache.add(cacheKey, result);
     await this._writeToCache(cacheKey, result);
 
     return result;
@@ -158,24 +158,6 @@ export abstract class DataAdapterCore {
 
     Log.error(`${this._adapterName} is not attached to a Client`);
     return '';
-  }
-
-  protected _addToInMemoryCache(
-    cacheKey: string,
-    result: DataAdapterResult,
-  ): void {
-    const entries = Object.entries(this._inMemoryCache);
-    if (entries.length < CACHE_LIMIT) {
-      this._inMemoryCache[cacheKey] = result;
-      return;
-    }
-
-    const [oldest] = entries.reduce((acc, curr) => {
-      return curr[1] < acc[1] ? curr : acc;
-    });
-
-    delete this._inMemoryCache[oldest];
-    this._inMemoryCache[cacheKey] = result;
   }
 
   private _loadFromCache(cacheKey: string): DataAdapterResult | null {
@@ -224,5 +206,57 @@ export abstract class DataAdapterCore {
     delete lastModifiedTimeMap[oldest[0]];
     await Storage._removeItem(oldest[0]);
     await _setObjectInStorage(this._lastModifiedStoreKey, lastModifiedTimeMap);
+  }
+}
+
+function _makeDataAdapterResult(
+  source: DataSource,
+  data: string,
+  stableID: string | null,
+): DataAdapterResult {
+  return {
+    source,
+    data,
+    receivedAt: Date.now(),
+    stableID,
+  };
+}
+
+class InMemoryCache {
+  private _data: Record<string, DataAdapterResult> = {};
+
+  get(
+    cacheKey: string,
+    user: StatsigUser | undefined,
+  ): DataAdapterResult | null {
+    const result = this._data[cacheKey];
+    const cached = result?.stableID;
+    const provided = user?.customIDs?.stableID;
+
+    if (provided && cached && provided !== cached) {
+      Log.warn("'StatsigUser.customIDs.stableID' mismatch");
+      return null;
+    }
+
+    return result;
+  }
+
+  add(cacheKey: string, value: DataAdapterResult) {
+    const entries = Object.entries(this._data);
+    if (entries.length < CACHE_LIMIT) {
+      this._data[cacheKey] = value;
+      return;
+    }
+
+    const [oldest] = entries.reduce((acc, curr) => {
+      return curr[1] < acc[1] ? curr : acc;
+    });
+
+    delete this._data[oldest];
+    this._data[cacheKey] = value;
+  }
+
+  merge(values: Record<string, DataAdapterResult>) {
+    this._data = { ...this._data, ...values };
   }
 }

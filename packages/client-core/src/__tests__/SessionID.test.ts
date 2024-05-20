@@ -3,6 +3,7 @@ import {
   MockLocalStorage,
   MockRemoteServerEvalClient,
   TestPromise,
+  anyUUID,
 } from 'statsig-test-helpers';
 
 import '../$_StatsigGlobal';
@@ -13,9 +14,6 @@ import { Storage } from '../StorageProvider';
 
 const MAX_SESSION_AGE = 4 * 60 * 60 * 1000; // 4 hours
 const MAX_SESSION_IDLE_TIME = 30 * 60 * 1000; // 30 minutes
-
-const UUID_V4_REGEX =
-  /^[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-4[0-9A-Fa-f]{3}-[89ABab][0-9A-Fa-f]{3}-[0-9A-Fa-f]{12}/;
 
 async function getSessionIDIgnoringInMemoryCache(
   sdkKey: string,
@@ -58,7 +56,7 @@ describe('SessionID', () => {
     });
 
     it('generates a new ID when none is set in storage', async () => {
-      expect(sessionID).toMatch(UUID_V4_REGEX);
+      expect(sessionID).toEqual(anyUUID());
     });
 
     it('persists to storage', async () => {

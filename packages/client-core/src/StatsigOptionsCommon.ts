@@ -75,11 +75,6 @@ export type StatsigOptionsCommon<NetworkConfig extends NetworkConfigCommon> =
     environment?: StatsigEnvironment;
 
     /**
-     * Overrides the auto-generated StableID that is set for the device.
-     */
-    overrideStableID?: string;
-
-    /**
      * How much information is allowed to be printed to the console.
      *
      * default: {@link LogLevel.Warn}

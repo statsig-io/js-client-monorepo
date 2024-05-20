@@ -24,6 +24,7 @@ function useProxiedClient(
       networkConfig: {
         api: 'http://localhost:4200/api/statsig',
       },
+      disableStatsigEncoding: true,
     });
     client.dataAdapter.setData(values, user);
     client.initializeSync();

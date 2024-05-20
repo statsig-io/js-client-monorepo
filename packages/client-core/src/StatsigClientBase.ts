@@ -8,7 +8,6 @@ import { Log } from './Log';
 import { NetworkCore } from './NetworkCore';
 import { OverrideAdapter } from './OverrideAdapter';
 import { _isBrowserEnv } from './SafeJs';
-import { StableID } from './StableID';
 import {
   AnyStatsigClientEvent,
   AnyStatsigClientEventListener,
@@ -71,8 +70,6 @@ export abstract class StatsigClientBase<
 
     options?.logLevel != null && (Log.level = options.logLevel);
     options?.disableStorage && Storage._setDisabled(true);
-    options?.overrideStableID &&
-      StableID.setOverride(options.overrideStableID, sdkKey);
 
     this._errorBoundary = new ErrorBoundary(sdkKey, options, emitter);
     this._errorBoundary.wrap(this);

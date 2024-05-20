@@ -19,6 +19,7 @@ export type DataAdapterResult = {
   readonly source: DataSource;
   readonly data: string;
   readonly receivedAt: number;
+  readonly stableID: string | null;
 };
 
 export type DataAdapterAsyncOptions = {

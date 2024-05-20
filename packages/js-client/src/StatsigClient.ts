@@ -369,6 +369,11 @@ export default class StatsigClient
     this._store.reset();
 
     this._user = _normalizeUser(user, this._options.environment);
+
+    const stableIdOverride = this._user.customIDs?.stableID;
+    if (stableIdOverride) {
+      StableID.setOverride(stableIdOverride, this._sdkKey);
+    }
   }
 
   private _getConfigImpl(

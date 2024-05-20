@@ -1,10 +1,7 @@
-import { MockLocalStorage } from 'statsig-test-helpers';
+import { MockLocalStorage, anyUUID } from 'statsig-test-helpers';
 
 import { _getStorageKey } from '../CacheKey';
 import { StableID } from '../StableID';
-
-const UUID_V4_REGEX =
-  /^[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-4[0-9A-Fa-f]{3}-[89ABab][0-9A-Fa-f]{3}-[0-9A-Fa-f]{12}/;
 
 async function getStableIDIgnoringInMemoryCache(
   sdkKey: string,
@@ -37,7 +34,7 @@ describe('StableID', () => {
     });
 
     it('generates a new ID when none is set in storage', async () => {
-      expect(stableID).toMatch(UUID_V4_REGEX);
+      expect(stableID).toEqual(anyUUID());
     });
 
     it('persists to storage', async () => {
