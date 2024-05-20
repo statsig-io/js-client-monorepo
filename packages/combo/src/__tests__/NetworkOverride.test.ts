@@ -34,7 +34,7 @@ describe('Network Override', () => {
     // /v1/initialize
     await client.initializeAsync();
 
-    // /v1/rgstr or /v1/log_event_beacon
+    // /v1/rgstr
     client.logEvent('my_event');
 
     // /v1/sdk_exception
@@ -70,9 +70,9 @@ describe('Network Override', () => {
       );
     });
 
-    it('sends /log_event_beacon requests to navigator beacon', () => {
+    it('sends /rgstr requests to navigator beacon', () => {
       expect(navigator.sendBeacon).toHaveBeenCalledWith(
-        anyStringContaining('/v1/log_event_beacon'),
+        anyStringContaining('/v1/rgstr'),
         anyString(),
       );
     });

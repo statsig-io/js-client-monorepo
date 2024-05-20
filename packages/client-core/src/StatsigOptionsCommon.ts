@@ -32,13 +32,6 @@ export type NetworkConfigCommon = {
   logEventUrl?: string;
 
   /**
-   * The URL used to flush queued events via {@link window.navigator.sendBeacon} (web only). Takes precedence over {@link StatsigOptionsCommon.api}.
-   *
-   * default: `https://featuregates.org/v1/initialize`
-   */
-  logEventBeaconUrl?: string;
-
-  /**
    * The maximum amount of time (in milliseconds) that any network request can take
    * before timing out.
    *

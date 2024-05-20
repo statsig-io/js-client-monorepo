@@ -58,7 +58,6 @@ export class EventLogger {
   private _creationTime = Date.now();
   private _isLoggingDisabled: boolean;
   private _logEventUrl: string;
-  private _logEventBeaconUrl: string;
 
   constructor(
     private _sdkKey: string,
@@ -75,13 +74,6 @@ export class EventLogger {
       config?.logEventUrl,
       config?.api,
       '/rgstr',
-      NetworkDefault.eventsApi,
-    );
-
-    this._logEventBeaconUrl = _getOverridableUrl(
-      config?.logEventBeaconUrl,
-      config?.api,
-      '/log_event_beacon',
       NetworkDefault.eventsApi,
     );
 
@@ -221,17 +213,7 @@ export class EventLogger {
   private async _sendEventsViaPost(
     events: StatsigEventInternal[],
   ): Promise<SendEventsResponse> {
-    const result = await this._network.post({
-      sdkKey: this._sdkKey,
-      data: {
-        events,
-      },
-      url: this._logEventUrl,
-      retries: 3,
-      params: {
-        [NetworkParam.EventCount]: String(events.length),
-      },
-    });
+    const result = await this._network.post(this._getRequestData(events));
 
     const code = result?.code ?? -1;
     return { success: code >= 200 && code < 300 };
@@ -241,13 +223,21 @@ export class EventLogger {
     events: StatsigEventInternal[],
   ): Promise<SendEventsResponse> {
     return {
-      success: await this._network.beacon({
-        sdkKey: this._sdkKey,
-        data: {
-          events,
-        },
-        url: this._logEventBeaconUrl,
-      }),
+      success: await this._network.beacon(this._getRequestData(events)),
+    };
+  }
+
+  private _getRequestData(events: StatsigEventInternal[]) {
+    return {
+      sdkKey: this._sdkKey,
+      data: {
+        events,
+      },
+      url: this._logEventUrl,
+      retries: 3,
+      params: {
+        [NetworkParam.EventCount]: String(events.length),
+      },
     };
   }
 

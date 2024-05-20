@@ -155,7 +155,10 @@
       "$_getSpecs": "un",
       "$_evaluator": "ln",
       "$_getOutputs": "an",
-      "$_isUnloading": "ti"
+      "$_isUnloading": "ti",
+      "$_startBackgroundFlushInterval": "cn",
+      "$_getRequestData": "dn",
+      "$_netConfig": "hn"
     }
   }
 }

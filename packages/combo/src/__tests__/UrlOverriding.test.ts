@@ -41,7 +41,7 @@ describe('Url Overriding', () => {
       client.logEvent({ eventName: 'my-event' }, user);
       await client.flush();
 
-      // /log_event_beacon
+      // /rgstr (sendBeacon)
       _notifyVisibilityChanged('background');
       client.logEvent({ eventName: 'my-event' }, user);
       await client.shutdown();
@@ -59,7 +59,7 @@ describe('Url Overriding', () => {
       );
 
       expect(sendBeaconMock.mock.calls[0][0]).toContain(
-        'https://prodregistryv2.org/v1/log_event_beacon?k=',
+        'https://prodregistryv2.org/v1/rgstr?k=',
       );
     });
 
@@ -73,19 +73,15 @@ describe('Url Overriding', () => {
 
       expect(fetchMock.mock.calls[1][0]).toContain(`${api}/rgstr?k=`);
 
-      expect(sendBeaconMock.mock.calls[0][0]).toContain(
-        `${api}/log_event_beacon?k=`,
-      );
+      expect(sendBeaconMock.mock.calls[0][0]).toContain(`${api}/rgstr?k=`);
     });
 
     it('works for individual url overrides', async () => {
       const downloadConfigSpecsUrl = 'http://dcs-only/dcs';
       const logEventUrl = 'http://log-only/log_event';
-      const logEventBeaconUrl = 'http://log-beacon-only/le_beacon';
       await run({
         networkConfig: {
           downloadConfigSpecsUrl,
-          logEventBeaconUrl,
           logEventUrl,
         },
       });
@@ -96,9 +92,7 @@ describe('Url Overriding', () => {
 
       expect(fetchMock.mock.calls[1][0]).toContain(`${logEventUrl}?k=`);
 
-      expect(sendBeaconMock.mock.calls[0][0]).toContain(
-        `${logEventBeaconUrl}?k=`,
-      );
+      expect(sendBeaconMock.mock.calls[0][0]).toContain(`${logEventUrl}?k=`);
     });
   });
 
@@ -114,7 +108,7 @@ describe('Url Overriding', () => {
       client.logEvent({ eventName: 'my-event' });
       await client.flush();
 
-      // /log_event_beacon
+      // /rgstr (sendBeacon)
       _notifyVisibilityChanged('background');
       client.logEvent({ eventName: 'my-event' });
       await client.shutdown();
@@ -132,7 +126,7 @@ describe('Url Overriding', () => {
       );
 
       expect(sendBeaconMock.mock.calls[0][0]).toContain(
-        'https://prodregistryv2.org/v1/log_event_beacon?k=',
+        'https://prodregistryv2.org/v1/rgstr?k=',
       );
     });
 
@@ -144,26 +138,21 @@ describe('Url Overriding', () => {
 
       expect(fetchMock.mock.calls[1][0]).toContain(`${api}/rgstr?k=`);
 
-      expect(sendBeaconMock.mock.calls[0][0]).toContain(
-        `${api}/log_event_beacon?k=`,
-      );
+      expect(sendBeaconMock.mock.calls[0][0]).toContain(`${api}/rgstr?k=`);
     });
 
     it('works for individual url overrides', async () => {
       const initializeUrl = 'http://init-only/init';
       const logEventUrl = 'http://log-only/log_event';
-      const logEventBeaconUrl = 'http://log-beacon-only/le_beacon';
       await run({
-        networkConfig: { initializeUrl, logEventBeaconUrl, logEventUrl },
+        networkConfig: { initializeUrl, logEventUrl },
       });
 
       expect(fetchMock.mock.calls[0][0]).toContain(`${initializeUrl}?k=`);
 
       expect(fetchMock.mock.calls[1][0]).toContain(`${logEventUrl}?k=`);
 
-      expect(sendBeaconMock.mock.calls[0][0]).toContain(
-        `${logEventBeaconUrl}?k=`,
-      );
+      expect(sendBeaconMock.mock.calls[0][0]).toContain(`${logEventUrl}?k=`);
     });
   });
 });

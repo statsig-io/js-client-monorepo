@@ -8,7 +8,7 @@ import { SessionID } from './SessionID';
 import { StableID } from './StableID';
 import { StatsigClientEmitEventFunc } from './StatsigClientBase';
 import { SDK_VERSION, StatsigMetadataProvider } from './StatsigMetadata';
-import { AnyStatsigOptions } from './StatsigOptionsCommon';
+import { AnyStatsigOptions, NetworkConfigCommon } from './StatsigOptionsCommon';
 import { _isUnloading } from './VisibilityObserving';
 
 const DEFAULT_TIMEOUT_MS = 10_000;
@@ -25,10 +25,15 @@ type RequestArgs = {
   >;
 };
 
-type RequestArgsWithData = RequestArgs & {
+export type RequestArgsWithData = RequestArgs & {
   data: Record<string, unknown>;
   isStatsigEncodable?: boolean;
 };
+
+export type BeaconRequestArgs = Pick<
+  RequestArgsWithData,
+  'data' | 'sdkKey' | 'url' | 'params'
+>;
 
 type RequestArgsInternal = RequestArgs & {
   method: 'POST' | 'GET';
@@ -42,13 +47,14 @@ type NetworkResponse = {
 
 export class NetworkCore {
   private readonly _timeout: number;
+  private readonly _netConfig: NetworkConfigCommon | null;
 
   constructor(
     private _options: AnyStatsigOptions | null,
     private _emitter?: StatsigClientEmitEventFunc,
   ) {
-    this._timeout =
-      _options?.networkConfig?.networkTimeoutMs ?? DEFAULT_TIMEOUT_MS;
+    this._netConfig = _options?.networkConfig ?? null;
+    this._timeout = this._netConfig?.networkTimeoutMs ?? DEFAULT_TIMEOUT_MS;
   }
 
   async post(args: RequestArgsWithData): Promise<NetworkResponse | null> {
@@ -67,11 +73,11 @@ export class NetworkCore {
   isBeaconSupported(): boolean {
     return (
       typeof navigator !== 'undefined' &&
-      typeof navigator?.sendBeacon === 'function'
+      typeof navigator.sendBeacon === 'function'
     );
   }
 
-  async beacon(args: RequestArgsWithData): Promise<boolean> {
+  async beacon(args: BeaconRequestArgs): Promise<boolean> {
     if (!_ensureValidSdkKey(args)) {
       return false;
     }
@@ -88,7 +94,7 @@ export class NetworkCore {
       return null;
     }
 
-    if (this._options?.networkConfig?.preventAllNetworkTraffic) {
+    if (this._netConfig?.preventAllNetworkTraffic) {
       return null;
     }
 
@@ -116,7 +122,7 @@ export class NetworkCore {
         keepalive,
       };
 
-      const func = this._options?.networkConfig?.networkOverrideFunc ?? fetch;
+      const func = this._netConfig?.networkOverrideFunc ?? fetch;
       response = await func(url, config);
       clearTimeout(handle);
 
