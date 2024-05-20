@@ -15,6 +15,7 @@
     "noImplicitReturns": true,
     "noPropertyAccessFromIndexSignature": true,
     "paths": {
+      "@statsig/angular-bindings": ["packages/angular-bindings/src/index.ts"],
       "@statsig/client-core": ["packages/client-core/src/index.ts"],
       "@statsig/client-extensions": ["packages/client-extensions/src/index.ts"],
       "@statsig/expo-bindings": ["packages/expo-bindings/src/index.ts"],
