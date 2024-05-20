@@ -6,5 +6,15 @@ module.exports = composePlugins(withNx(), withWeb(), (config) => {
   // e.g. `config.plugins.push(new MyPlugin())`
   return {
     ...config,
+    devServer: {
+      port: 4200,
+      setupMiddlewares: (middlewares, devServer) => {
+        devServer.app.post('/mock-rgstr', (_, response) => {
+          response.status(202).json({ success: true });
+        });
+
+        return middlewares;
+      },
+    },
   };
 });

@@ -9,9 +9,10 @@
       window.__requests = [];
 
       const actual = fetch;
-      window.fetch = (url, args) => {
-        __requests.push({ url, args });
-        return actual(url, args);
+      window.fetch = async (url, args) => {
+        const res = await actual(url, args);
+        __requests.push({ url, args, res });
+        return res;
       };
     </script>
 
@@ -28,7 +29,11 @@
         const client = new StatsigClient(
           'client-rfLvYGag3eyU0jYW5zcIJTQip7GXxSrhOFN69IGMjvq',
           { userID: 'a-user' },
-          { networkConfig: { logEventUrl: 'https://httpstat.us/202/rgstr' } },
+          {
+            networkConfig: {
+              logEventUrl: 'http://localhost:4200/mock-rgstr', // webpack devServer
+            },
+          },
         );
         client.initializeSync();
 
@@ -44,7 +49,9 @@
         await client.flush();
 
         const events = __requests
-          .filter((req) => req.url.startsWith('https://httpstat.us/202/rgstr'))
+          .filter((req) =>
+            req.url.startsWith('http://localhost:4200/mock-rgstr'),
+          )
           .flatMap((req) => JSON.parse(req.args.body).events);
 
         test('logged the large_event event', () => {
