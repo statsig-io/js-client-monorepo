@@ -13,6 +13,8 @@ export type StatsigGlobal = {
   instance: (sdkKey?: string) => StatsigClientInterface | undefined;
 };
 
+declare let global: any;
+
 declare global {
   let __STATSIG__: StatsigGlobal | undefined;
 

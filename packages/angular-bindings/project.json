@@ -14,7 +14,7 @@
       },
       "configurations": {
         "production": {
-          "tsConfig": "packages/angular-bindings/tsconfig.lib.prod.json"
+          "tsConfig": "packages/angular-bindings/tsconfig.lib.json"
         },
         "development": {
           "tsConfig": "packages/angular-bindings/tsconfig.lib.json"

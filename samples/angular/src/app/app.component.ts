@@ -1,7 +1,10 @@
 import { Component } from '@angular/core';
 import { RouterModule } from '@angular/router';
 
-import { AngularBindingsComponent } from '@statsig/angular-bindings';
+import {
+  AngularBindingsComponent,
+  StatsigService,
+} from '@statsig/angular-bindings';
 
 @Component({
   standalone: true,
@@ -11,4 +14,6 @@ import { AngularBindingsComponent } from '@statsig/angular-bindings';
     <router-outlet></router-outlet>`,
   styles: ``,
 })
-export class AppComponent {}
+export class AppComponent {
+  constructor(private _statsig: StatsigService) {}
+}
