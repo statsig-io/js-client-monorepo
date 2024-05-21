@@ -11,15 +11,8 @@
     [
       "prismjs",
       {
-        "languages": [
-          "typescript",
-          "javascript",
-          "css",
-          "markup"
-        ],
-        "plugins": [
-          "line-numbers"
-        ],
+        "languages": ["typescript", "javascript", "css", "markup"],
+        "plugins": ["line-numbers"],
         "theme": "okaidia",
         "css": true
       }

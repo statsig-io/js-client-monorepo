@@ -2,11 +2,9 @@
   "name": "@statsig/angular-bindings",
   "version": "0.0.1",
   "peerDependencies": {
+    "@statsig/js-client": "0.0.1-beta.41",
     "@angular/common": "^17.1.0",
     "@angular/core": "^17.1.0"
-  },
-  "dependencies": {
-    "@statsig/js-client": "0.0.1-beta.41"
   },
   "sideEffects": false
 }

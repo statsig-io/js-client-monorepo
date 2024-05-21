@@ -413,11 +413,7 @@ importers:
         specifier: ^4.9.1
         version: 4.10.1
 
-  packages/angular-bindings:
-    dependencies:
-      '@statsig/js-client':
-        specifier: 0.0.1-beta.41
-        version: link:../js-client
+  packages/angular-bindings: {}
 
   packages/client-core: {}
 

@@ -3,3 +3,6 @@
 /coverage
 /.nx/cache
 .angular
+pnpm-lock.yaml
+/node_modules
+*.min.js

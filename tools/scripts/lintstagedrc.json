@@ -1,3 +1,7 @@
 {
-  "*": ["npx nx format:write --files"]
+  "*": [
+    "nx format:write --parallel=5 --affected",
+    "npx prettier --write .",
+    "git add"
+  ]
 }
