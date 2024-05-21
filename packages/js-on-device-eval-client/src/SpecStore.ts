@@ -3,7 +3,7 @@ import {
   DataSource,
   DownloadConfigSpecsResponse,
   Spec,
-  typedJsonParse,
+  _typedJsonParse,
 } from '@statsig/client-core';
 
 export type SpecAndSourceInfo = {
@@ -16,10 +16,10 @@ export type SpecAndSourceInfo = {
 export type SpecKind = 'gate' | 'config' | 'layer';
 
 function _parseResponse(values: string): DownloadConfigSpecsResponse | null {
-  return typedJsonParse<DownloadConfigSpecsResponse>(
+  return _typedJsonParse<DownloadConfigSpecsResponse>(
     values,
     'has_updates',
-    'Failed to parse DownloadConfigSpecsResponse',
+    'DownloadConfigSpecsResponse',
   );
 }
 

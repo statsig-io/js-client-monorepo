@@ -9,7 +9,7 @@ import {
   InitializeResponse,
   InitializeResponseWithUpdates,
   LayerEvaluation,
-  typedJsonParse,
+  _typedJsonParse,
 } from '@statsig/client-core';
 
 export default class EvaluationStore {
@@ -18,16 +18,6 @@ export default class EvaluationStore {
   private _source: DataSource = 'Uninitialized';
   private _lcut = 0;
   private _receivedAt = 0;
-
-  getValues(): InitializeResponseWithUpdates | null {
-    return this._rawValues
-      ? typedJsonParse<InitializeResponseWithUpdates>(
-          this._rawValues,
-          'has_updates',
-          'Failed to parse EvaluationStoreValues',
-        )
-      : null;
-  }
 
   reset(): void {
     this._values = null;
@@ -45,15 +35,25 @@ export default class EvaluationStore {
     this._source = 'NoValues';
   }
 
-  setValuesFromDataAdapter(result: DataAdapterResult | null): void {
+  getValues(): InitializeResponseWithUpdates | null {
+    return this._rawValues
+      ? _typedJsonParse<InitializeResponseWithUpdates>(
+          this._rawValues,
+          'has_updates',
+          'EvaluationStoreValues',
+        )
+      : null;
+  }
+
+  setValues(result: DataAdapterResult | null): void {
     if (!result) {
       return;
     }
 
-    const values = typedJsonParse<InitializeResponse>(
+    const values = _typedJsonParse<InitializeResponse>(
       result.data,
       'has_updates',
-      'Failed to parse EvaluationResponse',
+      'EvaluationResponse',
     );
 
     if (values?.has_updates !== true) {

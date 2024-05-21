@@ -1,4 +1,4 @@
-import { DJB2 } from './Hashing';
+import { _DJB2 } from './Hashing';
 import { StatsigUser } from './StatsigUser';
 
 export type CustomCacheKeyGenerator = (
@@ -24,7 +24,7 @@ export function _getUserStorageKey(
     `k:${sdkKey}`,
   ];
 
-  return DJB2(parts.join('|'));
+  return _DJB2(parts.join('|'));
 }
 
 export function _getStorageKey(
@@ -36,5 +36,5 @@ export function _getStorageKey(
     return _getUserStorageKey(sdkKey, user, customKeyGenerator);
   }
 
-  return DJB2(`k:${sdkKey}`);
+  return _DJB2(`k:${sdkKey}`);
 }

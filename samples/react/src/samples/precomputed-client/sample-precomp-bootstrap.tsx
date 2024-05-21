@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-import { DJB2 } from '@statsig/client-core';
+import { _DJB2 } from '@statsig/client-core';
 import { StatsigClient } from '@statsig/js-client';
 
 import { STATSIG_CLIENT_KEY } from '../../Contants';
@@ -10,7 +10,7 @@ function getStatsigBootstrapJson(): string {
   // •••
   // </snippet>
 
-  const hash = DJB2('a_gate');
+  const hash = _DJB2('a_gate');
 
   return JSON.stringify({
     __note: 'Sample Response using the SDK Demo project',

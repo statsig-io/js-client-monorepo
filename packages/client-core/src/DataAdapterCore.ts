@@ -12,7 +12,7 @@ import {
   _getObjectFromStorage,
   _setObjectInStorage,
 } from './StorageProvider';
-import { typedJsonParse } from './TypedJsonParse';
+import { _typedJsonParse } from './TypedJsonParse';
 
 const CACHE_LIMIT = 10;
 
@@ -126,10 +126,10 @@ export abstract class DataAdapterCore {
       return null;
     }
 
-    const response = typedJsonParse<{ has_updates: boolean }>(
+    const response = _typedJsonParse<{ has_updates: boolean }>(
       latest,
       'has_updates',
-      'Failure while attempting to persist latest value',
+      'Initialize Response',
     );
 
     const sdkKey = this._getSdkKey();
@@ -166,10 +166,10 @@ export abstract class DataAdapterCore {
       return null;
     }
 
-    const result = typedJsonParse<DataAdapterResult>(
+    const result = _typedJsonParse<DataAdapterResult>(
       cache,
       'source',
-      'Failed to parse cached result',
+      'Cached Result',
     );
 
     return result ? { ...result, source: 'Cache' } : null;

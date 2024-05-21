@@ -1,5 +1,4 @@
 import {
-  DJB2,
   DataAdapterAsyncOptions,
   DataAdapterResult,
   DynamicConfig,
@@ -21,6 +20,7 @@ import {
   StatsigEvent,
   StatsigSession,
   StatsigUser,
+  _DJB2,
   _createConfigExposure,
   _createGateExposure,
   _createLayerParameterExposure,
@@ -134,7 +134,7 @@ export default class StatsigClient
     this._resetForUser(user);
 
     const result = this.dataAdapter.getDataSync(this._user);
-    this._store.setValuesFromDataAdapter(result);
+    this._store.setValues(result);
 
     this._finalizeUpdate(result);
     this._runPostUpdate(result ?? null, this._user);
@@ -163,7 +163,7 @@ export default class StatsigClient
 
     this._setStatus('Loading', result);
 
-    this._store.setValuesFromDataAdapter(result);
+    this._store.setValues(result);
     result = await this.dataAdapter.getDataAsync(result, initiator, options);
 
     // ensure the user hasn't changed while we were waiting
@@ -171,7 +171,7 @@ export default class StatsigClient
       return;
     }
 
-    this._store.setValuesFromDataAdapter(result);
+    this._store.setValues(result);
     this._finalizeUpdate(result);
   }
 
@@ -227,7 +227,7 @@ export default class StatsigClient
     name: string,
     options?: FeatureGateEvaluationOptions,
   ): FeatureGate {
-    const hash = DJB2(name);
+    const hash = _DJB2(name);
 
     const { evaluation, details } = this._store.getGate(hash);
     const gate = _makeFeatureGate(name, details, evaluation);
@@ -290,7 +290,7 @@ export default class StatsigClient
    * @returns {Layer} - The {@link Layer} object representing the layers's current evaluation results for the user.
    */
   getLayer(name: string, options?: LayerEvaluationOptions): Layer {
-    const hash = DJB2(name);
+    const hash = _DJB2(name);
 
     const { evaluation, details } = this._store.getLayer(hash);
     const layer = _makeLayer(name, details, evaluation);
@@ -381,7 +381,7 @@ export default class StatsigClient
     name: string,
     options?: DynamicConfigEvaluationOptions | ExperimentEvaluationOptions,
   ): DynamicConfig {
-    const hash = DJB2(name);
+    const hash = _DJB2(name);
     const { evaluation, details } = this._store.getConfig(hash);
 
     const config = _makeDynamicConfig(name, details, evaluation);

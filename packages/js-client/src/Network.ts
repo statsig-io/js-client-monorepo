@@ -6,10 +6,10 @@ import {
   StatsigClientEmitEventFunc,
   StatsigUser,
   _getOverridableUrl,
-  typedJsonParse,
+  _typedJsonParse,
 } from '@statsig/client-core';
 
-import { resolveDeltasResponse } from './EvaluationResponseDeltas';
+import { _resolveDeltasResponse } from './EvaluationResponseDeltas';
 import { StatsigOptions } from './StatsigOptions';
 
 type EvaluationsFetchArgs = {
@@ -45,10 +45,10 @@ export default class StatsigNetwork extends NetworkCore {
     user?: StatsigUser,
   ): Promise<string | null> {
     const cache = current
-      ? typedJsonParse<InitializeResponse>(
+      ? _typedJsonParse<InitializeResponse>(
           current,
           'has_updates',
-          'Failed to parse cached EvaluationResponse',
+          'InitializeResponse',
         )
       : null;
 
@@ -101,7 +101,7 @@ export default class StatsigNetwork extends NetworkCore {
       return response.body;
     }
 
-    const result = resolveDeltasResponse(cache, response.body);
+    const result = _resolveDeltasResponse(cache, response.body);
     if (typeof result === 'string') {
       return result;
     }

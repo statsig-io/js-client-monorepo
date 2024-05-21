@@ -7,10 +7,10 @@ import { Log } from './Log';
  * @param {string} error An error to print via Log.error() when parsing fails
  * @returns {T | null} The parse object T or null if it failed
  */
-export function typedJsonParse<T>(
+export function _typedJsonParse<T>(
   data: string,
   guard: string,
-  error: string,
+  typeName: string,
 ): T | null {
   try {
     const result = JSON.parse(data) as unknown;
@@ -25,6 +25,6 @@ export function typedJsonParse<T>(
     // noop
   }
 
-  Log.error(error);
+  Log.error(`Failed to parse ${typeName}`);
   return null;
 }

@@ -1,7 +1,7 @@
 import {
-  DJB2Object,
   InitializeResponseWithUpdates,
-  typedJsonParse,
+  _DJB2Object,
+  _typedJsonParse,
 } from '@statsig/client-core';
 
 type DeltasEvaluationResponse = InitializeResponseWithUpdates & {
@@ -23,14 +23,14 @@ export type DeltasFailureInfo = {
 
 type DeltasResult = string | DeltasFailureInfo | null;
 
-export function resolveDeltasResponse(
+export function _resolveDeltasResponse(
   cache: InitializeResponseWithUpdates,
   deltasString: string,
 ): DeltasResult {
-  const deltas = typedJsonParse<DeltasEvaluationResponse>(
+  const deltas = _typedJsonParse<DeltasEvaluationResponse>(
     deltasString,
     'checksum',
-    'Failed to parse DeltasEvaluationResponse',
+    'DeltasEvaluationResponse',
   );
 
   if (!deltas) {
@@ -42,7 +42,7 @@ export function resolveDeltasResponse(
   const merged = _mergeDeltasIntoCache(cache, deltas);
   const resolved = _handleDeletedEntries(merged);
 
-  const actualChecksum = DJB2Object({
+  const actualChecksum = _DJB2Object({
     feature_gates: resolved.feature_gates,
     dynamic_configs: resolved.dynamic_configs,
     layer_configs: resolved.layer_configs,

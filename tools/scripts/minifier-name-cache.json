@@ -157,7 +157,11 @@
       "$_downloadConfigSpecsUrl": "an",
       "$_getSpecs": "cn",
       "$_evaluator": "dn",
-      "$_getOutputs": "hn"
+      "$_getOutputs": "hn",
+      "$_DJB2": "ti",
+      "$_typedJsonParse": "ei",
+      "$_DJB2Object": "ii",
+      "$_resolveDeltasResponse": "ni"
     }
   }
 }

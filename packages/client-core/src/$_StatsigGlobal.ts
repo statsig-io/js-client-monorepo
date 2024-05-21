@@ -24,13 +24,18 @@ declare global {
 }
 
 export const _getStatsigGlobal = (): StatsigGlobal => {
-  return __STATSIG__ ?? statsigGlobal;
+  return __STATSIG__ ? __STATSIG__ : statsigGlobal;
 };
 
 export const _getInstance = (
   sdkKey: string,
 ): StatsigClientInterface | undefined => {
-  return sdkKey ? __STATSIG__?.instances?.[sdkKey] : __STATSIG__?.lastInstance;
+  const gbl = _getStatsigGlobal();
+  if (!sdkKey) {
+    return gbl.lastInstance;
+  }
+
+  return gbl.instances && gbl.instances[sdkKey];
 };
 
 const GLOBAL_KEY = '__STATSIG__';

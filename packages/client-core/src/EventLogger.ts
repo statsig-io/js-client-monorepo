@@ -1,4 +1,4 @@
-import { DJB2 } from './Hashing';
+import { _DJB2 } from './Hashing';
 import { Log } from './Log';
 import { NetworkDefault, NetworkParam } from './NetworkConfig';
 import { NetworkCore } from './NetworkCore';
@@ -157,12 +157,14 @@ export class EventLogger {
       return true;
     }
 
+    const user = event.user ? event.user : {};
+    const metadata = event.metadata ? event.metadata : {};
     const key = [
       event.eventName,
-      event.user?.userID,
-      event.metadata?.['gate'],
-      event.metadata?.['config'],
-      event.metadata?.['ruleID'],
+      user.userID,
+      metadata['gate'],
+      metadata['config'],
+      metadata['ruleID'],
     ].join('|');
     const previous = this._lastExposureTimeMap[key];
     const now = Date.now();
@@ -269,7 +271,7 @@ export class EventLogger {
   }
 
   private _getStorageKey() {
-    return `statsig.failed_logs.${DJB2(this._sdkKey)}`;
+    return `statsig.failed_logs.${_DJB2(this._sdkKey)}`;
   }
 
   private _normalizeAndAppendEvent(event: StatsigEventInternal) {

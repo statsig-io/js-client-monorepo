@@ -1,7 +1,7 @@
 module.exports = [
   {
     name: 'statsig-js-client',
-    limit: '10 kB',
+    limit: '10 kB', // hard limit! please do not adjust
     path: 'dist/packages/combo/build/js-client/statsig-js-client.min.js',
     import: '{ StatsigClient }',
     running: false,

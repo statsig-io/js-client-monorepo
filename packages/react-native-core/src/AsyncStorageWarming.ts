@@ -5,7 +5,7 @@ import {
   SpecsDataAdapter,
   StatsigClientInterface,
   Storage,
-  typedJsonParse,
+  _typedJsonParse,
 } from '@statsig/client-core';
 
 export type StatsigAsyncCacheWarming = {
@@ -44,10 +44,10 @@ async function _loadCacheAsync(
       if (!cache) {
         return;
       }
-      const result = typedJsonParse<DataAdapterResult>(
+      const result = _typedJsonParse<DataAdapterResult>(
         cache,
         'source',
-        'Failed to parse cached result',
+        'cached result',
       );
 
       if (result && 'source' in result) {

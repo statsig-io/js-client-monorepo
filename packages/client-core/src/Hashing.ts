@@ -1,4 +1,4 @@
-export const DJB2 = (value: string): string => {
+export const _DJB2 = (value: string): string => {
   let hash = 0;
   for (let i = 0; i < value.length; i++) {
     const character = value.charCodeAt(i);
@@ -8,8 +8,8 @@ export const DJB2 = (value: string): string => {
   return String(hash >>> 0);
 };
 
-export const DJB2Object = (value: Record<string, unknown> | null): string => {
-  return DJB2(JSON.stringify(_getSortedObject(value)));
+export const _DJB2Object = (value: Record<string, unknown> | null): string => {
+  return _DJB2(JSON.stringify(_getSortedObject(value)));
 };
 
 const _getSortedObject = (

@@ -22,49 +22,42 @@ const _resolve = <T>(input?: unknown) => Promise.resolve<T>(input as T);
 
 const _inMemoryProvider: StorageProvider = {
   _getProviderName: () => 'InMemory',
-  _getItemSync(key: string): string | null {
-    return inMemoryStore[key] ?? null;
-  },
-  _getItem(key: string): Promise<string | null> {
-    return _resolve(inMemoryStore[key] ?? null);
-  },
-  _setItem(key: string, value: string): Promise<void> {
-    inMemoryStore[key] = value;
-    return _resolve();
-  },
-  _removeItem(key: string): Promise<void> {
-    delete inMemoryStore[key];
-    return _resolve();
-  },
-  _getAllKeys(): Promise<readonly string[]> {
-    return _resolve(Object.keys(inMemoryStore));
-  },
+  _getItemSync: (key: string): string | null =>
+    inMemoryStore[key] ? inMemoryStore[key] : null,
+  _getItem: (key: string): Promise<string | null> =>
+    _resolve(inMemoryStore[key] ? inMemoryStore[key] : null),
+  _setItem: (key: string, value: string): Promise<void> => (
+    (inMemoryStore[key] = value), _resolve()
+  ),
+  _removeItem: (key: string): Promise<void> => (
+    delete inMemoryStore[key], _resolve()
+  ),
+  _getAllKeys: (): Promise<readonly string[]> =>
+    _resolve(Object.keys(inMemoryStore)),
 };
 
 let _localStorageProvider: StorageProvider | null = null;
 try {
   const win = _getWindowSafe();
-  if (typeof win?.localStorage?.getItem === 'function') {
+  if (
+    win &&
+    win.localStorage &&
+    typeof win.localStorage.getItem === 'function'
+  ) {
     _localStorageProvider = {
       _getProviderName: () => 'LocalStorage',
-      _getItemSync(key: string): string | null {
-        return win.localStorage.getItem(key);
-      },
-      _getItem(key: string): Promise<string | null> {
-        return _resolve(win.localStorage.getItem(key));
-      },
-      _setItem(key: string, value: string): Promise<void> {
-        win.localStorage.setItem(key, value);
-        return _resolve();
-      },
-      _removeItem(key: string): Promise<void> {
-        win.localStorage.removeItem(key);
-        return _resolve();
-      },
-      _getAllKeys(): Promise<string[]> {
-        const keys = Object.keys(win.localStorage);
-        return _resolve(keys);
-      },
+      _getItemSync: (key: string): string | null =>
+        win.localStorage.getItem(key),
+      _getItem: (key: string): Promise<string | null> =>
+        _resolve(win.localStorage.getItem(key)),
+      _setItem: (key: string, value: string): Promise<void> => (
+        win.localStorage.setItem(key, value), _resolve()
+      ),
+      _removeItem: (key: string): Promise<void> => (
+        win.localStorage.removeItem(key), _resolve()
+      ),
+      _getAllKeys: (): Promise<string[]> =>
+        _resolve(Object.keys(win.localStorage)),
     };
   }
 } catch (error) {
@@ -93,7 +86,9 @@ export const Storage: StorageProvider & StorageProviderManagment = {
     _inMemoryBreaker(() => _current._getItem(key)),
 
   _getItemSync: (key: string) =>
-    _inMemoryBreaker(() => _current._getItemSync?.(key) ?? null),
+    _inMemoryBreaker(() =>
+      _current._getItemSync ? _current._getItemSync(key) : null,
+    ),
 
   _setItem: (key: string, value: string) => _current._setItem(key, value),
   _removeItem: (key: string) => _current._removeItem(key),

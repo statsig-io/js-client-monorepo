@@ -1,4 +1,4 @@
-import { DJB2, StatsigUser, Storage } from '@statsig/client-core';
+import { StatsigUser, Storage, _DJB2 } from '@statsig/client-core';
 
 type LoginFormData = {
   email: string;
@@ -14,7 +14,7 @@ const storageKey = 'fake_logged_in_user';
 const service = {
   login: async (data: LoginFormData): Promise<AuthResult> => {
     await new Promise<void>((r) => setTimeout(r, 1000));
-    const userID = `user-${DJB2(data.email)}`;
+    const userID = `user-${_DJB2(data.email)}`;
     const user = { userID, email: data.email };
     await Storage._setItem(storageKey, JSON.stringify(user));
 
