@@ -16,9 +16,10 @@ import {
   _registerEventHandler,
   _shouldLogEvent,
 } from './Utils';
+import { _gatherPageViewPayload } from './payloadUtils';
 
-export function runStatsigAutoCapture(client: StatsigClient): void {
-  new AutoCapture(client);
+export function runStatsigAutoCapture(client: StatsigClient): AutoCapture {
+  return new AutoCapture(client);
 }
 
 export class AutoCapture {
@@ -122,17 +123,12 @@ export class AutoCapture {
   private _logPageView() {
     setTimeout(() => {
       const url = _getSafeUrl();
+      const payload = _gatherPageViewPayload(url);
 
-      this._enqueueAutoCapture(
-        'page_view',
-        _getSanitizedPageUrl(),
-        {
-          title: _getDocumentSafe()?.title,
-          queryParams: Object.fromEntries(url.searchParams),
-          referrer: _getDocumentSafe()?.referrer || '',
-        },
-        { flushImmediately: true, addNewSessionMetadata: true },
-      );
+      this._enqueueAutoCapture('page_view', _getSanitizedPageUrl(), payload, {
+        flushImmediately: true,
+        addNewSessionMetadata: true,
+      });
     }, 1);
   }
 
