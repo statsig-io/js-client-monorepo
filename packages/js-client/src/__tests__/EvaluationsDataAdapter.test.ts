@@ -48,7 +48,7 @@ describe('Evaluations Data Adapter', () => {
     });
 
     it('returns bootstrapped values', () => {
-      adapter.setData(InitResponseString, user);
+      adapter.setData(InitResponseString);
 
       const result = adapter.getDataSync(user);
 

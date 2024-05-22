@@ -24,7 +24,7 @@ describe('Init Strategy - Bootstrap', () => {
     fetchMock.mockResponse(InitResponseString);
 
     client = new StatsigClient(sdkKey, user);
-    client.dataAdapter.setData(InitResponseString, user);
+    client.dataAdapter.setData(InitResponseString);
 
     client.initializeSync();
   });

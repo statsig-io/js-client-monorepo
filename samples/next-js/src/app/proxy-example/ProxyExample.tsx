@@ -26,7 +26,7 @@ function useProxiedClient(
       },
       disableStatsigEncoding: true,
     });
-    client.dataAdapter.setData(values, user);
+    client.dataAdapter.setData(values);
     client.initializeSync();
     return client;
   }, [sdkKey, user, values]);

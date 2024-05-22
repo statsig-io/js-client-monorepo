@@ -25,10 +25,7 @@ describe('Bootstrap', () => {
       environment: { tier: 'development' },
     });
 
-    client.dataAdapter.setData(
-      JSON.stringify({ ...InitResponse, time: 1 }),
-      user,
-    );
+    client.dataAdapter.setData(JSON.stringify({ ...InitResponse, time: 1 }));
 
     client.initializeSync();
 

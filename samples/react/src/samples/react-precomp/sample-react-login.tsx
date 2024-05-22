@@ -45,7 +45,7 @@ function LoginForm(): JSX.Element {
         authorizedUser = { userID: 'dummy' };
         // <snippet>
         // or, bootstrap with data from your own backend
-        dataAdapter.setData(bootstrapData, authorizedUser);
+        dataAdapter.setData(bootstrapData);
 
         // </snippet>
         authorizedUser = actual;

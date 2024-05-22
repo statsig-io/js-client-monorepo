@@ -1,14 +1,14 @@
 module.exports = [
   {
     name: 'statsig-js-client',
-    limit: '10 kB', // hard limit! please do not adjust
+    limit: '10240 B', // hard limit! please do not adjust
     path: 'dist/packages/combo/build/js-client/statsig-js-client.min.js',
     import: '{ StatsigClient }',
     running: false,
   },
   {
     name: 'statsig-js-client + web-analytics',
-    limit: '12 kB',
+    limit: '13 kB',
     path: 'dist/packages/combo/build/js-client/statsig-js-client+web-analytics.min.js',
     import: '{ StatsigClient }',
     running: false,

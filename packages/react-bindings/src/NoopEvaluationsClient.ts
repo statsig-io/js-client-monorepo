@@ -42,6 +42,7 @@ const _noopDataAdapter: EvaluationsDataAdapter & SpecsDataAdapter = {
   getDataSync: () => null,
   getDataAsync: () => Promise.resolve(null),
   setData: _noop,
+  setDataLegacy: _noop,
   prefetchData: _noopAsync,
 };
 

@@ -4,8 +4,11 @@ import {
   DataAdapterCore,
   DataAdapterResult,
   EvaluationsDataAdapter,
+  InitializeResponse,
+  Log,
   StatsigUser,
   _getStorageKey,
+  _typedJsonParse,
 } from '@statsig/client-core';
 
 import Network from './Network';
@@ -40,6 +43,24 @@ export class StatsigEvaluationsDataAdapter
     options?: DataAdapterAsyncOptions,
   ): Promise<void> {
     return this._prefetchDataImpl(user, options);
+  }
+
+  override setData(data: string): void {
+    const values = _typedJsonParse<InitializeResponse>(
+      data,
+      'has_updates',
+      'data',
+    );
+
+    if (values && 'user' in values) {
+      super.setData(data, values.user);
+    } else {
+      Log.error('StatsigUser not found');
+    }
+  }
+
+  setDataLegacy(data: string, user: StatsigUser): void {
+    super.setData(data, user);
   }
 
   protected override async _fetchFromNetwork(

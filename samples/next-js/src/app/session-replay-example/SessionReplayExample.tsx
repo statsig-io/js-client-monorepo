@@ -30,7 +30,7 @@ function useClientWithSessionReplay(
     const client = new StatsigClient(sdkKey, user, {
       logLevel: LogLevel.Debug,
     });
-    client.dataAdapter.setData(values, user);
+    client.dataAdapter.setData(values);
     client.initializeAsync().catch((err) => {
       console.error(err);
     });

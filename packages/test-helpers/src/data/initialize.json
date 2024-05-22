@@ -107,11 +107,10 @@
   "time": 1705543730484,
   "company_lcut": 1705543730484,
   "evaluated_keys": {},
-  "hash_used": "djb2",
   "derived_fields": {
     "user_agent": "PostmanRuntime/7.36.3",
     "ip": "4.38.114.186",
     "country": "US"
   },
-  "hashed_sdk_key_used": "1295945792"
+  "user": { "userID": "a-user" }
 }

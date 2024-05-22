@@ -24,7 +24,7 @@ function useBootstrappedClient(
     const client = new StatsigClient(sdkKey, user, {
       logLevel: LogLevel.Debug,
     });
-    client.dataAdapter.setData(values, user);
+    client.dataAdapter.setData(values);
 
     client.initializeSync();
     return client;

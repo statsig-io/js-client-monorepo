@@ -15,7 +15,7 @@ describe('Client Event Emitting', () => {
     gateEvalEvents = [];
 
     client = new StatsigClient('client-key', user);
-    client.dataAdapter.setData(InitResponseString, user);
+    client.dataAdapter.setData(InitResponseString);
     client.on('*', (event) => {
       wildcardEvents.push(event);
     });

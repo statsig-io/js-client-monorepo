@@ -3,6 +3,7 @@ import {
   GateEvaluation,
   LayerEvaluation,
 } from './EvaluationTypes';
+import { StatsigUser } from './StatsigUser';
 
 type SessionReplayFields = {
   can_record_session?: boolean;
@@ -17,6 +18,7 @@ export type InitializeResponseWithUpdates = SessionReplayFields & {
   has_updates: true;
   hash_used: 'none' | 'sha256' | 'djb2';
   derived_fields?: Record<string, unknown>;
+  user?: StatsigUser;
 };
 
 export type InitializeResponse =

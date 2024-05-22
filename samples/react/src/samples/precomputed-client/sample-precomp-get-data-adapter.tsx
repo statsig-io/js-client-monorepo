@@ -28,7 +28,10 @@ class MyCustomEvalDataAdapter implements EvaluationsDataAdapter {
   prefetchData(_user: StatsigUser) {
     return Promise.resolve();
   }
-  setData(data: string, user: StatsigUser) {
+  setData(data: string) {
+    //
+  }
+  setDataLegacy(data: string, user: StatsigUser) {
     //
   }
 }

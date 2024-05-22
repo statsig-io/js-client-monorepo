@@ -390,8 +390,8 @@ importers:
         specifier: ^11.1.2
         version: 11.1.2
       statsig-node:
-        specifier: ^5.10.0
-        version: 5.17.0(encoding@0.1.13)
+        specifier: ^5.20.0
+        version: 5.21.0(encoding@0.1.13)
       sync-json:
         specifier: ^1.0.2
         version: 1.0.2
@@ -19373,8 +19373,8 @@ packages:
     dependencies:
       type-fest: 0.7.1
 
-  /statsig-node@5.17.0(encoding@0.1.13):
-    resolution: {integrity: sha512-RCNYTxPlkUItYHzANqGbq06PxDd+5iECw5FKWG2SsRL32hQ4q1P+QLL2vmEDpwQcO2r6XMUauwp5jHjUkNmyKg==}
+  /statsig-node@5.21.0(encoding@0.1.13):
+    resolution: {integrity: sha512-OSioKFrEYdcZoSG2Bn+T2+FdCfpauhyEL+3kFkfBamHEc3g/AgnQCCQMa9HLhHvsVZBvqfJYV+Z+WS2NlyIJ3A==}
     dependencies:
       ip3country: 5.0.0
       node-fetch: 2.7.0(encoding@0.1.13)
