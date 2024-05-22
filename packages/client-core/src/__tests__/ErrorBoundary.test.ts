@@ -7,7 +7,7 @@ describe('Error Boundary', () => {
   let eb: ErrorBoundary;
 
   function throwing() {
-    eb.capture('test', () => {
+    (eb as any)._capture('test', () => {
       throw new Error('Test Error');
     });
   }

@@ -71,15 +71,16 @@ export abstract class StatsigClientBase<
     options?.logLevel != null && (Log.level = options.logLevel);
     options?.disableStorage && Storage._setDisabled(true);
 
-    this._errorBoundary = new ErrorBoundary(sdkKey, options, emitter);
-    this._errorBoundary.wrap(this);
-    this._errorBoundary.wrap(network);
-    this._errorBoundary.wrap(adapter);
-
     this._sdkKey = sdkKey;
     this._options = options ?? {};
     this._overrideAdapter = options?.overrideAdapter ?? null;
     this._logger = new EventLogger(sdkKey, emitter, network, options);
+
+    this._errorBoundary = new ErrorBoundary(sdkKey, options, emitter);
+    this._errorBoundary.wrap(this);
+    this._errorBoundary.wrap(network);
+    this._errorBoundary.wrap(adapter);
+    this._errorBoundary.wrap(this._logger);
 
     if (_isBrowserEnv()) {
       const statsigGlobal = _getStatsigGlobal();

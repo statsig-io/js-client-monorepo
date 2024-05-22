@@ -5,6 +5,7 @@ import { StatsigMetadataProvider } from './StatsigMetadata';
 import { AnyStatsigOptions } from './StatsigOptionsCommon';
 
 export const EXCEPTION_ENDPOINT = 'https://statsigapi.net/v1/sdk_exception';
+const UNKNOWN_ERROR = '[Statsig] UnknownError';
 
 export class ErrorBoundary {
   private _seen = new Set<string>();
@@ -26,7 +27,7 @@ export class ErrorBoundary {
         }
 
         obj[name] = (...args: unknown[]) => {
-          return this.capture(name, () => original.apply(instance, args));
+          return this._capture(name, () => original.apply(instance, args));
         };
         (obj[name] as { $EB: boolean }).$EB = true;
       });
@@ -35,7 +36,11 @@ export class ErrorBoundary {
     }
   }
 
-  capture(tag: string, task: () => unknown): unknown {
+  logError(tag: string, error: unknown): void {
+    this._onError(tag, error);
+  }
+
+  private _capture(tag: string, task: () => unknown): unknown {
     try {
       const res = task();
       if (res && res instanceof Promise) {
@@ -48,17 +53,12 @@ export class ErrorBoundary {
     }
   }
 
-  logError(tag: string, error: unknown): void {
-    this._onError(tag, error);
-  }
-
   private _onError(tag: string, error: unknown) {
     try {
       Log.warn(`Caught error in ${tag}`, { error });
 
       const impl = async () => {
-        const unwrapped = (error ??
-          Error('[Statsig] Error was empty')) as unknown;
+        const unwrapped = (error ? error : Error(UNKNOWN_ERROR)) as unknown;
         const isError = unwrapped instanceof Error;
         const name = isError ? unwrapped.name : 'No Name';
 
@@ -115,7 +115,7 @@ function _getDescription(obj: unknown): string {
   try {
     return JSON.stringify(obj);
   } catch {
-    return '[Statsig] Failed to get string for error.';
+    return UNKNOWN_ERROR;
   }
 }
 

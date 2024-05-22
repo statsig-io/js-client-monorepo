@@ -26,21 +26,22 @@ type RequestArgs = {
   >;
 };
 
-type RequestArgsWithData = Flatten<
+export type RequestArgsWithData = Flatten<
   RequestArgs & {
     data: Record<string, unknown>;
     isStatsigEncodable?: boolean;
+    isCompressable?: boolean;
   }
 >;
 
 type BeaconRequestArgs = Pick<
   RequestArgsWithData,
-  'data' | 'sdkKey' | 'url' | 'params'
+  'data' | 'sdkKey' | 'url' | 'params' | 'isCompressable'
 >;
 
 type RequestArgsInternal = RequestArgs & {
   method: 'POST' | 'GET';
-  body?: string;
+  body?: BodyInit;
 };
 
 type NetworkResponse = {
@@ -61,10 +62,16 @@ export class NetworkCore {
   }
 
   async post(args: RequestArgsWithData): Promise<NetworkResponse | null> {
-    const body = await this._getPopulatedBody(args);
+    let body: BodyInit = await this._getPopulatedBody(args);
+    if (args.isStatsigEncodable) {
+      body = this._attemptToEncodeString(args, body);
+    } else if (args.isCompressable) {
+      body = await _attemptToCompressBody(args, body);
+    }
+
     return this._sendRequest({
       method: 'POST',
-      body: this._attemptToEncodeString(args, body),
+      body,
       ...args,
     });
   }
@@ -85,8 +92,10 @@ export class NetworkCore {
       return false;
     }
 
+    let body: BodyInit = await this._getPopulatedBody(args);
+    body = await _attemptToCompressBody(args, body);
+
     const url = await this._getPopulatedURL(args);
-    const body = await this._getPopulatedBody(args);
     return navigator.sendBeacon(url, body);
   }
 
@@ -103,9 +112,10 @@ export class NetworkCore {
 
     const { method, body, retries } = args;
 
-    const controller = new AbortController();
+    const controller =
+      typeof AbortController !== 'undefined' ? new AbortController() : null;
     const handle = setTimeout(
-      () => controller.abort(`Timeout of ${this._timeout}ms expired.`),
+      () => controller?.abort(`Timeout of ${this._timeout}ms expired.`),
       this._timeout,
     );
     const url = await this._getPopulatedURL(args);
@@ -120,7 +130,7 @@ export class NetworkCore {
         headers: {
           ...args.headers,
         },
-        signal: controller.signal,
+        signal: controller?.signal,
         priority: args.priority,
         keepalive,
       };
@@ -234,11 +244,11 @@ const _ensureValidSdkKey = (args: RequestArgs) => {
 };
 
 function _getErrorMessage(
-  controller: AbortController,
+  controller: AbortController | null,
   error: unknown,
 ): string | null {
   if (
-    controller.signal.aborted &&
+    controller?.signal.aborted &&
     typeof controller.signal.reason === 'string'
   ) {
     return controller.signal.reason;
@@ -253,4 +263,32 @@ function _getErrorMessage(
   }
 
   return 'Unknown Error';
+}
+
+async function _attemptToCompressBody(
+  args: RequestArgsWithData,
+  body: string,
+): Promise<BodyInit> {
+  if (
+    !args.isCompressable ||
+    typeof CompressionStream === 'undefined' ||
+    typeof TextEncoder === 'undefined' ||
+    __STATSIG__?.['no-compress'] != null
+  ) {
+    return body;
+  }
+
+  const bytes = new TextEncoder().encode(body);
+  const stream = new CompressionStream('gzip');
+
+  const writer = stream.writable.getWriter();
+  writer.write(bytes).catch(Log.error);
+  writer.close().catch(Log.error);
+
+  args.params = {
+    ...(args.params ?? {}),
+    [NetworkParam.IsGzipped]: '1',
+  };
+
+  return await new Response(stream.readable).arrayBuffer();
 }

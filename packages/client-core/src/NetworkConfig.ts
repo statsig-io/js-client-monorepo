@@ -18,4 +18,5 @@ export enum NetworkParam {
   Time = 't',
   SessionID = 'sid',
   StatsigEncoded = 'se',
+  IsGzipped = 'gz',
 }

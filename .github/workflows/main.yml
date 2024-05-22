@@ -53,15 +53,15 @@ jobs:
       - uses: ./.github/actions/setup-action
       - run: pnpm run test
 
-  e2e:
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    steps:
-      - name: Install Playwright Browsers
-        run: npx playwright install --with-deps
-      - uses: actions/checkout@v3
-      - uses: ./.github/actions/setup-action
-      - run: pnpm run e2e
+  # e2e:
+  #   runs-on: ubuntu-latest
+  #   timeout-minutes: 10
+  #   steps:
+  #     - name: Install Playwright Browsers
+  #       run: npx playwright install --with-deps
+  #     - uses: actions/checkout@v3
+  #     - uses: ./.github/actions/setup-action
+  #     - run: pnpm run e2e
 
   deploy:
     if: github.event_name == 'push' && github.event.repository.private

@@ -2,14 +2,36 @@
 
 /* eslint-disable no-console */
 import {
-  StatsigClient,
-  StatsigEvaluationsDataAdapter,
-} from '@statsig/js-client';
+  AnyStatsigOptions,
+  DataAdapterResult,
+  EvaluationsDataAdapter,
+  StatsigUser,
+} from '@statsig/client-core';
+import { StatsigClient } from '@statsig/js-client';
 
 import { STATSIG_CLIENT_KEY as YOUR_CLIENT_KEY } from '../../Contants';
 import { myStatsigClient } from './sample-precomp-instance';
 
-class MyCustomEvalDataAdapter extends StatsigEvaluationsDataAdapter {}
+class MyCustomEvalDataAdapter implements EvaluationsDataAdapter {
+  attach(_sdkKey: string, _options: AnyStatsigOptions | null) {
+    //
+  }
+  __primeInMemoryCache(_cache: Record<string, DataAdapterResult>) {
+    //
+  }
+  getDataSync(_user: StatsigUser): DataAdapterResult | null {
+    return null;
+  }
+  getDataAsync(_current: DataAdapterResult | null, _user: StatsigUser) {
+    return Promise.resolve(null);
+  }
+  prefetchData(_user: StatsigUser) {
+    return Promise.resolve();
+  }
+  setData(data: string, user: StatsigUser) {
+    //
+  }
+}
 
 // prettier-ignore
 export default async function Sample(): Promise<void> {

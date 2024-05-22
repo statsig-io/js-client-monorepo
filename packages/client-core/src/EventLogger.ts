@@ -1,7 +1,7 @@
 import { _DJB2 } from './Hashing';
 import { Log } from './Log';
 import { NetworkDefault, NetworkParam } from './NetworkConfig';
-import { NetworkCore } from './NetworkCore';
+import { NetworkCore, RequestArgsWithData } from './NetworkCore';
 import { _getCurrentPageUrlSafe, _isBrowserEnv } from './SafeJs';
 import { StatsigClientEmitEventFunc } from './StatsigClientBase';
 import { StatsigEventInternal, _isExposureEvent } from './StatsigEvent';
@@ -132,7 +132,7 @@ export class EventLogger {
     const events = this._queue;
     this._queue = [];
 
-    await this._sendEvents(events);
+    return this._sendEvents(events);
   }
 
   /**
@@ -229,7 +229,7 @@ export class EventLogger {
     };
   }
 
-  private _getRequestData(events: StatsigEventInternal[]) {
+  private _getRequestData(events: StatsigEventInternal[]): RequestArgsWithData {
     return {
       sdkKey: this._sdkKey,
       data: {
@@ -237,6 +237,7 @@ export class EventLogger {
       },
       url: this._logEventUrl,
       retries: 3,
+      isCompressable: true,
       params: {
         [NetworkParam.EventCount]: String(events.length),
       },

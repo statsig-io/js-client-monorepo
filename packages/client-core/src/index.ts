@@ -5,7 +5,6 @@ import { EventLogger } from './EventLogger';
 import { Log } from './Log';
 import { SDK_VERSION } from './StatsigMetadata';
 import { Storage } from './StorageProvider';
-import { getUUID } from './UUID';
 
 export * from './$_StatsigGlobal';
 export * from './CacheKey';
@@ -45,9 +44,6 @@ export { EventLogger, Storage, Log };
 
 __STATSIG__ = {
   ...(__STATSIG__ ?? {}),
-  EventLogger,
   Log,
-  getUUID,
-  Storage,
   SDK_VERSION,
 } as StatsigGlobal;
