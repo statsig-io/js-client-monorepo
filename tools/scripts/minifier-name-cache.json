@@ -165,7 +165,8 @@
       "$_typedJsonParse": "ui",
       "$_DJB2Object": "li",
       "$_resolveDeltasResponse": "ai",
-      "$_capture": "ci"
+      "$_capture": "ci",
+      "$_gatherPageViewPayload": "cn"
     }
   }
 }

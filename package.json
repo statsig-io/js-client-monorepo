@@ -1,6 +1,6 @@
 {
   "name": "statsig",
-  "version": "0.0.1-beta.41",
+  "version": "0.0.1-beta.42",
   "license": "MIT",
   "scripts": {
     "lint": "nx run-many --parallel=5 --target=lint",
