@@ -24,6 +24,14 @@
     "sync-version-package-json": {
       "command": "npx sync-json -v --property version --source package.json packages/**/package.json",
       "dependsOn": []
+    },
+    "lint": {
+      "command": ":",
+      "dependsOn": ["format-check"]
+    },
+    "format-check": {
+      "command": "prettier --check . && nx format:check",
+      "dependsOn": []
     }
   }
 }

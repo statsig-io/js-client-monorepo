@@ -2,7 +2,6 @@
 . "$(dirname -- "$0")/_/husky.sh"
 
 
-# pnpm format
-npx nx affected -t lint --parallel=5
+pnpm nx affected -t lint --parallel=5
 # npx nx affected -t test --parallel=3
 
