@@ -1,5 +1,5 @@
 type ClientType = 'javascript-client' | 'js-on-device-eval-client';
-type BindingType = 'expo' | 'rn' | 'react';
+type BindingType = 'expo' | 'rn' | 'react' | 'angular';
 
 const SDK_CLIENT: Record<string, ClientType> = {};
 

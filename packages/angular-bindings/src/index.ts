@@ -1,2 +1,2 @@
-export * from './lib/angular-bindings/angular-bindings.component';
+export { StatsigModule, STATSIG_CLIENT } from './statsig.module';
 export { StatsigService } from './statsig.service';

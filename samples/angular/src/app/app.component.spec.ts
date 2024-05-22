@@ -1,12 +1,25 @@
 import { TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 
+import { STATSIG_CLIENT, StatsigModule } from '@statsig/angular-bindings';
+import { StatsigClient } from '@statsig/js-client';
+
+import { STATSIG_CLIENT_KEY } from './Contants';
 import { AppComponent } from './app.component';
 
 describe('AppComponent', () => {
   beforeEach(async () => {
+    const precomputedClient = new StatsigClient(STATSIG_CLIENT_KEY, {
+      userID: 'a-user',
+    });
     await TestBed.configureTestingModule({
-      imports: [AppComponent, RouterTestingModule],
+      imports: [AppComponent, RouterTestingModule, StatsigModule],
+      providers: [
+        {
+          provide: STATSIG_CLIENT,
+          useValue: precomputedClient,
+        },
+      ],
     }).compileComponents();
   });
 

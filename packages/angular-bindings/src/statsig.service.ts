@@ -1,19 +1,29 @@
-import { Injectable } from '@angular/core';
+import { Inject, Injectable, OnDestroy } from '@angular/core';
 
-import { StatsigClient } from '@statsig/js-client';
+import { Log, StatsigClientInterface } from '@statsig/client-core';
 
-@Injectable({
-  providedIn: 'root',
-})
-export class StatsigService {
-  private readonly _client: StatsigClient;
+import { STATSIG_CLIENT } from './statsig.module';
 
-  constructor() {
-    //
-    this._client = new StatsigClient('client', {});
+@Injectable()
+export class StatsigService implements OnDestroy {
+  private _renderVersion = 0;
+
+  constructor(
+    @Inject(STATSIG_CLIENT) private readonly _client: StatsigClientInterface,
+  ) {
+    this._client.initializeSync();
+    Log.debug('Statsig client initialized', this._client);
   }
 
-  public initialize(): void {
-    //
+  onValuesUpdated = (): void => {
+    this._renderVersion++;
+    Log.debug('Values updated', this._renderVersion);
+  };
+
+  ngOnDestroy(): void {
+    this._client.shutdown().catch((error) => {
+      Log.error('An error occured during shutdown', error);
+    });
+    this._client.off('values_updated', this.onValuesUpdated);
   }
 }
