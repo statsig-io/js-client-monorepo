@@ -50,14 +50,19 @@ describe('Network Core', () => {
   });
 
   describe('Beacon Success', () => {
+    let bindSpy: jest.Mock;
     let body: unknown;
 
     beforeAll(async () => {
-      const spy = jest.fn();
-      navigator.sendBeacon = spy;
+      const sendSpy = jest.fn();
+      navigator.sendBeacon = sendSpy;
+
+      bindSpy = jest.fn();
+      bindSpy.mockImplementation(() => navigator.sendBeacon);
+      navigator.sendBeacon.bind = bindSpy;
 
       await network.beacon({ sdkKey, url, data });
-      body = JSON.parse(spy.mock.calls[0]?.[1] ?? '{}');
+      body = JSON.parse(sendSpy.mock.calls[0]?.[1] ?? '{}');
     });
 
     it('makes request with data', () => {
@@ -66,6 +71,12 @@ describe('Network Core', () => {
 
     it('includes statsig metadata', () => {
       expect(Object.keys(body as object)).toContain('statsigMetadata');
+    });
+
+    it('binds the navigator to itself', () => {
+      // ensures fix for "Illegal Invocation" error
+      // see: https://github.com/vercel/next.js/issues/23856
+      expect(bindSpy).toHaveBeenCalledWith(navigator);
     });
   });
 

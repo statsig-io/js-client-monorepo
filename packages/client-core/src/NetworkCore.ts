@@ -96,7 +96,8 @@ export class NetworkCore {
     body = await _attemptToCompressBody(args, body);
 
     const url = await this._getPopulatedURL(args);
-    return navigator.sendBeacon(url, body);
+    const nav = navigator;
+    return nav.sendBeacon.bind(nav)(url, body);
   }
 
   private async _sendRequest(
