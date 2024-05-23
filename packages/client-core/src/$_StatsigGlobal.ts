@@ -27,6 +27,10 @@ export const _getStatsigGlobal = (): StatsigGlobal => {
   return __STATSIG__ ? __STATSIG__ : statsigGlobal;
 };
 
+export const _getStatsigGlobalFlag = (flag: string): unknown => {
+  return _getStatsigGlobal()[flag];
+};
+
 export const _getInstance = (
   sdkKey: string,
 ): StatsigClientInterface | undefined => {

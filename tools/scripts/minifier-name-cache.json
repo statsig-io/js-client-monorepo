@@ -166,7 +166,9 @@
       "$_DJB2Object": "li",
       "$_resolveDeltasResponse": "ai",
       "$_capture": "ci",
-      "$_gatherPageViewPayload": "cn"
+      "$_gatherPageViewPayload": "cn",
+      "$_getStatsigGlobalFlag": "dn",
+      "$_attemptToCompressBody": "hn"
     }
   }
 }

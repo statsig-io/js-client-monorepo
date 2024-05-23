@@ -114,6 +114,13 @@ export type StatsigOptionsCommon<NetworkConfig extends NetworkConfigCommon> =
      * default: `false`
      */
     disableStatsigEncoding?: boolean;
+
+    /**
+     * Whether or not Statsig should compress JSON bodies for network requests where possible.
+     *
+     * default: `false`
+     */
+    disableCompression?: boolean;
   };
 
 export type AnyStatsigOptions = StatsigOptionsCommon<NetworkConfigCommon>;

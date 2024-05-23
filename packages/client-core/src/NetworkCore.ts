@@ -1,4 +1,5 @@
 import './$_StatsigGlobal';
+import { _getStatsigGlobalFlag } from './$_StatsigGlobal';
 import { Diagnostics } from './Diagnostics';
 import { Log } from './Log';
 import { NetworkArgs, NetworkParam, NetworkPriority } from './NetworkConfig';
@@ -50,15 +51,25 @@ type NetworkResponse = {
 };
 
 export class NetworkCore {
-  private readonly _timeout: number;
-  private readonly _netConfig: NetworkConfigCommon | null;
+  private readonly _timeout: number = DEFAULT_TIMEOUT_MS;
+  private readonly _netConfig: NetworkConfigCommon = {};
+  private readonly _options: AnyStatsigOptions = {};
 
   constructor(
-    private _options: AnyStatsigOptions | null,
+    options: AnyStatsigOptions | null,
     private _emitter?: StatsigClientEmitEventFunc,
   ) {
-    this._netConfig = _options?.networkConfig ?? null;
-    this._timeout = this._netConfig?.networkTimeoutMs ?? DEFAULT_TIMEOUT_MS;
+    if (options) {
+      this._options = options;
+    }
+
+    if (this._options.networkConfig) {
+      this._netConfig = this._options.networkConfig;
+    }
+
+    if (this._netConfig.networkTimeoutMs) {
+      this._timeout = this._netConfig.networkTimeoutMs;
+    }
   }
 
   async post(args: RequestArgsWithData): Promise<NetworkResponse | null> {
@@ -66,7 +77,7 @@ export class NetworkCore {
     if (args.isStatsigEncodable) {
       body = this._attemptToEncodeString(args, body);
     } else if (args.isCompressable) {
-      body = await _attemptToCompressBody(args, body);
+      body = await this._attemptToCompressBody(args, body);
     }
 
     return this._sendRequest({
@@ -93,7 +104,7 @@ export class NetworkCore {
     }
 
     let body: BodyInit = await this._getPopulatedBody(args);
-    body = await _attemptToCompressBody(args, body);
+    body = await this._attemptToCompressBody(args, body);
 
     const url = await this._getPopulatedURL(args);
     const nav = navigator;
@@ -107,7 +118,7 @@ export class NetworkCore {
       return null;
     }
 
-    if (this._netConfig?.preventAllNetworkTraffic) {
+    if (this._netConfig.preventAllNetworkTraffic) {
       return null;
     }
 
@@ -136,7 +147,7 @@ export class NetworkCore {
         keepalive,
       };
 
-      const func = this._netConfig?.networkOverrideFunc ?? fetch;
+      const func = this._netConfig.networkOverrideFunc ?? fetch;
       response = await func(url, config);
       clearTimeout(handle);
 
@@ -214,10 +225,10 @@ export class NetworkCore {
   ): string {
     const win = _getWindowSafe();
     if (
-      !win?.btoa ||
-      __STATSIG__?.['no-encode'] != null ||
-      this._options?.disableStatsigEncoding ||
-      !args.isStatsigEncodable
+      !args.isStatsigEncodable ||
+      this._options.disableStatsigEncoding ||
+      _getStatsigGlobalFlag('no-encode') != null ||
+      !win?.btoa
     ) {
       return input;
     }
@@ -233,6 +244,35 @@ export class NetworkCore {
       Log.warn('/initialize request encoding failed');
       return input;
     }
+  }
+
+  private async _attemptToCompressBody(
+    args: RequestArgsWithData,
+    body: string,
+  ): Promise<BodyInit> {
+    if (
+      !args.isCompressable ||
+      this._options.disableCompression ||
+      _getStatsigGlobalFlag('no-compress') != null ||
+      typeof CompressionStream === 'undefined' ||
+      typeof TextEncoder === 'undefined'
+    ) {
+      return body;
+    }
+
+    const bytes = new TextEncoder().encode(body);
+    const stream = new CompressionStream('gzip');
+
+    const writer = stream.writable.getWriter();
+    writer.write(bytes).catch(Log.error);
+    writer.close().catch(Log.error);
+
+    args.params = {
+      ...(args.params ?? {}),
+      [NetworkParam.IsGzipped]: '1',
+    };
+
+    return await new Response(stream.readable).arrayBuffer();
   }
 }
 
@@ -264,32 +304,4 @@ function _getErrorMessage(
   }
 
   return 'Unknown Error';
-}
-
-async function _attemptToCompressBody(
-  args: RequestArgsWithData,
-  body: string,
-): Promise<BodyInit> {
-  if (
-    !args.isCompressable ||
-    typeof CompressionStream === 'undefined' ||
-    typeof TextEncoder === 'undefined' ||
-    __STATSIG__?.['no-compress'] != null
-  ) {
-    return body;
-  }
-
-  const bytes = new TextEncoder().encode(body);
-  const stream = new CompressionStream('gzip');
-
-  const writer = stream.writable.getWriter();
-  writer.write(bytes).catch(Log.error);
-  writer.close().catch(Log.error);
-
-  args.params = {
-    ...(args.params ?? {}),
-    [NetworkParam.IsGzipped]: '1',
-  };
-
-  return await new Response(stream.readable).arrayBuffer();
 }
