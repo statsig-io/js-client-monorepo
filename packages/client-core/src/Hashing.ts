@@ -22,7 +22,7 @@ const _getSortedObject = (
   const sortedObject: Record<string, unknown> = {};
   keys.forEach((key) => {
     let value = object[key];
-    if (value instanceof Object) {
+    if (!Array.isArray(value) && value instanceof Object) {
       value = _getSortedObject(value as Record<string, unknown>);
     }
 

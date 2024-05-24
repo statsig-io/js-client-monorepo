@@ -54,4 +54,12 @@ export class StatsigSpecsDataAdapter
     const key = _getStorageKey(this._getSdkKey());
     return `${DataAdapterCachePrefix}.${this._cacheSuffix}.${key}`;
   }
+
+  protected override _isCachedResultValidFor204(
+    result: DataAdapterResult,
+    _user: StatsigUser | undefined,
+  ): boolean {
+    // Simply having a cache value makes it valid
+    return result.data.length > 0;
+  }
 }

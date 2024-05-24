@@ -7,8 +7,8 @@ import {
   Spec,
   SpecCondition,
   SpecRule,
+  StatsigUser,
   StatsigUserInternal,
-  getUnitIDFromUser,
 } from '@statsig/client-core';
 import { SHA256 } from '@statsig/sha256';
 
@@ -240,14 +240,14 @@ export default class Evaluator {
       case 'user_bucket': {
         const salt = String(condition.additionalValues?.['salt'] ?? '');
         const userHash = _computeUserHash(
-          salt + '.' + getUnitIDFromUser(user, idType) ?? '',
+          salt + '.' + _getUnitIDFromUser(user, idType) ?? '',
         );
         value = Number(userHash % BigInt(USER_BUCKET_COUNT));
         break;
       }
 
       case 'unit_id':
-        value = getUnitIDFromUser(user, idType);
+        value = _getUnitIDFromUser(user, idType);
         break;
 
       default:
@@ -409,6 +409,16 @@ export default class Evaluator {
   }
 }
 
+function _getUnitIDFromUser(
+  user: StatsigUser,
+  idType: string,
+): string | undefined {
+  if (typeof idType === 'string' && idType.toLowerCase() !== 'userid') {
+    return user.customIDs?.[idType] ?? user?.customIDs?.[idType.toLowerCase()];
+  }
+  return user.userID;
+}
+
 function _evalPassPercent(
   rule: SpecRule,
   user: StatsigUserInternal,
@@ -427,7 +437,7 @@ function _evalPassPercent(
       '.' +
       (rule.salt ?? rule.id) +
       '.' +
-      (getUnitIDFromUser(user, rule.idType) ?? ''),
+      (_getUnitIDFromUser(user, rule.idType) ?? ''),
   );
   return (
     Number(hash % BigInt(CONDITION_SEGMENT_COUNT)) < rule.passPercentage * 100

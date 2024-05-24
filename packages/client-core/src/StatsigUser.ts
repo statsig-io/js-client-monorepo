@@ -1,3 +1,4 @@
+import { _DJB2Object } from './Hashing';
 import type { StatsigEnvironment } from './StatsigOptionsCommon';
 
 type StatsigUserPrimitives =
@@ -44,12 +45,6 @@ export function _normalizeUser(
   }
 }
 
-export function getUnitIDFromUser(
-  user: StatsigUser,
-  idType: string,
-): string | undefined {
-  if (typeof idType === 'string' && idType.toLowerCase() !== 'userid') {
-    return user.customIDs?.[idType] ?? user?.customIDs?.[idType.toLowerCase()];
-  }
-  return user.userID;
+export function _getFullUserHash(user: StatsigUser | undefined): string | null {
+  return user ? _DJB2Object(user) : null;
 }

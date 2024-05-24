@@ -6,7 +6,7 @@ import {
   DataSource,
 } from './StatsigDataAdapter';
 import { AnyStatsigOptions } from './StatsigOptionsCommon';
-import { StatsigUser, _normalizeUser } from './StatsigUser';
+import { StatsigUser, _getFullUserHash, _normalizeUser } from './StatsigUser';
 import {
   Storage,
   _getObjectFromStorage,
@@ -59,7 +59,7 @@ export abstract class DataAdapterCore {
 
     this._inMemoryCache.add(
       cacheKey,
-      _makeDataAdapterResult('Bootstrap', data, null),
+      _makeDataAdapterResult('Bootstrap', data, null, normalized),
     );
   }
 
@@ -79,9 +79,7 @@ export abstract class DataAdapterCore {
   ): Promise<DataAdapterResult | null> {
     const cache = current ?? this.getDataSync(user);
 
-    const ops = [
-      this._fetchAndPrepFromNetwork(cache?.data ?? null, user, options),
-    ];
+    const ops = [this._fetchAndPrepFromNetwork(cache, user, options)];
 
     if (options?.timeoutMs) {
       ops.push(
@@ -114,13 +112,22 @@ export abstract class DataAdapterCore {
 
   protected abstract _getCacheKey(user?: StatsigUser): string;
 
+  protected abstract _isCachedResultValidFor204(
+    result: DataAdapterResult,
+    user: StatsigUser | undefined,
+  ): boolean;
+
   private async _fetchAndPrepFromNetwork(
-    current: string | null,
+    cachedResult: DataAdapterResult | null,
     user: StatsigUser | undefined,
     options: DataAdapterAsyncOptions | undefined,
   ): Promise<DataAdapterResult | null> {
-    const latest = await this._fetchFromNetwork(current, user, options);
+    let cachedData: string | null = null;
+    if (cachedResult && this._isCachedResultValidFor204(cachedResult, user)) {
+      cachedData = cachedResult.data;
+    }
 
+    const latest = await this._fetchFromNetwork(cachedData, user, options);
     if (!latest) {
       Log.debug('No response returned for latest value');
       return null;
@@ -129,7 +136,7 @@ export abstract class DataAdapterCore {
     const response = _typedJsonParse<{ has_updates: boolean }>(
       latest,
       'has_updates',
-      'Initialize Response',
+      'Response',
     );
 
     const sdkKey = this._getSdkKey();
@@ -137,9 +144,14 @@ export abstract class DataAdapterCore {
 
     let result: DataAdapterResult | null = null;
     if (response?.has_updates === true) {
-      result = _makeDataAdapterResult('Network', latest, stableID);
-    } else if (current && response?.has_updates === false) {
-      result = _makeDataAdapterResult('NetworkNotModified', current, stableID);
+      result = _makeDataAdapterResult('Network', latest, stableID, user);
+    } else if (cachedData && response?.has_updates === false) {
+      result = _makeDataAdapterResult(
+        'NetworkNotModified',
+        cachedData,
+        stableID,
+        user,
+      );
     } else {
       return null;
     }
@@ -213,12 +225,14 @@ function _makeDataAdapterResult(
   source: DataSource,
   data: string,
   stableID: string | null,
+  user?: StatsigUser,
 ): DataAdapterResult {
   return {
     source,
     data,
     receivedAt: Date.now(),
     stableID,
+    fullUserHash: _getFullUserHash(user),
   };
 }
 

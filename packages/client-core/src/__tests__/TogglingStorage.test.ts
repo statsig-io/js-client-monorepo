@@ -41,6 +41,13 @@ class TestDataAdapter extends DataAdapterCore implements SpecsDataAdapter {
   protected override _getCacheKey(): string {
     return 'test';
   }
+
+  protected override _isCachedResultValidFor204(
+    _result: DataAdapterResult,
+    _user: StatsigUser | undefined,
+  ): boolean {
+    return true;
+  }
 }
 
 describe('Toggle Storage', () => {

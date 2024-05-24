@@ -7,6 +7,7 @@ import {
   InitializeResponse,
   Log,
   StatsigUser,
+  _getFullUserHash,
   _getStorageKey,
   _typedJsonParse,
 } from '@statsig/client-core';
@@ -84,5 +85,15 @@ export class StatsigEvaluationsDataAdapter
       this._options?.customUserCacheKeyFunc,
     );
     return `${DataAdapterCachePrefix}.${this._cacheSuffix}.${key}`;
+  }
+
+  protected override _isCachedResultValidFor204(
+    result: DataAdapterResult,
+    user: StatsigUser | undefined,
+  ): boolean {
+    return (
+      result.fullUserHash != null &&
+      result.fullUserHash === _getFullUserHash(user)
+    );
   }
 }

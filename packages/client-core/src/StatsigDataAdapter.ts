@@ -20,6 +20,7 @@ export type DataAdapterResult = {
   readonly data: string;
   readonly receivedAt: number;
   readonly stableID: string | null;
+  readonly fullUserHash: string | null;
 };
 
 export type DataAdapterAsyncOptions = {

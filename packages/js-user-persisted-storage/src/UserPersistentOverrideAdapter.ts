@@ -5,7 +5,6 @@ import {
   OverrideAdapter,
   StatsigUser,
   _makeDynamicConfig,
-  getUnitIDFromUser,
 } from '@statsig/client-core';
 
 import {
@@ -131,6 +130,16 @@ export class UserPersistentOverrideAdapter implements OverrideAdapter {
   }
 
   private _getStorageKey(user: StatsigUser, idType: string): string {
-    return `${String(getUnitIDFromUser(user, idType))}:${idType}`;
+    return `${String(_getUnitIDFromUser(user, idType))}:${idType}`;
   }
+}
+
+function _getUnitIDFromUser(
+  user: StatsigUser,
+  idType: string,
+): string | undefined {
+  if (typeof idType === 'string' && idType.toLowerCase() !== 'userid') {
+    return user.customIDs?.[idType] ?? user?.customIDs?.[idType.toLowerCase()];
+  }
+  return user.userID;
 }
