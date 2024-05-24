@@ -1,16 +1,16 @@
 {
-  "private": "true",
+  "private": true,
   "name": "statsig-combo",
-  "version": "0.0.1-beta.42",
+  "version": "1.0.0",
   "dependencies": {
-    "@statsig/client-core": "0.0.1-beta.42",
-    "@statsig/js-client": "0.0.1-beta.42",
-    "@statsig/js-local-overrides": "0.0.1-beta.42",
-    "@statsig/js-on-device-eval-client": "0.0.1-beta.42",
-    "@statsig/js-user-persisted-storage": "0.0.1-beta.42",
-    "@statsig/session-replay": "0.0.1-beta.42",
-    "@statsig/web-analytics": "0.0.1-beta.42",
-    "@statsig/react-bindings": "0.0.1-beta.42"
+    "@statsig/client-core": "1.0.0",
+    "@statsig/js-client": "1.0.0",
+    "@statsig/js-local-overrides": "1.0.0",
+    "@statsig/js-on-device-eval-client": "1.0.0",
+    "@statsig/js-user-persisted-storage": "1.0.0",
+    "@statsig/session-replay": "1.0.0",
+    "@statsig/web-analytics": "1.0.0",
+    "@statsig/react-bindings": "1.0.0"
   },
   "type": "commonjs",
   "main": "./src/index.js",

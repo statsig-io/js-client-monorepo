@@ -7,7 +7,7 @@
       "dependsOn": ["sync-version"]
     },
     "sync-version": {
-      "command": "pnpm format && pnpm install && echo 'Version Sync Complete.'",
+      "command": "pnpm format:write && pnpm install && echo 'Version Sync Complete.'",
       "dependsOn": [
         "sync-version-statsig-metadata",
         "sync-version-package-json",
@@ -31,6 +31,10 @@
     },
     "format-check": {
       "command": "prettier --check . && nx format:check",
+      "dependsOn": []
+    },
+    "format-write": {
+      "command": "prettier --write . && nx format:write",
       "dependsOn": []
     }
   }

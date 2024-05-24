@@ -1,4 +1,5 @@
 import { _DJB2Object } from './Hashing';
+import { Log } from './Log';
 import type { StatsigEnvironment } from './StatsigOptionsCommon';
 
 type StatsigUserPrimitives =
@@ -41,7 +42,8 @@ export function _normalizeUser(
 
     return copy;
   } catch (error) {
-    throw new Error('User object must be convertable to JSON string.');
+    Log.error('Failed to JSON.stringify user');
+    return {};
   }
 }
 

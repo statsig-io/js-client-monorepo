@@ -1,8 +1,8 @@
 {
   "name": "@statsig/react-bindings",
-  "version": "0.0.1-beta.42",
+  "version": "1.0.0",
   "dependencies": {
-    "@statsig/client-core": "0.0.1-beta.42"
+    "@statsig/client-core": "1.0.0"
   },
   "peerDependencies": {
     "react": "^16.6.3 || ^17.0.0 || ^18.0.0"

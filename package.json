@@ -1,13 +1,15 @@
 {
+  "private": true,
   "name": "statsig",
-  "version": "0.0.1-beta.42",
+  "version": "1.0.0",
   "license": "MIT",
   "scripts": {
     "lint": "nx run-many --parallel=5 --target=lint",
     "test": "nx run-many --parallel=5 --target=test",
     "e2e": "nx run-many --parallel=5 --target=e2e",
     "build": "nx run-many --parallel=5 --target=build",
-    "format": "nx format-check --parallel=5 --affected --verbose",
+    "format": "nx format-check --parallel=5 --affected",
+    "format:write": "nx format-write --parallel=5 --affected",
     "sync-version": "nx sync-version",
     "publish-all": "nx publish-all",
     "prepare": "husky install",
@@ -15,7 +17,6 @@
     "size": "size-limit",
     "noop": ":"
   },
-  "private": true,
   "devDependencies": {
     "@angular-devkit/build-angular": "~17.1.0",
     "@angular-devkit/core": "~17.1.0",

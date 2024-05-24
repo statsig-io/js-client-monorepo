@@ -168,7 +168,9 @@
       "$_capture": "ci",
       "$_gatherPageViewPayload": "cn",
       "$_getStatsigGlobalFlag": "dn",
-      "$_attemptToCompressBody": "hn"
+      "$_attemptToCompressBody": "hn",
+      "$_getFullUserHash": "vn",
+      "$_isCachedResultValidFor204": "fn"
     }
   }
 }
