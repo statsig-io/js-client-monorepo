@@ -49,6 +49,9 @@ const dataAdapter = myStatsigClient.dataAdapter;
 // Pass the bootstrap values to the data adapter
 dataAdapter.setData(getStatsigBootstrapJson());
 
+// Note: if you are using an older Server SDK, call setDataLegacy
+dataAdapter.setDataLegacy(getStatsigBootstrapJson(), user);
+
 // Then finally call initializeSync
 myStatsigClient.initializeSync();
 
