@@ -1,5 +1,5 @@
 <h1 align="center">
-	<img src="https://github.com/statsig-io/private-js-client-monorepo/assets/95646168/85b8ea90-2217-4c3d-88c1-35762884ac98" />
+	<img src="https://github.com/statsig-io/js-client-monorepo/assets/95646168/ae5499ed-20ff-4584-bf21-8857f800d485" />
     	<div />
 	<a href="https://statsig.com/?ref=gh_jsm">Statsig</a>
 </h1>
