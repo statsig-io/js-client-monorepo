@@ -12,6 +12,7 @@ describe('AppComponent', () => {
     const precomputedClient = new StatsigClient(STATSIG_CLIENT_KEY, {
       userID: 'a-user',
     });
+    precomputedClient.initializeSync();
     await TestBed.configureTestingModule({
       imports: [AppComponent, RouterTestingModule, StatsigModule],
       providers: [

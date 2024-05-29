@@ -13,6 +13,9 @@ const precomputedClient = new StatsigClient(
   { userID: 'a-user' },
   { logLevel: LogLevel.Debug },
 );
+
+precomputedClient.initializeSync();
+
 export const appConfig: ApplicationConfig = {
   providers: [
     provideRouter(appRoutes),
