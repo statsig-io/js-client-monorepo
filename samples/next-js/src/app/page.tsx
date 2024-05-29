@@ -25,6 +25,11 @@ export default function Index(): JSX.Element {
             <a href="/session-replay-example">Session Replay</a>
           </button>
         </li>
+        <li>
+          <button>
+            <a href="/override-adapter-example">Override Adapter</a>
+          </button>
+        </li>
       </ul>
     </div>
   );
