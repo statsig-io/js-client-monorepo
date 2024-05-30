@@ -202,21 +202,12 @@ export abstract class DataAdapterCore {
       )) ?? {};
     lastModifiedTimeMap[cacheKey] = Date.now();
 
-    const entries = Object.entries(lastModifiedTimeMap);
-    if (entries.length <= CACHE_LIMIT) {
-      await _setObjectInStorage(
-        this._lastModifiedStoreKey,
-        lastModifiedTimeMap,
-      );
-      return;
+    const evictable = _getEvictableKey(lastModifiedTimeMap, CACHE_LIMIT);
+    if (evictable) {
+      delete lastModifiedTimeMap[evictable];
+      await Storage._removeItem(evictable);
     }
 
-    const oldest = entries.reduce((acc, current) => {
-      return current[1] < acc[1] ? current : acc;
-    });
-
-    delete lastModifiedTimeMap[oldest[0]];
-    await Storage._removeItem(oldest[0]);
     await _setObjectInStorage(this._lastModifiedStoreKey, lastModifiedTimeMap);
   }
 }
@@ -256,21 +247,35 @@ class InMemoryCache {
   }
 
   add(cacheKey: string, value: DataAdapterResult) {
-    const entries = Object.entries(this._data);
-    if (entries.length < CACHE_LIMIT) {
-      this._data[cacheKey] = value;
-      return;
+    const oldest = _getEvictableKey(this._data, CACHE_LIMIT - 1);
+    if (oldest) {
+      delete this._data[oldest];
     }
 
-    const [oldest] = entries.reduce((acc, curr) => {
-      return curr[1] < acc[1] ? curr : acc;
-    });
-
-    delete this._data[oldest];
     this._data[cacheKey] = value;
   }
 
   merge(values: Record<string, DataAdapterResult>) {
     this._data = { ...this._data, ...values };
   }
+}
+
+function _getEvictableKey(
+  data: Record<string, number | { receivedAt: number }>,
+  limit: number,
+): string | null {
+  const keys = Object.keys(data);
+  if (keys.length <= limit) {
+    return null;
+  }
+
+  return keys.reduce((prevKey, currKey) => {
+    const prev = data[prevKey];
+    const current = data[currKey];
+    if (typeof prev === 'object' && typeof current === 'object') {
+      return current.receivedAt < prev.receivedAt ? currKey : prevKey;
+    }
+
+    return current < prev ? currKey : prevKey;
+  });
 }

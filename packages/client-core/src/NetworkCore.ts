@@ -184,7 +184,7 @@ export class NetworkCore {
   }
 
   private async _getPopulatedURL(args: RequestArgs): Promise<string> {
-    const params = {
+    const params: Record<string, string> = {
       [NetworkParam.SdkKey]: args.sdkKey,
       [NetworkParam.SdkType]: SDKType._get(args.sdkKey),
       [NetworkParam.SdkVersion]: SDK_VERSION,
@@ -193,9 +193,9 @@ export class NetworkCore {
       ...args.params,
     };
 
-    const query = Object.entries(params)
-      .map(([key, value]) => {
-        return `${encodeURIComponent(key)}=${encodeURIComponent(value)}`;
+    const query = Object.keys(params)
+      .map((key) => {
+        return `${encodeURIComponent(key)}=${encodeURIComponent(params[key])}`;
       })
       .join('&');
 

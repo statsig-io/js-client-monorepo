@@ -15,11 +15,13 @@ export function _getUserStorageKey(
     return customKeyGenerator(sdkKey, user);
   }
 
+  const cids = user && user.customIDs ? user.customIDs : {};
+
   const parts = [
     `uid:${user?.userID ?? ''}`,
-    `cids:${Object.entries(user?.customIDs ?? {})
-      .sort(([leftKey], [rightKey]) => leftKey.localeCompare(rightKey))
-      .map(([key, value]) => `${key}-${value}`)
+    `cids:${Object.keys(cids)
+      .sort((leftKey, rightKey) => leftKey.localeCompare(rightKey))
+      .map((key) => `${key}-${cids[key]}`)
       .join(',')}`,
     `k:${sdkKey}`,
   ];
