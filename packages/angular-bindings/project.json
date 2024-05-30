@@ -10,18 +10,11 @@
       "executor": "@nx/angular:package",
       "outputs": ["{workspaceRoot}/dist/{projectRoot}"],
       "options": {
-        "project": "packages/angular-bindings/ng-package.json"
-      },
-      "configurations": {
-        "production": {
-          "tsConfig": "packages/angular-bindings/tsconfig.lib.json"
-        },
-        "development": {
-          "tsConfig": "packages/angular-bindings/tsconfig.lib.json"
-        }
-      },
-      "defaultConfiguration": "production"
+        "project": "packages/angular-bindings/ng-package.json",
+        "tsConfig": "packages/angular-bindings/tsconfig.lib.json"
+      }
     },
+
     "test": {
       "executor": "@nx/jest:jest",
       "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],

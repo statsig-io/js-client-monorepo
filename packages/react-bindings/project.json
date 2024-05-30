@@ -11,7 +11,7 @@
         "outputPath": "dist/packages/react-bindings",
         "main": "packages/react-bindings/src/index.ts",
         "tsConfig": "packages/react-bindings/tsconfig.lib.json",
-        "assets": ["packages/react-bindings/*.md"]
+        "assets": ["README.md"]
       }
     },
     "publish": {

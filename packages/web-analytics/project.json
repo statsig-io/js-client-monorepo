@@ -15,7 +15,7 @@
         "outputPath": "dist/packages/web-analytics",
         "main": "packages/web-analytics/src/index.ts",
         "tsConfig": "packages/web-analytics/tsconfig.lib.json",
-        "assets": ["packages/web-analytics/*.md"]
+        "assets": ["README.md"]
       }
     },
     "publish": {

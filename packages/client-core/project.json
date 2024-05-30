@@ -21,7 +21,7 @@
         "outputPath": "dist/packages/client-core",
         "main": "packages/client-core/src/index.ts",
         "tsConfig": "packages/client-core/tsconfig.lib.json",
-        "assets": ["packages/client-core/*.md"]
+        "assets": ["README.md"]
       }
     },
     "publish": {

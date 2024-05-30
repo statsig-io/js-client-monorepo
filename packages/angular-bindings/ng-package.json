@@ -3,5 +3,6 @@
   "dest": "../../dist/packages/angular-bindings",
   "lib": {
     "entryFile": "src/index.ts"
-  }
+  },
+  "assets": ["README.md"]
 }

@@ -15,7 +15,7 @@
         "outputPath": "dist/packages/js-on-device-eval-client",
         "main": "packages/js-on-device-eval-client/src/index.ts",
         "tsConfig": "packages/js-on-device-eval-client/tsconfig.lib.json",
-        "assets": ["packages/js-on-device-eval-client/*.md"]
+        "assets": ["README.md"]
       }
     },
     "publish": {

@@ -21,7 +21,7 @@
         "outputPath": "dist/packages/sha256",
         "main": "packages/sha256/src/index.ts",
         "tsConfig": "packages/sha256/tsconfig.lib.json",
-        "assets": ["packages/sha256/*.md"]
+        "assets": ["README.md"]
       }
     },
     "publish": {
