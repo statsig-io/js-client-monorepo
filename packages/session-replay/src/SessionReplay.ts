@@ -12,6 +12,7 @@ import {
 } from '@statsig/client-core';
 
 import {
+  RRWebConfig,
   ReplayEvent,
   ReplaySessionData,
   SessionReplayClient,
@@ -19,12 +20,17 @@ import {
 
 const MAX_REPLAY_PAYLOAD_BYTES = 2048;
 
+type SessionReplayOptions = {
+  rrwebConfig?: RRWebConfig;
+};
+
 type EndReason = 'is_leaving_page' | 'session_expired';
 
 export function runStatsigSessionReplay(
   client: PrecomputedEvaluationsInterface,
+  options?: SessionReplayOptions,
 ): void {
-  new SessionReplay(client);
+  new SessionReplay(client, options);
 }
 
 export class SessionReplay {
@@ -34,7 +40,10 @@ export class SessionReplay {
   private _currentSessionID: Promise<string>;
   private _errorBoundary: ErrorBoundary;
 
-  constructor(private _client: PrecomputedEvaluationsInterface) {
+  constructor(
+    private _client: PrecomputedEvaluationsInterface,
+    private _options?: SessionReplayOptions,
+  ) {
     const { sdkKey, errorBoundary } = _client.getContext();
     this._errorBoundary = errorBoundary;
     this._errorBoundary.wrap(this);
@@ -112,7 +121,10 @@ export class SessionReplay {
     }
 
     StatsigMetadataProvider.add({ isRecordingSession: 'true' });
-    this._replayer.record((e, d) => this._onRecordingEvent(e, d));
+    this._replayer.record(
+      (e, d) => this._onRecordingEvent(e, d),
+      this._options?.rrwebConfig ?? {},
+    );
   }
 
   private _shutdown() {

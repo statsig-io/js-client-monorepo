@@ -30,12 +30,15 @@ function useClientWithSessionReplay(
     const client = new StatsigClient(sdkKey, user, {
       logLevel: LogLevel.Debug,
     });
+
     client.dataAdapter.setData(values);
     client.initializeAsync().catch((err) => {
       console.error(err);
     });
 
-    runStatsigSessionReplay(client);
+    runStatsigSessionReplay(client, {
+      rrwebConfig: { blockClass: 'do-not-record' },
+    });
     runStatsigAutoCapture(client);
 
     return { client };
@@ -64,6 +67,7 @@ function Content() {
       >
         Click Me
       </button>
+      <p className="do-not-record">Secret: 123-12-1234</p>
       <button onClick={() => window.location.replace('https://statsig.com')}>
         Leave
       </button>

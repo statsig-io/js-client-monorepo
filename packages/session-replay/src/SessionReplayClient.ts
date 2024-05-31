@@ -7,6 +7,8 @@ const TIMEOUT_MS = 1000 * 60 * 60 * 4; // 4 hours
 
 export type ReplayEvent = Flatten<eventWithTime>;
 
+export type RRWebConfig = Omit<rrweb.recordOptions<unknown>, 'emit'>;
+
 export type ReplaySessionData = {
   startTime: number;
   endTime: number;
@@ -22,6 +24,7 @@ export class SessionReplayClient {
 
   public record(
     callback: (latest: ReplayEvent, data: ReplaySessionData) => void,
+    config: RRWebConfig,
     stopCallback?: () => void,
   ): void {
     if (_getDocumentSafe() == null) {
@@ -65,7 +68,7 @@ export class SessionReplayClient {
       }
     };
 
-    this._stopFn = _minifiedAwareRecord(emit);
+    this._stopFn = _minifiedAwareRecord(emit, config);
   }
 
   public stop(): void {
@@ -86,9 +89,10 @@ export class SessionReplayClient {
  */
 function _minifiedAwareRecord(
   emit: (event: eventWithTime) => void,
+  config: RRWebConfig,
 ): listenerHandler | undefined {
   const record = typeof rrweb === 'function' ? rrweb : rrweb.record;
-  return record({ emit });
+  return record({ ...config, emit });
 }
 
 function _isClickEvent(event: eventWithTime) {
