@@ -64,6 +64,9 @@ function Content() {
       >
         Click Me
       </button>
+      <button onClick={() => window.location.replace('https://statsig.com')}>
+        Leave
+      </button>
     </div>
   );
 }

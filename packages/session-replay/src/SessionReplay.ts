@@ -7,6 +7,7 @@ import {
   _getStatsigGlobal,
   _isBrowserEnv,
   _isCurrentlyVisible,
+  _isUnloading,
   _subscribeToVisiblityChanged,
 } from '@statsig/client-core';
 
@@ -17,6 +18,8 @@ import {
 } from './SessionReplayClient';
 
 const MAX_REPLAY_PAYLOAD_BYTES = 2048;
+
+type EndReason = 'is_leaving_page' | 'session_expired';
 
 export function runStatsigSessionReplay(
   client: PrecomputedEvaluationsInterface,
@@ -52,7 +55,7 @@ export class SessionReplay {
     this._client.on('session_expired', () => {
       this._replayer.stop();
       StatsigMetadataProvider.add({ isRecordingSession: 'false' });
-      this._logRecording();
+      this._logRecording('session_expired');
       this._currentSessionID = this._getSessionIdFromClient();
     });
 
@@ -72,12 +75,14 @@ export class SessionReplay {
   }
 
   private _onVisibilityChanged(visibility: Visibility): void {
-    if (visibility === 'background') {
-      this._logRecording();
-      this._client.flush().catch((e) => {
-        this._errorBoundary.logError('SR::visibility', e);
-      });
+    if (visibility !== 'background') {
+      return;
     }
+
+    this._logRecording();
+    this._client.flush().catch((e) => {
+      this._errorBoundary.logError('SR::visibility', e);
+    });
   }
 
   private _onRecordingEvent(event: ReplayEvent, data: ReplaySessionData) {
@@ -120,26 +125,30 @@ export class SessionReplay {
     this._bumpSessionIdleTimerAndLogRecording();
   }
 
-  private _logRecording() {
+  private _logRecording(endReason?: EndReason) {
     if (this._events.length === 0 || this._sessionData == null) {
       return;
     }
 
+    endReason = _isUnloading() ? 'is_leaving_page' : endReason;
+
     this._currentSessionID
-      .then((sessionID) => this._logRecordingWithSessionID(sessionID))
+      .then((sessionID) =>
+        this._logRecordingWithSessionID(sessionID, endReason),
+      )
       .catch((err) => {
         this._errorBoundary.logError('SR::flush', err);
       });
   }
 
-  private _logRecordingWithSessionID(sessionID: string) {
+  private _logRecordingWithSessionID(sessionID: string, endReason?: EndReason) {
     const data = this._sessionData;
     if (data === null || this._events.length === 0) {
       return;
     }
 
     const payload = JSON.stringify(this._events);
-    this._client.logEvent({
+    const event = {
       eventName: 'statsig::session_recording',
       value: sessionID,
       metadata: {
@@ -148,8 +157,14 @@ export class SessionReplay {
         clicks_captured_cumulative: String(data.clickCount),
         rrweb_events: payload,
         session_replay_sdk_version: SDK_VERSION,
-      },
-    });
+      } as Record<string, string>,
+    };
+
+    if (endReason) {
+      event.metadata[endReason] = 'true';
+    }
+
+    this._client.logEvent(event);
 
     this._events = [];
   }

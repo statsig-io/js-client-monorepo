@@ -249,7 +249,7 @@ export class NetworkCore {
   private async _attemptToCompressBody(
     args: RequestArgsWithData,
     body: string,
-  ): Promise<BodyInit> {
+  ): Promise<ArrayBuffer | string> {
     if (
       !args.isCompressable ||
       this._options.disableCompression ||
