@@ -1,6 +1,8 @@
 <h1 align="center">
-	<img src="https://github.com/statsig-io/js-client-monorepo/assets/95646168/ae5499ed-20ff-4584-bf21-8857f800d485" />
-    	<div />
+	<a href="https://statsig.com/?ref=gh_jsm">
+		<img src="https://github.com/statsig-io/js-client-monorepo/assets/95646168/ae5499ed-20ff-4584-bf21-8857f800d485" />
+	</a>
+    <div />
 	<a href="https://statsig.com/?ref=gh_jsm">Statsig</a>
 </h1>
 
