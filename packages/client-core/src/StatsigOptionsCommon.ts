@@ -32,19 +32,6 @@ export type NetworkConfigCommon = {
   logEventUrl?: string;
 
   /**
-   * The maximum amount of time (in milliseconds) that any network request can take
-   * before timing out.
-   *
-   * default: `10,000 ms` (10 seconds)
-   */
-  networkTimeoutMs?: number;
-
-  /**
-   * Intended for testing purposes. Prevents any network requests being made.
-   */
-  preventAllNetworkTraffic?: boolean;
-
-  /**
    * Overrides the default networking layer used by the Statsig client.
    * By default, the client use `fetch`, but overriding this
    * you could use `axios` or raw `XMLHttpRequest`
@@ -56,23 +43,50 @@ export type NetworkConfigCommon = {
    * @returns {Response}
    */
   networkOverrideFunc?: (url: string, args: NetworkArgs) => Promise<Response>;
+
+  /**
+   * The maximum amount of time (in milliseconds) that any network request can take
+   * before timing out.
+   *
+   * default: `10,000 ms` (10 seconds)
+   */
+  networkTimeoutMs?: number;
+
+  /**
+   * Intended for testing purposes. Prevents any network requests being made.
+   */
+  preventAllNetworkTraffic?: boolean;
 };
 
 /** Options for configuring a Statsig client. */
 export type StatsigOptionsCommon<NetworkConfig extends NetworkConfigCommon> =
   StatsigRuntimeMutableOptions & {
     /**
-     * Allows for fine grained control over which api or urls are hit for specific Statsig network requests.
+     * Whether or not Statsig should compress JSON bodies for network requests where possible.
      *
-     * For defaults see {@link StatsigClientUrlOverrideOptions}
+     * default: `false`
      */
-    networkConfig?: NetworkConfig;
+    disableCompression?: boolean;
+
+    /**
+     * Whether or not Statsig should use raw JSON for network requests where possible.
+     *
+     * default: `false`
+     */
+    disableStatsigEncoding?: boolean;
 
     /**
      * An object you can use to set environment variables that apply to all of your users
      * in the same session.
      */
     environment?: StatsigEnvironment;
+
+    /**
+     * (Web only) Should the 'current page' url be included with logged events.
+     *
+     * default: true
+     */
+    includeCurrentPageUrlWithEvents?: boolean;
 
     /**
      * How much information is allowed to be printed to the console.
@@ -91,36 +105,22 @@ export type StatsigOptionsCommon<NetworkConfig extends NetworkConfigCommon> =
     /**
      * How often (in milliseconds) to flush logs to Statsig.
      *
-     * default: `10,000 ms`  (10 seconds)
+     * default: `10,000 ms` (10 seconds)
      */
     loggingIntervalMs?: number;
+
+    /**
+     * Allows for fine grained control over which api or urls are hit for specific Statsig network requests.
+     *
+     * For defaults see {@link StatsigClientUrlOverrideOptions}
+     */
+    networkConfig?: NetworkConfig;
 
     /**
      * An implementor of {@link OverrideAdapter}, used to alter evaluations before its
      * returned to the caller of a check api (checkGate/getExperiment etc).
      */
     overrideAdapter?: OverrideAdapter;
-
-    /**
-     * (Web only) Should the 'current page' url be included with logged events.
-     *
-     * default: true
-     */
-    includeCurrentPageUrlWithEvents?: boolean;
-
-    /**
-     * Whether or not Statsig should use raw JSON for network requests where possible.
-     *
-     * default: `false`
-     */
-    disableStatsigEncoding?: boolean;
-
-    /**
-     * Whether or not Statsig should compress JSON bodies for network requests where possible.
-     *
-     * default: `false`
-     */
-    disableCompression?: boolean;
   };
 
 export type AnyStatsigOptions = StatsigOptionsCommon<NetworkConfigCommon>;
