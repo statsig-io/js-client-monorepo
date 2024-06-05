@@ -28,19 +28,21 @@ Read through the [Documentation](https://docs.statsig.com/client/javascript-sdk?
 
 Clients
 
-- [Precomputed Evaluations (Recommended)](packages/js-client/README.md)
-- [On Device Evaluations](packages/js-on-device-eval-client/README.md)
+- Precomputed Evaluations (Recommended) [[npm](https://www.npmjs.com/package/@statsig/js-client)] [[source](https://github.com/statsig-io/js-client-monorepo/tree/main/packages/js-client)]
+- On Device Evaluations [[npm](https://www.npmjs.com/package/@statsig/js-on-device-eval-client)] [[source](https://github.com/statsig-io/js-client-monorepo/tree/main/packages/js-on-device-eval-client)]
 
 Product Bundles
 
-- [Session Replay](packages/session-replay/README.md)
-- [Web Analytics](packages/web-analytics/README.md)
+- Session Replay [[npm](https://www.npmjs.com/package/@statsig/session-replay)] [[source](https://github.com/statsig-io/js-client-monorepo/tree/main/packages/session-replay)]
+- Web Analytics [[npm](https://www.npmjs.com/package/@statsig/web-analytics)] [[source](https://github.com/statsig-io/js-client-monorepo/tree/main/packages/web-analytics)]
 
 Framework Specific Bindings
 
-- [React](packages/react-bindings/README.md)
-- [React Native](packages/react-native-bindings/README.md)
-- [React Native (Expo)](packages/expo-bindings/README.md)
+- React [[npm](https://www.npmjs.com/package/@statsig/react-bindings)] [[source](https://github.com/statsig-io/js-client-monorepo/tree/main/packages/react-bindings)]
+
+- React Native [[npm](https://www.npmjs.com/package/@statsig/react-native-bindings)] [[source](https://github.com/statsig-io/js-client-monorepo/tree/main/packages/react-native-bindings)]
+
+- React Native (Expo) [[npm](https://www.npmjs.com/package/@statsig/expo-bindings)] [[source](https://github.com/statsig-io/js-client-monorepo/tree/main/packages/expo-bindings)]
 
 ## Community
 
