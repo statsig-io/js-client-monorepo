@@ -1,4 +1,9 @@
-import { Log, _getDocumentSafe, _getWindowSafe } from '@statsig/client-core';
+import {
+  Log,
+  _getCurrentPageUrlSafe,
+  _getDocumentSafe,
+  _getWindowSafe,
+} from '@statsig/client-core';
 import { StatsigClient } from '@statsig/js-client';
 
 type InitArgs = {
@@ -8,6 +13,35 @@ type InitArgs = {
 
 function _getParam(name: string, params: URLSearchParams): string | null {
   return params.get(name) ?? params.get(name.toLowerCase());
+}
+
+function _constructUser() {
+  const win = _getWindowSafe();
+  if (!win) {
+    return {};
+  }
+
+  let userOverride =
+    (win as unknown as Record<string, unknown>)['statsigUser'] || {};
+  if (typeof userOverride !== 'object') {
+    userOverride = {};
+  }
+  const customOverride =
+    (userOverride as Record<string, unknown>)['custom'] || {};
+  const customIDsOverride =
+    (userOverride as Record<string, unknown>)['customIDs'] || {};
+  return {
+    ...userOverride,
+    customIDs: {
+      ...customIDsOverride,
+    },
+    custom: {
+      ...customOverride,
+      useragent: win.navigator.userAgent,
+      page_url: _getCurrentPageUrlSafe() || '',
+      language: win.navigator?.language,
+    },
+  };
 }
 
 export abstract class AutoInit {
@@ -43,7 +77,7 @@ export abstract class AutoInit {
       }
 
       if (!client) {
-        client = new StatsigClient(sdkKey, {});
+        client = new StatsigClient(sdkKey, _constructUser());
         client.initializeAsync().catch((err) => {
           Log.error(err);
         });
