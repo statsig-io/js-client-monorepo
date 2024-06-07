@@ -62,6 +62,13 @@ export type NetworkConfigCommon = {
 export type StatsigOptionsCommon<NetworkConfig extends NetworkConfigCommon> =
   StatsigRuntimeMutableOptions & {
     /**
+     * Whether or not Statsig should compress JSON bodies for network requests where possible.
+     *
+     * default: `false`
+     */
+    disableCompression?: boolean;
+
+    /**
      * Whether or not Statsig should use raw JSON for network requests where possible.
      *
      * default: `false`
