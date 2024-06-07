@@ -19,7 +19,7 @@ window.fetch = (url, args) => {
 const client = new StatsigClient(
   DEMO_CLIENT_KEY,
   { userID: 'a-user' },
-  { logLevel: 4, disableCompression: true },
+  { logLevel: 4 },
 );
 
 (async () => {

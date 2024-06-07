@@ -76,8 +76,6 @@ export class NetworkCore {
     let body: BodyInit = await this._getPopulatedBody(args);
     if (args.isStatsigEncodable) {
       body = this._attemptToEncodeString(args, body);
-    } else if (args.isCompressable) {
-      body = await this._attemptToCompressBody(args, body);
     }
 
     return this._sendRequest({
@@ -103,9 +101,7 @@ export class NetworkCore {
       return false;
     }
 
-    let body: BodyInit = await this._getPopulatedBody(args);
-    body = await this._attemptToCompressBody(args, body);
-
+    const body: BodyInit = await this._getPopulatedBody(args);
     const url = await this._getPopulatedURL(args);
     const nav = navigator;
     return nav.sendBeacon.bind(nav)(url, body);
@@ -244,35 +240,6 @@ export class NetworkCore {
       Log.warn('/initialize request encoding failed');
       return input;
     }
-  }
-
-  private async _attemptToCompressBody(
-    args: RequestArgsWithData,
-    body: string,
-  ): Promise<ArrayBuffer | string> {
-    if (
-      !args.isCompressable ||
-      this._options.disableCompression ||
-      _getStatsigGlobalFlag('no-compress') != null ||
-      typeof CompressionStream === 'undefined' ||
-      typeof TextEncoder === 'undefined'
-    ) {
-      return body;
-    }
-
-    const bytes = new TextEncoder().encode(body);
-    const stream = new CompressionStream('gzip');
-
-    const writer = stream.writable.getWriter();
-    writer.write(bytes).catch(Log.error);
-    writer.close().catch(Log.error);
-
-    args.params = {
-      ...(args.params ?? {}),
-      [NetworkParam.IsGzipped]: '1',
-    };
-
-    return await new Response(stream.readable).arrayBuffer();
   }
 }
 
