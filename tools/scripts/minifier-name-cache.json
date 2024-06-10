@@ -166,7 +166,9 @@
       "$_downloadConfigSpecsUrl": "cn",
       "$_getSpecs": "hn",
       "$_evaluator": "dn",
-      "$_getOutputs": "vn"
+      "$_getOutputs": "vn",
+      "$_logSessionIfNew": "fn",
+      "$_isNewSession": "_n"
     }
   }
 }

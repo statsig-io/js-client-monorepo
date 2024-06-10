@@ -6,8 +6,9 @@ export function _gatherEventData(target: Element): {
 } {
   const tagName = target.tagName.toLowerCase();
   const metadata: Record<string, string | null> = {};
-  const value = tagName;
+  const value = _getCurrentPageUrlSafe() || '';
 
+  metadata['tagName'] = tagName;
   if (tagName === 'form') {
     metadata['action'] = target.getAttribute('action');
     metadata['method'] = target.getAttribute('method') ?? 'GET';

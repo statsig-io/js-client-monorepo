@@ -5,21 +5,34 @@ import { StatsigClient } from '@statsig/js-client';
 
 import { AutoCapture, runStatsigAutoCapture } from '../AutoCapture';
 
-function getLastPageViewEvent(
+function getLastEvent(
   requests: Record<string, any>[],
+  eventName: string,
 ): Record<string, any> {
   for (let ii = requests.length - 1; ii >= 0; ii--) {
     const req = requests[ii];
     if (req['events']) {
       for (let jj = req['events'].length - 1; jj >= 0; jj--) {
         const evt = req['events'][jj];
-        if (evt.eventName === 'auto_capture::page_view') {
+        if (evt.eventName === eventName) {
           return evt as Record<string, any>;
         }
       }
     }
   }
   return {};
+}
+
+function getLastPageViewEvent(
+  requests: Record<string, any>[],
+): Record<string, any> {
+  return getLastEvent(requests, 'auto_capture::page_view');
+}
+
+function getLastSessionStartEvent(
+  requests: Record<string, any>[],
+): Record<string, any> {
+  return getLastEvent(requests, 'auto_capture::session_start');
 }
 
 describe('Autocapture Tests', () => {
@@ -40,6 +53,10 @@ describe('Autocapture Tests', () => {
     const client = new StatsigClient('client-key', { userID: '' });
     autoCapture = runStatsigAutoCapture(client);
     await client.initializeAsync();
+  });
+
+  beforeEach(() => {
+    requestDataList.length = 0;
   });
 
   it('has the required fields', async () => {
@@ -144,6 +161,7 @@ describe('Autocapture Tests', () => {
       });
     }
   });
+
   it('has the right ad conversion ids', async () => {
     Object.defineProperty(window, 'location', {
       value: {
@@ -163,6 +181,27 @@ describe('Autocapture Tests', () => {
       fbclid: 'facebook',
       gclid: 'google',
       li_fat_id: 'linedin',
+    });
+  });
+
+  it('session_start has the required fields', async () => {
+    Object.defineProperty(window, 'location', {
+      value: {
+        href: 'http://foo.com/',
+      },
+      writable: true,
+    });
+    autoCapture['_logSessionStart']();
+    await new Promise((f) => {
+      pageViewResolver = f;
+    });
+
+    const eventData = getLastSessionStartEvent(requestDataList);
+    expect(eventData['eventName']).toMatch('auto_capture::session_start');
+    expect(eventData['value']).toMatch('http://foo.com/');
+    expect(eventData['metadata']).toMatchObject({
+      sessionID: expect.any(String),
+      page_url: 'http://foo.com/',
     });
   });
 });

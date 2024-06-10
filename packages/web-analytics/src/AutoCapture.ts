@@ -1,6 +1,7 @@
 import {
   ErrorBoundary,
   Log,
+  StatsigSession,
   _getDocumentSafe,
   _getStatsigGlobal,
   _getWindowSafe,
@@ -92,6 +93,7 @@ export class AutoCapture {
 
   private _initialize() {
     this._addEventHandlers();
+    this._logSessionStart();
     this._logPageView();
     this._logPerformance();
   }
@@ -118,6 +120,25 @@ export class AutoCapture {
       colno: event.colno,
       error_str: errorStr,
     });
+  }
+
+  private _logSessionStart() {
+    this._getSessionFromClient()
+      .then((session) => {
+        if (!this._isNewSession(session)) {
+          return;
+        }
+
+        this._enqueueAutoCapture(
+          'session_start',
+          _getSanitizedPageUrl(),
+          { sessionID: session.data.sessionID },
+          { flushImmediately: true },
+        );
+      })
+      .catch((err) => {
+        this._errorBoundary.logError('AC::logSession', err);
+      });
   }
 
   private _logPageView() {
@@ -202,9 +223,7 @@ export class AutoCapture {
         };
 
         if (options?.addNewSessionMetadata) {
-          logMetadata['isNewSession'] = String(
-            Math.abs(session.data.startTime - Date.now()) < 1000, // within the last second
-          );
+          logMetadata['isNewSession'] = String(this._isNewSession(session));
         }
 
         const event = {
@@ -236,6 +255,11 @@ export class AutoCapture {
       this._deepestScroll,
       Math.min(100, Math.round(((scrollY + innerHeight) / scrollHeight) * 100)),
     );
+  }
+
+  private _isNewSession(session: StatsigSession) {
+    // within the last second
+    return Math.abs(session.data.startTime - Date.now()) < 1000;
   }
 
   private async _getSessionFromClient() {
