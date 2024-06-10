@@ -6,6 +6,7 @@ import {
   FeatureGate,
   Layer,
   OnDeviceEvaluationsInterface,
+  ParameterStore,
   PrecomputedEvaluationsInterface,
   SpecsDataAdapter,
   _makeDynamicConfig,
@@ -21,7 +22,9 @@ const _noopAsync = (): Promise<void> => Promise.resolve();
 
 const NOOP_DETAILS = { reason: 'Error' };
 
-const _defaultEvaluation = <T>(type: 'gate' | 'config' | 'layer') => {
+const _defaultEvaluation = <T>(
+  type: 'gate' | 'config' | 'layer' | 'param_store',
+) => {
   return (...args: unknown[]): T => {
     const name = typeof args[0] === 'string' ? args[0] : (args[1] as string);
 
@@ -32,6 +35,8 @@ const _defaultEvaluation = <T>(type: 'gate' | 'config' | 'layer') => {
         return _makeDynamicConfig(name, NOOP_DETAILS, null) as T;
       case 'layer':
         return _makeLayer(name, NOOP_DETAILS, null) as T;
+      case 'param_store':
+        return { name } as T;
     }
   };
 };
@@ -81,6 +86,7 @@ const _client: OnDeviceEvaluationsInterface &
   getDynamicConfig: _defaultEvaluation<DynamicConfig>('config'),
   getExperiment: _defaultEvaluation<Experiment>('config'),
   getLayer: _defaultEvaluation<Layer>('layer'),
+  getParameterStore: _defaultEvaluation<ParameterStore>('param_store'),
   logEvent: _noop,
   on: _noop,
   off: _noop,

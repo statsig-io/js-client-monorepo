@@ -20,6 +20,7 @@ export * from './Log';
 export * from './NetworkCore';
 export * from './NetworkConfig';
 export * from './OverrideAdapter';
+export * from './ParamStoreTypes';
 export * from './SafeJs';
 export * from './SDKType';
 export * from './SessionID';

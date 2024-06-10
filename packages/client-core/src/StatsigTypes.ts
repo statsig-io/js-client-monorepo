@@ -4,12 +4,15 @@ import {
   GateEvaluation,
   LayerEvaluation,
 } from './EvaluationTypes';
+import { ParamStoreConfig } from './ParamStoreTypes';
 import { Flatten } from './UtitlityTypes';
 
 export type TypedGet = <T = unknown>(
   key: string,
   fallback?: T,
 ) => TypedReturn<T>;
+
+export type ParamStoreTypedGet = <T = unknown>(key: string, fallback: T) => T;
 
 // prettier-ignore
 export type TypedReturn<T = unknown> = 
@@ -50,6 +53,13 @@ export type Layer = Flatten<{
   readonly __value: Record<string, unknown>;
   readonly __evaluation: LayerEvaluation | null;
   readonly get: TypedGet;
+}>;
+
+export type ParameterStore = Flatten<{
+  readonly name: string;
+  readonly details: EvaluationDetails;
+  readonly get: TypedGet;
+  readonly __configuration: ParamStoreConfig | null;
 }>;
 
 export type AnyConfigBasedStatsigType = DynamicConfig | Experiment | Layer;

@@ -3,6 +3,7 @@ import {
   GateEvaluation,
   LayerEvaluation,
 } from './EvaluationTypes';
+import { ParamStoreConfig } from './ParamStoreTypes';
 import { StatsigUser } from './StatsigUser';
 
 type SessionReplayFields = {
@@ -14,6 +15,7 @@ export type InitializeResponseWithUpdates = SessionReplayFields & {
   feature_gates: Record<string, GateEvaluation>;
   dynamic_configs: Record<string, DynamicConfigEvaluation>;
   layer_configs: Record<string, LayerEvaluation>;
+  param_stores?: Record<string, ParamStoreConfig>;
   time: number;
   has_updates: true;
   hash_used: 'none' | 'sha256' | 'djb2';

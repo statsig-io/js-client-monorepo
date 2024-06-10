@@ -1,3 +1,4 @@
+import { ParamStoreConfig } from './ParamStoreTypes';
 import { Flatten } from './UtitlityTypes';
 
 type EvaluationBase<T> = {
@@ -49,7 +50,7 @@ export type EvaluationDetails = {
   receivedAt?: number;
 };
 
-export type DetailedEvaluation<T extends AnyEvaluation> = {
-  evaluation: T | null;
+export type DetailedStoreResult<T extends AnyEvaluation | ParamStoreConfig> = {
+  result: T | null;
   details: EvaluationDetails;
 };

@@ -11,6 +11,8 @@ import {
   Layer,
   LayerEvaluationOptions,
   Log,
+  ParameterStore,
+  ParameterStoreEvaluationOptions,
   PrecomputedEvaluationsAsyncContext,
   PrecomputedEvaluationsContext,
   PrecomputedEvaluationsInterface,
@@ -20,7 +22,6 @@ import {
   StatsigEvent,
   StatsigSession,
   StatsigUser,
-  _DJB2,
   _createConfigExposure,
   _createGateExposure,
   _createLayerParameterExposure,
@@ -35,6 +36,7 @@ import {
 
 import EvaluationStore from './EvaluationStore';
 import Network from './Network';
+import { _makeParamStoreGetter } from './ParamStoreGetterFactory';
 import { StatsigEvaluationsDataAdapter } from './StatsigEvaluationsDataAdapter';
 import type { StatsigOptions } from './StatsigOptions';
 
@@ -227,9 +229,7 @@ export default class StatsigClient
     name: string,
     options?: FeatureGateEvaluationOptions,
   ): FeatureGate {
-    const hash = _DJB2(name);
-
-    const { evaluation, details } = this._store.getGate(hash);
+    const { result: evaluation, details } = this._store.getGate(name);
     const gate = _makeFeatureGate(name, details, evaluation);
     const overridden = this._overrideAdapter?.getGateOverride?.(
       gate,
@@ -290,11 +290,8 @@ export default class StatsigClient
    * @returns {Layer} - The {@link Layer} object representing the layers's current evaluation results for the user.
    */
   getLayer(name: string, options?: LayerEvaluationOptions): Layer {
-    const hash = _DJB2(name);
-
-    const { evaluation, details } = this._store.getLayer(hash);
+    const { result: evaluation, details } = this._store.getLayer(name);
     const layer = _makeLayer(name, details, evaluation);
-
     const overridden = this._overrideAdapter?.getLayerOverride?.(
       layer,
       this._user,
@@ -316,6 +313,21 @@ export default class StatsigClient
 
     this.$emt({ name: 'layer_evaluation', layer: result });
     return result;
+  }
+
+  getParameterStore(
+    name: string,
+    options?: ParameterStoreEvaluationOptions,
+  ): ParameterStore {
+    const { result: configuration, details } = this._store.getParamStore(name);
+    this._logger.incrementNonExposureCount(name);
+
+    return {
+      name,
+      details,
+      __configuration: configuration,
+      get: _makeParamStoreGetter(this, configuration, options),
+    };
   }
 
   /**
@@ -381,9 +393,7 @@ export default class StatsigClient
     name: string,
     options?: DynamicConfigEvaluationOptions | ExperimentEvaluationOptions,
   ): DynamicConfig {
-    const hash = _DJB2(name);
-    const { evaluation, details } = this._store.getConfig(hash);
-
+    const { result: evaluation, details } = this._store.getConfig(name);
     const config = _makeDynamicConfig(name, details, evaluation);
 
     const overridden =

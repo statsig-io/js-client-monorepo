@@ -1,10 +1,9 @@
 'use client';
 
-import { useContext, useEffect, useMemo } from 'react';
+import { useContext, useEffect } from 'react';
 import { StatsigUser } from 'statsig-node';
 
-import { AnyStatsigClientEvent, LogLevel } from '@statsig/client-core';
-import { StatsigClient } from '@statsig/js-client';
+import { AnyStatsigClientEvent } from '@statsig/client-core';
 import {
   StatsigContext,
   StatsigProvider,
@@ -12,26 +11,9 @@ import {
 } from '@statsig/react-bindings';
 
 import { DEMO_CLIENT_KEY } from '../../utils/constants';
+import useBootstrappedClient from '../../utils/useBootstrappedClient';
 
 /* eslint-disable no-console */
-
-function useBootstrappedClient(
-  sdkKey: string,
-  user: StatsigUser,
-  values: string,
-): StatsigClient {
-  const client = useMemo(() => {
-    const client = new StatsigClient(sdkKey, user, {
-      logLevel: LogLevel.Debug,
-    });
-    client.dataAdapter.setData(values);
-
-    client.initializeSync();
-    return client;
-  }, [sdkKey, user, values]);
-
-  return client;
-}
 
 function Content() {
   const { value, details } = useFeatureGate('a_gate');

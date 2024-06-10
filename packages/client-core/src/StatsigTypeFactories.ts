@@ -16,6 +16,16 @@ import {
 
 const DEFAULT_RULE = 'default';
 
+type Primitive =
+  | 'string'
+  | 'number'
+  | 'bigint'
+  | 'boolean'
+  | 'symbol'
+  | 'undefined'
+  | 'object'
+  | 'function';
+
 function _makeEvaluation<T, U extends AnyEvaluation>(
   name: string,
   details: EvaluationDetails,
@@ -78,12 +88,16 @@ export function _mergeOverride<T extends AnyConfigBasedStatsigType>(
   };
 }
 
-function _isTypeMatch<T>(a: unknown, b: unknown): a is T {
+export function _typeOf(input: unknown): Primitive | 'array' {
+  return Array.isArray(input) ? 'array' : typeof input;
+}
+
+export function _isTypeMatch<T>(a: unknown, b: unknown): a is T {
   const typeOf = (x: unknown) => (Array.isArray(x) ? 'array' : typeof x);
   return typeOf(a) === typeOf(b);
 }
 
-function _makeTypedGet(
+export function _makeTypedGet(
   value: Record<string, unknown> | undefined,
   exposeFunc?: (param: string) => void,
 ): TypedGet {

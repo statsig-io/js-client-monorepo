@@ -28,3 +28,7 @@ export type ExperimentEvaluationOptions = EvaluationOptionsCommon & {
 export type LayerEvaluationOptions = EvaluationOptionsCommon & {
   // Layer specific options
 };
+
+export type ParameterStoreEvaluationOptions = EvaluationOptionsCommon & {
+  // Parameter Store specific options
+};

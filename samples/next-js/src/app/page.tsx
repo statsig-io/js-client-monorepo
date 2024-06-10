@@ -30,6 +30,11 @@ export default function Index(): JSX.Element {
             <a href="/override-adapter-example">Override Adapter</a>
           </button>
         </li>
+        <li>
+          <button>
+            <a href="/param-store-example">Param Stores</a>
+          </button>
+        </li>
       </ul>
     </div>
   );

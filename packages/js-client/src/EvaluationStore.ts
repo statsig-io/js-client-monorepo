@@ -2,13 +2,15 @@ import {
   AnyEvaluation,
   DataAdapterResult,
   DataSource,
-  DetailedEvaluation,
+  DetailedStoreResult,
   DynamicConfigEvaluation,
   EvaluationDetails,
   GateEvaluation,
   InitializeResponse,
   InitializeResponseWithUpdates,
   LayerEvaluation,
+  ParamStoreConfig,
+  _DJB2,
   _typedJsonParse,
 } from '@statsig/client-core';
 
@@ -67,27 +69,34 @@ export default class EvaluationStore {
     this._values = values;
   }
 
-  getGate(name: string): DetailedEvaluation<GateEvaluation> {
-    const evaluation = this._values?.feature_gates[name] ?? null;
-    return this._makeDetailedEvaluation(evaluation);
+  getGate(name: string): DetailedStoreResult<GateEvaluation> {
+    return this._getDetailedStoreResult(this._values?.feature_gates, name);
   }
 
-  getConfig(name: string): DetailedEvaluation<DynamicConfigEvaluation> {
-    const evaluation = this._values?.dynamic_configs[name] ?? null;
-    return this._makeDetailedEvaluation(evaluation);
+  getConfig(name: string): DetailedStoreResult<DynamicConfigEvaluation> {
+    return this._getDetailedStoreResult(this._values?.dynamic_configs, name);
   }
 
-  getLayer(name: string): DetailedEvaluation<LayerEvaluation> {
-    const evaluation = this._values?.layer_configs[name] ?? null;
-    return this._makeDetailedEvaluation(evaluation);
+  getLayer(name: string): DetailedStoreResult<LayerEvaluation> {
+    return this._getDetailedStoreResult(this._values?.layer_configs, name);
   }
 
-  private _makeDetailedEvaluation<T extends AnyEvaluation>(
-    evaluation: T | null,
-  ): DetailedEvaluation<T> {
+  getParamStore(name: string): DetailedStoreResult<ParamStoreConfig> {
+    return this._getDetailedStoreResult(this._values?.param_stores, name);
+  }
+
+  private _getDetailedStoreResult<T extends AnyEvaluation | ParamStoreConfig>(
+    lookup: Record<string, T> | undefined,
+    name: string,
+  ): DetailedStoreResult<T> {
+    let result: T | null = null;
+    if (lookup) {
+      result = lookup[name] ? lookup[name] : lookup[_DJB2(name)];
+    }
+
     return {
-      evaluation,
-      details: this._getDetails(evaluation == null),
+      result,
+      details: this._getDetails(result == null),
     };
   }
 

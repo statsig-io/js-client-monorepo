@@ -5,7 +5,7 @@ import { StatsigUser } from './StatsigUser';
 export type StatsigEvent = {
   eventName: string;
   value?: string | number | null;
-  metadata?: { [key: string]: string } | null;
+  metadata?: { [key: string]: string | undefined } | null;
 };
 
 export type StatsigEventInternal = Omit<StatsigEvent, 'metadata'> & {

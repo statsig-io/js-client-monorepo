@@ -5,6 +5,7 @@ import {
   ExperimentEvaluationOptions,
   FeatureGateEvaluationOptions,
   LayerEvaluationOptions,
+  ParameterStoreEvaluationOptions,
 } from './EvaluationOptions';
 import { InitializeResponseWithUpdates } from './InitializeResponse';
 import { StatsigSession } from './SessionID';
@@ -15,7 +16,13 @@ import {
   AnyStatsigOptions,
   StatsigRuntimeMutableOptions,
 } from './StatsigOptionsCommon';
-import { DynamicConfig, Experiment, FeatureGate, Layer } from './StatsigTypes';
+import {
+  DynamicConfig,
+  Experiment,
+  FeatureGate,
+  Layer,
+  ParameterStore,
+} from './StatsigTypes';
 import { StatsigUser } from './StatsigUser';
 import { Flatten } from './UtitlityTypes';
 
@@ -118,6 +125,10 @@ export interface PrecomputedEvaluationsInterface
     options?: ExperimentEvaluationOptions,
   ): Experiment;
   getLayer(name: string, options?: LayerEvaluationOptions): Layer;
+  getParameterStore(
+    name: string,
+    options?: ParameterStoreEvaluationOptions,
+  ): ParameterStore;
   logEvent(event: StatsigEvent): void;
   logEvent(
     eventName: string,
