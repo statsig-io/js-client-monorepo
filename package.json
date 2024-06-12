@@ -162,12 +162,13 @@
   },
   "pnpm": {
     "overrides": {
-      "yargs-parser@<=5.0.0": ">=5.0.1",
-      "semver@>=7.0.0 <7.5.2": ">=7.5.2",
-      "ip@<1.1.9": ">=1.1.9",
-      "webpack-dev-middleware@<=5.3.3": ">=5.3.4",
+      "braces": ">=3.0.3",
       "express@<4.19.2": ">=4.19.2",
-      "follow-redirects@<=1.15.5": ">=1.15.6"
+      "follow-redirects@<=1.15.5": ">=1.15.6",
+      "ip@<1.1.9": ">=1.1.9",
+      "semver@>=7.0.0 <7.5.2": ">=7.5.2",
+      "webpack-dev-middleware@<=5.3.3": ">=5.3.4",
+      "yargs-parser@<=5.0.0": ">=5.0.1"
     }
   }
 }
