@@ -35,7 +35,6 @@ jobs:
       - run: pnpm run build
 
       - uses: daniel-statsig/size-limit-action@main
-        if: github.event_name == 'pull_request'
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           script: pnpm run size --json
