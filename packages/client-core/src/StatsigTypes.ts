@@ -43,7 +43,7 @@ export type Experiment = Flatten<{
   readonly get: TypedGet;
 }>;
 
-export type DynamicConfig = Flatten<Experiment>;
+export type DynamicConfig = Flatten<Omit<Experiment, 'groupName'>>;
 
 export type Layer = Flatten<{
   readonly name: string;

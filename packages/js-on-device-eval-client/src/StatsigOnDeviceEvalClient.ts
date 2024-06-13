@@ -27,6 +27,7 @@ import {
   _getStatsigGlobal,
   _isBrowserEnv,
   _makeDynamicConfig,
+  _makeExperiment,
   _makeFeatureGate,
   _makeLayer,
   _normalizeUser,
@@ -164,14 +165,20 @@ export default class StatsigOnDeviceEvalClient
     user: StatsigUser,
     options?: DynamicConfigEvaluationOptions,
   ): DynamicConfig {
-    const dynamicConfig = this._getConfigImpl(
-      'dynamic_config',
-      name,
+    user = _normalizeUser(user, this._options.environment);
+    const { evaluation, details } = this._evaluator.evaluateConfig(name, user);
+
+    const config = _makeDynamicConfig(name, details, evaluation);
+    const overridden = this._overrideAdapter?.getDynamicConfigOverride?.(
+      config,
       user,
       options,
     );
-    this.$emt({ name: 'dynamic_config_evaluation', dynamicConfig });
-    return dynamicConfig;
+
+    const result = overridden ?? config;
+    this._enqueueExposure(name, _createConfigExposure(user, result), options);
+    this.$emt({ name: 'dynamic_config_evaluation', dynamicConfig: result });
+    return result;
   }
 
   getExperiment(
@@ -179,9 +186,20 @@ export default class StatsigOnDeviceEvalClient
     user: StatsigUser,
     options?: ExperimentEvaluationOptions,
   ): Experiment {
-    const experiment = this._getConfigImpl('experiment', name, user, options);
-    this.$emt({ name: 'experiment_evaluation', experiment });
-    return experiment;
+    user = _normalizeUser(user, this._options.environment);
+    const { evaluation, details } = this._evaluator.evaluateConfig(name, user);
+
+    const experiment = _makeExperiment(name, details, evaluation);
+    const overridden = this._overrideAdapter?.getExperimentOverride?.(
+      experiment,
+      user,
+      options,
+    );
+
+    const result = overridden ?? experiment;
+    this._enqueueExposure(name, _createConfigExposure(user, result), options);
+    this.$emt({ name: 'experiment_evaluation', experiment: result });
+    return result;
   }
 
   getLayer(
@@ -238,25 +256,5 @@ export default class StatsigOnDeviceEvalClient
     this.dataAdapter.getDataAsync(current, { priority: 'low' }).catch((err) => {
       Log.error('An error occurred after update.', err);
     });
-  }
-
-  private _getConfigImpl(
-    kind: 'experiment' | 'dynamic_config',
-    name: string,
-    user: StatsigUser,
-    opts?: DynamicConfigEvaluationOptions | ExperimentEvaluationOptions,
-  ): DynamicConfig {
-    user = _normalizeUser(user, this._options.environment);
-    const { evaluation, details } = this._evaluator.evaluateConfig(name, user);
-    const config = _makeDynamicConfig(name, details, evaluation);
-
-    const overridden =
-      kind === 'experiment'
-        ? this._overrideAdapter?.getExperimentOverride?.(config, user, opts)
-        : this._overrideAdapter?.getDynamicConfigOverride?.(config, user, opts);
-
-    const result = overridden ?? config;
-    this._enqueueExposure(name, _createConfigExposure(user, result), opts);
-    return result;
   }
 }

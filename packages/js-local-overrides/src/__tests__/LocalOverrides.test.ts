@@ -1,5 +1,6 @@
 import {
   _makeDynamicConfig,
+  _makeExperiment,
   _makeFeatureGate,
   _makeLayer,
 } from '@statsig/client-core';
@@ -10,7 +11,7 @@ describe('Local Overrides', () => {
   const user = { userID: 'a-user' };
   const gate = _makeFeatureGate('a_gate', { reason: '' }, null);
   const dynamicConfig = _makeDynamicConfig('a_config', { reason: '' }, null);
-  const experiment = _makeDynamicConfig('an_experiment', { reason: '' }, null);
+  const experiment = _makeExperiment('an_experiment', { reason: '' }, null);
   const layer = _makeLayer('a_layer', { reason: '' }, null);
 
   let provider: LocalOverrideAdapter;

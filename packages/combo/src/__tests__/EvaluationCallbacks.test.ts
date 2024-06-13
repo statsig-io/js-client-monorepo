@@ -85,7 +85,6 @@ describe('Client Evaluations Callback', () => {
           dynamicConfig: {
             name: 'a_dynamic_config',
             ruleID: 'default',
-            groupName: null,
             details: {
               lcut: 123456,
               reason: 'Network:Recognized',
@@ -111,7 +110,7 @@ describe('Client Evaluations Callback', () => {
           experiment: {
             name: 'an_experiment',
             ruleID: '49CGlTB7z97PEdqJapQplA',
-            groupName: null,
+            groupName: 'Test',
             details: {
               lcut: 123456,
               reason: 'Network:Recognized',

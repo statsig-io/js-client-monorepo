@@ -28,6 +28,7 @@ import {
   _getStatsigGlobal,
   _isBrowserEnv,
   _makeDynamicConfig,
+  _makeExperiment,
   _makeFeatureGate,
   _makeLayer,
   _mergeOverride,
@@ -261,9 +262,24 @@ export default class StatsigClient
     name: string,
     options?: DynamicConfigEvaluationOptions,
   ): DynamicConfig {
-    const dynamicConfig = this._getConfigImpl('dynamic_config', name, options);
-    this.$emt({ name: 'dynamic_config_evaluation', dynamicConfig });
-    return dynamicConfig;
+    const { result: evaluation, details } = this._store.getConfig(name);
+    const config = _makeDynamicConfig(name, details, evaluation);
+
+    const overridden = this._overrideAdapter?.getDynamicConfigOverride?.(
+      config,
+      this._user,
+      options,
+    );
+
+    const result = overridden ?? config;
+
+    this._enqueueExposure(
+      name,
+      _createConfigExposure(this._user, result),
+      options,
+    );
+    this.$emt({ name: 'dynamic_config_evaluation', dynamicConfig: result });
+    return result;
   }
 
   /**
@@ -277,9 +293,24 @@ export default class StatsigClient
     name: string,
     options?: ExperimentEvaluationOptions,
   ): Experiment {
-    const experiment = this._getConfigImpl('experiment', name, options);
-    this.$emt({ name: 'experiment_evaluation', experiment });
-    return experiment;
+    const { result: evaluation, details } = this._store.getConfig(name);
+    const experiment = _makeExperiment(name, details, evaluation);
+
+    const overridden = this._overrideAdapter?.getExperimentOverride?.(
+      experiment,
+      this._user,
+      options,
+    );
+
+    const result = overridden ?? experiment;
+
+    this._enqueueExposure(
+      name,
+      _createConfigExposure(this._user, result),
+      options,
+    );
+    this.$emt({ name: 'experiment_evaluation', experiment: result });
+    return result;
   }
 
   /**
@@ -386,37 +417,5 @@ export default class StatsigClient
     if (stableIdOverride) {
       StableID.setOverride(stableIdOverride, this._sdkKey);
     }
-  }
-
-  private _getConfigImpl(
-    kind: 'experiment' | 'dynamic_config',
-    name: string,
-    options?: DynamicConfigEvaluationOptions | ExperimentEvaluationOptions,
-  ): DynamicConfig {
-    const { result: evaluation, details } = this._store.getConfig(name);
-    const config = _makeDynamicConfig(name, details, evaluation);
-
-    const overridden =
-      kind === 'experiment'
-        ? this._overrideAdapter?.getExperimentOverride?.(
-            config,
-            this._user,
-            options,
-          )
-        : this._overrideAdapter?.getDynamicConfigOverride?.(
-            config,
-            this._user,
-            options,
-          );
-
-    const result = overridden ?? config;
-
-    this._enqueueExposure(
-      name,
-      _createConfigExposure(this._user, result),
-      options,
-    );
-
-    return result;
   }
 }

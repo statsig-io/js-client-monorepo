@@ -8,6 +8,7 @@ import {
 import {
   AnyConfigBasedStatsigType,
   DynamicConfig,
+  Experiment,
   FeatureGate,
   Layer,
   TypedGet,
@@ -54,10 +55,22 @@ export function _makeDynamicConfig(
   details: EvaluationDetails,
   evaluation: DynamicConfigEvaluation | null,
 ): DynamicConfig {
+  const value = evaluation?.value ?? {};
   return {
-    ..._makeEvaluation(name, details, evaluation, evaluation?.value ?? {}),
-    groupName: null,
+    ..._makeEvaluation(name, details, evaluation, value),
     get: _makeTypedGet(evaluation?.value),
+  };
+}
+
+export function _makeExperiment(
+  name: string,
+  details: EvaluationDetails,
+  evaluation: DynamicConfigEvaluation | null,
+): Experiment {
+  const result = _makeDynamicConfig(name, details, evaluation);
+  return {
+    ...result,
+    groupName: evaluation?.group_name ?? null,
   };
 }
 
