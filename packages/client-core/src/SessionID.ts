@@ -37,6 +37,10 @@ export const StatsigSession = {
     const session = await PROMISE_MAP[sdkKey];
     return _bumpSession(session);
   },
+
+  overrideInitialSessionID: (override: string, sdkKey: string): void => {
+    PROMISE_MAP[sdkKey] = _overrideSessionId(override, sdkKey);
+  },
 };
 
 async function _loadSession(sdkKey: string): Promise<StatsigSession> {
@@ -54,6 +58,21 @@ async function _loadSession(sdkKey: string): Promise<StatsigSession> {
     data,
     sdkKey,
   };
+}
+
+function _overrideSessionId(
+  override: string,
+  sdkKey: string,
+): Promise<StatsigSession> {
+  const now = Date.now();
+  return Promise.resolve({
+    data: {
+      sessionID: override,
+      startTime: now,
+      lastUpdate: now,
+    },
+    sdkKey,
+  });
 }
 
 function _bumpSession(session: StatsigSession): StatsigSession {

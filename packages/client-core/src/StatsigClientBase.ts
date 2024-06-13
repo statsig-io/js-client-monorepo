@@ -8,6 +8,7 @@ import { Log } from './Log';
 import { NetworkCore } from './NetworkCore';
 import { OverrideAdapter } from './OverrideAdapter';
 import { _isBrowserEnv } from './SafeJs';
+import { StatsigSession } from './SessionID';
 import {
   AnyStatsigClientEvent,
   AnyStatsigClientEventListener,
@@ -70,6 +71,8 @@ export abstract class StatsigClientBase<
 
     options?.logLevel != null && (Log.level = options.logLevel);
     options?.disableStorage && Storage._setDisabled(true);
+    options?.initialSessionID &&
+      StatsigSession.overrideInitialSessionID(options.initialSessionID, sdkKey);
 
     this._sdkKey = sdkKey;
     this._options = options ?? {};

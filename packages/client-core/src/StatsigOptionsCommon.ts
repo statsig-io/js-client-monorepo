@@ -121,6 +121,13 @@ export type StatsigOptionsCommon<NetworkConfig extends NetworkConfigCommon> =
      * returned to the caller of a check api (checkGate/getExperiment etc).
      */
     overrideAdapter?: OverrideAdapter;
+
+    /**
+     * Overrides the auto-generated SessionID with the provided string.
+     *
+     * Note: Sessions still expire and will be replaced with an auto-generated SessionID.
+     */
+    initialSessionID?: string;
   };
 
 export type AnyStatsigOptions = StatsigOptionsCommon<NetworkConfigCommon>;
