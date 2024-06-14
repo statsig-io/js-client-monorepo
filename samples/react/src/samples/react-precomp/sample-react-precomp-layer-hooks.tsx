@@ -11,17 +11,16 @@ export default async function Sample(): Promise<void> {
 // prettier-ignore
 function App() {
 // <snippet>
-// Get the Layer value
+// get the getLayer function
+const { getLayer } = useStatsigClient();
+// or, just get the Layer value
 const layer = useLayer('my_layer');
 
-// or, get the getLayer function
-const { getLayer } = useStatsigClient();
-
 return <div>
-  <p>Reason: {layer.details.reason}</p>
-  <p>Value: { layer.get("a_value", "fallback_value") }</p>
-
   <p>GroupName: { getLayer('my_layer').groupName } </p>
+  <p>Reason: {layer.details.reason}</p>
+  {/* layer exposures are not logged until you get a value */}
+  <p>Value: { layer.get("a_value", "fallback_value") }</p> 
 </div>;
 // </snippet>
 }
