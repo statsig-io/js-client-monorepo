@@ -24,13 +24,13 @@ export function _gatherEventData(target: Element): {
     metadata['inputName'] = target.getAttribute('name');
   }
 
-  if (tagName === 'button') {
-    metadata['content'] = (target.textContent || '').trim();
-  }
-
   const anchor = _getAnchorNodeInHierarchy(target);
   if (anchor) {
     metadata['href'] = anchor.getAttribute('href');
+  }
+
+  if (tagName === 'button' || anchor) {
+    metadata['content'] = (target.textContent || '').trim();
   }
 
   return { value, metadata };
