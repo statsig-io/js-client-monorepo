@@ -96,7 +96,8 @@ export default class StatsigNetwork extends NetworkCore {
 
     if (
       cache?.has_updates !== true ||
-      response.body?.includes('"is_delta":true') !== true
+      response.body?.includes('"is_delta":true') !== true ||
+      data.deltasResponseRequested !== true
     ) {
       return response.body;
     }

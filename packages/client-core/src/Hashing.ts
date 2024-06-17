@@ -1,3 +1,5 @@
+import { _typeOf } from './TypingUtils';
+
 export const _DJB2 = (value: string): string => {
   let hash = 0;
   for (let i = 0; i < value.length; i++) {
@@ -8,12 +10,16 @@ export const _DJB2 = (value: string): string => {
   return String(hash >>> 0);
 };
 
-export const _DJB2Object = (value: Record<string, unknown> | null): string => {
-  return _DJB2(JSON.stringify(_getSortedObject(value)));
+export const _DJB2Object = (
+  value: Record<string, unknown> | null,
+  maxLevels?: number,
+): string => {
+  return _DJB2(JSON.stringify(_getSortedObject(value, maxLevels)));
 };
 
-const _getSortedObject = (
+export const _getSortedObject = (
   object: Record<string, unknown> | null,
+  maxDepth: number | undefined,
 ): Record<string, unknown> | null => {
   if (object == null) {
     return null;
@@ -21,12 +27,17 @@ const _getSortedObject = (
   const keys = Object.keys(object).sort();
   const sortedObject: Record<string, unknown> = {};
   keys.forEach((key) => {
-    let value = object[key];
-    if (!Array.isArray(value) && value instanceof Object) {
-      value = _getSortedObject(value as Record<string, unknown>);
+    const value = object[key];
+
+    if (maxDepth === 0 || _typeOf(value) !== 'object') {
+      sortedObject[key] = value;
+      return;
     }
 
-    sortedObject[key] = value;
+    sortedObject[key] = _getSortedObject(
+      value as Record<string, unknown>,
+      maxDepth != null ? maxDepth - 1 : maxDepth,
+    );
   });
   return sortedObject;
 };

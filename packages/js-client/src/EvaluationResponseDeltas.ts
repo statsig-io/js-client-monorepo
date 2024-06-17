@@ -10,7 +10,7 @@ type DeltasEvaluationResponse = InitializeResponseWithUpdates & {
   deleted_layers?: string[];
   is_delta: true;
   has_updates: true;
-  checksum: string;
+  checksumV2: string;
   deltas_full_response?: Record<string, unknown>;
 };
 
@@ -22,6 +22,8 @@ export type DeltasFailureInfo = {
 };
 
 type DeltasResult = string | DeltasFailureInfo | null;
+
+const MAX_DELTAS_SORT_DEPTH = 2;
 
 export function _resolveDeltasResponse(
   cache: InitializeResponseWithUpdates,
@@ -42,13 +44,16 @@ export function _resolveDeltasResponse(
   const merged = _mergeDeltasIntoCache(cache, deltas);
   const resolved = _handleDeletedEntries(merged);
 
-  const actualChecksum = _DJB2Object({
-    feature_gates: resolved.feature_gates,
-    dynamic_configs: resolved.dynamic_configs,
-    layer_configs: resolved.layer_configs,
-  });
+  const actualChecksum = _DJB2Object(
+    {
+      feature_gates: resolved.feature_gates,
+      dynamic_configs: resolved.dynamic_configs,
+      layer_configs: resolved.layer_configs,
+    },
+    MAX_DELTAS_SORT_DEPTH,
+  );
 
-  const isMatch = actualChecksum === deltas.checksum;
+  const isMatch = actualChecksum === deltas.checksumV2;
   if (!isMatch) {
     return {
       hadBadDeltaChecksum: true,

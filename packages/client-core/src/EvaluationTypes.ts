@@ -1,5 +1,5 @@
 import { ParamStoreConfig } from './ParamStoreTypes';
-import { Flatten } from './UtitlityTypes';
+import { Flatten } from './TypingUtils';
 
 type EvaluationBase<T> = {
   id_type: string;

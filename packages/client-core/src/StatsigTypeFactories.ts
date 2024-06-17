@@ -14,18 +14,9 @@ import {
   TypedGet,
   TypedReturn,
 } from './StatsigTypes';
+import { _isTypeMatch } from './TypingUtils';
 
 const DEFAULT_RULE = 'default';
-
-type Primitive =
-  | 'string'
-  | 'number'
-  | 'bigint'
-  | 'boolean'
-  | 'symbol'
-  | 'undefined'
-  | 'object'
-  | 'function';
 
 function _makeEvaluation<T, U extends AnyEvaluation>(
   name: string,
@@ -99,15 +90,6 @@ export function _mergeOverride<T extends AnyConfigBasedStatsigType>(
     ...overridden,
     get: _makeTypedGet(value, exposeFunc),
   };
-}
-
-export function _typeOf(input: unknown): Primitive | 'array' {
-  return Array.isArray(input) ? 'array' : typeof input;
-}
-
-export function _isTypeMatch<T>(a: unknown, b: unknown): a is T {
-  const typeOf = (x: unknown) => (Array.isArray(x) ? 'array' : typeof x);
-  return typeOf(a) === typeOf(b);
 }
 
 export function _makeTypedGet(

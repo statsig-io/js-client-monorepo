@@ -5,7 +5,7 @@ import {
   LayerEvaluation,
 } from './EvaluationTypes';
 import { ParamStoreConfig } from './ParamStoreTypes';
-import { Flatten } from './UtitlityTypes';
+import { Flatten } from './TypingUtils';
 
 export type TypedGet = <T = unknown>(
   key: string,

@@ -10,7 +10,7 @@ import { StableID } from './StableID';
 import { StatsigClientEmitEventFunc } from './StatsigClientBase';
 import { SDK_VERSION, StatsigMetadataProvider } from './StatsigMetadata';
 import { AnyStatsigOptions, NetworkConfigCommon } from './StatsigOptionsCommon';
-import { Flatten } from './UtitlityTypes';
+import { Flatten } from './TypingUtils';
 import { _isUnloading } from './VisibilityObserving';
 
 const DEFAULT_TIMEOUT_MS = 10_000;

@@ -1,6 +1,6 @@
 import { DataAdapterResult } from './StatsigDataAdapter';
 import { DynamicConfig, Experiment, FeatureGate, Layer } from './StatsigTypes';
-import { Flatten } from './UtitlityTypes';
+import { Flatten } from './TypingUtils';
 
 export type StatsigLoadingStatus = 'Uninitialized' | 'Loading' | 'Ready';
 

@@ -24,7 +24,7 @@ import {
   ParameterStore,
 } from './StatsigTypes';
 import { StatsigUser } from './StatsigUser';
-import { Flatten } from './UtitlityTypes';
+import { Flatten } from './TypingUtils';
 
 export interface StatsigClientCommonInterface
   extends StatsigClientEventEmitterInterface {
