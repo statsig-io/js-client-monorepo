@@ -3,6 +3,7 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "packages/combo/src",
   "projectType": "library",
+  "tags": [],
   "targets": {
     "build": {
       "command": ":",
@@ -82,7 +83,6 @@
       },
       "dependsOn": ["build-ts", "js-client:build"]
     },
-
     "build-webpack-js-on-device-eval-client": {
       "executor": "@nx/webpack:webpack",
       "outputs": ["{options.outputPath}"],
@@ -111,6 +111,5 @@
       "command": "pnpm exec webpack-bundle-analyzer dist/packages/combo/build/js-client/js-client-stats.json",
       "dependsOn": ["build-webpack-js-client"]
     }
-  },
-  "tags": []
+  }
 }

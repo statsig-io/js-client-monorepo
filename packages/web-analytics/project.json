@@ -3,6 +3,7 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "packages/web-analytics/src",
   "projectType": "library",
+  "tags": [],
   "targets": {
     "build": {
       "command": ":",
@@ -32,6 +33,5 @@
         "jestConfig": "packages/web-analytics/jest.config.ts"
       }
     }
-  },
-  "tags": []
+  }
 }

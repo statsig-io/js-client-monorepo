@@ -2,6 +2,7 @@
   "name": "next-js-sample-e2e",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "samples/next-js-e2e/src",
+  "implicitDependencies": ["next-js-sample"],
   "targets": {
     "e2e": {
       "executor": "@nx/playwright:playwright",
@@ -13,6 +14,5 @@
     "lint": {
       "executor": "@nx/eslint:lint"
     }
-  },
-  "implicitDependencies": ["next-js-sample"]
+  }
 }

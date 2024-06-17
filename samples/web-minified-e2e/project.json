@@ -2,6 +2,7 @@
   "name": "web-minified-e2e",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "samples/web-minified-e2e/src",
+  "implicitDependencies": ["web-minified"],
   "targets": {
     "e2e": {
       "executor": "@nx/playwright:playwright",
@@ -13,6 +14,5 @@
     "lint": {
       "executor": "@nx/eslint:lint"
     }
-  },
-  "implicitDependencies": ["web-minified"]
+  }
 }

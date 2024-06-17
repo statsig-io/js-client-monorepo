@@ -3,6 +3,7 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "samples/react-native/src",
   "projectType": "application",
+  "tags": [],
   "targets": {
     "start": {
       "executor": "@nx/react-native:start",
@@ -124,6 +125,5 @@
         }
       }
     }
-  },
-  "tags": []
+  }
 }

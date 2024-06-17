@@ -3,6 +3,7 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "packages/session-replay/src",
   "projectType": "library",
+  "tags": [],
   "targets": {
     "build": {
       "command": ":",
@@ -18,7 +19,6 @@
         "assets": ["README.md"]
       }
     },
-
     "publish": {
       "command": "ts-node ./tools/scripts/publish.ts session-replay",
       "dependsOn": ["build"]
@@ -33,6 +33,5 @@
         "jestConfig": "packages/session-replay/jest.config.ts"
       }
     }
-  },
-  "tags": []
+  }
 }
