@@ -1,8 +1,8 @@
 {
   "name": "@statsig/js-user-persisted-storage",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "dependencies": {
-    "@statsig/client-core": "1.2.0"
+    "@statsig/client-core": "1.3.0"
   },
   "type": "commonjs",
   "main": "./src/index.js",
