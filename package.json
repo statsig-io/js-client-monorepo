@@ -9,6 +9,7 @@
     "e2e": "nx run-many --parallel=5 --target=e2e",
     "build": "nx run-many --parallel=5 --target=build",
     "format": "nx format-check --parallel=5 --affected",
+    "fix": "./tools/scripts/fix.sh",
     "format:write": "nx format-write --parallel=5 --affected",
     "sync-version": "nx sync-version",
     "publish-all": "nx publish-all",
