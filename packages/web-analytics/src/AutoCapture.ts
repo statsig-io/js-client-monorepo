@@ -5,7 +5,7 @@ import {
   _getDocumentSafe,
   _getStatsigGlobal,
   _getWindowSafe,
-  _isBrowserEnv,
+  _isServerEnv,
 } from '@statsig/client-core';
 import { StatsigClient } from '@statsig/js-client';
 
@@ -35,7 +35,7 @@ export class AutoCapture {
 
     const doc = _getDocumentSafe();
 
-    if (_isBrowserEnv()) {
+    if (!_isServerEnv()) {
       __STATSIG__ = _getStatsigGlobal();
       const instances = __STATSIG__.acInstances ?? {};
       instances[sdkKey] = this;

@@ -2,7 +2,7 @@ import { _DJB2 } from './Hashing';
 import { Log } from './Log';
 import { NetworkDefault, NetworkParam } from './NetworkConfig';
 import { NetworkCore, RequestArgsWithData } from './NetworkCore';
-import { _getCurrentPageUrlSafe, _isBrowserEnv } from './SafeJs';
+import { _getCurrentPageUrlSafe, _isServerEnv } from './SafeJs';
 import { StatsigClientEmitEventFunc } from './StatsigClientBase';
 import { StatsigEventInternal, _isExposureEvent } from './StatsigEvent';
 import {
@@ -322,7 +322,7 @@ export class EventLogger {
   }
 
   private _startBackgroundFlushInterval() {
-    if (!_isBrowserEnv()) {
+    if (_isServerEnv()) {
       return; // do not run in server environments
     }
 

@@ -1,3 +1,6 @@
+declare let EdgeRuntime: unknown;
+declare let process: { versions: { node: unknown } };
+
 export const _getWindowSafe = (): Window | null => {
   return typeof window !== 'undefined' ? window : null;
 };
@@ -7,8 +10,18 @@ export const _getDocumentSafe = (): Document | null => {
   return win?.document ?? null;
 };
 
-export const _isBrowserEnv = (): boolean => {
-  return _getDocumentSafe() != null;
+export const _isServerEnv = (): boolean => {
+  if (_getDocumentSafe() !== null) {
+    return false;
+  }
+
+  const isNode =
+    typeof process !== 'undefined' &&
+    process.versions != null &&
+    process.versions.node != null;
+
+  const isVercel = typeof EdgeRuntime === 'string';
+  return isVercel || isNode;
 };
 
 export const _addWindowEventListenerSafe = (

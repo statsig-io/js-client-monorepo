@@ -5,8 +5,8 @@ import {
   StatsigMetadataProvider,
   Visibility,
   _getStatsigGlobal,
-  _isBrowserEnv,
   _isCurrentlyVisible,
+  _isServerEnv,
   _isUnloading,
   _subscribeToVisiblityChanged,
 } from '@statsig/client-core';
@@ -48,7 +48,7 @@ export class SessionReplay {
     this._errorBoundary = errorBoundary;
     this._errorBoundary.wrap(this);
 
-    if (_isBrowserEnv()) {
+    if (!_isServerEnv()) {
       const statsigGlobal = _getStatsigGlobal();
       statsigGlobal.srInstances = {
         ...statsigGlobal.srInstances,

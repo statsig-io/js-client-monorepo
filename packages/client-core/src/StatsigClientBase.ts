@@ -7,7 +7,7 @@ import { EventLogger } from './EventLogger';
 import { Log } from './Log';
 import { NetworkCore } from './NetworkCore';
 import { OverrideAdapter } from './OverrideAdapter';
-import { _isBrowserEnv } from './SafeJs';
+import { _isServerEnv } from './SafeJs';
 import { StatsigSession } from './SessionID';
 import {
   AnyStatsigClientEvent,
@@ -85,7 +85,7 @@ export abstract class StatsigClientBase<
     this._errorBoundary.wrap(adapter);
     this._errorBoundary.wrap(this._logger);
 
-    if (_isBrowserEnv()) {
+    if (!_isServerEnv()) {
       const statsigGlobal = _getStatsigGlobal();
       const instances = statsigGlobal.instances ?? {};
       const inst = this as unknown as StatsigClientInterface;
