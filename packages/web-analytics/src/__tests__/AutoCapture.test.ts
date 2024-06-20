@@ -85,6 +85,8 @@ describe('Autocapture Tests', () => {
     expect(eventData['metadata']).toMatchObject({
       sessionID: expect.any(String),
       page_url: 'http://foo.com/',
+      hostname: 'foo.com',
+      pathname: '/',
       referrer: '',
       screen_width: 'unknown',
       screen_height: 'unknown',

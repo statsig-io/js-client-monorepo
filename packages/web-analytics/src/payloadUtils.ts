@@ -32,6 +32,8 @@ export function _gatherPageViewPayload(
     ...queryParams,
     title: safeDoc?.title || '',
     locale: navigator?.language || 'unknown',
+    hostname: url.hostname || 'unknown',
+    pathname: url.pathname || 'unknown',
     referrer,
     screen_width: safeWnd?.screen?.width || 'unknown',
     screen_height: safeWnd?.screen?.height || 'unknown',
