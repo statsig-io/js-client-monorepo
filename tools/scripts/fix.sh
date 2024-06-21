@@ -21,9 +21,9 @@ delete_directory "tmp"
 delete_directory ".nx"
 
 echo "----------------"
-echo "Searching for node_modules/ folders..."
+echo "Searching for node_modules folders (This can take a few minutes)..."
 find . -name "node_modules" -type d -exec rm -rf {} +
-echo "Deleted all node_modules/ folders."
+echo "Deleted all node_modules folders."
 echo "----------------"
 
 

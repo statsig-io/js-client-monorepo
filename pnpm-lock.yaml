@@ -51,11 +51,11 @@ importers:
         specifier: ~51.0.12
         version: 51.0.12(@babel/core@7.23.9)(encoding@0.1.13)
       expo-application:
-        specifier: ^5.4.0
+        specifier: 5.*
         version: 5.8.3(expo@51.0.12)
       expo-device:
-        specifier: ^5.6.0
-        version: 5.9.3(expo@51.0.12)
+        specifier: 6.*
+        version: 6.0.2(expo@51.0.12)
       expo-splash-screen:
         specifier: ~0.27.5
         version: 0.27.5(encoding@0.1.13)(expo@51.0.12)
@@ -13302,8 +13302,8 @@ packages:
       - supports-color
     dev: false
 
-  /expo-device@5.9.3(expo@51.0.12):
-    resolution: {integrity: sha512-azH5rz8krDZUJb/arqkcA6oZGaX2T5s4aaXIMFsDDzvq8TW0CttZZy2HFp6itmFdiKGdRpFX3/Gj0n6ZmPoJ/w==}
+  /expo-device@6.0.2(expo@51.0.12):
+    resolution: {integrity: sha512-sCt91CuTmAuMXX4SlFOn4lIos2UIr8vb0jDstDDZXys6kErcj0uynC7bQAMreU5uRUTKMAl4MAMpKt9ufCXPBw==}
     peerDependencies:
       expo: '*'
     dependencies:
