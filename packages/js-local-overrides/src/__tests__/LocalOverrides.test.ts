@@ -43,4 +43,34 @@ describe('Local Overrides', () => {
     const overridden = provider.getLayerOverride(layer, user);
     expect(overridden?.__value).toEqual({ layer_key: 'value' });
   });
+
+  it('returns all overrides', () => {
+    provider.overrideGate(gate.name, true);
+    provider.overrideDynamicConfig(dynamicConfig.name, { dc: 'value' });
+    provider.overrideExperiment(experiment.name, { exp: 'value' });
+    provider.overrideLayer(layer.name, { layer_key: 'value' });
+
+    expect(provider.getAllOverrides()).toEqual({
+      dynamicConfig: { a_config: { dc: 'value' } },
+      experiment: { an_experiment: { exp: 'value' } },
+      gate: { a_gate: true },
+      layer: { a_layer: { layer_key: 'value' } },
+    });
+  });
+
+  it('returns removes all overrides', () => {
+    provider.overrideGate(gate.name, true);
+    provider.overrideDynamicConfig(dynamicConfig.name, { dc: 'value' });
+    provider.overrideExperiment(experiment.name, { exp: 'value' });
+    provider.overrideLayer(layer.name, { layer_key: 'value' });
+
+    provider.removeAllOverrides();
+
+    expect(provider.getAllOverrides()).toEqual({
+      dynamicConfig: {},
+      experiment: {},
+      gate: {},
+      layer: {},
+    });
+  });
 });

@@ -9,20 +9,24 @@ import {
 
 const LOCAL_OVERRIDE_REASON = 'LocalOverride';
 
-type OverrideStore = {
+export type OverrideStore = {
   gate: Record<string, boolean>;
   dynamicConfig: Record<string, Record<string, unknown>>;
   experiment: OverrideStore['dynamicConfig'];
   layer: OverrideStore['dynamicConfig'];
 };
 
-export class LocalOverrideAdapter implements OverrideAdapter {
-  private readonly _overrides: OverrideStore = {
+function _makeEmptyStore(): OverrideStore {
+  return {
     gate: {},
     dynamicConfig: {},
     experiment: {},
     layer: {},
   };
+}
+
+export class LocalOverrideAdapter implements OverrideAdapter {
+  private _overrides = _makeEmptyStore();
 
   overrideGate(name: string, value: boolean): void {
     this._overrides.gate[name] = value;
@@ -68,6 +72,14 @@ export class LocalOverrideAdapter implements OverrideAdapter {
 
   overrideLayer(name: string, value: Record<string, unknown>): void {
     this._overrides.layer[name] = value;
+  }
+
+  getAllOverrides(): OverrideStore {
+    return JSON.parse(JSON.stringify(this._overrides)) as OverrideStore;
+  }
+
+  removeAllOverrides(): void {
+    this._overrides = _makeEmptyStore();
   }
 
   getLayerOverride(current: Layer, _user: StatsigUser): Layer | null {
