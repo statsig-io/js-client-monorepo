@@ -35,6 +35,11 @@ export default function Index(): JSX.Element {
             <a href="/param-store-example">Param Stores</a>
           </button>
         </li>
+        <li>
+          <button>
+            <a href="/async-initialize-example">Async Initialization</a>
+          </button>
+        </li>
       </ul>
     </div>
   );
