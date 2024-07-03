@@ -43,6 +43,10 @@ const SAMPLES = [
 
   // React
   () => import('./samples/react-precomp/sample-react-login'),
+  () => import('./samples/react-precomp/sample-react-init-strat-unawait-async'),
+  () => import('./samples/react-precomp/sample-react-init-strat-await-async'),
+  () => import('./samples/react-precomp/sample-react-init-strat-bootstrap'),
+  () => import('./samples/react-precomp/sample-react-init-strat-cache'),
 
   // React Native
   () => import('./samples/react-native/react-native-on-device-eval'),
