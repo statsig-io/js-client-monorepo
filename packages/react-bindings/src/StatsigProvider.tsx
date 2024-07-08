@@ -1,4 +1,4 @@
-import { ReactNode, useEffect, useState } from 'react';
+import { ReactNode, useEffect, useMemo, useState } from 'react';
 
 import { Log, SDKType, StatsigClientInterface } from '@statsig/client-core';
 
@@ -33,8 +33,12 @@ export function StatsigProvider({
     };
   }, [client]);
 
+  const contextValue = useMemo(
+    () => ({ renderVersion, client }),
+    [renderVersion, client],
+  );
   return (
-    <StatsigContext.Provider value={{ renderVersion, client }}>
+    <StatsigContext.Provider value={contextValue}>
       {_shouldRender(client) ? children : null}
     </StatsigContext.Provider>
   );
