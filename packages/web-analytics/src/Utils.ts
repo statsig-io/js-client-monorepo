@@ -1,5 +1,22 @@
 import { _getCurrentPageUrlSafe, _getWindowSafe } from '@statsig/client-core';
 
+export function _gatherDatasetProperties(el: Element): Record<string, string> {
+  const dataset = {} as Record<string, string>;
+  if (!el) {
+    return dataset;
+  }
+  const attr = (el as HTMLElement)?.dataset;
+  if (!attr) {
+    return dataset;
+  }
+
+  for (const key in attr) {
+    dataset[`data-${key}`] = attr[key] || '';
+  }
+
+  return dataset;
+}
+
 export function _gatherEventData(target: Element): {
   value: string;
   metadata: Record<string, string | null>;
@@ -31,6 +48,8 @@ export function _gatherEventData(target: Element): {
 
   if (tagName === 'button' || anchor) {
     metadata['content'] = (target.textContent || '').trim();
+    const dataset = _gatherDatasetProperties(anchor || target);
+    Object.assign(metadata, dataset);
   }
 
   return { value, metadata };

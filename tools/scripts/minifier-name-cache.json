@@ -173,7 +173,8 @@
       "$_downloadConfigSpecsUrl": "cn",
       "$_getSpecs": "dn",
       "$_evaluator": "hn",
-      "$_getOutputs": "vn"
+      "$_getOutputs": "vn",
+      "$_gatherDatasetProperties": "fn"
     }
   }
 }
