@@ -148,12 +148,15 @@ export default class StatsigOnDeviceEvalClient
     user: StatsigUser,
     options?: FeatureGateEvaluationOptions,
   ): FeatureGate {
-    user = _normalizeUser(user, this._options.environment);
-    const { evaluation, details } = this._evaluator.evaluateGate(name, user);
+    const normalized = _normalizeUser(user, this._options);
+    const { evaluation, details } = this._evaluator.evaluateGate(
+      name,
+      normalized,
+    );
 
     const gate = _makeFeatureGate(name, details, evaluation);
 
-    this._enqueueExposure(name, _createGateExposure(user, gate), options);
+    this._enqueueExposure(name, _createGateExposure(normalized, gate), options);
 
     this.$emt({ name: 'gate_evaluation', gate });
 
@@ -165,18 +168,25 @@ export default class StatsigOnDeviceEvalClient
     user: StatsigUser,
     options?: DynamicConfigEvaluationOptions,
   ): DynamicConfig {
-    user = _normalizeUser(user, this._options.environment);
-    const { evaluation, details } = this._evaluator.evaluateConfig(name, user);
+    const normalized = _normalizeUser(user, this._options);
+    const { evaluation, details } = this._evaluator.evaluateConfig(
+      name,
+      normalized,
+    );
 
     const config = _makeDynamicConfig(name, details, evaluation);
     const overridden = this._overrideAdapter?.getDynamicConfigOverride?.(
       config,
-      user,
+      normalized,
       options,
     );
 
     const result = overridden ?? config;
-    this._enqueueExposure(name, _createConfigExposure(user, result), options);
+    this._enqueueExposure(
+      name,
+      _createConfigExposure(normalized, result),
+      options,
+    );
     this.$emt({ name: 'dynamic_config_evaluation', dynamicConfig: result });
     return result;
   }
@@ -186,18 +196,25 @@ export default class StatsigOnDeviceEvalClient
     user: StatsigUser,
     options?: ExperimentEvaluationOptions,
   ): Experiment {
-    user = _normalizeUser(user, this._options.environment);
-    const { evaluation, details } = this._evaluator.evaluateConfig(name, user);
+    const normalized = _normalizeUser(user, this._options);
+    const { evaluation, details } = this._evaluator.evaluateConfig(
+      name,
+      normalized,
+    );
 
     const experiment = _makeExperiment(name, details, evaluation);
     const overridden = this._overrideAdapter?.getExperimentOverride?.(
       experiment,
-      user,
+      normalized,
       options,
     );
 
     const result = overridden ?? experiment;
-    this._enqueueExposure(name, _createConfigExposure(user, result), options);
+    this._enqueueExposure(
+      name,
+      _createConfigExposure(normalized, result),
+      options,
+    );
     this.$emt({ name: 'experiment_evaluation', experiment: result });
     return result;
   }
@@ -207,13 +224,16 @@ export default class StatsigOnDeviceEvalClient
     user: StatsigUser,
     options?: LayerEvaluationOptions,
   ): Layer {
-    user = _normalizeUser(user, this._options.environment);
-    const { evaluation, details } = this._evaluator.evaluateLayer(name, user);
+    const normalized = _normalizeUser(user, this._options);
+    const { evaluation, details } = this._evaluator.evaluateLayer(
+      name,
+      normalized,
+    );
 
     const layer = _makeLayer(name, details, evaluation, (param: string) => {
       this._enqueueExposure(
         name,
-        _createLayerParameterExposure(user, layer, param),
+        _createLayerParameterExposure(normalized, layer, param),
         options,
       );
     });
@@ -238,7 +258,11 @@ export default class StatsigOnDeviceEvalClient
           }
         : eventOrName;
 
-    this._logger.enqueue({ ...event, user, time: Date.now() });
+    this._logger.enqueue({
+      ...event,
+      user: _normalizeUser(user, this._options),
+      time: Date.now(),
+    });
   }
 
   protected override _primeReadyRipcord(): void {

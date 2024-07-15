@@ -22,6 +22,7 @@ import {
   StatsigEvent,
   StatsigSession,
   StatsigUser,
+  StatsigUserInternal,
   _createConfigExposure,
   _createGateExposure,
   _createLayerParameterExposure,
@@ -48,7 +49,7 @@ export default class StatsigClient
   implements PrecomputedEvaluationsInterface
 {
   private _store: EvaluationStore;
-  private _user: StatsigUser;
+  private _user: StatsigUserInternal;
 
   /**
    * Retrieves an instance of the StatsigClient based on the provided SDK key.
@@ -97,7 +98,7 @@ export default class StatsigClient
     );
 
     this._store = new EvaluationStore();
-    this._user = user;
+    this._user = _normalizeUser(user, options);
   }
 
   /**
@@ -411,7 +412,7 @@ export default class StatsigClient
     this._logger.reset();
     this._store.reset();
 
-    this._user = _normalizeUser(user, this._options.environment);
+    this._user = _normalizeUser(user, this._options);
 
     const stableIdOverride = this._user.customIDs?.stableID;
     if (stableIdOverride) {

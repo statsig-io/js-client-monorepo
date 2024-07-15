@@ -1,6 +1,6 @@
 import { EvaluationDetails, SecondaryExposure } from './EvaluationTypes';
 import { DynamicConfig, FeatureGate, Layer } from './StatsigTypes';
-import { StatsigUser } from './StatsigUser';
+import { StatsigUserInternal } from './StatsigUser';
 
 export type StatsigEvent = {
   eventName: string;
@@ -9,7 +9,7 @@ export type StatsigEvent = {
 };
 
 export type StatsigEventInternal = Omit<StatsigEvent, 'metadata'> & {
-  user: StatsigUser | null;
+  user: StatsigUserInternal | null;
   time: number;
   metadata?: { [key: string]: unknown } | null;
   secondaryExposures?: SecondaryExposure[];
@@ -21,7 +21,7 @@ const LAYER_EXPOSURE_NAME = 'statsig::layer_exposure';
 
 const _createExposure = (
   eventName: string,
-  user: StatsigUser,
+  user: StatsigUserInternal,
   details: EvaluationDetails,
   metadata: Record<string, string>,
   secondaryExposures: SecondaryExposure[],
@@ -43,7 +43,7 @@ export const _isExposureEvent = ({
 };
 
 export const _createGateExposure = (
-  user: StatsigUser,
+  user: StatsigUserInternal,
   gate: FeatureGate,
 ): StatsigEventInternal => {
   return _createExposure(
@@ -60,7 +60,7 @@ export const _createGateExposure = (
 };
 
 export const _createConfigExposure = (
-  user: StatsigUser,
+  user: StatsigUserInternal,
   config: DynamicConfig,
 ): StatsigEventInternal => {
   return _createExposure(
@@ -76,7 +76,7 @@ export const _createConfigExposure = (
 };
 
 export const _createLayerParameterExposure = (
-  user: StatsigUser,
+  user: StatsigUserInternal,
   layer: Layer,
   parameterName: string,
 ): StatsigEventInternal => {

@@ -157,7 +157,7 @@ export class EventLogger {
       return true;
     }
 
-    const user = event.user ? event.user : {};
+    const user = event.user ? event.user : { statsigEnvironment: undefined };
     const metadata = event.metadata ? event.metadata : {};
     const key = [
       event.eventName,

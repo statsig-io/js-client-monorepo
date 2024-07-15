@@ -7,8 +7,10 @@ import {
   InitializeResponse,
   Log,
   StatsigUser,
+  StatsigUserInternal,
   _getFullUserHash,
   _getStorageKey,
+  _normalizeUser,
   _typedJsonParse,
 } from '@statsig/client-core';
 
@@ -36,7 +38,11 @@ export class StatsigEvaluationsDataAdapter
     user: StatsigUser,
     options?: DataAdapterAsyncOptions,
   ): Promise<DataAdapterResult | null> {
-    return this._getDataAsyncImpl(current, user, options);
+    return this._getDataAsyncImpl(
+      current,
+      _normalizeUser(user, this._options),
+      options,
+    );
   }
 
   prefetchData(
@@ -78,7 +84,7 @@ export class StatsigEvaluationsDataAdapter
     return result ?? null;
   }
 
-  protected override _getCacheKey(user?: StatsigUser): string {
+  protected override _getCacheKey(user?: StatsigUserInternal): string {
     const key = _getStorageKey(
       this._getSdkKey(),
       user,

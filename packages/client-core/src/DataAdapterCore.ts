@@ -6,7 +6,12 @@ import {
   DataSource,
 } from './StatsigDataAdapter';
 import { AnyStatsigOptions } from './StatsigOptionsCommon';
-import { StatsigUser, _getFullUserHash, _normalizeUser } from './StatsigUser';
+import {
+  StatsigUser,
+  StatsigUserInternal,
+  _getFullUserHash,
+  _normalizeUser,
+} from './StatsigUser';
 import {
   Storage,
   _getObjectFromStorage,
@@ -37,8 +42,9 @@ export abstract class DataAdapterCore {
   }
 
   getDataSync(user?: StatsigUser | undefined): DataAdapterResult | null {
-    const cacheKey = this._getCacheKey(user);
-    const inMem = this._inMemoryCache.get(cacheKey, user);
+    const normalized = user && _normalizeUser(user, this._options);
+    const cacheKey = this._getCacheKey(normalized);
+    const inMem = this._inMemoryCache.get(cacheKey, normalized);
 
     if (inMem) {
       return inMem;
@@ -47,14 +53,14 @@ export abstract class DataAdapterCore {
     const cache = this._loadFromCache(cacheKey);
     if (cache) {
       this._inMemoryCache.add(cacheKey, cache);
-      return this._inMemoryCache.get(cacheKey, user);
+      return this._inMemoryCache.get(cacheKey, normalized);
     }
 
     return null;
   }
 
   setData(data: string, user?: StatsigUser): void {
-    const normalized = user && _normalizeUser(user, this._options?.environment);
+    const normalized = user && _normalizeUser(user, this._options);
     const cacheKey = this._getCacheKey(normalized);
 
     this._inMemoryCache.add(
@@ -74,7 +80,7 @@ export abstract class DataAdapterCore {
 
   protected async _getDataAsyncImpl(
     current: DataAdapterResult | null,
-    user?: StatsigUser,
+    user?: StatsigUserInternal,
     options?: DataAdapterAsyncOptions,
   ): Promise<DataAdapterResult | null> {
     const cache = current ?? this.getDataSync(user);
@@ -97,8 +103,9 @@ export abstract class DataAdapterCore {
     user?: StatsigUser,
     options?: DataAdapterAsyncOptions,
   ): Promise<void> {
-    const cacheKey = this._getCacheKey(user);
-    const result = await this._getDataAsyncImpl(null, user, options);
+    const normalized = user && _normalizeUser(user, this._options);
+    const cacheKey = this._getCacheKey(normalized);
+    const result = await this._getDataAsyncImpl(null, normalized, options);
     if (result) {
       this._inMemoryCache.add(cacheKey, { ...result, source: 'Prefetch' });
     }
@@ -110,7 +117,7 @@ export abstract class DataAdapterCore {
     options?: DataAdapterAsyncOptions,
   ): Promise<string | null>;
 
-  protected abstract _getCacheKey(user?: StatsigUser): string;
+  protected abstract _getCacheKey(user?: StatsigUserInternal): string;
 
   protected abstract _isCachedResultValidFor204(
     result: DataAdapterResult,
@@ -119,7 +126,7 @@ export abstract class DataAdapterCore {
 
   private async _fetchAndPrepFromNetwork(
     cachedResult: DataAdapterResult | null,
-    user: StatsigUser | undefined,
+    user: StatsigUserInternal | undefined,
     options: DataAdapterAsyncOptions | undefined,
   ): Promise<DataAdapterResult | null> {
     let cachedData: string | null = null;
@@ -232,7 +239,7 @@ class InMemoryCache {
 
   get(
     cacheKey: string,
-    user: StatsigUser | undefined,
+    user: StatsigUserInternal | undefined,
   ): DataAdapterResult | null {
     const result = this._data[cacheKey];
     const cached = result?.stableID;

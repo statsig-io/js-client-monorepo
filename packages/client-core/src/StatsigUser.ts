@@ -1,6 +1,9 @@
 import { _DJB2Object } from './Hashing';
 import { Log } from './Log';
-import type { StatsigEnvironment } from './StatsigOptionsCommon';
+import type {
+  AnyStatsigOptions,
+  StatsigEnvironment,
+} from './StatsigOptionsCommon';
 
 type StatsigUserPrimitives =
   | string
@@ -26,24 +29,24 @@ export type StatsigUser = {
 };
 
 export type StatsigUserInternal = StatsigUser & {
-  statsigEnvironment?: StatsigEnvironment;
+  statsigEnvironment: StatsigEnvironment | undefined;
 };
 
 export function _normalizeUser(
   original: StatsigUser,
-  environment?: StatsigEnvironment,
-): StatsigUser {
+  options?: AnyStatsigOptions | null,
+): StatsigUserInternal {
   try {
     const copy = JSON.parse(JSON.stringify(original)) as StatsigUserInternal;
 
-    if (environment != null) {
-      copy.statsigEnvironment = environment;
+    if (options != null && options.environment != null) {
+      copy.statsigEnvironment = options.environment;
     }
 
     return copy;
   } catch (error) {
     Log.error('Failed to JSON.stringify user');
-    return {};
+    return { statsigEnvironment: undefined };
   }
 }
 
