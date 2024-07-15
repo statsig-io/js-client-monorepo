@@ -1,11 +1,11 @@
 {
   "private": true,
   "name": "@statsig/angular-bindings",
-  "version": "1.4.0",
+  "version": "1.5.0",
   "dependencies": {},
   "peerDependencies": {
     "@angular/core": "^17.1.0",
-    "@statsig/client-core": "1.4.0"
+    "@statsig/client-core": "1.5.0"
   },
   "sideEffects": false
 }
