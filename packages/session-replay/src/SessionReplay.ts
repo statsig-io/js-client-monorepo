@@ -22,6 +22,7 @@ const MAX_REPLAY_PAYLOAD_BYTES = 2048;
 
 type SessionReplayOptions = {
   rrwebConfig?: RRWebConfig;
+  forceRecording?: boolean;
 };
 
 type EndReason = 'is_leaving_page' | 'session_expired';
@@ -60,7 +61,9 @@ export class SessionReplay {
 
     this._replayer = new SessionReplayClient();
     this._client.$on('pre_shutdown', () => this._shutdown());
-    this._client.$on('values_updated', () => this._attemptToStartRecording());
+    this._client.$on('values_updated', () =>
+      this._attemptToStartRecording(this._options?.forceRecording),
+    );
     this._client.on('session_expired', () => {
       this._replayer.stop();
       StatsigMetadataProvider.add({ isRecordingSession: 'false' });
@@ -69,7 +72,7 @@ export class SessionReplay {
     });
 
     this._subscribeToVisibilityChanged();
-    this._attemptToStartRecording();
+    this._attemptToStartRecording(this._options?.forceRecording);
   }
 
   private _subscribeToVisibilityChanged() {
@@ -81,6 +84,10 @@ export class SessionReplay {
         inst._onVisibilityChanged(vis);
       }
     });
+  }
+
+  public forceStartRecording(): void {
+    this._attemptToStartRecording(true);
   }
 
   private _onVisibilityChanged(visibility: Visibility): void {
@@ -108,10 +115,10 @@ export class SessionReplay {
     }
   }
 
-  private _attemptToStartRecording() {
+  private _attemptToStartRecording(force = false) {
     const values = this._client.getContext().values;
 
-    if (values?.can_record_session !== true) {
+    if (!force && values?.can_record_session !== true) {
       this._shutdown();
       return;
     }
