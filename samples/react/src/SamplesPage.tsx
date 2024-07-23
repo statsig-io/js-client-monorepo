@@ -43,6 +43,8 @@ const SAMPLES = [
 
   // React
   () => import('./samples/react-precomp/sample-react-login'),
+  () =>
+    import('./samples/react-precomp/sample-react-precomp-update-user-prefetch'),
   () => import('./samples/react-precomp/sample-react-init-strat-unawait-async'),
   () => import('./samples/react-precomp/sample-react-init-strat-await-async'),
   () => import('./samples/react-precomp/sample-react-init-strat-bootstrap'),

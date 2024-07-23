@@ -40,6 +40,11 @@ export default function Index(): JSX.Element {
             <a href="/async-initialize-example">Async Initialization</a>
           </button>
         </li>
+        <li>
+          <button>
+            <a href="/login-example">Login</a>
+          </button>
+        </li>
       </ul>
     </div>
   );
