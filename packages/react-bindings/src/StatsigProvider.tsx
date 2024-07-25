@@ -7,11 +7,13 @@ import StatsigContext from './StatsigContext';
 export type StatsigProviderProps = {
   children: ReactNode | ReactNode[];
   client: StatsigClientInterface;
+  loadingComponent?: ReactNode | ReactNode[];
 };
 
 export function StatsigProvider({
   client,
   children,
+  loadingComponent,
 }: StatsigProviderProps): JSX.Element {
   const [renderVersion, setRenderVersion] = useState(0);
 
@@ -37,14 +39,17 @@ export function StatsigProvider({
     () => ({ renderVersion, client }),
     [renderVersion, client],
   );
+
   return (
     <StatsigContext.Provider value={contextValue}>
-      {_shouldRender(client) ? children : null}
+      {loadingComponent == null || _isReady(client)
+        ? children
+        : loadingComponent}
     </StatsigContext.Provider>
   );
 }
 
-function _shouldRender(client: StatsigClientInterface): boolean {
+function _isReady(client: StatsigClientInterface): boolean {
   if ('isNoop' in client) {
     return true;
   }

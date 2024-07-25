@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 
 import { StatsigClient } from '@statsig/js-client';
 import {
@@ -22,26 +22,14 @@ if (typeof window !== 'undefined') {
   };
 }
 
-function Content({
-  setIsLoading,
-}: {
-  setIsLoading: (isLoading: boolean) => void;
-}) {
+function Content() {
   const { client } = useStatsigClient();
   const { value, details } = useFeatureGate('partial_gate');
 
   const handleLogin = () => {
-    setIsLoading(true);
-
-    const updatedUser = { userID: 'updated-user' };
-
-    client.dataAdapter
-      .prefetchData(updatedUser)
-      .catch((err) => console.log(err))
-      .finally(() => {
-        client.updateUserSync(updatedUser);
-        setIsLoading(false);
-      });
+    client
+      .updateUserAsync({ userID: 'updated-user' })
+      .catch((err) => console.log(err));
   };
 
   return (
@@ -54,40 +42,22 @@ function Content({
   );
 }
 
-function useAsyncClient(setIsLoading: (isLoading: boolean) => void): {
-  client: StatsigClient;
-} {
+export default function LoginExample(): JSX.Element {
   const client = useMemo(() => {
     const instance = new StatsigClient(DEMO_CLIENT_KEY, {
       userID: 'initial-user',
     });
 
-    instance
-      .initializeAsync()
-      .then(() => {
-        setIsLoading(false);
-      })
-      .catch((err) => {
-        console.error(err);
-      });
-
+    instance.initializeAsync().catch((err) => console.error(err));
     return instance;
-  }, [setIsLoading]);
-
-  return { client };
-}
-
-export default function LoginExample(): JSX.Element {
-  const [isLoading, setIsLoading] = useState(true);
-  const { client } = useAsyncClient(setIsLoading);
-
-  if (isLoading) {
-    return <div style={{ padding: 16 }}>Statsig Loading...</div>;
-  }
+  }, []);
 
   return (
-    <StatsigProvider client={client}>
-      <Content setIsLoading={setIsLoading} />
+    <StatsigProvider
+      client={client}
+      loadingComponent={<div style={{ padding: 16 }}>Statsig Loading...</div>}
+    >
+      <Content />
     </StatsigProvider>
   );
 }
