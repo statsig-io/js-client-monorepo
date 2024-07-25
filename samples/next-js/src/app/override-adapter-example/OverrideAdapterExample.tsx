@@ -9,8 +9,6 @@ import { StatsigProvider, useFeatureGate } from '@statsig/react-bindings';
 
 import { DEMO_CLIENT_KEY } from '../../utils/constants';
 
-/* eslint-disable no-console */
-
 function useClientWithOverrides(): StatsigClient {
   const { client } = useMemo(() => {
     const overrideAdapter = new LocalOverrideAdapter();
