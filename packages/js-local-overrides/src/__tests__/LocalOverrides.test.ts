@@ -73,4 +73,46 @@ describe('Local Overrides', () => {
       layer: {},
     });
   });
+  it('returns removes single override', () => {
+    const gateB = _makeFeatureGate('b_gate', { reason: '' }, null);
+    const dynamicConfigB = _makeDynamicConfig('b_config', { reason: '' }, null);
+    const experimentB = _makeExperiment('b_experiment', { reason: '' }, null);
+    const layerB = _makeLayer('b_layer', { reason: '' }, null);
+
+    provider.overrideGate(gate.name, true);
+    provider.overrideDynamicConfig(dynamicConfig.name, { dc: 'value' });
+    provider.overrideExperiment(experiment.name, { exp: 'value' });
+    provider.overrideLayer(layer.name, { layer_key: 'value' });
+
+    provider.overrideGate(gateB.name, true);
+    provider.overrideDynamicConfig(dynamicConfigB.name, { dc: 'value' });
+    provider.overrideExperiment(experimentB.name, { exp: 'value' });
+    provider.overrideLayer(layerB.name, { layer_key: 'value' });
+
+    provider.removeGateOverride(gate.name);
+    provider.removeDynamicConfigOverride(dynamicConfig.name);
+    provider.removeExperimentOverride(experiment.name);
+    provider.removeLayerOverride(layer.name);
+
+    expect(provider.getAllOverrides()).toEqual({
+      dynamicConfig: {
+        b_config: {
+          dc: 'value',
+        },
+      },
+      experiment: {
+        b_experiment: {
+          exp: 'value',
+        },
+      },
+      gate: {
+        b_gate: true,
+      },
+      layer: {
+        b_layer: {
+          layer_key: 'value',
+        },
+      },
+    });
+  });
 });
