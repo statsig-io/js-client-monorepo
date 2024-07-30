@@ -32,6 +32,10 @@ export class LocalOverrideAdapter implements OverrideAdapter {
     this._overrides.gate[name] = value;
   }
 
+  removeGateOverride(name: string): void {
+    delete this._overrides.gate[name];
+  }
+
   getGateOverride(
     current: FeatureGate,
     _user: StatsigUser,
@@ -52,6 +56,10 @@ export class LocalOverrideAdapter implements OverrideAdapter {
     this._overrides.dynamicConfig[name] = value;
   }
 
+  removeDynamicConfigOverride(name: string): void {
+    delete this._overrides.dynamicConfig[name];
+  }
+
   getDynamicConfigOverride(
     current: DynamicConfig,
     _user: StatsigUser,
@@ -63,6 +71,10 @@ export class LocalOverrideAdapter implements OverrideAdapter {
     this._overrides.experiment[name] = value;
   }
 
+  removeExperimentOverride(name: string): void {
+    delete this._overrides.experiment[name];
+  }
+
   getExperimentOverride(
     current: Experiment,
     _user: StatsigUser,
@@ -72,6 +84,10 @@ export class LocalOverrideAdapter implements OverrideAdapter {
 
   overrideLayer(name: string, value: Record<string, unknown>): void {
     this._overrides.layer[name] = value;
+  }
+
+  removeLayerOverride(name: string): void {
+    delete this._overrides.layer[name];
   }
 
   getAllOverrides(): OverrideStore {
