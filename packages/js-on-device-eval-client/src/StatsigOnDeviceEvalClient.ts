@@ -175,7 +175,7 @@ export default class StatsigOnDeviceEvalClient
     );
 
     const config = _makeDynamicConfig(name, details, evaluation);
-    const overridden = this._overrideAdapter?.getDynamicConfigOverride?.(
+    const overridden = this.overrideAdapter?.getDynamicConfigOverride?.(
       config,
       normalized,
       options,
@@ -203,7 +203,7 @@ export default class StatsigOnDeviceEvalClient
     );
 
     const experiment = _makeExperiment(name, details, evaluation);
-    const overridden = this._overrideAdapter?.getExperimentOverride?.(
+    const overridden = this.overrideAdapter?.getExperimentOverride?.(
       experiment,
       normalized,
       options,

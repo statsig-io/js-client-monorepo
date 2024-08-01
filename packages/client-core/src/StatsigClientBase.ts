@@ -51,13 +51,13 @@ export abstract class StatsigClientBase<
 > implements StatsigClientEventEmitterInterface
 {
   loadingStatus: StatsigLoadingStatus = 'Uninitialized';
-  readonly dataAdapter: TAdapter;
+  public readonly dataAdapter: TAdapter;
+  public readonly overrideAdapter: OverrideAdapter | null;
 
   protected readonly _sdkKey: string;
   protected readonly _options: AnyStatsigOptions;
   protected readonly _errorBoundary: ErrorBoundary;
   protected readonly _logger: EventLogger;
-  protected readonly _overrideAdapter: OverrideAdapter | null;
 
   private _listeners = {} as EventListenersMap;
 
@@ -76,7 +76,7 @@ export abstract class StatsigClientBase<
 
     this._sdkKey = sdkKey;
     this._options = options ?? {};
-    this._overrideAdapter = options?.overrideAdapter ?? null;
+    this.overrideAdapter = options?.overrideAdapter ?? null;
     this._logger = new EventLogger(sdkKey, emitter, network, options);
 
     this._errorBoundary = new ErrorBoundary(sdkKey, options, emitter);

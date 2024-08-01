@@ -233,7 +233,7 @@ export default class StatsigClient
   ): FeatureGate {
     const { result: evaluation, details } = this._store.getGate(name);
     const gate = _makeFeatureGate(name, details, evaluation);
-    const overridden = this._overrideAdapter?.getGateOverride?.(
+    const overridden = this.overrideAdapter?.getGateOverride?.(
       gate,
       this._user,
       options,
@@ -266,7 +266,7 @@ export default class StatsigClient
     const { result: evaluation, details } = this._store.getConfig(name);
     const config = _makeDynamicConfig(name, details, evaluation);
 
-    const overridden = this._overrideAdapter?.getDynamicConfigOverride?.(
+    const overridden = this.overrideAdapter?.getDynamicConfigOverride?.(
       config,
       this._user,
       options,
@@ -297,7 +297,7 @@ export default class StatsigClient
     const { result: evaluation, details } = this._store.getConfig(name);
     const experiment = _makeExperiment(name, details, evaluation);
 
-    const overridden = this._overrideAdapter?.getExperimentOverride?.(
+    const overridden = this.overrideAdapter?.getExperimentOverride?.(
       experiment,
       this._user,
       options,
@@ -324,7 +324,7 @@ export default class StatsigClient
   getLayer(name: string, options?: LayerEvaluationOptions): Layer {
     const { result: evaluation, details } = this._store.getLayer(name);
     const layer = _makeLayer(name, details, evaluation);
-    const overridden = this._overrideAdapter?.getLayerOverride?.(
+    const overridden = this.overrideAdapter?.getLayerOverride?.(
       layer,
       this._user,
       options,
