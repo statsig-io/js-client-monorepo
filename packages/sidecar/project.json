@@ -1,0 +1,29 @@
+{
+  "name": "sidecar",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/sidecar/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/sidecar",
+        "main": "packages/sidecar/src/index.ts",
+        "tsConfig": "packages/sidecar/tsconfig.lib.json",
+        "assets": ["packages/sidecar/*.md"]
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "packages/sidecar/jest.config.ts"
+      }
+    }
+  },
+  "tags": []
+}
