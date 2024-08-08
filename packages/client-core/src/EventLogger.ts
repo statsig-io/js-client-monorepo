@@ -1,3 +1,4 @@
+import { _getUserStorageKey } from './CacheKey';
 import { _DJB2 } from './Hashing';
 import { Log } from './Log';
 import { NetworkDefault, NetworkParam } from './NetworkConfig';
@@ -158,10 +159,12 @@ export class EventLogger {
     }
 
     const user = event.user ? event.user : { statsigEnvironment: undefined };
+    const userKey = _getUserStorageKey(this._sdkKey, user);
+
     const metadata = event.metadata ? event.metadata : {};
     const key = [
       event.eventName,
-      user.userID,
+      userKey,
       metadata['gate'],
       metadata['config'],
       metadata['ruleID'],
