@@ -6,7 +6,6 @@ import { useStatsigClient } from '@statsig/react-bindings';
 import {
   StatsigProviderRN,
   useFeatureGate,
-  warmCachingFromAsyncStorage,
 } from '@statsig/react-native-bindings';
 
 import { DEMO_CLIENT_KEY } from '../Constants';
@@ -58,24 +57,18 @@ function LoginForm({ onSubmit }: { onSubmit: (email: string) => void }) {
 }
 
 export function RNLoginExample({ onBackPress }: Props): React.ReactNode {
-  const { client, warming } = useMemo(() => {
+  const { client } = useMemo(() => {
     const client = new StatsigClient(DEMO_CLIENT_KEY, { userID: '' });
-    const warming = warmCachingFromAsyncStorage(client);
 
-    return { client, warming };
+    return { client };
   }, []);
 
   useEffect(() => {
-    AuthService.getUser()
-      .then((u) => client.updateUserSync(u))
-      .catch((e) => {
-        // eslint-disable-next-line no-console
-        console.error(e);
-      });
+    client.updateUserSync(AuthService.getUser());
   }, [client]);
 
   return (
-    <StatsigProviderRN client={client} cacheWarming={warming}>
+    <StatsigProviderRN client={client}>
       <Button title="Back" onPress={onBackPress}></Button>
 
       <LoginForm

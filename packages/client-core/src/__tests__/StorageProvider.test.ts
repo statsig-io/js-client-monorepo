@@ -20,14 +20,8 @@ describe('StorageProvider', () => {
   describe.each([
     [
       'getItem',
-      async () => {
-        return await Storage._getItem('my_thing');
-      },
-    ],
-    [
-      'getItemSync',
-      async () => {
-        return Storage._getItemSync?.('my_thing');
+      () => {
+        return Storage._getItem('my_thing');
       },
     ],
   ])('Security Errors: %s', (_title, action) => {
@@ -43,7 +37,7 @@ describe('StorageProvider', () => {
         throw error;
       };
 
-      value = (await action()) as any;
+      value = action() as any;
     });
 
     it('switches to inMemory when security throws', () => {
@@ -54,9 +48,9 @@ describe('StorageProvider', () => {
       expect(value).toBeNull();
     });
 
-    it('continues to function afterwards', async () => {
-      await Storage._setItem('a_key', 'foo');
-      const foo = await Storage._getItem('a_key');
+    it('continues to function afterwards', () => {
+      Storage._setItem('a_key', 'foo');
+      const foo = Storage._getItem('a_key');
 
       expect(foo).toBe('foo');
     });

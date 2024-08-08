@@ -180,7 +180,7 @@ export abstract class DataAdapterCore {
   }
 
   private _loadFromCache(cacheKey: string): DataAdapterResult | null {
-    const cache = Storage._getItemSync?.(cacheKey);
+    const cache = Storage._getItem?.(cacheKey);
     if (cache == null) {
       return null;
     }

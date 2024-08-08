@@ -3,27 +3,24 @@ import { Log } from './Log';
 import { _getObjectFromStorage, _setObjectInStorage } from './StorageProvider';
 import { getUUID } from './UUID';
 
-const PROMISE_MAP: Record<string, Promise<string>> = {};
+const PROMISE_MAP: Record<string, string> = {};
 
 export const StableID = {
-  get: async (sdkKey: string): Promise<string> => {
+  get: (sdkKey: string): string => {
     if (PROMISE_MAP[sdkKey] == null) {
-      PROMISE_MAP[sdkKey] = _loadFromStorage(sdkKey).then((stableID) => {
-        if (stableID != null) {
-          return stableID;
-        }
-
-        const newStableID = getUUID();
-        _persistToStorage(newStableID, sdkKey);
-        return newStableID;
-      });
+      let stableID = _loadFromStorage(sdkKey);
+      if (stableID == null) {
+        stableID = getUUID();
+        _persistToStorage(stableID, sdkKey);
+      }
+      PROMISE_MAP[sdkKey] = stableID;
     }
 
     return PROMISE_MAP[sdkKey];
   },
 
   setOverride: (override: string, sdkKey: string): void => {
-    PROMISE_MAP[sdkKey] = Promise.resolve(override);
+    PROMISE_MAP[sdkKey] = override;
     _persistToStorage(override, sdkKey);
   },
 };
@@ -34,10 +31,11 @@ function _getStableIDStorageKey(sdkKey: string): string {
 
 function _persistToStorage(stableID: string, sdkKey: string) {
   const storageKey = _getStableIDStorageKey(sdkKey);
-
-  _setObjectInStorage(storageKey, stableID).catch(() => {
+  try {
+    _setObjectInStorage(storageKey, stableID);
+  } catch (e) {
     Log.warn('Failed to save StableID');
-  });
+  }
 }
 
 function _loadFromStorage(sdkKey: string) {

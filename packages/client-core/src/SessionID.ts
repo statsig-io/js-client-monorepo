@@ -20,21 +20,21 @@ export type StatsigSession = {
 
 const MAX_SESSION_IDLE_TIME = 30 * 60 * 1000; // 30 minutes
 const MAX_SESSION_AGE = 4 * 60 * 60 * 1000; // 4 hours
-const PROMISE_MAP: Record<string, Promise<StatsigSession>> = {};
+const PROMISE_MAP: Record<string, StatsigSession> = {};
 
 export const SessionID = {
-  get: async (sdkKey: string): Promise<string> => {
-    return StatsigSession.get(sdkKey).then((x) => x.data.sessionID);
+  get: (sdkKey: string): string => {
+    return StatsigSession.get(sdkKey).data.sessionID;
   },
 };
 
 export const StatsigSession = {
-  get: async (sdkKey: string): Promise<StatsigSession> => {
+  get: (sdkKey: string): StatsigSession => {
     if (PROMISE_MAP[sdkKey] == null) {
       PROMISE_MAP[sdkKey] = _loadSession(sdkKey);
     }
 
-    const session = await PROMISE_MAP[sdkKey];
+    const session = PROMISE_MAP[sdkKey];
     return _bumpSession(session);
   },
 
@@ -43,8 +43,8 @@ export const StatsigSession = {
   },
 };
 
-async function _loadSession(sdkKey: string): Promise<StatsigSession> {
-  let data = await _loadFromStorage(sdkKey);
+function _loadSession(sdkKey: string): StatsigSession {
+  let data = _loadFromStorage(sdkKey);
   const now = Date.now();
   if (!data) {
     data = {
@@ -60,19 +60,16 @@ async function _loadSession(sdkKey: string): Promise<StatsigSession> {
   };
 }
 
-function _overrideSessionId(
-  override: string,
-  sdkKey: string,
-): Promise<StatsigSession> {
+function _overrideSessionId(override: string, sdkKey: string): StatsigSession {
   const now = Date.now();
-  return Promise.resolve({
+  return {
     data: {
       sessionID: override,
       startTime: now,
       lastUpdate: now,
     },
     sdkKey,
-  });
+  };
 }
 
 function _bumpSession(session: StatsigSession): StatsigSession {
@@ -128,10 +125,11 @@ function _getSessionIDStorageKey(sdkKey: string): string {
 
 function _persistToStorage(session: SessionData, sdkKey: string) {
   const storageKey = _getSessionIDStorageKey(sdkKey);
-
-  _setObjectInStorage(storageKey, session).catch(() => {
+  try {
+    _setObjectInStorage(storageKey, session);
+  } catch (e) {
     Log.warn('Failed to save SessionID');
-  });
+  }
 }
 
 function _loadFromStorage(sdkKey: string) {
