@@ -32,35 +32,37 @@ export function useStatsigClient(): HositedFuncs & {
 
   const deps = [client, renderVersion];
 
-  return {
-    client,
-    checkGate: useCallback((name, options) => {
-      return client.checkGate(name, options);
-    }, deps),
-    getFeatureGate: useCallback((name, options) => {
-      return client.getFeatureGate(name, options);
-    }, deps),
-    getDynamicConfig: useCallback((name, options) => {
-      return client.getDynamicConfig(name, options);
-    }, deps),
-    getExperiment: useCallback((name, options) => {
-      return client.getExperiment(name, options);
-    }, deps),
-    getLayer: useCallback((name, options) => {
-      return client.getLayer(name, options);
-    }, deps),
-    logEvent: useCallback(
-      (
-        eventName,
-        value?: string | number,
-        metadata?: Record<string, string>,
-      ) => {
-        if (typeof eventName === 'string') {
-          return client.logEvent(eventName, value, metadata);
-        }
-        return client.logEvent(eventName);
-      },
-      deps,
-    ),
-  };
+  return useMemo(() => {
+    return {
+      client,
+      checkGate: useCallback((name, options) => {
+        return client.checkGate(name, options);
+      }, deps),
+      getFeatureGate: useCallback((name, options) => {
+        return client.getFeatureGate(name, options);
+      }, deps),
+      getDynamicConfig: useCallback((name, options) => {
+        return client.getDynamicConfig(name, options);
+      }, deps),
+      getExperiment: useCallback((name, options) => {
+        return client.getExperiment(name, options);
+      }, deps),
+      getLayer: useCallback((name, options) => {
+        return client.getLayer(name, options);
+      }, deps),
+      logEvent: useCallback(
+        (
+          eventName,
+          value?: string | number,
+          metadata?: Record<string, string>,
+        ) => {
+          if (typeof eventName === 'string') {
+            return client.logEvent(eventName, value, metadata);
+          }
+          return client.logEvent(eventName);
+        },
+        deps,
+      ),
+    };
+  }, deps);
 }
