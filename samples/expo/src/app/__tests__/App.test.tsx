@@ -22,10 +22,13 @@ const storage = {
 
 Storage._setProvider({
   _getProviderName: () => 'JestStorage',
-  _getAllKeys: () => Object.keys(inMemoryStore),
-  _getItem: (key: string) => storage.getItem(key),
-  _setItem: (key: string, value: string) => storage.setItem(key, value),
-  _removeItem: (key: string) => storage.removeItem(key),
+  _getAllKeys: () => Promise.resolve(Object.keys(inMemoryStore)),
+  _getItemSync: (key: string) => storage.getItem(key),
+  _getItem: (key: string) => Promise.resolve(storage.getItem(key)),
+  // getItem: (key: string) => Promise.reject(key),
+  _setItem: (key: string, value: string) =>
+    Promise.resolve(storage.setItem(key, value)),
+  _removeItem: (key: string) => Promise.resolve(storage.removeItem(key)),
 });
 
 describe('App', () => {

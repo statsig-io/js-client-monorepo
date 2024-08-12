@@ -1,12 +1,12 @@
 import { useEffect } from 'react';
 
 import { SDKType, StatsigMetadataProvider } from '@statsig/client-core';
-import { StatsigProviderProps } from '@statsig/react-bindings';
-import { StatsigProviderRNSyncStorage } from '@statsig/react-native-core';
+import type { StatsigProviderWithCacheWarmingProps } from '@statsig/react-native-core';
+import { StatsigProviderWithCacheWarming } from '@statsig/react-native-core';
 
 import { GetStatsigMetadataAdditions } from './StatsigMetadataAdditions';
 
-type Props = StatsigProviderProps;
+type Props = StatsigProviderWithCacheWarmingProps;
 
 export function StatsigProviderRN(props: Props): JSX.Element | null {
   useEffect(() => {
@@ -14,5 +14,5 @@ export function StatsigProviderRN(props: Props): JSX.Element | null {
     StatsigMetadataProvider.add(GetStatsigMetadataAdditions());
   }, []);
 
-  return StatsigProviderRNSyncStorage(props);
+  return StatsigProviderWithCacheWarming(props);
 }

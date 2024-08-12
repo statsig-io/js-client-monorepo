@@ -3,7 +3,10 @@ import { Button, FlatList, StyleSheet, Text, View } from 'react-native';
 
 import { AnyStatsigClientEvent, LogLevel } from '@statsig/client-core';
 import { StatsigClient } from '@statsig/js-client';
-import { StatsigProviderRN } from '@statsig/react-native-bindings';
+import {
+  StatsigProviderRN,
+  warmCachingFromAsyncStorage,
+} from '@statsig/react-native-bindings';
 
 import { DEMO_CLIENT_KEY } from './Constants';
 
@@ -11,6 +14,7 @@ const user = { userID: 'a-user' };
 const client = new StatsigClient(DEMO_CLIENT_KEY, user, {
   logLevel: LogLevel.Debug,
 });
+const warming = warmCachingFromAsyncStorage(client);
 client.initializeSync();
 
 function ClientEventItem({ event }: { event: AnyStatsigClientEvent }) {
@@ -57,7 +61,7 @@ export default function ClientEventStreamExample(): JSX.Element {
   }, []);
 
   return (
-    <StatsigProviderRN client={client}>
+    <StatsigProviderRN client={client} cacheWarming={warming}>
       <Content events={events} />
     </StatsigProviderRN>
   );
