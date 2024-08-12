@@ -20,7 +20,7 @@ const _noop = (): void => {
 
 const _noopAsync = (): Promise<void> => Promise.resolve();
 
-const NOOP_DETAILS = { reason: 'Error' };
+const NOOP_DETAILS = { reason: 'Error:NoClient' };
 
 const _defaultEvaluation = <T>(
   type: 'gate' | 'config' | 'layer' | 'param_store',
