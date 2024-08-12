@@ -1,9 +1,9 @@
 // <snippet>
-import {
-  StatsigProviderExpo, // StatsigProvider specifically for Expo
-  warmCachingFromAsyncStorage,
-} from '@statsig/expo-bindings';
 import { StatsigClient } from '@statsig/js-client';
+import {
+  StatsigProviderRN, // StatsigProvider specifically for RN
+  warmCachingFromAsyncStorage,
+} from '@statsig/react-native-bindings';
 
 // </snippet>
 import { DEMO_CLIENT_KEY } from '../Constants';
@@ -20,9 +20,9 @@ const warming = warmCachingFromAsyncStorage(myStatsigClient);
 
 export function App(): JSX.Element {
   return (
-    <StatsigProviderExpo client={myStatsigClient} cacheWarming={warming}>
+    <StatsigProviderRN client={myStatsigClient} cacheWarming={warming}>
       <YourApp />
-    </StatsigProviderExpo>
+    </StatsigProviderRN>
   );
 }
 

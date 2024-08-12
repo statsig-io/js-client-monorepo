@@ -1,6 +1,8 @@
 import {
+  CreateTestPromise,
   MockLocalStorage,
   MockRemoteServerEvalClient,
+  TestPromise,
   anyUUID,
 } from 'statsig-test-helpers';
 
@@ -19,7 +21,7 @@ async function getSessionIDIgnoringInMemoryCache(
   let result: string | null = null;
   await jest.isolateModulesAsync(async () => {
     const s = (await import('../SessionID')).SessionID;
-    result = s.get(sdkKey);
+    result = await s.get(sdkKey);
   });
 
   return result ?? 'error';
@@ -255,33 +257,42 @@ describe('SessionID', () => {
   describe('when multiple calls to session id', () => {
     const data: Record<string, string> = {};
     let calls = 0;
+    let firstReqPromise: TestPromise<string | null>;
+    let secondReqPromise: TestPromise<string | null>;
 
     beforeAll(async () => {
       storageMock.clear();
+      firstReqPromise = CreateTestPromise<string | null>();
+      secondReqPromise = CreateTestPromise<string | null>();
 
       const inMemoryStore = {};
 
       Storage._setProvider({
         _getProviderName: () => 'JestStorage',
-        _getAllKeys: () => Object.keys(inMemoryStore),
-        _getItem: (_key: string) => {
+        _getAllKeys: () => Promise.resolve(Object.keys(inMemoryStore)),
+        _getItem: async (_key: string) => {
           if (calls++ === 0) {
-            return 'first';
+            return firstReqPromise;
           }
-          return 'second';
+          return secondReqPromise;
         },
         _setItem: (key: string, value: string) => {
           data[key] = value;
+          return Promise.resolve();
         },
         _removeItem: (key: string) => {
           delete data[key];
+          return Promise.resolve();
         },
       });
     });
 
     it('gets the same session id', async () => {
-      const sessionID = SessionID.get(SDK_KEY);
-      const sessionID2 = SessionID.get(SDK_KEY);
+      const sessionID = SessionID.get(SDK_KEY).catch(() => 'error');
+      const sessionID2 = SessionID.get(SDK_KEY).catch(() => 'error');
+
+      secondReqPromise.resolve(null);
+      firstReqPromise.resolve(null);
 
       const val1 = await sessionID;
       const val2 = await sessionID2;

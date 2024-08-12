@@ -40,8 +40,10 @@ describe('StatsigProviderRN', () => {
       }
     });
 
+    const warming = { result: Promise.resolve(), isResolved: true };
+
     render(
-      <StatsigProviderRN client={client}>
+      <StatsigProviderRN cacheWarming={warming} client={client}>
         <div data-testid="first-child" />
       </StatsigProviderRN>,
     );

@@ -6,6 +6,7 @@ import { StatsigOnDeviceEvalClient } from '@statsig/js-on-device-eval-client';
 import {
   StatsigProviderRN,
   useFeatureGate,
+  warmCachingFromAsyncStorage,
 } from '@statsig/react-native-bindings';
 
 import { DEMO_CLIENT_KEY } from '../Constants';
@@ -26,21 +27,25 @@ function Content() {
 
 export function RNBootstrapExample({ onBackPress }: Props): React.ReactNode {
   const onClearCachePress = () => {
-    const keys = Storage._getAllKeys();
-    for (const key of keys) {
-      Storage._removeItem(key);
-    }
+    Storage._getAllKeys()
+      .then((keys) => keys.map((key) => Storage._removeItem(key)))
+      .catch((e) => {
+        // eslint-disable-next-line no-console
+        console.error(e);
+      });
   };
 
-  const { client } = useMemo(() => {
+  const { client, warming } = useMemo(() => {
     const client = new StatsigOnDeviceEvalClient(DEMO_CLIENT_KEY);
     client.dataAdapter.setData(JSON.stringify(BootstrapValues));
 
-    return { client };
+    const warming = warmCachingFromAsyncStorage(client);
+
+    return { client, warming };
   }, []);
 
   return (
-    <StatsigProviderRN client={client}>
+    <StatsigProviderRN client={client} cacheWarming={warming}>
       <View>
         <Button title="Back" onPress={onBackPress}></Button>
         <Button title="Clear Cache" onPress={onClearCachePress}></Button>
