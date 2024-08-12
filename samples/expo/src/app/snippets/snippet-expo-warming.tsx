@@ -1,7 +1,6 @@
 // <snippet>
 import {
   StatsigProviderExpo, // StatsigProvider specifically for Expo
-  warmCachingFromAsyncStorage,
 } from '@statsig/expo-bindings';
 import { StatsigClient } from '@statsig/js-client';
 
@@ -15,12 +14,11 @@ const myStatsigClient = new StatsigClient(YOUR_SDK_KEY, {
   userID: 'a-user',
 });
 
-const warming = warmCachingFromAsyncStorage(myStatsigClient);
 // </snippet>
 
 export function App(): JSX.Element {
   return (
-    <StatsigProviderExpo client={myStatsigClient} cacheWarming={warming}>
+    <StatsigProviderExpo client={myStatsigClient}>
       <YourApp />
     </StatsigProviderExpo>
   );
