@@ -1,14 +1,16 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { AppState } from 'react-native';
+import { MMKV } from 'react-native-mmkv';
 
 import { Storage, _notifyVisibilityChanged } from '@statsig/client-core';
 
+const storage = new MMKV();
+
 Storage._setProvider({
-  _getProviderName: () => 'AsyncStorage',
-  _getItem: (key) => AsyncStorage.getItem(key),
-  _setItem: (key: string, value: string) => AsyncStorage.setItem(key, value),
-  _removeItem: (key: string) => AsyncStorage.removeItem(key),
-  _getAllKeys: () => AsyncStorage.getAllKeys(),
+  _getProviderName: () => 'MMKV Storage',
+  _getItem: (key) => storage.getString(key) || null,
+  _setItem: (key: string, value: string) => storage.set(key, value),
+  _removeItem: (key: string) => storage.delete(key),
+  _getAllKeys: () => storage.getAllKeys(),
 });
 
 AppState.addEventListener('change', (nextAppState) =>
@@ -17,8 +19,6 @@ AppState.addEventListener('change', (nextAppState) =>
   ),
 );
 
-export type { StatsigProviderWithCacheWarmingProps } from './StatsigProviderWithCacheWarming';
-export { StatsigProviderWithCacheWarming } from './StatsigProviderWithCacheWarming';
+export { StatsigProviderRNSyncStorage } from './StatsigProviderRNSyncStorage';
 
-export * from './AsyncStorageWarming';
-export * from './StatsigProviderWithCacheWarming';
+export * from './StatsigProviderRNSyncStorage';

@@ -3,12 +3,11 @@
   "version": "1.7.0",
   "dependencies": {
     "@statsig/client-core": "1.7.0",
-    "@statsig/react-bindings": "1.7.0"
+    "@statsig/react-bindings": "1.7.0",
+    "react-native-mmkv": "2.12.2"
   },
   "peerDependencies": {
-    "react": "^16.6.3 || ^17.0.0 || ^18.0.0",
-    "react-native": "0.*",
-    "@react-native-async-storage/async-storage": "1.*"
+    "react-native": "0.*"
   },
   "type": "commonjs",
   "main": "./src/index.js",

@@ -261,20 +261,22 @@ export class EventLogger {
 
     const storageKey = this._getStorageKey();
 
-    _setObjectInStorage(storageKey, events).catch(() => {
+    try {
+      _setObjectInStorage(storageKey, events);
+    } catch {
       Log.warn('Unable to save failed logs to storage');
-    });
+    }
   }
 
   private _retryFailedLogs() {
     const storageKey = this._getStorageKey();
     (async () => {
-      const events = await _getObjectFromStorage<EventQueue>(storageKey);
+      const events = _getObjectFromStorage<EventQueue>(storageKey);
       if (!events) {
         return;
       }
 
-      await Storage._removeItem(storageKey);
+      Storage._removeItem(storageKey);
       await this._sendEvents(events);
     })().catch(() => {
       Log.warn('Failed to flush stored logs');

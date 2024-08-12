@@ -206,8 +206,8 @@ export default class StatsigClient
   async getAsyncContext(): Promise<PrecomputedEvaluationsAsyncContext> {
     return {
       ...this.getContext(),
-      session: await StatsigSession.get(this._sdkKey),
-      stableID: await StableID.get(this._sdkKey),
+      session: StatsigSession.get(this._sdkKey),
+      stableID: StableID.get(this._sdkKey),
     };
   }
 

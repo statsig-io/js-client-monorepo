@@ -5,7 +5,6 @@ import {
   StatsigProviderRN,
   useExperiment,
   useFeatureGate,
-  warmCachingFromAsyncStorage,
 } from '@statsig/react-native-bindings';
 
 import { DEMO_CLIENT_KEY } from './Constants';
@@ -13,7 +12,6 @@ import { DEMO_CLIENT_KEY } from './Constants';
 const user = { userID: 'a-user' };
 
 const client = new StatsigOnDeviceEvalClient(DEMO_CLIENT_KEY);
-const warming = warmCachingFromAsyncStorage(client);
 
 function Content() {
   const gate = useFeatureGate('a_gate', { user });
@@ -33,7 +31,7 @@ function Content() {
 
 export default function OnDeviceEvaluationsExample(): JSX.Element {
   return (
-    <StatsigProviderRN client={client} cacheWarming={warming}>
+    <StatsigProviderRN client={client}>
       <Content />
     </StatsigProviderRN>
   );

@@ -3,10 +3,7 @@ import { Button, FlatList, Text, View } from 'react-native';
 
 import { StatsigClientEvent } from '@statsig/client-core';
 import { StatsigClient } from '@statsig/js-client';
-import {
-  StatsigProviderRN,
-  warmCachingFromAsyncStorage,
-} from '@statsig/react-native-bindings';
+import { StatsigProviderRN } from '@statsig/react-native-bindings';
 
 import { DEMO_CLIENT_KEY } from '../Constants';
 
@@ -31,15 +28,14 @@ function Content({ events }: { events: StatsigClientEvent[] }) {
 export function RNEventStream({ onBackPress }: Props): React.ReactNode {
   const [events, setEvents] = useState<StatsigClientEvent[]>([]);
 
-  const { client, warming } = useMemo(() => {
+  const { client } = useMemo(() => {
     const client = new StatsigClient(DEMO_CLIENT_KEY, { userID: 'a-user' });
-    const warming = warmCachingFromAsyncStorage(client);
     client.on('*', (e) => setEvents((o) => [...o, e]));
-    return { client, warming };
+    return { client };
   }, []);
 
   return (
-    <StatsigProviderRN client={client} cacheWarming={warming}>
+    <StatsigProviderRN client={client}>
       <View>
         <Button title="Back" onPress={onBackPress}></Button>
         <Button
