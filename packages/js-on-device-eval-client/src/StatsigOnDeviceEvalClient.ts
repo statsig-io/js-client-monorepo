@@ -84,10 +84,12 @@ export default class StatsigOnDeviceEvalClient
   }
 
   initializeSync(): void {
+    this._logger.start();
     this.updateSync();
   }
 
   async initializeAsync(options?: AsyncOptions): Promise<void> {
+    this._logger.start();
     return this.updateAsync(options);
   }
 

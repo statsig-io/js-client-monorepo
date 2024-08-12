@@ -29,7 +29,7 @@ describe('useStatsigClient', () => {
 
   beforeEach(() => {
     client = MockRemoteServerEvalClient.create();
-    client.shutdown.mockReturnValue(Promise.resolve());
+    client.flush.mockReturnValue(Promise.resolve());
     (client.loadingStatus as any) = 'Ready';
 
     client.$on.mockImplementation((event, callback) => {

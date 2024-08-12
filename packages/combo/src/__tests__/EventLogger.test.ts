@@ -8,6 +8,12 @@ const timeout = async (ms: number) => {
   return new Promise((r) => setTimeout(r, ms));
 };
 
+const getLogEventCalls = () => {
+  return fetchMock.mock.calls.filter((call) =>
+    String(call[0]).includes('rgstr'),
+  );
+};
+
 describe('Event Logger', () => {
   beforeEach(() => {
     fetchMock.enableMocks();
@@ -20,20 +26,22 @@ describe('Event Logger', () => {
       {},
       { loggingIntervalMs: 999, loggingBufferMaxSize: 999 },
     );
+    client.initializeSync();
 
     client.logEvent('one');
     await timeout(2);
 
-    expect(fetchMock.mock.calls).toHaveLength(0);
+    expect(getLogEventCalls()).toHaveLength(0);
   });
 
   it('calls flush on a set interval', async () => {
     const client = new StatsigClient('my-key', {}, { loggingIntervalMs: 1 });
+    client.initializeSync();
 
     client.logEvent('one');
     await timeout(2);
 
-    expect(fetchMock.mock.calls[0]).toEqual([
+    expect(getLogEventCalls()[0]).toEqual([
       anyStringContaining('/v1/rgstr'),
       anyObject(),
     ]);
@@ -41,7 +49,7 @@ describe('Event Logger', () => {
     client.logEvent('two');
     await timeout(2);
 
-    expect(fetchMock.mock.calls[1]).toEqual([
+    expect(getLogEventCalls()[1]).toEqual([
       anyStringContaining('/v1/rgstr'),
       anyObject(),
     ]);
@@ -49,13 +57,14 @@ describe('Event Logger', () => {
 
   it('flushes when backgrounded', async () => {
     const client = new StatsigClient('my-key', {}, { loggingIntervalMs: 1 });
+    client.initializeSync();
 
     client.logEvent('one');
 
     _notifyVisibilityChanged('background');
     await timeout(1);
 
-    expect(fetchMock.mock.calls[0]).toEqual([
+    expect(getLogEventCalls()[0]).toEqual([
       anyStringContaining('/v1/rgstr'),
       anyObject(),
     ]);

@@ -109,6 +109,7 @@ export default class StatsigClient
    * @see {@link initializeAsync} for the asynchronous version of this method.
    */
   initializeSync(): void {
+    this._logger.start();
     this.updateUserSync(this._user);
   }
 
@@ -123,6 +124,7 @@ export default class StatsigClient
    * @see {@link initializeSync} for the synchronous version of this method.
    */
   initializeAsync(options?: AsyncOptions): Promise<void> {
+    this._logger.start();
     return this.updateUserAsync(this._user, options);
   }
 

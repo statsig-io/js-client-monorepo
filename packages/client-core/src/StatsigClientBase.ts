@@ -140,7 +140,7 @@ export abstract class StatsigClientBase<
    */
   async shutdown(): Promise<void> {
     this.$emt({ name: 'pre_shutdown' });
-    await this._logger.shutdown();
+    await this._logger.stop();
   }
 
   /**

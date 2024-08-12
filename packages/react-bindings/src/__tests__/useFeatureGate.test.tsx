@@ -28,7 +28,7 @@ describe('useFeatureGate', () => {
 
   beforeEach(() => {
     client = MockRemoteServerEvalClient.create();
-    client.shutdown.mockReturnValue(Promise.resolve());
+    client.flush.mockReturnValue(Promise.resolve());
     client.getFeatureGate.mockReturnValue({ value: true } as any);
     (client.loadingStatus as any) = 'Ready';
 

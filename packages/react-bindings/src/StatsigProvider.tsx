@@ -27,9 +27,9 @@ export function StatsigProvider({
     client.$on('values_updated', onValuesUpdated);
 
     return () => {
-      client.shutdown().catch((error) => {
-        Log.error('An error occured during shutdown', error);
-      });
+      client
+        .flush()
+        .catch((err) => Log.error('An error occured during flush', err));
 
       client.off('values_updated', onValuesUpdated);
     };

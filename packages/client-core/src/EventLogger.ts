@@ -66,7 +66,6 @@ export class EventLogger {
     private _network: NetworkCore,
     private _options: StatsigOptionsCommon<NetworkConfigCommon> | null,
   ) {
-    EVENT_LOGGER_MAP[_sdkKey] = this;
     this._isLoggingDisabled = _options?.disableLogging === true;
     this._maxQueueSize = _options?.loggingBufferMaxSize ?? DEFAULT_QUEUE_SIZE;
 
@@ -77,15 +76,6 @@ export class EventLogger {
       '/rgstr',
       NetworkDefault.eventsApi,
     );
-
-    _subscribeToVisiblityChanged((visibility) => {
-      if (visibility === 'background') {
-        _safeFlushAndForget(_sdkKey);
-      }
-    });
-
-    this._retryFailedLogs();
-    this._startBackgroundFlushInterval();
   }
 
   setLoggingDisabled(isDisabled: boolean): void {
@@ -114,7 +104,24 @@ export class EventLogger {
     this._lastExposureTimeMap = {};
   }
 
-  async shutdown(): Promise<void> {
+  start(): void {
+    if (_isServerEnv()) {
+      return; // do not run in server environments
+    }
+
+    EVENT_LOGGER_MAP[this._sdkKey] = this;
+
+    _subscribeToVisiblityChanged((visibility) => {
+      if (visibility === 'background') {
+        _safeFlushAndForget(this._sdkKey);
+      }
+    });
+
+    this._retryFailedLogs();
+    this._startBackgroundFlushInterval();
+  }
+
+  async stop(): Promise<void> {
     if (this._flushIntervalId) {
       clearInterval(this._flushIntervalId);
       this._flushIntervalId = null;
@@ -327,10 +334,6 @@ export class EventLogger {
   }
 
   private _startBackgroundFlushInterval() {
-    if (_isServerEnv()) {
-      return; // do not run in server environments
-    }
-
     const flushInterval =
       this._options?.loggingIntervalMs ?? DEFAULT_FLUSH_INTERVAL_MS;
 

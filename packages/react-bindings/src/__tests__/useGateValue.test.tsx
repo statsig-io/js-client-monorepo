@@ -26,7 +26,7 @@ describe('useGateValue', () => {
 
   beforeEach(() => {
     client = MockRemoteServerEvalClient.create();
-    client.shutdown.mockReturnValue(Promise.resolve());
+    client.flush.mockReturnValue(Promise.resolve());
     client.checkGate.mockReturnValue(true);
     (client.loadingStatus as any) = 'Ready';
 

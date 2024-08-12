@@ -16,7 +16,7 @@ describe('StatsigProvider', () => {
 
   beforeAll(() => {
     client = MockRemoteServerEvalClient.create();
-    client.shutdown.mockReturnValue(Promise.resolve());
+    client.flush.mockReturnValue(Promise.resolve());
 
     client.$on.mockImplementation((event, callback) => {
       if (event === 'values_updated') {
