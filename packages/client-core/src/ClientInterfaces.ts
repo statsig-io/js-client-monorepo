@@ -39,9 +39,6 @@ export type CommonContext = {
   sdkKey: string;
   options: AnyStatsigOptions;
   errorBoundary: ErrorBoundary;
-};
-
-export type AsyncCommonContext = {
   session: StatsigSession;
   stableID: string;
 };
@@ -50,13 +47,10 @@ export type OnDeviceEvaluationsContext = CommonContext & {
   values: DownloadConfigSpecsResponse | null;
 };
 
-export type OnDeviceEvaluationsAsyncContext = OnDeviceEvaluationsContext &
-  AsyncCommonContext;
-
 export interface OnDeviceEvaluationsInterface
   extends StatsigClientCommonInterface {
   readonly dataAdapter: SpecsDataAdapter;
-  getAsyncContext(): Promise<OnDeviceEvaluationsAsyncContext>;
+
   getContext(): OnDeviceEvaluationsContext;
   checkGate(
     name: string,
@@ -99,15 +93,10 @@ export type PrecomputedEvaluationsContext = Flatten<
   }
 >;
 
-export type PrecomputedEvaluationsAsyncContext = Flatten<
-  AsyncCommonContext & PrecomputedEvaluationsContext
->;
-
 export interface PrecomputedEvaluationsInterface
   extends StatsigClientCommonInterface {
   readonly dataAdapter: EvaluationsDataAdapter;
 
-  getAsyncContext(): Promise<PrecomputedEvaluationsAsyncContext>;
   getContext(): PrecomputedEvaluationsContext;
   updateUserSync(user: StatsigUser): void;
   updateUserAsync(user: StatsigUser): Promise<void>;

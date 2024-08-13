@@ -57,6 +57,11 @@ const context = {
   values: null,
   user: { userID: '' },
   errorBoundary: {} as ErrorBoundary,
+  session: {
+    data: { sessionID: '', startTime: 0, lastUpdate: 0 },
+    sdkKey: '',
+  },
+  stableID: '',
 };
 
 const _client: OnDeviceEvaluationsInterface &
@@ -72,14 +77,6 @@ const _client: OnDeviceEvaluationsInterface &
   updateUserAsync: _noopAsync,
   getContext: () => ({
     ...context,
-  }),
-  getAsyncContext: async () => ({
-    ...context,
-    session: {
-      data: { sessionID: '', startTime: 0, lastUpdate: 0 },
-      sdkKey: '',
-    },
-    stableID: '',
   }),
   checkGate: () => false,
   getFeatureGate: _defaultEvaluation<FeatureGate>('gate'),

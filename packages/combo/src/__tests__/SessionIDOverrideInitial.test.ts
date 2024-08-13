@@ -109,9 +109,7 @@ describe('Session ID Override Initial', () => {
 
     it('expires custom session ids', async () => {
       Date.now = () => Number.MAX_SAFE_INTEGER;
-      expect((await client.getAsyncContext()).session.data.sessionID).toEqual(
-        anyUUID(),
-      );
+      expect(client.getContext().session.data.sessionID).toEqual(anyUUID());
     });
   });
 });

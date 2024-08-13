@@ -30,10 +30,7 @@ const myStatsigClient = {} as StatsigOnDeviceEvalClient;
 
 // prettier-ignore
 function Setup() {
-  // </snippet>
-
-  // <snippet>
-
+const myStatsigClient = new StatsigOnDeviceEvalClient(YOUR_CLIENT_KEY);
   // </snippet>
 }
 

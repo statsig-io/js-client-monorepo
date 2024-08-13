@@ -27,7 +27,6 @@ describe('Session Replay Force', () => {
       values: { session_recording_rate: 1, can_record_session: false },
       session: { data: { sessionID: '' } },
     } as any;
-    client.getAsyncContext.mockReturnValue(Promise.resolve(ctx));
     client.getContext.mockReturnValue(ctx);
     const sessionReplay = new SessionReplay(client);
     sessionReplay.forceStartRecording();

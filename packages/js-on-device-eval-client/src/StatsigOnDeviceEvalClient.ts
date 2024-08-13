@@ -11,7 +11,6 @@ import {
   Layer,
   LayerEvaluationOptions,
   Log,
-  OnDeviceEvaluationsAsyncContext,
   OnDeviceEvaluationsContext,
   OnDeviceEvaluationsInterface,
   SDKType,
@@ -126,14 +125,8 @@ export default class StatsigOnDeviceEvalClient
       options: this._options,
       values: this._store.getValues(),
       errorBoundary: this._errorBoundary,
-    };
-  }
-
-  async getAsyncContext(): Promise<OnDeviceEvaluationsAsyncContext> {
-    return {
-      ...this.getContext(),
-      session: await StatsigSession.get(this._sdkKey),
-      stableID: await StableID.get(this._sdkKey),
+      session: StatsigSession.get(this._sdkKey),
+      stableID: StableID.get(this._sdkKey),
     };
   }
 

@@ -194,6 +194,6 @@ export class SessionReplay {
   }
 
   private async _getSessionIdFromClient() {
-    return this._client.getAsyncContext().then((x) => x.session.data.sessionID);
+    return this._client.getContext().session.data.sessionID;
   }
 }

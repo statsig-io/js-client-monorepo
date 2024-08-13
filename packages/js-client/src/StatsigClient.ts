@@ -13,7 +13,6 @@ import {
   Log,
   ParameterStore,
   ParameterStoreEvaluationOptions,
-  PrecomputedEvaluationsAsyncContext,
   PrecomputedEvaluationsContext,
   PrecomputedEvaluationsInterface,
   SDKType,
@@ -185,7 +184,6 @@ export default class StatsigClient
    * Retrieves a synchronous context containing data currently being used by the SDK. Represented as a {@link PrecomputedEvaluationsContext} object.
    *
    * @returns {PrecomputedEvaluationsContext} The current synchronous context for the this StatsigClient instance.
-   * @see {@link getAsyncContext} for the asynchronous version of the context that includes more information.
    */
   getContext(): PrecomputedEvaluationsContext {
     return {
@@ -194,18 +192,6 @@ export default class StatsigClient
       values: this._store.getValues(),
       user: JSON.parse(JSON.stringify(this._user)) as StatsigUser,
       errorBoundary: this._errorBoundary,
-    };
-  }
-
-  /**
-   * Asynchronously retrieves a context similar to that provided by {@link getContext}, but with additional properties fetched asynchronously, such as session and stable IDs. This is useful for situations where these IDs are required and are not immediately available.
-   *
-   * @returns {PrecomputedEvaluationsAsyncContext} An object containing the current values.
-   * @see {@link getContext} for the synchronous version of the context that this function extends.
-   */
-  async getAsyncContext(): Promise<PrecomputedEvaluationsAsyncContext> {
-    return {
-      ...this.getContext(),
       session: StatsigSession.get(this._sdkKey),
       stableID: StableID.get(this._sdkKey),
     };

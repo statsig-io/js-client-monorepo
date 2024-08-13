@@ -123,22 +123,22 @@ export class AutoCapture {
   }
 
   private _logSessionStart() {
-    this._getSessionFromClient()
-      .then((session) => {
-        if (!this._isNewSession(session)) {
-          return;
-        }
+    const session = this._getSessionFromClient();
 
-        this._enqueueAutoCapture(
-          'session_start',
-          _getSanitizedPageUrl(),
-          { sessionID: session.data.sessionID },
-          { flushImmediately: true },
-        );
-      })
-      .catch((err) => {
-        this._errorBoundary.logError('AC::logSession', err);
-      });
+    try {
+      if (!this._isNewSession(session)) {
+        return;
+      }
+
+      this._enqueueAutoCapture(
+        'session_start',
+        _getSanitizedPageUrl(),
+        { sessionID: session.data.sessionID },
+        { flushImmediately: true },
+      );
+    } catch (err) {
+      this._errorBoundary.logError('AC::logSession', err);
+    }
   }
 
   private _logPageView() {
@@ -214,35 +214,34 @@ export class AutoCapture {
     metadata: Record<string, unknown>,
     options?: { flushImmediately?: boolean; addNewSessionMetadata?: boolean },
   ) {
-    this._getSessionFromClient()
-      .then((session) => {
-        const logMetadata: Record<string, string> = {
-          sessionID: session.data.sessionID,
-          page_url: _getWindowSafe()?.location?.href ?? '',
-          ...metadata,
-        };
+    const session = this._getSessionFromClient();
+    try {
+      const logMetadata: Record<string, string> = {
+        sessionID: session.data.sessionID,
+        page_url: _getWindowSafe()?.location?.href ?? '',
+        ...metadata,
+      };
 
-        if (options?.addNewSessionMetadata) {
-          logMetadata['isNewSession'] = String(this._isNewSession(session));
-        }
+      if (options?.addNewSessionMetadata) {
+        logMetadata['isNewSession'] = String(this._isNewSession(session));
+      }
 
-        const event = {
-          eventName: `auto_capture::${name}`,
-          value,
-          metadata: logMetadata,
-        };
+      const event = {
+        eventName: `auto_capture::${name}`,
+        value,
+        metadata: logMetadata,
+      };
 
-        this._client.logEvent(event);
+      this._client.logEvent(event);
 
-        if (options?.flushImmediately) {
-          this._client.flush().catch((e) => {
-            Log.error(e);
-          });
-        }
-      })
-      .catch((err) => {
-        this._errorBoundary.logError('AC::enqueue', err);
-      });
+      if (options?.flushImmediately) {
+        this._client.flush().catch((e) => {
+          Log.error(e);
+        });
+      }
+    } catch (err) {
+      this._errorBoundary.logError('AC::enqueue', err);
+    }
   }
 
   private _scrollEventHandler() {
@@ -262,8 +261,7 @@ export class AutoCapture {
     return Math.abs(session.data.startTime - Date.now()) < 1000;
   }
 
-  private async _getSessionFromClient() {
-    const x = await this._client.getAsyncContext();
-    return x.session;
+  private _getSessionFromClient() {
+    return this._client.getContext().session;
   }
 }
