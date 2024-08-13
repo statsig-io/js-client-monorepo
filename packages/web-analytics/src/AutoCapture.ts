@@ -27,9 +27,11 @@ export class AutoCapture {
   private _errorBoundary: ErrorBoundary;
   private _startTime = Date.now();
   private _deepestScroll = 0;
+  private _disabledEvents: Record<string, boolean> = {};
 
   constructor(private _client: StatsigClient) {
-    const { sdkKey, errorBoundary } = _client.getContext();
+    const { sdkKey, errorBoundary, values } = _client.getContext();
+    this._disabledEvents = values?.auto_capture_settings?.disabled_events ?? {};
     this._errorBoundary = errorBoundary;
     this._errorBoundary.wrap(this);
 
@@ -214,6 +216,9 @@ export class AutoCapture {
     metadata: Record<string, unknown>,
     options?: { flushImmediately?: boolean; addNewSessionMetadata?: boolean },
   ) {
+    if (this._disabledEvents[name]) {
+      return;
+    }
     const session = this._getSessionFromClient();
     try {
       const logMetadata: Record<string, string> = {

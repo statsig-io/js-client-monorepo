@@ -49,14 +49,41 @@ describe('Autocapture Tests', () => {
       pageViewResolver = null;
       return '{}';
     });
-
     const client = new StatsigClient('client-key', { userID: '' });
-    autoCapture = runStatsigAutoCapture(client);
     await client.initializeAsync();
+    autoCapture = runStatsigAutoCapture(client);
   });
 
   beforeEach(() => {
     requestDataList.length = 0;
+  });
+
+  it('disabled the correct events', async () => {
+    autoCapture['_disabledEvents'] = { page_view: true };
+
+    Object.defineProperty(window, 'location', {
+      value: {
+        href: 'http://foo.com/',
+      },
+      writable: true,
+    });
+    Object.defineProperty(window, 'innerWidth', {
+      value: 4000,
+      writable: true,
+    });
+    Object.defineProperty(window, 'innerHeight', {
+      value: 2000,
+      writable: true,
+    });
+    autoCapture['_logPageView']();
+    await new Promise((f) => {
+      pageViewResolver = f;
+    });
+
+    const eventData = getLastPageViewEvent(requestDataList);
+    expect(eventData).toMatchObject({});
+
+    autoCapture['_disabledEvents'] = {};
   });
 
   it('has the required fields', async () => {
