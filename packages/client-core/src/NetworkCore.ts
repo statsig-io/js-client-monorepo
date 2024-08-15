@@ -15,6 +15,8 @@ import { _isUnloading } from './VisibilityObserving';
 
 const DEFAULT_TIMEOUT_MS = 10_000;
 
+const RETRYABLE_CODES = new Set([408, 500, 502, 503, 504, 522, 524, 599]);
+
 type RequestArgs = {
   sdkKey: string;
   url: string;
@@ -165,7 +167,11 @@ export class NetworkCore {
       const errorMessage = _getErrorMessage(controller, error);
       Diagnostics.mark();
 
-      if (!retries || retries <= 0) {
+      if (
+        !retries ||
+        retries <= 0 ||
+        !RETRYABLE_CODES.has(response?.status ?? 500)
+      ) {
         this._emitter?.({ name: 'error', error });
         Log.error(
           `A networking error occured during ${method} request to ${url}.`,
