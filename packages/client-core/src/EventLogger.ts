@@ -86,10 +86,8 @@ export class EventLogger {
     if (!this._shouldLogEvent(event)) {
       return;
     }
-
     this._normalizeAndAppendEvent(event);
     this._quickFlushIfNeeded();
-
     if (this._queue.length > this._maxQueueSize) {
       _safeFlushAndForget(this._sdkKey);
     }
@@ -161,6 +159,10 @@ export class EventLogger {
   }
 
   private _shouldLogEvent(event: StatsigEventInternal): boolean {
+    if (_isServerEnv()) {
+      return false; // do not run in server environments
+    }
+
     if (!_isExposureEvent(event)) {
       return true;
     }

@@ -1,6 +1,7 @@
 import {
   DataAdapterAsyncOptions,
   DataAdapterResult,
+  Diagnostics,
   DynamicConfig,
   DynamicConfigEvaluationOptions,
   EvaluationsDataAdapter,
@@ -163,21 +164,40 @@ export default class StatsigClient
     this._resetForUser(user);
 
     const initiator = this._user;
+    Diagnostics._markInitOverallStart(this._sdkKey);
 
     let result = this.dataAdapter.getDataSync(initiator);
+    this._store.setValues(result);
 
     this._setStatus('Loading', result);
 
-    this._store.setValues(result);
     result = await this.dataAdapter.getDataAsync(result, initiator, options);
-
     // ensure the user hasn't changed while we were waiting
     if (initiator !== this._user) {
       return;
     }
 
-    this._store.setValues(result);
+    let isUsingNetworkValues = false;
+
+    if (result != null) {
+      Diagnostics._markInitProcessStart(this._sdkKey);
+      isUsingNetworkValues = this._store.setValues(result);
+      Diagnostics._markInitProcessEnd(this._sdkKey, {
+        success: isUsingNetworkValues,
+      });
+    }
     this._finalizeUpdate(result);
+    Diagnostics._markInitOverallEnd(
+      this._sdkKey,
+      isUsingNetworkValues,
+      this._store.getCurrentSourceDetails(),
+    );
+    Diagnostics._enqueueDiagnosticsEvent(
+      this._user,
+      this._logger,
+      this._sdkKey,
+      this._options,
+    );
   }
 
   /**

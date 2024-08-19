@@ -30,6 +30,7 @@ describe('Memory Usage', () => {
         { logLevel: LogLevel.None },
       );
       await instance.initializeAsync();
+      instance.checkGate('gate1');
     }
     const initialMemory = process.memoryUsage().heapUsed;
 
@@ -41,6 +42,7 @@ describe('Memory Usage', () => {
         { logLevel: LogLevel.None },
       );
       await instance.initializeAsync();
+      instance.checkGate('gate1');
     }
 
     gc();

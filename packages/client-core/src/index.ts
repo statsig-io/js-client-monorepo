@@ -1,6 +1,7 @@
 /** Statsig Global should go first */
 import './$_StatsigGlobal';
 import { StatsigGlobal } from './$_StatsigGlobal';
+import { Diagnostics } from './Diagnostics';
 import { EventLogger } from './EventLogger';
 import { Log } from './Log';
 import { SDK_VERSION } from './StatsigMetadata';
@@ -10,6 +11,7 @@ export * from './$_StatsigGlobal';
 export * from './CacheKey';
 export * from './ClientInterfaces';
 export * from './DataAdapterCore';
+export * from './Diagnostics';
 export * from './DownloadConfigSpecsResponse';
 export * from './ErrorBoundary';
 export * from './EvaluationOptions';
@@ -41,7 +43,7 @@ export * from './UrlOverrides';
 export * from './UUID';
 export * from './VisibilityObserving';
 
-export { EventLogger, Storage, Log };
+export { EventLogger, Storage, Log, Diagnostics };
 
 __STATSIG__ = {
   ...(__STATSIG__ ?? {}),

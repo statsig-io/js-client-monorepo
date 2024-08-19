@@ -47,26 +47,31 @@ export default class EvaluationStore {
       : null;
   }
 
-  setValues(result: DataAdapterResult | null): void {
+  setValues(result: DataAdapterResult | null): boolean {
     if (!result) {
-      return;
+      return false;
     }
-
     const values = _typedJsonParse<InitializeResponse>(
       result.data,
       'has_updates',
       'EvaluationResponse',
     );
 
+    if (values == null) {
+      return false;
+    }
+
+    this._source = result.source;
+
     if (values?.has_updates !== true) {
-      return;
+      return true;
     }
 
     this._rawValues = result.data;
     this._lcut = values.time;
     this._receivedAt = result.receivedAt;
-    this._source = result.source;
     this._values = values;
+    return true;
   }
 
   getGate(name: string): DetailedStoreResult<GateEvaluation> {
@@ -100,18 +105,30 @@ export default class EvaluationStore {
     };
   }
 
-  private _getDetails(isUnrecognized: boolean): EvaluationDetails {
+  getCurrentSourceDetails(): EvaluationDetails {
     if (this._source === 'Uninitialized' || this._source === 'NoValues') {
       return { reason: this._source };
     }
 
-    const subreason = isUnrecognized ? 'Unrecognized' : 'Recognized';
-    const reason = `${this._source}:${subreason}`;
-
     return {
-      reason,
+      reason: this._source,
       lcut: this._lcut,
       receivedAt: this._receivedAt,
+    };
+  }
+
+  private _getDetails(isUnrecognized: boolean): EvaluationDetails {
+    const sourceDetails = this.getCurrentSourceDetails();
+
+    let reason = sourceDetails.reason;
+    if (reason !== 'Uninitialized' && reason !== 'NoValues') {
+      const subreason = isUnrecognized ? 'Unrecognized' : 'Recognized';
+      reason = `${reason}:${subreason}`;
+    }
+
+    return {
+      ...sourceDetails,
+      reason,
     };
   }
 }

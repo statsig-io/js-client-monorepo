@@ -7,7 +7,11 @@ import {
   TestPromise,
 } from 'statsig-test-helpers';
 
-import { StatsigEvent, _notifyVisibilityChanged } from '@statsig/client-core';
+import {
+  Diagnostics,
+  StatsigEvent,
+  _notifyVisibilityChanged,
+} from '@statsig/client-core';
 import { StatsigClient } from '@statsig/js-client';
 import { StatsigProvider } from '@statsig/react-bindings';
 import { runStatsigSessionReplay } from '@statsig/session-replay';
@@ -22,6 +26,7 @@ describe('Session Recording RRWeb Config', () => {
   const setup = async (blockClass?: string): Promise<StatsigEvent> => {
     fetchMock.enableMocks();
     fetchMock.mock.calls = [];
+    clearDiagnostics();
 
     fetchMock.mockResponse(
       JSON.stringify({
@@ -70,3 +75,12 @@ describe('Session Recording RRWeb Config', () => {
     expect(event.metadata?.rrweb_events).toContain('Secret Value');
   });
 });
+
+function clearDiagnostics() {
+  Diagnostics._markInitNetworkReqEnd = jest.fn();
+  Diagnostics._markInitOverallEnd = jest.fn();
+  Diagnostics._markInitProcessEnd = jest.fn();
+  Diagnostics._markInitNetworkReqStart = jest.fn();
+  Diagnostics._markInitOverallStart = jest.fn();
+  Diagnostics._markInitProcessStart = jest.fn();
+}

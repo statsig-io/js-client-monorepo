@@ -84,6 +84,7 @@ export default class StatsigNetwork extends NetworkCore {
       retries: 2,
       isStatsigEncodable: true,
       priority,
+      isInitialize: true,
     });
 
     if (response?.code === 204) {

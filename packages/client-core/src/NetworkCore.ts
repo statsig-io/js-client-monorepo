@@ -22,6 +22,8 @@ type RequestArgs = {
   url: string;
   priority?: NetworkPriority;
   retries?: number;
+  attempt?: number;
+  isInitialize?: boolean;
   params?: Record<string, string>;
   headers?: /* Warn: Using headers leads to preflight requests */ Record<
     string,
@@ -39,7 +41,7 @@ export type RequestArgsWithData = Flatten<
 
 type BeaconRequestArgs = Pick<
   RequestArgsWithData,
-  'data' | 'sdkKey' | 'url' | 'params' | 'isCompressable'
+  'data' | 'sdkKey' | 'url' | 'params' | 'isCompressable' | 'attempt'
 >;
 
 type RequestArgsInternal = RequestArgs & {
@@ -120,7 +122,8 @@ export class NetworkCore {
       return null;
     }
 
-    const { method, body, retries } = args;
+    const { method, body, retries, attempt } = args;
+    const currentAttempt = attempt ?? 1;
 
     const controller =
       typeof AbortController !== 'undefined' ? new AbortController() : null;
@@ -144,7 +147,11 @@ export class NetworkCore {
         priority: args.priority,
         keepalive,
       };
-
+      if (args.isInitialize) {
+        Diagnostics._markInitNetworkReqStart(args.sdkKey, {
+          attempt: currentAttempt,
+        });
+      }
       const func = this._netConfig.networkOverrideFunc ?? fetch;
       response = await func(url, config);
       clearTimeout(handle);
@@ -157,7 +164,13 @@ export class NetworkCore {
       }
 
       const text = await response.text();
-      Diagnostics.mark();
+
+      if (args.isInitialize) {
+        Diagnostics._markInitNetworkReqEnd(
+          args.sdkKey,
+          Diagnostics._getDiagnosticsData(response, currentAttempt, text),
+        );
+      }
 
       return {
         body: text,
@@ -165,11 +178,16 @@ export class NetworkCore {
       };
     } catch (error) {
       const errorMessage = _getErrorMessage(controller, error);
-      Diagnostics.mark();
+      if (args.isInitialize) {
+        Diagnostics._markInitNetworkReqEnd(
+          args.sdkKey,
+          Diagnostics._getDiagnosticsData(response, currentAttempt, '', error),
+        );
+      }
 
       if (
         !retries ||
-        retries <= 0 ||
+        currentAttempt > retries ||
         !RETRYABLE_CODES.has(response?.status ?? 500)
       ) {
         this._emitter?.({ name: 'error', error });
@@ -181,7 +199,11 @@ export class NetworkCore {
         return null;
       }
 
-      return this._sendRequest({ ...args, retries: retries - 1 });
+      return this._sendRequest({
+        ...args,
+        retries: retries,
+        attempt: currentAttempt + 1,
+      });
     }
   }
 
