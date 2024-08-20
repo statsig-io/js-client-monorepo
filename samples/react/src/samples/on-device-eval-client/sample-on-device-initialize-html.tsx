@@ -20,7 +20,7 @@ export default async function Sample(): Promise<void> {
   (
 <div>
 {/* <snippet> */}
-<script src="https://cdn.jsdelivr.net/npm/@statsig/js-on-device-eval-client@latest/build/statsig-js-on-device-eval-client.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@statsig/js-on-device-eval-client@1/build/statsig-js-on-device-eval-client.min.js"></script>
 <script>
 {/* </snippet> */}
   {
