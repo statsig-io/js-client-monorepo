@@ -174,7 +174,19 @@
       "$_getSpecs": "dn",
       "$_evaluator": "hn",
       "$_getOutputs": "vn",
-      "$_gatherDatasetProperties": "fn"
+      "$_gatherDatasetProperties": "fn",
+      "$_getMarkers": "_n",
+      "$_markInitOverallStart": "gn",
+      "$_markInitOverallEnd": "mn",
+      "$_markInitNetworkReqStart": "bn",
+      "$_markInitNetworkReqEnd": "pn",
+      "$_markInitProcessStart": "yn",
+      "$_markInitProcessEnd": "On",
+      "$_clearMarkers": "jn",
+      "$_formatError": "Sn",
+      "$_getDiagnosticsData": "wn",
+      "$_enqueueDiagnosticsEvent": "Tn",
+      "$_disabledEvents": "In"
     }
   }
 }

@@ -4,10 +4,13 @@ import { useEffect } from 'react';
 import { StatsigUser } from 'statsig-node';
 
 import { AnyStatsigClientEvent } from '@statsig/client-core';
-import { StatsigProvider, useParameterStore } from '@statsig/react-bindings';
+import {
+  StatsigProvider,
+  useClientBootstrapInit,
+  useParameterStore,
+} from '@statsig/react-bindings';
 
 import { DEMO_CLIENT_KEY } from '../../utils/constants';
-import useBootstrappedClient from '../../utils/useBootstrappedClient';
 
 /* eslint-disable no-console */
 
@@ -65,7 +68,7 @@ export default function ParamStoreExample({
   user: StatsigUser;
   values: string;
 }): JSX.Element {
-  const client = useBootstrappedClient(DEMO_CLIENT_KEY, user, values);
+  const { client } = useClientBootstrapInit(DEMO_CLIENT_KEY, user, values);
 
   useEffect(() => {
     const onAnyClientEvent = (event: AnyStatsigClientEvent) =>

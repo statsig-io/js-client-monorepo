@@ -14,7 +14,7 @@ export enum LogLevel {
 }
 
 export abstract class Log {
-  static level: LogLevel = LogLevel.Error;
+  static level: LogLevel = LogLevel.Warn;
 
   static info(...args: unknown[]): void {
     if (this.level >= LogLevel.Info) {

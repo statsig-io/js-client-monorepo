@@ -7,6 +7,10 @@
   "peerDependencies": {
     "react": "^16.6.3 || ^17.0.0 || ^18.0.0"
   },
+  "optionalDependencies": {
+    "@statsig/js-client": "1.7.0",
+    "@statsig/js-on-device-eval-client": "1.7.0"
+  },
   "type": "commonjs",
   "main": "./src/index.js",
   "typings": "./src/index.d.ts"
