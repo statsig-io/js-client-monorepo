@@ -1,11 +1,14 @@
 /* eslint-disable no-console */
 
 /* eslint-disable @typescript-eslint/no-inferrable-types */
-import { useEffect, useState } from 'react';
+// <snippet>
+import {
+  StatsigProvider,
+  useClientAsyncInit,
+  useFeatureGate,
+} from '@statsig/react-bindings';
 
-import { StatsigClient } from '@statsig/js-client';
-import { StatsigProvider, useFeatureGate } from '@statsig/react-bindings';
-
+// </snippet>
 import { STATSIG_CLIENT_KEY as YOUR_CLIENT_KEY } from '../../Contants';
 
 // prettier-ignore
@@ -14,10 +17,6 @@ console.log(App);
 }
 
 // <snippet>
-const myStatsigClient = new StatsigClient(YOUR_CLIENT_KEY, {
-  userID: 'a-user',
-});
-
 function Content() {
   const gate = useFeatureGate('a_gate');
 
@@ -25,23 +24,16 @@ function Content() {
 }
 
 function App() {
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    myStatsigClient
-      .initializeAsync()
-      .then(() => {
-        setIsLoading(false);
-      })
-      .catch((err) => console.log(err));
-  }, []);
+  const { client, isLoading } = useClientAsyncInit(YOUR_CLIENT_KEY, {
+    userID: 'a-user',
+  });
 
   if (isLoading) {
     return <div>Loading...</div>;
   }
 
   return (
-    <StatsigProvider client={myStatsigClient}>
+    <StatsigProvider client={client}>
       <Content />
     </StatsigProvider>
   );

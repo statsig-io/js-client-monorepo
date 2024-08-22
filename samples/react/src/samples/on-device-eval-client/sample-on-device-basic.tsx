@@ -9,7 +9,7 @@ export default async function Sample(): Promise<void> {
 // <snippet>
 const client = new StatsigOnDeviceEvalClient(YOUR_CLIENT_KEY);
 
-client.initializeSync();
+await client.initializeAsync();
 
 const user = { userID: 'a-user' };
 

@@ -2,6 +2,7 @@ import { useState } from 'react';
 
 import {
   AnyStatsigOptions,
+  Log,
   OnDeviceEvaluationsInterface,
 } from '@statsig/client-core';
 
@@ -21,8 +22,7 @@ export function useOnDeviceClientAsyncInit(
 
     client
       .initializeAsync()
-      // eslint-disable-next-line no-console
-      .catch(console.error)
+      .catch(Log.error)
       .finally(() => setIsLoading(false));
 
     return { client, sdkKey };

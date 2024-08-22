@@ -30,13 +30,15 @@ export default async function Sample(): Promise<void> {
 
   const client = new StatsigOnDeviceEvalClient(YOUR_CLIENT_KEY);
 
-  client.initializeSync();
+  client.initializeAsync()
+    .catch(console.error)
+    .finally(() => {
+      const user = { userID: 'a-user' };
 
-  const user = { userID: 'a-user' };
-
-  if (client.checkGate('a_gate', user)) {
-    // show new  feature
-  }
+      if (client.checkGate('a_gate', user)) {
+        // show new  feature
+      }
+    })
       // </snippet>
       return <div></div>
     })()

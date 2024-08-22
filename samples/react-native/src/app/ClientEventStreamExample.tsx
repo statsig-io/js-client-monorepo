@@ -2,16 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { Button, FlatList, StyleSheet, Text, View } from 'react-native';
 
 import { AnyStatsigClientEvent, LogLevel } from '@statsig/client-core';
-import { StatsigClient } from '@statsig/js-client';
-import { StatsigProviderRN } from '@statsig/react-native-bindings';
+import {
+  StatsigProviderRN,
+  useClientAsyncInit,
+  useStatsigClient,
+} from '@statsig/react-native-bindings';
 
 import { DEMO_CLIENT_KEY } from './Constants';
-
-const user = { userID: 'a-user' };
-const client = new StatsigClient(DEMO_CLIENT_KEY, user, {
-  logLevel: LogLevel.Debug,
-});
-client.initializeSync();
 
 function ClientEventItem({ event }: { event: AnyStatsigClientEvent }) {
   return (
@@ -25,6 +22,8 @@ function ClientEventItem({ event }: { event: AnyStatsigClientEvent }) {
 }
 
 function Content({ events }: { events: AnyStatsigClientEvent[] }) {
+  const { client } = useStatsigClient();
+
   return (
     <View style={styles.container}>
       <View style={styles.buttons}>
@@ -46,6 +45,12 @@ function Content({ events }: { events: AnyStatsigClientEvent[] }) {
 }
 
 export default function ClientEventStreamExample(): JSX.Element {
+  const { client, isLoading } = useClientAsyncInit(
+    DEMO_CLIENT_KEY,
+    { userID: 'a-user' },
+    { logLevel: LogLevel.Debug },
+  );
+
   const [events, setEvents] = useState<AnyStatsigClientEvent[]>([]);
   useEffect(() => {
     const onClientEvent = (event: AnyStatsigClientEvent) => {
@@ -54,7 +59,11 @@ export default function ClientEventStreamExample(): JSX.Element {
 
     client.on('*', onClientEvent);
     return () => client.off('*', onClientEvent);
-  }, []);
+  }, [client]);
+
+  if (isLoading) {
+    return <Text>Loading...</Text>;
+  }
 
   return (
     <StatsigProviderRN client={client}>

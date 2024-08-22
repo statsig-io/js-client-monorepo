@@ -1,15 +1,12 @@
-import { ReactNode, useEffect, useState } from 'react';
+import { ReactNode } from 'react';
 
-import { StatsigClient } from '@statsig/js-client';
-import { StatsigProvider, useGateValue } from '@statsig/react-bindings';
+import {
+  StatsigProvider,
+  useClientAsyncInit,
+  useGateValue,
+} from '@statsig/react-bindings';
 
 import { STATSIG_CLIENT_KEY } from './Contants';
-
-const user = {
-  userID: 'a-user',
-};
-const client = new StatsigClient(STATSIG_CLIENT_KEY, user);
-client.initializeSync();
 
 function Content() {
   const gateOn = useGateValue('a_gate');
@@ -27,22 +24,12 @@ function Content() {
 }
 
 export default function HomePage(): ReactNode {
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    // Todo: add ability to block render via StatsigProvider
-    client
-      .updateUserAsync(user)
-      .catch((e) => {
-        throw e;
-      })
-      .finally(() => {
-        setIsLoading(false);
-      });
-  }, []);
+  const { client, isLoading } = useClientAsyncInit(STATSIG_CLIENT_KEY, {
+    userID: 'a-user',
+  });
 
   if (isLoading) {
-    return <>...</>;
+    return <>Loading...</>;
   }
 
   return (

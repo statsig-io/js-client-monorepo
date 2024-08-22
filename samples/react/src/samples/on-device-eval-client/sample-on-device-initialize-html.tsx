@@ -33,10 +33,7 @@ export default async function Sample(): Promise<void> {
     { environment: {tier: 'development'} }
   );
   
-  // initialize immediately from cache values
-  myStatsigClient.initializeSync();
-  
-  // or, initialize and wait for the latest values
+  // initialize and wait for the latest values
   myStatsigClient.initializeAsync()
     .then(() => { 
         // render something...

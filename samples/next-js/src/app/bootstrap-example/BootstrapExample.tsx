@@ -9,7 +9,6 @@ import {
   StatsigProvider,
   useClientBootstrapInit,
   useFeatureGate,
-  useStatsigClient,
 } from '@statsig/react-bindings';
 
 import { DEMO_CLIENT_KEY } from '../../utils/constants';
@@ -19,12 +18,10 @@ import { DEMO_CLIENT_KEY } from '../../utils/constants';
 function Content() {
   const { value, details } = useFeatureGate('a_gate');
   const { renderVersion } = useContext(StatsigContext);
-  const { client } = useStatsigClient();
 
   return (
     <div style={{ padding: 16 }}>
       <div>Render Version: {renderVersion}</div>
-      <button onClick={() => client.logEvent('my_event')}>Log Event</button>
       <div>
         a_gate: {value ? 'Passing' : 'Failing'} ({details.reason})
       </div>

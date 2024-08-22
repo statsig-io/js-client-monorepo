@@ -1,23 +1,25 @@
-import { ReactNode } from 'react';
+/* eslint-disable no-console */
+import { ReactNode, useEffect } from 'react';
 
+import { AnyStatsigClientEvent } from '@statsig/client-core';
 import {
   StatsigProvider,
+  useClientAsyncInit,
   useFeatureGate,
+  useStatsigClient,
   useStatsigUser,
 } from '@statsig/react-bindings';
 
 import { authService } from './samples/react-precomp/sample-react-auth-service';
 import {
   LoginForm,
-  loginSampleClient,
+  YOUR_CLIENT_KEY,
 } from './samples/react-precomp/sample-react-login';
-
-// eslint-disable-next-line no-console
-loginSampleClient.on('*', (data) => console.log(data));
 
 let renderCount = 0;
 
 function Content() {
+  const { client } = useStatsigClient();
   renderCount++;
 
   const { user } = useStatsigUser();
@@ -25,7 +27,7 @@ function Content() {
 
   const handleLogout = () => {
     authService.logout();
-    loginSampleClient.updateUserSync(authService.getUser());
+    client.updateUserSync(authService.getUser());
   };
 
   return (
@@ -46,8 +48,24 @@ function Content() {
 }
 
 export default function TransitionToLoggedInExample(): ReactNode {
+  const { client, isLoading } = useClientAsyncInit(
+    YOUR_CLIENT_KEY,
+    authService.getUser(),
+  );
+
+  useEffect(() => {
+    const onAnyClientEvent = (event: AnyStatsigClientEvent) =>
+      console.log(event);
+    client.on('*', onAnyClientEvent);
+    return () => client.off('*', onAnyClientEvent);
+  }, [client]);
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
   return (
-    <StatsigProvider client={loginSampleClient}>
+    <StatsigProvider client={client}>
       <Content />
     </StatsigProvider>
   );

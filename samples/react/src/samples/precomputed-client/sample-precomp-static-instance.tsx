@@ -9,7 +9,7 @@ import { STATSIG_CLIENT_KEY as YOUR_CLIENT_KEY } from '../../Contants';
 export default async function Sample(): Promise<void> {
 // <snippet>
 const client = new StatsigClient(YOUR_CLIENT_KEY, { userID: 'a-user' });
-client.initializeSync();
+await client.initializeAsync();
 
 // then later, at some other location in your code base
 if (StatsigClient.instance().checkGate('a_gate')) {

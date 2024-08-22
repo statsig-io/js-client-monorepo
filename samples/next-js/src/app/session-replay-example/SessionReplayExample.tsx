@@ -1,16 +1,16 @@
 'use client';
 
-import { useContext, useEffect, useMemo } from 'react';
+import { useContext, useEffect } from 'react';
 
 import {
   AnyStatsigClientEvent,
   LogLevel,
   StatsigUser,
 } from '@statsig/client-core';
-import { StatsigClient } from '@statsig/js-client';
 import {
   StatsigContext,
   StatsigProvider,
+  useClientBootstrapInit,
   useFeatureGate,
   useStatsigClient,
 } from '@statsig/react-bindings';
@@ -20,32 +20,6 @@ import { runStatsigAutoCapture } from '@statsig/web-analytics';
 import { DEMO_CLIENT_KEY } from '../../utils/constants';
 
 /* eslint-disable no-console */
-
-function useClientWithSessionReplay(
-  sdkKey: string,
-  user: StatsigUser,
-  values: string,
-): StatsigClient {
-  const { client } = useMemo(() => {
-    const client = new StatsigClient(sdkKey, user, {
-      logLevel: LogLevel.Debug,
-    });
-
-    client.dataAdapter.setData(values);
-    client.initializeAsync().catch((err) => {
-      console.error(err);
-    });
-
-    runStatsigSessionReplay(client, {
-      rrwebConfig: { blockClass: 'do-not-record' },
-    });
-    runStatsigAutoCapture(client);
-
-    return { client };
-  }, [sdkKey, user, values]);
-
-  return client;
-}
 
 function Content() {
   const { client } = useStatsigClient();
@@ -82,9 +56,16 @@ export default function SessionReplayExample({
   user: StatsigUser;
   values: string;
 }): JSX.Element {
-  const client = useClientWithSessionReplay(DEMO_CLIENT_KEY, user, values);
+  const { client } = useClientBootstrapInit(DEMO_CLIENT_KEY, user, values, {
+    logLevel: LogLevel.Debug,
+  });
 
   useEffect(() => {
+    runStatsigSessionReplay(client, {
+      rrwebConfig: { blockClass: 'do-not-record' },
+    });
+    runStatsigAutoCapture(client);
+
     const onClientEvent = (event: AnyStatsigClientEvent) => {
       console.log('StatsigClientEvent', event);
     };

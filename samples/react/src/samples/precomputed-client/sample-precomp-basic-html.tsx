@@ -30,11 +30,13 @@ export default async function Sample(): Promise<void> {
 
   const client = new StatsigClient(YOUR_CLIENT_KEY, { userID: 'a-user' });
 
-  client.initializeSync();
-
-  if (client.checkGate('a_gate')) {
-    // show new  feature
-  }
+  client.initializeAsync()
+    .catch(console.error)
+    .finally(() => {
+      if (client.checkGate('a_gate')) {
+        // show new  feature
+      }
+    });
       // </snippet>
       return <div></div>
     })()

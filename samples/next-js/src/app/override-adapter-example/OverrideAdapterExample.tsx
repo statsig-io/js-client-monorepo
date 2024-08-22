@@ -1,16 +1,21 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useState } from 'react';
 
-import { LogLevel } from '@statsig/client-core';
+import { Log, LogLevel } from '@statsig/client-core';
 import { StatsigClient } from '@statsig/js-client';
 import { LocalOverrideAdapter } from '@statsig/js-local-overrides';
 import { StatsigProvider, useFeatureGate } from '@statsig/react-bindings';
 
 import { DEMO_CLIENT_KEY } from '../../utils/constants';
 
-function useClientWithOverrides(): StatsigClient {
-  const { client } = useMemo(() => {
+function useClientWithOverrides(): {
+  client: StatsigClient;
+  isLoading: boolean;
+} {
+  const [isLoading, setIsLoading] = useState(true);
+
+  const [client] = useState(() => {
     const overrideAdapter = new LocalOverrideAdapter();
     overrideAdapter.overrideGate('gate_a', false);
     overrideAdapter.overrideGate('gate_b', true);
@@ -24,12 +29,15 @@ function useClientWithOverrides(): StatsigClient {
       },
     );
 
-    client.initializeSync();
+    client
+      .initializeAsync()
+      .catch(Log.error)
+      .finally(() => setIsLoading(false));
 
-    return { client };
-  }, []);
+    return client;
+  });
 
-  return client;
+  return { isLoading, client };
 }
 
 function Content() {
@@ -49,7 +57,11 @@ function Content() {
 }
 
 export default function OverrideAdapterExample(): JSX.Element {
-  const client = useClientWithOverrides();
+  const { client, isLoading } = useClientWithOverrides();
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <StatsigProvider client={client}>

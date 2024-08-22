@@ -1,10 +1,8 @@
 'use client';
 
-import { useMemo } from 'react';
-
-import { StatsigClient } from '@statsig/js-client';
 import {
   StatsigProvider,
+  useClientAsyncInit,
   useFeatureGate,
   useStatsigClient,
 } from '@statsig/react-bindings';
@@ -43,14 +41,9 @@ function Content() {
 }
 
 export default function LoginExample(): JSX.Element {
-  const client = useMemo(() => {
-    const instance = new StatsigClient(DEMO_CLIENT_KEY, {
-      userID: 'initial-user',
-    });
-
-    instance.initializeAsync().catch((err) => console.error(err));
-    return instance;
-  }, []);
+  const { client } = useClientAsyncInit(DEMO_CLIENT_KEY, {
+    userID: 'initial-user',
+  });
 
   return (
     <StatsigProvider

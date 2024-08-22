@@ -1,13 +1,12 @@
 'use client';
 
-import { type PropsWithChildren, useMemo } from 'react';
+import { type PropsWithChildren } from 'react';
 
+import { StatsigUser } from '@statsig/js-client';
 import {
-  StatsigClient,
-  type StatsigOptions,
-  StatsigUser,
-} from '@statsig/js-client';
-import { StatsigProvider } from '@statsig/react-bindings';
+  StatsigProvider,
+  useClientBootstrapInit,
+} from '@statsig/react-bindings';
 
 type Props = PropsWithChildren & {
   readonly clientSdkKey: string;
@@ -21,19 +20,12 @@ export default function BootstrappedStatsigProvider({
   values,
   children,
 }: Props): JSX.Element {
-  const client = useMemo(() => {
-    const options: StatsigOptions = {
-      networkConfig: {
-        api: 'http://localhost:4200/statsig-demo/proxy', // Your Next.js server
-      },
-      disableStatsigEncoding: true,
-    };
-
-    const client = new StatsigClient(clientSdkKey, user, options);
-    client.dataAdapter.setData(values);
-    client.initializeSync();
-    return client;
-  }, [clientSdkKey, user, values]);
+  const { client } = useClientBootstrapInit(clientSdkKey, user, values, {
+    networkConfig: {
+      api: 'http://localhost:4200/statsig-demo/proxy', // Your Next.js server
+    },
+    disableStatsigEncoding: true,
+  });
 
   return <StatsigProvider client={client}>{children}</StatsigProvider>;
 }

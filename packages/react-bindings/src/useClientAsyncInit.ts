@@ -2,6 +2,7 @@ import { useState } from 'react';
 
 import {
   AnyStatsigOptions,
+  Log,
   PrecomputedEvaluationsInterface,
   StatsigUser,
 } from '@statsig/client-core';
@@ -24,8 +25,7 @@ export function useClientAsyncInit(
 
     client
       .initializeAsync()
-      // eslint-disable-next-line no-console
-      .catch(console.error)
+      .catch(Log.error)
       .finally(() => setIsLoading(false));
 
     return { client, initialUser, sdkKey };

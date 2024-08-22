@@ -20,8 +20,10 @@ const secondaryStatsigClient = new StatsigClient(
   { userID: 'some-other-user' },
 );
 
-mainStatsigClient.initializeSync();
-secondaryStatsigClient.initializeSync();
+await Promise.all([
+  mainStatsigClient.initializeAsync(),
+  secondaryStatsigClient.initializeAsync()
+]);
 
 if (mainStatsigClient.checkGate('a_gate')) {
   // do something because a_gate passes

@@ -11,7 +11,7 @@ const client = new StatsigClient(YOUR_CLIENT_KEY, {}, {
   disableLogging: true,
   disableStorage: true
 });
-client.initializeSync();
+await client.initializeAsync();
 
 // then, once permissions have been granted
 client.updateRuntimeOptions({disableLogging: false, disableStorage: false})

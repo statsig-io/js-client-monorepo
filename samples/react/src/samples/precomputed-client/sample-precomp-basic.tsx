@@ -10,7 +10,7 @@ export default async function Sample(): Promise<void> {
 const user = { userID: 'a-user' };
 const client = new StatsigClient(YOUR_CLIENT_KEY, user);
 
-client.initializeSync();
+await client.initializeAsync();
 
 if (client.checkGate('a_gate')) {
   // show new  feature

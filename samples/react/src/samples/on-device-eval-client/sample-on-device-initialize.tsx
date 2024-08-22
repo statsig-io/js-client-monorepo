@@ -12,10 +12,7 @@ const myStatsigClient = new StatsigOnDeviceEvalClient(
   { environment: {tier: 'development'} }
 );
 
-// initialize immediately from cache values
-myStatsigClient.initializeSync();
-
-// or, initialize and wait for the latest values
+// initialize and wait for the latest values
 await myStatsigClient.initializeAsync();
 // </snippet>
 }

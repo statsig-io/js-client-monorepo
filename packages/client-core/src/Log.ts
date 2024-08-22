@@ -1,5 +1,11 @@
 /* eslint-disable no-console */
 
+// intentionally spaced for formatting
+const DEBUG = ' DEBUG ';
+const _INFO = '  INFO ';
+const _WARN = '  WARN ';
+const ERROR = ' ERROR ';
+
 function addTag(args: unknown[]) {
   args.unshift('[Statsig]');
   return args; // ['[Statsig]', ...args];
@@ -18,25 +24,25 @@ export abstract class Log {
 
   static info(...args: unknown[]): void {
     if (this.level >= LogLevel.Info) {
-      console.info(...addTag(args));
+      console.info('\x1b[34m%s\x1b[0m', _INFO, ...addTag(args));
     }
   }
 
   static debug(...args: unknown[]): void {
     if (this.level >= LogLevel.Debug) {
-      console.debug(...addTag(args));
+      console.debug('\x1b[32m%s\x1b[0m', DEBUG, ...addTag(args));
     }
   }
 
   static warn(...args: unknown[]): void {
     if (this.level >= LogLevel.Warn) {
-      console.warn(...addTag(args));
+      console.warn('\x1b[33m%s\x1b[0m', _WARN, ...addTag(args));
     }
   }
 
   static error(...args: unknown[]): void {
     if (this.level >= LogLevel.Error) {
-      console.error(...addTag(args));
+      console.error('\x1b[31m%s\x1b[0m', ERROR, ...addTag(args));
     }
   }
 }

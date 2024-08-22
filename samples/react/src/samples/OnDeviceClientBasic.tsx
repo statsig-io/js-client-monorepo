@@ -10,7 +10,7 @@ export default async function Sample(): Promise<void> {
 const user = { userID: 'a-user' };
 const client = new StatsigOnDeviceEvalClient(YOUR_CLIENT_KEY);
 
-client.initializeSync();
+await client.initializeAsync();
 
 if (client.checkGate('a_gate', user)) {
   // show new  feature

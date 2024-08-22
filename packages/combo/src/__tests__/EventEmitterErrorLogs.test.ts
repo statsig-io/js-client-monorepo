@@ -1,5 +1,9 @@
 import fetchMock from 'jest-fetch-mock';
-import { anyObject, anyStringContaining } from 'statsig-test-helpers';
+import {
+  anyObject,
+  anyString,
+  anyStringContaining,
+} from 'statsig-test-helpers';
 
 import { StatsigClient } from '@statsig/js-client';
 
@@ -40,11 +44,15 @@ describe('Event Emitter Error Logs', () => {
 
   describe('user errors', () => {
     beforeAll(() => {
+      fetchMock.mock.calls = [];
+      logSpy.mock.calls = [];
       client.checkGate('a_gate');
     });
 
     it('logs to console', () => {
       expect(logSpy).toHaveBeenCalledWith(
+        anyString(),
+        ' ERROR ',
         '[Statsig]',
         'An error occurred in a StatsigClientEvent listener. This is not an issue with Statsig.',
         anyObject(),
@@ -58,15 +66,13 @@ describe('Event Emitter Error Logs', () => {
 
   describe('internal errors', () => {
     beforeAll(() => {
+      fetchMock.mock.calls = [];
+      logSpy.mock.calls = [];
       client.getExperiment('an_experiment');
     });
 
     it('logs nothing to console', () => {
-      expect(logSpy).toHaveBeenCalledWith(
-        '[Statsig]',
-        'An error occurred in a StatsigClientEvent listener. This is not an issue with Statsig.',
-        anyObject(),
-      );
+      expect(logSpy).not.toHaveBeenCalled();
     });
 
     it('logs to error boundary', () => {

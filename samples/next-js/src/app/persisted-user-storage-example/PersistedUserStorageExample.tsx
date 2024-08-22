@@ -1,15 +1,18 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 
-import { StatsigOnDeviceEvalClient } from '@statsig/js-on-device-eval-client';
 import {
   StickyValues,
   UserPersistedValues,
   UserPersistentOverrideAdapter,
   UserPersistentStorage,
 } from '@statsig/js-user-persisted-storage';
-import { StatsigProvider, useExperiment } from '@statsig/react-bindings';
+import {
+  StatsigProvider,
+  useExperiment,
+  useOnDeviceClientAsyncInit,
+} from '@statsig/react-bindings';
 
 import { DEMO_CLIENT_KEY } from '../../utils/constants';
 
@@ -39,28 +42,12 @@ class InMemoryUserPersistedStorage implements UserPersistentStorage {
 }
 
 function useUserPersistentOverrideAdapter(): UserPersistentOverrideAdapter {
-  return useMemo(() => {
+  const [adapter] = useState(() => {
     const storage = new InMemoryUserPersistedStorage();
     return new UserPersistentOverrideAdapter(storage);
-  }, []);
-}
+  });
 
-function useUserPersistedStorageClient(
-  sdkKey: string,
-  overrideAdapter: UserPersistentOverrideAdapter,
-): StatsigOnDeviceEvalClient {
-  const client = useMemo(() => {
-    const client = new StatsigOnDeviceEvalClient(sdkKey, {
-      overrideAdapter,
-    });
-    client.initializeAsync().catch((e) => {
-      // eslint-disable-next-line no-console
-      console.error(e);
-    });
-    return client;
-  }, [sdkKey, overrideAdapter]);
-
-  return client;
+  return adapter;
 }
 
 function Content(props: { overrideAdapter: UserPersistentOverrideAdapter }) {
@@ -90,6 +77,8 @@ function Content(props: { overrideAdapter: UserPersistentOverrideAdapter }) {
         Switch User
       </button>
 
+      <div>UserID: {user.userID}</div>
+
       <div style={{ display: 'flex' }}>
         <div style={{ marginRight: '4px' }}>
           <p>User Persistent Storage Values</p>
@@ -111,12 +100,18 @@ function Content(props: { overrideAdapter: UserPersistentOverrideAdapter }) {
 }
 
 export default function PersistedUserStorageExample(): JSX.Element {
-  const adapter = useUserPersistentOverrideAdapter();
-  const client = useUserPersistedStorageClient(DEMO_CLIENT_KEY, adapter);
+  const overrideAdapter = useUserPersistentOverrideAdapter();
+  const { client, isLoading } = useOnDeviceClientAsyncInit(DEMO_CLIENT_KEY, {
+    overrideAdapter,
+  });
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <StatsigProvider client={client}>
-      <Content overrideAdapter={adapter} />
+      <Content overrideAdapter={overrideAdapter} />
     </StatsigProvider>
   );
 }

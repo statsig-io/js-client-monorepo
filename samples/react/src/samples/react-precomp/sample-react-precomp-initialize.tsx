@@ -1,6 +1,9 @@
 // <snippet>
-import { StatsigClient } from '@statsig/js-client';
-import { StatsigProvider, useFeatureGate } from '@statsig/react-bindings';
+import {
+  StatsigProvider,
+  useClientAsyncInit,
+  useFeatureGate,
+} from '@statsig/react-bindings';
 
 // </snippet>
 import { STATSIG_CLIENT_KEY as YOUR_CLIENT_KEY } from '../../Contants';
@@ -11,11 +14,6 @@ App();
 }
 
 // <snippet>
-const myStatsigClient = new StatsigClient(YOUR_CLIENT_KEY, {
-  userID: 'a-user',
-});
-myStatsigClient.initializeSync();
-
 function Content() {
   const gate = useFeatureGate('a_gate');
 
@@ -23,8 +21,16 @@ function Content() {
 }
 
 function App() {
+  const { client, isLoading } = useClientAsyncInit(YOUR_CLIENT_KEY, {
+    userID: 'a-user',
+  });
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
   return (
-    <StatsigProvider client={myStatsigClient}>
+    <StatsigProvider client={client}>
       <Content />
     </StatsigProvider>
   );

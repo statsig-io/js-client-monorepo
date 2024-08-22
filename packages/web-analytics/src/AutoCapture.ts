@@ -1,13 +1,13 @@
 import {
   ErrorBoundary,
   Log,
+  PrecomputedEvaluationsInterface,
   StatsigSession,
   _getDocumentSafe,
   _getStatsigGlobal,
   _getWindowSafe,
   _isServerEnv,
 } from '@statsig/client-core';
-import { StatsigClient } from '@statsig/js-client';
 
 import {
   _gatherEventData,
@@ -19,7 +19,9 @@ import {
 } from './Utils';
 import { _gatherPageViewPayload } from './payloadUtils';
 
-export function runStatsigAutoCapture(client: StatsigClient): AutoCapture {
+export function runStatsigAutoCapture(
+  client: PrecomputedEvaluationsInterface,
+): AutoCapture {
   return new AutoCapture(client);
 }
 
@@ -29,7 +31,7 @@ export class AutoCapture {
   private _deepestScroll = 0;
   private _disabledEvents: Record<string, boolean> = {};
 
-  constructor(private _client: StatsigClient) {
+  constructor(private _client: PrecomputedEvaluationsInterface) {
     const { sdkKey, errorBoundary, values } = _client.getContext();
     this._disabledEvents = values?.auto_capture_settings?.disabled_events ?? {};
     this._errorBoundary = errorBoundary;

@@ -1,23 +1,23 @@
-/* eslint-disable @typescript-eslint/no-inferrable-types */
-import { StatsigClient } from '@statsig/js-client';
-import { StatsigProvider, useFeatureGate } from '@statsig/react-bindings';
+/* eslint-disable no-console */
 
+/* eslint-disable @typescript-eslint/no-inferrable-types */
+// <snippet>
+import {
+  StatsigProvider,
+  useClientBootstrapInit,
+  useFeatureGate,
+} from '@statsig/react-bindings';
+
+// </snippet>
 import { STATSIG_CLIENT_KEY as YOUR_CLIENT_KEY } from '../../Contants';
 
 // prettier-ignore
 export default async function Sample(): Promise<void> {
-App();
+console.log(App);
 }
 
 // <snippet>
 const myBootstrapValues: string = '...'; // Retrieved from a Statsig Server SDK
-
-const myStatsigClient = new StatsigClient(YOUR_CLIENT_KEY, {
-  userID: 'a-user',
-});
-
-myStatsigClient.dataAdapter.setData(myBootstrapValues);
-myStatsigClient.initializeSync();
 
 function Content() {
   const gate = useFeatureGate('a_gate');
@@ -26,8 +26,16 @@ function Content() {
 }
 
 function App() {
+  const { client } = useClientBootstrapInit(
+    YOUR_CLIENT_KEY,
+    {
+      userID: 'a-user',
+    },
+    myBootstrapValues,
+  );
+
   return (
-    <StatsigProvider client={myStatsigClient}>
+    <StatsigProvider client={client}>
       <Content />
     </StatsigProvider>
   );

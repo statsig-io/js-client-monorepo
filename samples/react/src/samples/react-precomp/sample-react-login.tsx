@@ -1,28 +1,28 @@
 import { useState } from 'react';
 
-import { StatsigClient } from '@statsig/js-client';
-import { StatsigProvider, useStatsigUser } from '@statsig/react-bindings';
+import {
+  StatsigProvider,
+  useClientAsyncInit,
+  useStatsigClient,
+  useStatsigUser,
+} from '@statsig/react-bindings';
 
 import { STATSIG_CLIENT_KEY as YOUR_CLIENT_KEY } from '../../Contants';
 import { authService } from './sample-react-auth-service';
+
+export { YOUR_CLIENT_KEY };
 
 // prettier-ignore
 export default async function Sample(): Promise<void> {
 App();
 }
 
-const myStatsigClient = new StatsigClient(
-  YOUR_CLIENT_KEY,
-  authService.getUser(),
-);
-
-const dataAdapter = myStatsigClient.dataAdapter;
-myStatsigClient.initializeSync();
-
 // prettier-ignore
 // <snippet>
 function LoginForm(): JSX.Element {
   const { user } = useStatsigUser();
+  const {client} = useStatsigClient();
+
   const [authData, setAuthData] = useState({
     email: user.email ?? '',
     password: '',
@@ -38,20 +38,20 @@ function LoginForm(): JSX.Element {
       .login(authData)
       .then(async ({ authorizedUser, bootstrapData }) => {
         // prefetch data from Statsig
-        await dataAdapter.prefetchData(authorizedUser);
+        await client.dataAdapter.prefetchData(authorizedUser);
 
         // </snippet>
         const actual = authorizedUser;
         authorizedUser = { userID: 'dummy' };
         // <snippet>
         // or, bootstrap with data from your own backend
-        dataAdapter.setData(bootstrapData);
+        client.dataAdapter.setData(bootstrapData);
 
         // </snippet>
         authorizedUser = actual;
         // <snippet>
         // then update synchronously
-        myStatsigClient.updateUserSync(authorizedUser);
+        client.updateUserSync(authorizedUser);
       })
       .catch((err) => {
         throw err;
@@ -87,13 +87,21 @@ function LoginForm(): JSX.Element {
 }
 
 function App() {
+  const { client, isLoading } = useClientAsyncInit(
+    YOUR_CLIENT_KEY,
+    authService.getUser(),
+  );
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
   return (
-    <StatsigProvider client={myStatsigClient}>
+    <StatsigProvider client={client}>
       <LoginForm />
     </StatsigProvider>
   );
 }
 // </snippet>
 
-const loginSampleClient = myStatsigClient;
-export { LoginForm, loginSampleClient };
+export { LoginForm };
