@@ -1,6 +1,6 @@
 {
   "name": "@statsig/sha256",
-  "version": "1.7.0",
+  "version": "2.0.0",
   "dependencies": {},
   "devDependencies": {
     "js-sha256": "0.10.1"
