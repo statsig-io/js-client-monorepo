@@ -1,6 +1,7 @@
 import {
   DataAdapterAsyncOptions,
   DataAdapterResult,
+  DataAdapterSyncOptions,
   Diagnostics,
   DynamicConfig,
   DynamicConfigEvaluationOptions,
@@ -42,7 +43,8 @@ import { _makeParamStoreGetter } from './ParamStoreGetterFactory';
 import { StatsigEvaluationsDataAdapter } from './StatsigEvaluationsDataAdapter';
 import type { StatsigOptions } from './StatsigOptions';
 
-type AsyncOptions = DataAdapterAsyncOptions;
+type AsyncUpdateOptions = DataAdapterAsyncOptions;
+type SyncUpdateOptions = DataAdapterSyncOptions;
 
 export default class StatsigClient
   extends StatsigClientBase<EvaluationsDataAdapter>
@@ -108,9 +110,9 @@ export default class StatsigClient
    *
    * @see {@link initializeAsync} for the asynchronous version of this method.
    */
-  initializeSync(): void {
+  initializeSync(options?: SyncUpdateOptions): void {
     this._logger.start();
-    this.updateUserSync(this._user);
+    this.updateUserSync(this._user, options);
   }
 
   /**
@@ -119,11 +121,11 @@ export default class StatsigClient
    * there might be a transition from cached to network values during the session, which can affect consistency.
    * This method is useful when it's acceptable to begin with potentially stale data and switch to the latest configuration as it becomes available.
    *
-   * @param {AsyncOptions} [options] - Optional. Additional options to customize the method call.
+   * @param {AsyncUpdateOptions} [options] - Optional. Additional options to customize the method call.
    * @returns {Promise<void>} A promise that resolves once the client is fully initialized with the latest values from the network or a timeout (if set) is hit.
    * @see {@link initializeSync} for the synchronous version of this method.
    */
-  initializeAsync(options?: AsyncOptions): Promise<void> {
+  initializeAsync(options?: AsyncUpdateOptions): Promise<void> {
     this._logger.start();
     return this.updateUserAsync(this._user, options);
   }
@@ -136,14 +138,16 @@ export default class StatsigClient
    * @param {StatsigUser} user - The new StatsigUser for which the client should update its internal state.
    * @see {@link updateUserAsync} for the asynchronous version of this method.
    */
-  updateUserSync(user: StatsigUser): void {
+  updateUserSync(user: StatsigUser, options?: SyncUpdateOptions): void {
     this._resetForUser(user);
 
     const result = this.dataAdapter.getDataSync(this._user);
     this._store.setValues(result);
 
     this._finalizeUpdate(result);
-    this._runPostUpdate(result ?? null, this._user);
+    if (!options?.disableBackgroundCacheRefresh) {
+      this._runPostUpdate(result ?? null, this._user);
+    }
   }
 
   /**
@@ -153,13 +157,13 @@ export default class StatsigClient
    * This method is best used in scenarios where up-to-date configuration is critical and initial delays are acceptable.
    *
    * @param {StatsigUser} user - The new StatsigUser for which the client should update its internal state.
-   * @param {AsyncOptions} [options] - Optional. Additional options to customize the method call.
+   * @param {AsyncUpdateOptions} [options] - Optional. Additional options to customize the method call.
    * @returns {Promise<void>} A promise that resolves once the client is fully updated with the latest values from the network or a timeout (if set) is hit.
    * @see {@link updateUserSync} for the synchronous version of this method.
    */
   async updateUserAsync(
     user: StatsigUser,
-    options?: AsyncOptions,
+    options?: AsyncUpdateOptions,
   ): Promise<void> {
     this._resetForUser(user);
 

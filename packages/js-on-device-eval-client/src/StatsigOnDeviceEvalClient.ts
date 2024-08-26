@@ -1,6 +1,7 @@
 import {
   DataAdapterAsyncOptions,
   DataAdapterResult,
+  DataAdapterSyncOptions,
   DownloadConfigSpecsResponse,
   DynamicConfig,
   DynamicConfigEvaluationOptions,
@@ -44,7 +45,8 @@ declare global {
   }
 }
 
-type AsyncOptions = DataAdapterAsyncOptions;
+type AsyncUpdateOptions = DataAdapterAsyncOptions;
+type SyncUpdateOptions = DataAdapterSyncOptions;
 
 export default class StatsigOnDeviceEvalClient
   extends StatsigClientBase<SpecsDataAdapter>
@@ -82,17 +84,17 @@ export default class StatsigOnDeviceEvalClient
     this._evaluator = new Evaluator(this._store);
   }
 
-  initializeSync(): void {
+  initializeSync(options?: SyncUpdateOptions): void {
     this._logger.start();
-    this.updateSync();
+    this.updateSync(options);
   }
 
-  async initializeAsync(options?: AsyncOptions): Promise<void> {
+  async initializeAsync(options?: AsyncUpdateOptions): Promise<void> {
     this._logger.start();
     return this.updateAsync(options);
   }
 
-  updateSync(): void {
+  updateSync(options?: SyncUpdateOptions): void {
     this._store.reset();
 
     const result = this.dataAdapter.getDataSync();
@@ -101,10 +103,12 @@ export default class StatsigOnDeviceEvalClient
     this._store.finalize();
     this._setStatus('Ready', result);
 
-    this._runPostUpdate(result);
+    if (!options?.disableBackgroundCacheRefresh) {
+      this._runPostUpdate(result);
+    }
   }
 
-  async updateAsync(options?: AsyncOptions): Promise<void> {
+  async updateAsync(options?: AsyncUpdateOptions): Promise<void> {
     this._store.reset();
 
     this._setStatus('Loading', null);

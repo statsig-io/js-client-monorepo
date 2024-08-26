@@ -42,6 +42,16 @@ export type DataAdapterAsyncOptions = {
   readonly priority?: NetworkPriority;
 };
 
+export type DataAdapterSyncOptions = {
+  /**
+   * The flag to disable background cache refresh.
+   * If set to true, the cache will not be updated in the background and will only use the data adatpter values.
+   *
+   * default: false
+   */
+  readonly disableBackgroundCacheRefresh?: boolean;
+};
+
 export const DataAdapterCachePrefix = 'statsig.cached';
 
 /**
