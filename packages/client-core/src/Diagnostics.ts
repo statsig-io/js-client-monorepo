@@ -41,7 +41,7 @@ export const Diagnostics = {
     return MARKER_MAP.get(sdkKey);
   },
   _markInitOverallStart: (sdkKey: string): void => {
-    _addMarker(sdkKey, _createMarker({}, ACT_START));
+    _addMarker(sdkKey, _createMarker({}, ACT_START, 'overall'));
   },
   _markInitOverallEnd: (
     sdkKey: string,
@@ -59,6 +59,7 @@ export const Diagnostics = {
           evaluationDetails,
         },
         ACT_END,
+        'overall',
       ),
     );
   },
@@ -66,22 +67,28 @@ export const Diagnostics = {
     sdkKey: string,
     data: InitializeDataType['networkRequest']['start'],
   ): void => {
-    _addMarker(sdkKey, _createMarker(data, ACT_START));
+    _addMarker(
+      sdkKey,
+      _createMarker(data, ACT_START, 'initialize', 'network_request'),
+    );
   },
   _markInitNetworkReqEnd: (
     sdkKey: string,
     data: InitializeDataType['networkRequest']['end'],
   ): void => {
-    _addMarker(sdkKey, _createMarker(data, ACT_END));
+    _addMarker(
+      sdkKey,
+      _createMarker(data, ACT_END, 'initialize', 'network_request'),
+    );
   },
   _markInitProcessStart: (sdkKey: string): void => {
-    _addMarker(sdkKey, _createMarker({}, ACT_START));
+    _addMarker(sdkKey, _createMarker({}, ACT_START, 'initialize', 'process'));
   },
   _markInitProcessEnd: (
     sdkKey: string,
     data: InitializeDataType['process']['end'],
   ): void => {
-    _addMarker(sdkKey, _createMarker(data, ACT_END));
+    _addMarker(sdkKey, _createMarker(data, ACT_END, 'initialize', 'process'));
   },
   _clearMarkers: (sdkKey: string): void => {
     MARKER_MAP.delete(sdkKey);
@@ -146,10 +153,13 @@ function _createMarker(
     | InitializeDataType['networkRequest']['end']
     | Record<string, never>,
   action: ActionType,
+  key: KeyType,
+  step?: StepType,
 ): Marker {
   return {
-    key: 'initialize',
+    key: key,
     action: action,
+    step: step,
     timestamp: Date.now(),
     ...data,
   };
