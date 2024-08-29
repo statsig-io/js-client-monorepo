@@ -1,15 +1,15 @@
 {
   "name": "@statsig/react-bindings",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "dependencies": {
-    "@statsig/client-core": "2.0.0"
+    "@statsig/client-core": "2.1.0"
   },
   "peerDependencies": {
     "react": "^16.6.3 || ^17.0.0 || ^18.0.0"
   },
   "optionalDependencies": {
-    "@statsig/js-client": "2.0.0",
-    "@statsig/js-on-device-eval-client": "2.0.0"
+    "@statsig/js-client": "2.1.0",
+    "@statsig/js-on-device-eval-client": "2.1.0"
   },
   "type": "commonjs",
   "main": "./src/index.js",
