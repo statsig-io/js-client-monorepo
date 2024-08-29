@@ -73,4 +73,46 @@ describe('Local Overrides', () => {
       layer: {},
     });
   });
+
+  it('removes single gate overrides', () => {
+    provider.overrideGate('gate_a', true);
+    provider.overrideGate('gate_b', true);
+
+    provider.removeGateOverride('gate_a');
+
+    expect(provider.getAllOverrides().gate).toEqual({ gate_b: true });
+  });
+
+  it('removes single dynamic config overrides', () => {
+    provider.overrideDynamicConfig('config_a', { a: 1 });
+    provider.overrideDynamicConfig('config_b', { b: 2 });
+
+    provider.removeDynamicConfigOverride('config_a');
+
+    expect(provider.getAllOverrides().dynamicConfig).toEqual({
+      config_b: { b: 2 },
+    });
+  });
+
+  it('removes single experiment overrides', () => {
+    provider.overrideExperiment('experiment_a', { a: 1 });
+    provider.overrideExperiment('experiment_b', { b: 2 });
+
+    provider.removeExperimentOverride('experiment_a');
+
+    expect(provider.getAllOverrides().experiment).toEqual({
+      experiment_b: { b: 2 },
+    });
+  });
+
+  it('removes single layer overrides', () => {
+    provider.overrideLayer('layer_a', { a: 1 });
+    provider.overrideLayer('layer_b', { b: 2 });
+
+    provider.removeLayerOverride('layer_a');
+
+    expect(provider.getAllOverrides().layer).toEqual({
+      layer_b: { b: 2 },
+    });
+  });
 });
