@@ -3,11 +3,11 @@
   "version": "2.0.0",
   "dependencies": {
     "@statsig/client-core": "2.0.0",
-    "@statsig/react-bindings": "2.0.0",
-    "react-native-mmkv": "2.12.2"
+    "@statsig/react-bindings": "2.0.0"
   },
   "peerDependencies": {
-    "react-native": "0.*"
+    "react-native": "0.*",
+    "react-native-mmkv": "2.* || 3.*"
   },
   "type": "commonjs",
   "main": "./src/index.js",

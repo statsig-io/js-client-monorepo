@@ -86,7 +86,7 @@ importers:
         specifier: ^10.11.0
         version: 10.12.0(react-native@0.73.2)
       react-native-mmkv:
-        specifier: 2.12.2
+        specifier: 2.* || 3.*
         version: 2.12.2(react-native@0.73.2)(react@18.2.0)
       rxjs:
         specifier: ~7.8.0
@@ -529,9 +529,6 @@ importers:
       '@statsig/react-bindings':
         specifier: 2.0.0
         version: link:../react-bindings
-      react-native-mmkv:
-        specifier: 2.12.2
-        version: 2.12.2
 
   packages/session-replay:
     dependencies:
@@ -19124,13 +19121,6 @@ packages:
       react-native: '*'
     dependencies:
       react-native: 0.73.2(@babel/core@7.23.9)(encoding@0.1.13)(react@18.2.0)
-    dev: false
-
-  /react-native-mmkv@2.12.2:
-    resolution: {integrity: sha512-6058Aq0p57chPrUutLGe9fYoiDVDNMU2PKV+lLFUJ3GhoHvUrLdsS1PDSCLr00yqzL4WJQ7TTzH+V8cpyrNcfg==}
-    peerDependencies:
-      react: '*'
-      react-native: '>=0.71.0'
     dev: false
 
   /react-native-mmkv@2.12.2(react-native@0.73.2)(react@18.2.0):
