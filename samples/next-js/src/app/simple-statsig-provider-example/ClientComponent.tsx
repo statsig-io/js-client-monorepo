@@ -8,7 +8,10 @@ import {
   useFeatureGate,
 } from '@statsig/react-bindings';
 
-import { DEMO_CLIENT_KEY } from '../../utils/constants';
+import {
+  DEMO_CLIENT_KEY,
+  DEMO_CLIENT_KEY_WITH_DCS_ENABLED,
+} from '../../utils/constants';
 
 /* eslint-disable no-console */
 
@@ -17,7 +20,7 @@ function Content() {
   const { renderVersion } = useContext(StatsigContext);
 
   return (
-    <div style={{ padding: 16 }}>
+    <div style={{ height: 100, width: 300, padding: 16 }}>
       <div>Render Version: {renderVersion}</div>
       <div>
         a_gate: {value ? 'Passing' : 'Failing'} ({details.reason})
@@ -28,13 +31,23 @@ function Content() {
 
 export default function ClientComponent(): JSX.Element {
   return (
-    <StatsigProvider
-      sdkKey={DEMO_CLIENT_KEY}
-      user={{ userID: 'a-user' }}
-      loadingComponent={<div>Loading...</div>}
-      options={{ disableStatsigEncoding: true }}
-    >
-      <Content />
-    </StatsigProvider>
+    <div>
+      <StatsigProvider
+        sdkKey={DEMO_CLIENT_KEY}
+        user={{ userID: 'a-user' }}
+        loadingComponent={
+          <div style={{ height: 100, width: 300, padding: 16 }}>Loading...</div>
+        }
+        options={{ disableStatsigEncoding: true }}
+      >
+        <Content />
+      </StatsigProvider>
+      <StatsigProvider
+        sdkKey={DEMO_CLIENT_KEY_WITH_DCS_ENABLED}
+        user={{ userID: 'a-user' }}
+      >
+        <Content />
+      </StatsigProvider>
+    </div>
   );
 }
