@@ -1,21 +1,35 @@
 import { ReactNode, useEffect, useMemo, useState } from 'react';
 
-import { Log, SDKType, StatsigClientInterface } from '@statsig/client-core';
+import {
+  AnyStatsigOptions,
+  Log,
+  SDKType,
+  StatsigClientInterface,
+  StatsigUser,
+} from '@statsig/client-core';
 
 import StatsigContext from './StatsigContext';
+import { useClientAsyncInit } from './useClientAsyncInit';
+
+type WithClient = { client: StatsigClientInterface };
+type WithConfiguration = {
+  sdkKey: string;
+  user: StatsigUser;
+  options?: AnyStatsigOptions;
+};
 
 export type StatsigProviderProps = {
   children: ReactNode | ReactNode[];
-  client: StatsigClientInterface;
   loadingComponent?: ReactNode | ReactNode[];
-};
+} & (WithClient | WithConfiguration);
 
-export function StatsigProvider({
-  client,
-  children,
-  loadingComponent,
-}: StatsigProviderProps): JSX.Element {
+export function StatsigProvider(props: StatsigProviderProps): JSX.Element {
   const [renderVersion, setRenderVersion] = useState(0);
+
+  const client =
+    'client' in props
+      ? props.client
+      : useClientAsyncInit(props.sdkKey, props.user).client;
 
   useEffect(() => {
     const onValuesUpdated = () => {
@@ -42,9 +56,9 @@ export function StatsigProvider({
 
   return (
     <StatsigContext.Provider value={contextValue}>
-      {loadingComponent == null || _isReady(client)
-        ? children
-        : loadingComponent}
+      {props.loadingComponent == null || _isReady(client)
+        ? props.children
+        : props.loadingComponent}
     </StatsigContext.Provider>
   );
 }

@@ -5,7 +5,7 @@ export default function Index(): JSX.Element {
       <ul>
         <li>
           <button>
-            <a href="/bootstrap-example">Simple Server Side Render</a>
+            <a href="/bootstrap-example">Server Side Render</a>
           </button>
         </li>
         <li>
@@ -43,6 +43,13 @@ export default function Index(): JSX.Element {
         <li>
           <button>
             <a href="/login-example">Login</a>
+          </button>
+        </li>
+        <li>
+          <button>
+            <a href="/simple-statsig-provider-example">
+              Simple Statsig Provider
+            </a>
           </button>
         </li>
       </ul>
