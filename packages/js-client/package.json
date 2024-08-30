@@ -1,8 +1,8 @@
 {
   "name": "@statsig/js-client",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "dependencies": {
-    "@statsig/client-core": "2.1.0"
+    "@statsig/client-core": "2.1.1"
   },
   "jsdelivr": "./build/statsig-js-client.min.js",
   "type": "commonjs",
