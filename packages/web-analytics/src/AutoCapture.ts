@@ -11,6 +11,7 @@ import {
 
 import {
   _gatherEventData,
+  _getSafeNetworkInformation,
   _getSafeUrl,
   _getSanitizedPageUrl,
   _getTargetNode,
@@ -194,6 +195,15 @@ export class AutoCapture {
         fpEntries[0] instanceof PerformancePaintTiming
       ) {
         metadata['first_contentful_paint_time_ms'] = fpEntries[0].startTime;
+      }
+
+      const networkInfo = _getSafeNetworkInformation();
+
+      if (networkInfo) {
+        metadata['effective_connection_type'] = networkInfo.effectiveType;
+        metadata['rtt_ms'] = networkInfo.rtt;
+        metadata['downlink_kbps'] = networkInfo.downlink;
+        metadata['save_data'] = networkInfo.saveData;
       }
 
       this._enqueueAutoCapture('performance', _getSanitizedPageUrl(), metadata);

@@ -1,5 +1,12 @@
 import { _getCurrentPageUrlSafe, _getWindowSafe } from '@statsig/client-core';
 
+interface NetworkInformation {
+  downlink: number;
+  effectiveType: string;
+  rtt: number;
+  saveData: boolean;
+}
+
 export function _gatherDatasetProperties(el: Element): Record<string, string> {
   const dataset = {} as Record<string, string>;
   if (!el) {
@@ -128,6 +135,22 @@ export function _registerEventHandler(
   }
 
   element.addEventListener(eventType, handler, true);
+}
+
+export function _getSafeNetworkInformation(): NetworkInformation | null {
+  const win = _getWindowSafe();
+  if (!win || !win.navigator) {
+    return null;
+  }
+  const connection = (
+    win.navigator as unknown as { connection?: NetworkInformation }
+  ).connection;
+
+  if (!connection) {
+    return null;
+  }
+
+  return connection;
 }
 
 function _getAnchorNodeInHierarchy(node: Element | null): Element | null {

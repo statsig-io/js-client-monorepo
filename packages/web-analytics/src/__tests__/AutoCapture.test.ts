@@ -35,6 +35,12 @@ function getLastSessionStartEvent(
   return getLastEvent(requests, 'auto_capture::session_start');
 }
 
+function getLastPerformanceEvent(
+  requests: Record<string, any>[],
+): Record<string, any> {
+  return getLastEvent(requests, 'auto_capture::performance');
+}
+
 describe('Autocapture Tests', () => {
   let autoCapture: AutoCapture;
   let pageViewResolver: ((v: unknown) => void) | null = null;
@@ -232,5 +238,45 @@ describe('Autocapture Tests', () => {
       sessionID: expect.any(String),
       page_url: 'http://foo.com/',
     });
+  });
+
+  it('performance has the network information fields if defined', async () => {
+    const mockConnection = {
+      downlink: 10,
+      effectiveType: '4g',
+      rtt: 100,
+      saveData: false,
+    };
+    Object.defineProperty(window, 'navigator', {
+      value: { connection: mockConnection },
+      writable: true,
+    });
+    autoCapture['_logPerformance']();
+    await new Promise((f) => {
+      pageViewResolver = f;
+    });
+    const eventData = getLastPerformanceEvent(requestDataList);
+    const metadata = eventData['metadata'];
+    expect(metadata['effective_connection_type']).toEqual('4g');
+    expect(metadata['rtt_ms']).toEqual(100);
+    expect(metadata['downlink_kbps']).toEqual(10);
+    expect(metadata['save_data']).toEqual(false);
+  });
+
+  it('performance does not have the network information fields if not defined', async () => {
+    Object.defineProperty(window, 'navigator', {
+      value: undefined,
+      writable: true,
+    });
+    autoCapture['_logPerformance']();
+    await new Promise((f) => {
+      pageViewResolver = f;
+    });
+    const eventData = getLastPerformanceEvent(requestDataList);
+    const metadata = eventData['metadata'];
+    expect(metadata['effective_connection_type']).toBeUndefined();
+    expect(metadata['rtt_ms']).toBeUndefined();
+    expect(metadata['downlink_kbps']).toBeUndefined();
+    expect(metadata['save_data']).toBeUndefined();
   });
 });
