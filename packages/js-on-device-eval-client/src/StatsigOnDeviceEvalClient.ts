@@ -21,6 +21,7 @@ import {
   StatsigEvent,
   StatsigSession,
   StatsigUser,
+  Storage,
   _createConfigExposure,
   _createGateExposure,
   _createLayerParameterExposure,
@@ -90,6 +91,7 @@ export default class StatsigOnDeviceEvalClient
   }
 
   async initializeAsync(options?: AsyncUpdateOptions): Promise<void> {
+    Storage._isProviderReady() && (await Storage._isProviderReady());
     this._logger.start();
     return this.updateAsync(options);
   }
@@ -131,6 +133,7 @@ export default class StatsigOnDeviceEvalClient
       errorBoundary: this._errorBoundary,
       session: StatsigSession.get(this._sdkKey),
       stableID: StableID.get(this._sdkKey),
+      storageProvider: Storage,
     };
   }
 

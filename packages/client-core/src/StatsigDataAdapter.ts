@@ -73,15 +73,6 @@ type DataAdapterCommon = {
    * @param {StatsigOptionsCommon | null} options The StatsigOptions being used by the Statsig client.
    */
   readonly attach: (sdkKey: string, options: AnyStatsigOptions | null) => void;
-
-  /**
-   * (Internal Use Only) - Used by \@statsig/react-native-bindings to prime the cache from AsyncStorage
-   *
-   * @param {Record<string, DataAdapterResult>} cache The values to merge into _inMemoryCache
-   */
-  readonly __primeInMemoryCache: (
-    cache: Record<string, DataAdapterResult>,
-  ) => void;
 };
 
 export type EvaluationsDataAdapter = DataAdapterCommon & {

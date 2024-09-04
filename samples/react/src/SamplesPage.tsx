@@ -51,7 +51,7 @@ const SAMPLES = [
   () => import('./samples/react-precomp/sample-react-init-strat-cache'),
 
   // React Native
-  () => import('./samples/react-native/react-native-on-device-eval'),
+  // () => import('./samples/react-native/react-native-on-device-eval'),
 ];
 
 type Snippet = {

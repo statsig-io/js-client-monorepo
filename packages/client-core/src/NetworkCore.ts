@@ -228,8 +228,8 @@ export class NetworkCore {
 
   private async _getPopulatedBody(args: RequestArgsWithData): Promise<string> {
     const { data, sdkKey } = args;
-    const stableID = await StableID.get(sdkKey);
-    const sessionID = await SessionID.get(sdkKey);
+    const stableID = StableID.get(sdkKey);
+    const sessionID = SessionID.get(sdkKey);
     const sdkType = SDKType._get(sdkKey);
 
     return JSON.stringify({

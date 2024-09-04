@@ -11,25 +11,27 @@ import { StatsigClient, StatsigOptions } from '@statsig/js-client';
 import StatsigContext from './StatsigContext';
 import { useClientAsyncInit } from './useClientAsyncInit';
 
-type WithClient = { client: StatsigClient };
+type WithClient<T extends StatsigClient> = { client: T };
 type WithConfiguration = {
   sdkKey: string;
   user: StatsigUser;
   options?: StatsigOptions;
 };
 
-export type StatsigProviderProps = {
+export type StatsigProviderProps<T extends StatsigClient> = {
   children: ReactNode | ReactNode[];
   loadingComponent?: ReactNode | ReactNode[];
-} & (WithClient | WithConfiguration);
+} & (WithClient<T> | WithConfiguration);
 
-export function StatsigProvider(props: StatsigProviderProps): JSX.Element {
+export function StatsigProvider(
+  props: StatsigProviderProps<StatsigClient>,
+): JSX.Element {
   const [renderVersion, setRenderVersion] = useState(0);
 
   const client =
     'client' in props
       ? props.client
-      : useClientAsyncInit(props.sdkKey, props.user).client;
+      : useClientAsyncInit(props.sdkKey, props.user, props.options).client;
 
   useEffect(() => {
     const onValuesUpdated = () => {

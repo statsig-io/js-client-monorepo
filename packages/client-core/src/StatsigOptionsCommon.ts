@@ -1,6 +1,7 @@
 import { LogLevel } from './Log';
 import { NetworkArgs } from './NetworkConfig';
 import { OverrideAdapter } from './OverrideAdapter';
+import { StorageProvider } from './StorageProvider';
 
 /** Options that can be set at init and updated during runtime. */
 export type StatsigRuntimeMutableOptions = {
@@ -128,6 +129,13 @@ export type StatsigOptionsCommon<NetworkConfig extends NetworkConfigCommon> =
      * Note: Sessions still expire and will be replaced with an auto-generated SessionID.
      */
     initialSessionID?: string;
+
+    /**
+     * Swaps out the storage layer used by the SDK.
+     *
+     * default: `window.localStorage` on Web. `@react-native-async-storage/async-storage` on Mobile.
+     */
+    storageProvider?: StorageProvider;
   };
 
 export type AnyStatsigOptions = StatsigOptionsCommon<NetworkConfigCommon>;

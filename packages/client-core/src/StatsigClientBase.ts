@@ -73,6 +73,7 @@ export abstract class StatsigClientBase<
     options?.disableStorage && Storage._setDisabled(true);
     options?.initialSessionID &&
       StatsigSession.overrideInitialSessionID(options.initialSessionID, sdkKey);
+    options?.storageProvider && Storage._setProvider(options.storageProvider);
 
     this._sdkKey = sdkKey;
     this._options = options ?? {};

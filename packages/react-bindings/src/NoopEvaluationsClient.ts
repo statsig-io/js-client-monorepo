@@ -8,6 +8,7 @@ import {
   ParameterStore,
   PrecomputedEvaluationsInterface,
   SpecsDataAdapter,
+  Storage,
   _makeDynamicConfig,
   _makeFeatureGate,
   _makeLayer,
@@ -41,7 +42,6 @@ const _defaultEvaluation = <T>(
 };
 
 const _noopDataAdapter: EvaluationsDataAdapter & SpecsDataAdapter = {
-  __primeInMemoryCache: _noop,
   attach: _noop,
   getDataSync: () => null,
   getDataAsync: () => Promise.resolve(null),
@@ -61,6 +61,7 @@ const context = {
     sdkKey: '',
   },
   stableID: '',
+  storageProvider: Storage,
 };
 
 const _client: PrecomputedEvaluationsInterface & { isNoop: true } = {

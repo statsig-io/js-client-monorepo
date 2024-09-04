@@ -1,18 +1,13 @@
 import { useState } from 'react';
 
-import {
-  AnyStatsigOptions,
-  Log,
-  PrecomputedEvaluationsInterface,
-  StatsigUser,
-} from '@statsig/client-core';
-import { StatsigClient } from '@statsig/js-client';
+import { Log, StatsigUser } from '@statsig/client-core';
+import { StatsigClient, StatsigOptions } from '@statsig/js-client';
 
 export function useClientAsyncInit(
   sdkKey: string,
   initialUser: StatsigUser,
-  statsigOptions: AnyStatsigOptions | null = null,
-): { isLoading: boolean; client: PrecomputedEvaluationsInterface } {
+  statsigOptions: StatsigOptions | null = null,
+): { isLoading: boolean; client: StatsigClient } {
   const [isLoading, setIsLoading] = useState(true);
 
   const [args] = useState(() => {

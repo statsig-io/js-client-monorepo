@@ -24,6 +24,7 @@ import {
   StatsigSession,
   StatsigUser,
   StatsigUserInternal,
+  Storage,
   _createConfigExposure,
   _createGateExposure,
   _createLayerParameterExposure,
@@ -125,7 +126,8 @@ export default class StatsigClient
    * @returns {Promise<void>} A promise that resolves once the client is fully initialized with the latest values from the network or a timeout (if set) is hit.
    * @see {@link initializeSync} for the synchronous version of this method.
    */
-  initializeAsync(options?: AsyncUpdateOptions): Promise<void> {
+  async initializeAsync(options?: AsyncUpdateOptions): Promise<void> {
+    Storage._isProviderReady() && (await Storage._isProviderReady());
     this._logger.start();
     return this.updateUserAsync(this._user, options);
   }
@@ -218,6 +220,7 @@ export default class StatsigClient
       errorBoundary: this._errorBoundary,
       session: StatsigSession.get(this._sdkKey),
       stableID: StableID.get(this._sdkKey),
+      storageProvider: Storage,
     };
   }
 

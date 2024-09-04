@@ -1,5 +1,10 @@
-import { StatsigProviderExpo } from './StatsigProviderExpo';
-
 export * from '@statsig/react-bindings';
 
-export { StatsigProviderExpo };
+// Expo environments should use the Expo specific variants
+const StatsigProvider = undefined as never;
+const StatsigClient = undefined as never;
+
+export { StatsigProvider, StatsigClient };
+
+export { StatsigClientExpo } from './StatsigClientExpo';
+export { StatsigProviderExpo } from './StatsigProviderExpo';

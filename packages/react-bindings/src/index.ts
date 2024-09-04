@@ -15,6 +15,8 @@ import { useStatsigUser } from './useStatsigUser';
 
 export type { StatsigProviderProps };
 
+export * from '@statsig/js-client';
+
 export {
   StatsigContext,
   StatsigProvider,

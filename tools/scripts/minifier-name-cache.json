@@ -186,7 +186,9 @@
       "$_formatError": "Sn",
       "$_getDiagnosticsData": "wn",
       "$_enqueueDiagnosticsEvent": "Tn",
-      "$_disabledEvents": "In"
+      "$_disabledEvents": "In",
+      "$_isProviderReady": "_i",
+      "$_getSafeNetworkInformation": "gi"
     }
   }
 }

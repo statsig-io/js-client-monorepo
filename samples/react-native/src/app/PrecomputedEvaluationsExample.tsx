@@ -1,7 +1,7 @@
 import { Text, View } from 'react-native';
 
-import { StatsigClient } from '@statsig/js-client';
 import {
+  StatsigClientRN,
   StatsigProviderRN,
   useExperiment,
   useFeatureGate,
@@ -11,7 +11,7 @@ import { DEMO_CLIENT_KEY } from './Constants';
 
 const user = { userID: 'a-user' };
 
-const client = new StatsigClient(DEMO_CLIENT_KEY, user);
+const client = new StatsigClientRN(DEMO_CLIENT_KEY, user);
 
 function Content() {
   const gate = useFeatureGate('a_gate');

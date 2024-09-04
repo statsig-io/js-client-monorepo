@@ -2,6 +2,7 @@ import { Log } from './Log';
 import { _getWindowSafe } from './SafeJs';
 
 export type StorageProvider = {
+  _isProviderReady: () => Promise<void> | null;
   _getProviderName: () => string;
   _getItem: (key: string) => string | null;
   _setItem: (key: string, value: string) => void;
@@ -17,6 +18,7 @@ type StorageProviderManagment = {
 const inMemoryStore: Record<string, string> = {};
 
 const _inMemoryProvider: StorageProvider = {
+  _isProviderReady: () => null,
   _getProviderName: () => 'InMemory',
   _getItem: (key: string): string | null =>
     inMemoryStore[key] ? inMemoryStore[key] : null,
@@ -38,6 +40,7 @@ try {
     typeof win.localStorage.getItem === 'function'
   ) {
     _localStorageProvider = {
+      _isProviderReady: () => null,
       _getProviderName: () => 'LocalStorage',
       _getItem: (key: string): string | null => win.localStorage.getItem(key),
       _setItem: (key: string, value: string): void =>
@@ -66,6 +69,7 @@ function _inMemoryBreaker<T>(get: () => T) {
 }
 
 export const Storage: StorageProvider & StorageProviderManagment = {
+  _isProviderReady: () => _current._isProviderReady() ?? null,
   _getProviderName: () => _current._getProviderName(),
 
   _getItem: (key: string) => _inMemoryBreaker(() => _current._getItem(key)),

@@ -273,6 +273,7 @@ export class EventLogger {
   private _retryFailedLogs() {
     const storageKey = this._getStorageKey();
     (async () => {
+      Storage._isProviderReady() && (await Storage._isProviderReady());
       const events = _getObjectFromStorage<EventQueue>(storageKey);
       if (!events) {
         return;

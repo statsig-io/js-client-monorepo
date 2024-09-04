@@ -16,9 +16,6 @@ class MyCustomEvalDataAdapter implements EvaluationsDataAdapter {
   attach(_sdkKey: string, _options: AnyStatsigOptions | null) {
     //
   }
-  __primeInMemoryCache(_cache: Record<string, DataAdapterResult>) {
-    //
-  }
   getDataSync(_user: StatsigUser): DataAdapterResult | null {
     return null;
   }

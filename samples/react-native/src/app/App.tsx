@@ -4,11 +4,11 @@ import { Button, SafeAreaView, StatusBar, View } from 'react-native';
 import ChangeExampleModal from './ChangeExampleModal';
 import ClientEventStreamExample from './ClientEventStreamExample';
 import DelayedInitExample from './DelayedInitExample';
-import OnDeviceEvaluationsExample from './OnDeviceEvaluationsExample';
+// import OnDeviceEvaluationsExample from './OnDeviceEvaluationsExample';
 import PrecomputedEvaluationsExample from './PrecomputedEvaluationsExample';
 
 export default function App(): React.ReactNode {
-  const [sample, setSample] = useState('on-device-eval');
+  const [sample, setSample] = useState('precomputed-eval');
   const [isModalVisible, setIsModalVisible] = useState(false);
 
   return (
@@ -35,8 +35,8 @@ export default function App(): React.ReactNode {
         ></Button>
         {(() => {
           switch (sample) {
-            case 'on-device-eval':
-              return <OnDeviceEvaluationsExample />;
+            // case 'on-device-eval':
+            //   return <OnDeviceEvaluationsExample />;
             case 'precomputed-eval':
               return <PrecomputedEvaluationsExample />;
             case 'delayed-init':

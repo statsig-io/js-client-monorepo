@@ -69,20 +69,13 @@ export abstract class DataAdapterCore {
     );
   }
 
-  /**
-   * (Internal Use Only) - Used by \@statsig/react-native-bindings to prime the cache from AsyncStorage
-   *
-   * @param {Record<string, DataAdapterResult>} cache The values to merge into _inMemoryCache
-   */
-  __primeInMemoryCache(cache: Record<string, DataAdapterResult>): void {
-    this._inMemoryCache.merge(cache);
-  }
-
   protected async _getDataAsyncImpl(
     current: DataAdapterResult | null,
     user?: StatsigUserInternal,
     options?: DataAdapterAsyncOptions,
   ): Promise<DataAdapterResult | null> {
+    Storage._isProviderReady() && (await Storage._isProviderReady());
+
     const cache = current ?? this.getDataSync(user);
 
     const ops = [this._fetchAndPrepFromNetwork(cache, user, options)];
@@ -147,7 +140,7 @@ export abstract class DataAdapterCore {
     );
 
     const sdkKey = this._getSdkKey();
-    const stableID = await StableID.get(sdkKey);
+    const stableID = StableID.get(sdkKey);
 
     let result: DataAdapterResult | null = null;
     if (response?.has_updates === true) {
@@ -165,7 +158,7 @@ export abstract class DataAdapterCore {
 
     const cacheKey = this._getCacheKey(user);
     this._inMemoryCache.add(cacheKey, result);
-    await this._writeToCache(cacheKey, result);
+    this._writeToCache(cacheKey, result);
 
     return result;
   }
@@ -194,28 +187,25 @@ export abstract class DataAdapterCore {
     return result ? { ...result, source: 'Cache' } : null;
   }
 
-  private async _writeToCache(
-    cacheKey: string,
-    result: DataAdapterResult,
-  ): Promise<void> {
-    await Storage._setItem(cacheKey, JSON.stringify(result));
-    await this._runLocalStorageCacheEviction(cacheKey);
+  private _writeToCache(cacheKey: string, result: DataAdapterResult): void {
+    Storage._setItem(cacheKey, JSON.stringify(result));
+    this._runLocalStorageCacheEviction(cacheKey);
   }
 
-  private async _runLocalStorageCacheEviction(cacheKey: string): Promise<void> {
+  private _runLocalStorageCacheEviction(cacheKey: string) {
     const lastModifiedTimeMap =
-      (await _getObjectFromStorage<Record<string, number>>(
+      _getObjectFromStorage<Record<string, number>>(
         this._lastModifiedStoreKey,
-      )) ?? {};
+      ) ?? {};
     lastModifiedTimeMap[cacheKey] = Date.now();
 
     const evictable = _getEvictableKey(lastModifiedTimeMap, CACHE_LIMIT);
     if (evictable) {
       delete lastModifiedTimeMap[evictable];
-      await Storage._removeItem(evictable);
+      Storage._removeItem(evictable);
     }
 
-    await _setObjectInStorage(this._lastModifiedStoreKey, lastModifiedTimeMap);
+    _setObjectInStorage(this._lastModifiedStoreKey, lastModifiedTimeMap);
   }
 }
 

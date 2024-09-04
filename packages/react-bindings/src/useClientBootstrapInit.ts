@@ -1,18 +1,14 @@
 import { useState } from 'react';
 
-import {
-  AnyStatsigOptions,
-  PrecomputedEvaluationsInterface,
-  StatsigUser,
-} from '@statsig/client-core';
-import { StatsigClient } from '@statsig/js-client';
+import { StatsigUser } from '@statsig/client-core';
+import { StatsigClient, StatsigOptions } from '@statsig/js-client';
 
 export function useClientBootstrapInit(
   sdkKey: string,
   initialUser: StatsigUser,
   initialValues: string,
-  statsigOptions: AnyStatsigOptions | null = null,
-): { client: PrecomputedEvaluationsInterface } {
+  statsigOptions: StatsigOptions | null = null,
+): { client: StatsigClient } {
   const [args] = useState(() => {
     const client = new StatsigClient(sdkKey, initialUser, statsigOptions);
 
