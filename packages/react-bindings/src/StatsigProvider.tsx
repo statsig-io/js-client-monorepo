@@ -1,21 +1,21 @@
 import { ReactNode, useEffect, useMemo, useState } from 'react';
 
 import {
-  AnyStatsigOptions,
   Log,
   SDKType,
   StatsigClientInterface,
   StatsigUser,
 } from '@statsig/client-core';
+import { StatsigClient, StatsigOptions } from '@statsig/js-client';
 
 import StatsigContext from './StatsigContext';
 import { useClientAsyncInit } from './useClientAsyncInit';
 
-type WithClient = { client: StatsigClientInterface };
+type WithClient = { client: StatsigClient };
 type WithConfiguration = {
   sdkKey: string;
   user: StatsigUser;
-  options?: AnyStatsigOptions;
+  options?: StatsigOptions;
 };
 
 export type StatsigProviderProps = {

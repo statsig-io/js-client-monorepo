@@ -5,7 +5,6 @@ import {
   Experiment,
   FeatureGate,
   Layer,
-  OnDeviceEvaluationsInterface,
   ParameterStore,
   PrecomputedEvaluationsInterface,
   SpecsDataAdapter,
@@ -64,8 +63,7 @@ const context = {
   stableID: '',
 };
 
-const _client: OnDeviceEvaluationsInterface &
-  PrecomputedEvaluationsInterface & { isNoop: true } = {
+const _client: PrecomputedEvaluationsInterface & { isNoop: true } = {
   isNoop: true,
   loadingStatus: 'Uninitialized',
   initializeSync: _noop,
@@ -93,3 +91,7 @@ const _client: OnDeviceEvaluationsInterface &
 };
 
 export const NoopEvaluationsClient = _client;
+
+export function isNoopClient(client: PrecomputedEvaluationsInterface): boolean {
+  return 'isNoop' in client;
+}

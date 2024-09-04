@@ -4,16 +4,12 @@ import {
   Log,
   ParameterStore,
   ParameterStoreEvaluationOptions,
-  StatsigUser,
 } from '@statsig/client-core';
 
-import { NoopEvaluationsClient } from './NoopEvaluationsClient';
-import { isPrecomputedEvalClient } from './OnDeviceVsPrecomputedUtils';
+import { NoopEvaluationsClient, isNoopClient } from './NoopEvaluationsClient';
 import StatsigContext from './StatsigContext';
 
-export type useParameterStoreOptions = ParameterStoreEvaluationOptions & {
-  user?: StatsigUser;
-};
+export type useParameterStoreOptions = ParameterStoreEvaluationOptions;
 
 export default function (
   storeName: string,
@@ -22,21 +18,14 @@ export default function (
   const { client, renderVersion } = useContext(StatsigContext);
 
   const store = useMemo(() => {
-    if (isPrecomputedEvalClient(client)) {
-      return client.getParameterStore(storeName, options);
+    if (isNoopClient(client)) {
+      Log.warn(
+        `useParameterStore hook failed to find a valid StatsigClient for parameter store '${storeName}'.`,
+      );
+      return NoopEvaluationsClient.getParameterStore(storeName, options);
     }
 
-    if (options?.user != null) {
-      Log.warn(
-        `useParameterStore hook is not yet supported by StatsigOnDeviceEvalClient.`,
-      );
-    } else {
-      Log.warn(
-        `useParameterStore hook failed to find a valid Statsig client for parameter store '${storeName}'.`,
-      );
-    }
-
-    return NoopEvaluationsClient.getParameterStore(storeName, options);
+    return client.getParameterStore(storeName, options);
   }, [storeName, client, renderVersion, options]);
 
   return store;

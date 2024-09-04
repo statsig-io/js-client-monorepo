@@ -1,12 +1,12 @@
 import { createContext } from 'react';
 
-import { StatsigClientInterface } from '@statsig/client-core';
+import { PrecomputedEvaluationsInterface } from '@statsig/client-core';
 
 import { NoopEvaluationsClient } from './NoopEvaluationsClient';
 
 export interface StatsigContext {
   readonly renderVersion: number;
-  readonly client: StatsigClientInterface;
+  readonly client: PrecomputedEvaluationsInterface;
 }
 
 export default createContext<StatsigContext>({

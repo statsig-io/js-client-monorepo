@@ -1,36 +1,24 @@
 import { useContext, useMemo } from 'react';
 
-import {
-  Layer,
-  LayerEvaluationOptions,
-  Log,
-  StatsigUser,
-} from '@statsig/client-core';
+import { Layer, LayerEvaluationOptions, Log } from '@statsig/client-core';
 
-import { NoopEvaluationsClient } from './NoopEvaluationsClient';
-import { isPrecomputedEvalClient } from './OnDeviceVsPrecomputedUtils';
+import { NoopEvaluationsClient, isNoopClient } from './NoopEvaluationsClient';
 import StatsigContext from './StatsigContext';
 
-export type UseLayerOptions = LayerEvaluationOptions & {
-  user: StatsigUser | null;
-};
+export type UseLayerOptions = LayerEvaluationOptions;
 
 export default function (layerName: string, options?: UseLayerOptions): Layer {
   const { client, renderVersion } = useContext(StatsigContext);
 
   const layer = useMemo(() => {
-    if (isPrecomputedEvalClient(client)) {
-      return client.getLayer(layerName, options);
+    if (isNoopClient(client)) {
+      Log.warn(
+        `useLayer hook failed to find a valid Statsig client for layer '${layerName}'.`,
+      );
+      return NoopEvaluationsClient.getLayer(layerName, options);
     }
 
-    if (options?.user != null) {
-      return client.getLayer(layerName, options.user, options);
-    }
-
-    Log.warn(
-      `useLayer hook failed to find a valid Statsig client for layer '${layerName}'.`,
-    );
-    return NoopEvaluationsClient.getLayer(layerName, options);
+    return client.getLayer(layerName, options);
   }, [layerName, client, renderVersion, options]);
 
   return layer;

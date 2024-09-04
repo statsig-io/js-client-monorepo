@@ -44,7 +44,7 @@ describe('useStatsigClient', () => {
     } as unknown as DynamicConfig);
 
     result = render(
-      <StatsigProvider client={client}>
+      <StatsigProvider client={client as any}>
         <GetDynamicConfigComponent />
       </StatsigProvider>,
     );

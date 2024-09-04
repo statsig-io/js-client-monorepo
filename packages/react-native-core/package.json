@@ -6,7 +6,9 @@
     "@statsig/react-bindings": "2.1.1"
   },
   "peerDependencies": {
-    "react-native": "0.*",
+    "react-native": "0.*"
+  },
+  "optionalDependencies": {
     "react-native-mmkv": "2.* || 3.*"
   },
   "type": "commonjs",

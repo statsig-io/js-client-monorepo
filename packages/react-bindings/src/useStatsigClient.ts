@@ -2,8 +2,7 @@ import { useCallback, useContext, useMemo } from 'react';
 
 import { Log, PrecomputedEvaluationsInterface } from '@statsig/client-core';
 
-import { NoopEvaluationsClient } from './NoopEvaluationsClient';
-import { isPrecomputedEvalClient } from './OnDeviceVsPrecomputedUtils';
+import { NoopEvaluationsClient, isNoopClient } from './NoopEvaluationsClient';
 import StatsigContext from './StatsigContext';
 
 type HositedFuncs = Pick<
@@ -24,12 +23,12 @@ export function useStatsigClient(): Output {
   const { client: anyClient, renderVersion } = useContext(StatsigContext);
 
   const client = useMemo(() => {
-    if (isPrecomputedEvalClient(anyClient)) {
-      return anyClient;
+    if (isNoopClient(anyClient)) {
+      Log.warn('Attempting to retrieve a StatsigClient but none was set.');
+      return NoopEvaluationsClient;
     }
 
-    Log.warn('Attempting to retrieve a StatsigClient but none was set.');
-    return NoopEvaluationsClient;
+    return anyClient;
   }, [anyClient, renderVersion]);
 
   const deps = [client, renderVersion];

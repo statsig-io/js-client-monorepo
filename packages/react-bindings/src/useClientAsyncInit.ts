@@ -6,8 +6,7 @@ import {
   PrecomputedEvaluationsInterface,
   StatsigUser,
 } from '@statsig/client-core';
-
-import { requireOptionalClientDependency } from './requireOptionalDependency';
+import { StatsigClient } from '@statsig/js-client';
 
 export function useClientAsyncInit(
   sdkKey: string,
@@ -17,11 +16,7 @@ export function useClientAsyncInit(
   const [isLoading, setIsLoading] = useState(true);
 
   const [args] = useState(() => {
-    const client = requireOptionalClientDependency(
-      sdkKey,
-      initialUser,
-      statsigOptions,
-    );
+    const client = new StatsigClient(sdkKey, initialUser, statsigOptions);
 
     client
       .initializeAsync()

@@ -9,11 +9,8 @@ import useExperiment from './useExperiment';
 import useFeatureGate from './useFeatureGate';
 import useGateValue from './useGateValue';
 import useLayer from './useLayer';
-import { useOnDeviceClientAsyncInit } from './useOnDeviceClientAsyncInit';
-import { useOnDeviceClientBootstrapInit } from './useOnDeviceClientBootstrapInit';
 import useParameterStore from './useParameterStore';
 import { useStatsigClient } from './useStatsigClient';
-import { useStatsigOnDeviceEvalClient } from './useStatsigOnDeviceEvalClient';
 import { useStatsigUser } from './useStatsigUser';
 
 export type { StatsigProviderProps };
@@ -28,11 +25,8 @@ export {
   useFeatureGate,
   useGateValue,
   useLayer,
-  useOnDeviceClientAsyncInit,
-  useOnDeviceClientBootstrapInit,
   useParameterStore,
   useStatsigClient,
-  useStatsigOnDeviceEvalClient,
   useStatsigUser,
 };
 
@@ -47,10 +41,7 @@ __STATSIG__ = {
   useFeatureGate,
   useGateValue,
   useLayer,
-  useOnDeviceClientAsyncInit,
-  useOnDeviceClientBootstrapInit,
   useParameterStore,
   useStatsigClient,
-  useStatsigOnDeviceEvalClient,
   useStatsigUser,
 } as StatsigGlobal;

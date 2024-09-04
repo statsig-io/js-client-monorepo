@@ -4,16 +4,12 @@ import {
   FeatureGate,
   FeatureGateEvaluationOptions,
   Log,
-  StatsigUser,
 } from '@statsig/client-core';
 
-import { NoopEvaluationsClient } from './NoopEvaluationsClient';
-import { isPrecomputedEvalClient } from './OnDeviceVsPrecomputedUtils';
+import { NoopEvaluationsClient, isNoopClient } from './NoopEvaluationsClient';
 import StatsigContext from './StatsigContext';
 
-export type useFeatureGateOptions = FeatureGateEvaluationOptions & {
-  user: StatsigUser | null;
-};
+export type useFeatureGateOptions = FeatureGateEvaluationOptions;
 
 export default function (
   gateName: string,
@@ -22,18 +18,14 @@ export default function (
   const { client, renderVersion } = useContext(StatsigContext);
 
   const gate = useMemo(() => {
-    if (isPrecomputedEvalClient(client)) {
-      return client.getFeatureGate(gateName, options);
+    if (isNoopClient(client)) {
+      Log.warn(
+        `useFeatureGate hook failed to find a valid StatsigClient for gate '${gateName}'.`,
+      );
+      return NoopEvaluationsClient.getFeatureGate(gateName, options);
     }
 
-    if (options?.user != null) {
-      return client.getFeatureGate(gateName, options.user, options);
-    }
-
-    Log.warn(
-      `useFeatureGate hook failed to find a valid Statsig client for gate '${gateName}'.`,
-    );
-    return NoopEvaluationsClient.getFeatureGate(gateName, options);
+    return client.getFeatureGate(gateName, options);
   }, [gateName, client, renderVersion, options]);
 
   return gate;

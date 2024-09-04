@@ -4,16 +4,12 @@ import {
   Experiment,
   ExperimentEvaluationOptions,
   Log,
-  StatsigUser,
 } from '@statsig/client-core';
 
-import { NoopEvaluationsClient } from './NoopEvaluationsClient';
-import { isPrecomputedEvalClient } from './OnDeviceVsPrecomputedUtils';
+import { NoopEvaluationsClient, isNoopClient } from './NoopEvaluationsClient';
 import StatsigContext from './StatsigContext';
 
-export type UseExperimentOptions = ExperimentEvaluationOptions & {
-  user: StatsigUser | null;
-};
+export type UseExperimentOptions = ExperimentEvaluationOptions;
 
 export default function (
   experimentName: string,
@@ -22,17 +18,13 @@ export default function (
   const { client, renderVersion } = useContext(StatsigContext);
 
   return useMemo(() => {
-    if (isPrecomputedEvalClient(client)) {
-      return client.getExperiment(experimentName, options);
+    if (isNoopClient(client)) {
+      Log.warn(
+        `useExperiment hook failed to find a valid Statsig client for experiment '${experimentName}'.`,
+      );
+      return NoopEvaluationsClient.getExperiment(experimentName, options);
     }
 
-    if (options?.user != null) {
-      return client.getExperiment(experimentName, options.user, options);
-    }
-
-    Log.warn(
-      `useExperiment hook failed to find a valid Statsig client for experiment '${experimentName}'.`,
-    );
-    return NoopEvaluationsClient.getExperiment(experimentName, options);
+    return client.getExperiment(experimentName, options);
   }, [experimentName, client, renderVersion, options]);
 }

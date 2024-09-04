@@ -5,8 +5,7 @@ import {
   PrecomputedEvaluationsInterface,
   StatsigUser,
 } from '@statsig/client-core';
-
-import { requireOptionalClientDependency } from './requireOptionalDependency';
+import { StatsigClient } from '@statsig/js-client';
 
 export function useClientBootstrapInit(
   sdkKey: string,
@@ -15,11 +14,7 @@ export function useClientBootstrapInit(
   statsigOptions: AnyStatsigOptions | null = null,
 ): { client: PrecomputedEvaluationsInterface } {
   const [args] = useState(() => {
-    const client = requireOptionalClientDependency(
-      sdkKey,
-      initialUser,
-      statsigOptions,
-    );
+    const client = new StatsigClient(sdkKey, initialUser, statsigOptions);
 
     client.dataAdapter.setData(initialValues);
     client.initializeSync();
