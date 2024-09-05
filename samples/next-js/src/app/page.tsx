@@ -51,6 +51,11 @@ export default function Index(): JSX.Element {
               Simple Statsig Provider
             </a>
           </button>
+        </li>{' '}
+        <li>
+          <button>
+            <a href="/on-device-eval-example">On Device Evaluation</a>
+          </button>
         </li>
       </ul>
     </div>

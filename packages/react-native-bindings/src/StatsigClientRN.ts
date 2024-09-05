@@ -1,9 +1,9 @@
-import { StatsigOptions, StatsigUser } from '@statsig/js-client';
-import { StatsigClientReactNativeBase } from '@statsig/react-native-core';
+import { StatsigClient, StatsigOptions, StatsigUser } from '@statsig/js-client';
+import { _setupStatsigForReactNative } from '@statsig/react-native-core';
 
 import { GetStatsigMetadataAdditions } from './StatsigMetadataAdditions';
 
-export class StatsigClientRN extends StatsigClientReactNativeBase {
+export class StatsigClientRN extends StatsigClient {
   __isRnClient = true;
 
   constructor(
@@ -11,6 +11,9 @@ export class StatsigClientRN extends StatsigClientReactNativeBase {
     user: StatsigUser,
     options: StatsigOptions | null = null,
   ) {
-    super(sdkKey, user, options, 'rn', GetStatsigMetadataAdditions());
+    const opts = options ?? {};
+    _setupStatsigForReactNative('rn', GetStatsigMetadataAdditions(), opts);
+
+    super(sdkKey, user, opts);
   }
 }

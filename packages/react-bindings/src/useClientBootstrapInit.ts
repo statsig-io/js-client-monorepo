@@ -8,7 +8,7 @@ export function useClientBootstrapInit(
   initialUser: StatsigUser,
   initialValues: string,
   statsigOptions: StatsigOptions | null = null,
-): { client: StatsigClient } {
+): StatsigClient {
   const [args] = useState(() => {
     const client = new StatsigClient(sdkKey, initialUser, statsigOptions);
 
@@ -18,5 +18,5 @@ export function useClientBootstrapInit(
     return { client, initialValues, initialUser, sdkKey };
   });
 
-  return { client: args.client };
+  return args.client;
 }

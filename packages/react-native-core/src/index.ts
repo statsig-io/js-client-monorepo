@@ -1,4 +1,1 @@
-export {
-  StatsigClientReactNativeBase,
-  _setupStatsigForReactNative,
-} from './StatsigClientReactNativeBase';
+export { _setupStatsigForReactNative } from './RNSetup';

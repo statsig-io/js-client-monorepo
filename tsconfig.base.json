@@ -30,8 +30,14 @@
         "packages/js-user-persisted-storage/src/index.ts"
       ],
       "@statsig/react-bindings": ["packages/react-bindings/src/index.ts"],
+      "@statsig/react-bindings-on-device-eval": [
+        "packages/react-bindings-on-device-eval/src/index.ts"
+      ],
       "@statsig/react-native-bindings": [
         "packages/react-native-bindings/src/index.ts"
+      ],
+      "@statsig/react-native-bindings-on-device-eval": [
+        "packages/react-native-bindings-on-device-eval/src/index.ts"
       ],
       "@statsig/react-native-core": ["packages/react-native-core/src/index.ts"],
       "@statsig/session-replay": ["packages/session-replay/src/index.ts"],
