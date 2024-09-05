@@ -26,7 +26,7 @@ function Content() {
 }
 
 function App() {
-  const { client } = useClientBootstrapInit(
+  const client = useClientBootstrapInit(
     YOUR_CLIENT_KEY,
     {
       userID: 'a-user',

@@ -36,7 +36,7 @@ export default function BootstrapExample({
   user: StatsigUser;
   values: string;
 }): JSX.Element {
-  const { client } = useClientBootstrapInit(DEMO_CLIENT_KEY, user, values, {
+  const client = useClientBootstrapInit(DEMO_CLIENT_KEY, user, values, {
     logLevel: LogLevel.Debug,
   });
 

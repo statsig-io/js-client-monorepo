@@ -20,7 +20,7 @@ export default function BootstrappedStatsigProvider({
   values,
   children,
 }: Props): JSX.Element {
-  const { client } = useClientBootstrapInit(clientSdkKey, user, values, {
+  const client = useClientBootstrapInit(clientSdkKey, user, values, {
     networkConfig: {
       api: 'http://localhost:4200/statsig-demo/proxy', // Your Next.js server
     },

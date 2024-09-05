@@ -68,7 +68,7 @@ export default function ParamStoreExample({
   user: StatsigUser;
   values: string;
 }): JSX.Element {
-  const { client } = useClientBootstrapInit(DEMO_CLIENT_KEY, user, values);
+  const client = useClientBootstrapInit(DEMO_CLIENT_KEY, user, values);
 
   useEffect(() => {
     const onAnyClientEvent = (event: AnyStatsigClientEvent) =>
