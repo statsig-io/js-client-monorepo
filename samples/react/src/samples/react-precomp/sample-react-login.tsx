@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import { useState } from 'react';
 
 import {
@@ -14,7 +15,7 @@ export { YOUR_CLIENT_KEY };
 
 // prettier-ignore
 export default async function Sample(): Promise<void> {
-App();
+console.log(App)
 }
 
 // prettier-ignore

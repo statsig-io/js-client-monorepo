@@ -1,66 +1,68 @@
-// Todo: re-implement support for StatsigOnDeviceEvalClient
+/* eslint-disable @typescript-eslint/no-unused-vars */
 
-// /* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-unsafe-return */
 
-// /* eslint-disable @typescript-eslint/no-unsafe-return */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 
-// /* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
-// /* eslint-disable @typescript-eslint/no-explicit-any */
-// import { Text } from 'react-native';
+/* eslint-disable no-console */
 
-// // <snippet>
-// import { StatsigOnDeviceEvalClient } from '@statsig/js-on-device-eval-client';
-// import type {
-//   StatsigProviderRN,
-//   useFeatureGate,
-// } from '@statsig/react-native-bindings';
+/* eslint-disable @typescript-eslint/no-empty-function */
+import type {
+  StatsigProviderOnDeviceEvalRN as _StatsigProviderOnDeviceEvalRN,
+  useFeatureGate as _useFeatureGate,
+} from '@statsig/react-native-bindings-on-device-eval';
+// <snippet>
+import {
+  StatsigProviderOnDeviceEvalRN,
+  useFeatureGate,
+} from '@statsig/react-native-bindings-on-device-eval';
 
-// // </snippet>
-// import { STATSIG_CLIENT_KEY as YOUR_CLIENT_KEY } from '../../Contants';
+// </snippet>
+import { STATSIG_CLIENT_KEY as YOUR_CLIENT_KEY } from '../../Contants';
 
-// type TText = typeof Text;
-// type TStatsigProviderRN = typeof StatsigProviderRN;
-// type TuseFeatureGate = typeof useFeatureGate;
+// prettier-ignore
+export default async function Sample(): Promise<void> {
+console.log(App);
+}
 
-// // prettier-ignore
-// export default async function Sample(): Promise<void> {
-// App();
-// }
+function Text(props: any) {
+  return null;
+}
 
-// const myStatsigClient = {} as StatsigOnDeviceEvalClient;
+// prettier-ignore
+function Setup() {
+  // </snippet>
+}
 
-// // prettier-ignore
-// function Setup() {
-// const myStatsigClient = new StatsigOnDeviceEvalClient(YOUR_CLIENT_KEY);
-//   // </snippet>
-// }
+// <snippet>
+function Content() {
+  // </snippet>
 
-// // <snippet>
-// function Content() {
-//   // </snippet>
-//   const useFeatureGate: TuseFeatureGate = () => {
-//     return { value: true } as any;
-//   };
-//   const Text: TText = (() => {
-//     return null;
-//   }) as any;
-//   // <snippet>
-//   const gate = useFeatureGate('a_gate');
+  // why? avoids issue where webpack tries to actually use this. "react is not defined"
+  const useFeatureGate = (() => {}) as unknown as typeof _useFeatureGate;
 
-//   return <Text>a_gate: {gate.value ? 'Passing' : 'Failing'}</Text>;
-// }
+  // <snippet>
+  const gate = useFeatureGate('a_gate', { userID: 'a-user' });
+  return <Text>a_gate: {gate ? 'Passing' : 'Failing'}</Text>;
+}
 
-// function App() {
-//   // </snippet>
-//   const StatsigProviderRN: TStatsigProviderRN = () => {
-//     return null;
-//   };
-//   // <snippet>
-//   return (
-//     <StatsigProviderRN client={myStatsigClient}>
-//       <Content />
-//     </StatsigProviderRN>
-//   );
-// }
-// // </snippet>
+function App() {
+  // </snippet>
+
+  // why? avoids issue where webpack tries to actually use this. "react is not defined"
+  const StatsigProviderOnDeviceEvalRN =
+    (() => {}) as unknown as typeof _StatsigProviderOnDeviceEvalRN;
+
+  // <snippet>
+  return (
+    <StatsigProviderOnDeviceEvalRN
+      sdkKey={YOUR_CLIENT_KEY}
+      loadingComponent={<Text>...</Text>}
+    >
+      <Content />
+    </StatsigProviderOnDeviceEvalRN>
+  );
+}
+// </snippet>
