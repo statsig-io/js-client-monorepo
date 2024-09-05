@@ -1,0 +1,16 @@
+{
+  "name": "@statsig/expo-bindings-on-device-eval",
+  "version": "2.1.1",
+  "dependencies": {
+    "@statsig/client-core": "2.1.1",
+    "@statsig/js-on-device-eval-client": "2.1.1",
+    "@statsig/react-bindings-on-device-eval": "2.1.1",
+    "@statsig/react-native-core": "2.1.1"
+  },
+  "peerDependencies": {
+    "react": "^16.6.3 || ^17.0.0 || ^18.0.0"
+  },
+  "type": "commonjs",
+  "main": "./src/index.js",
+  "typings": "./src/index.d.ts"
+}
