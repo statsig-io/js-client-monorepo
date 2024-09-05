@@ -18,16 +18,18 @@ export function _createPreloadedAsyncStorage(): StorageProvider {
   };
 
   const provider = {
-    _getProviderName: function (): string {
+    getProviderName: function (): string {
       return 'AsyncStorage';
     },
 
-    _isProviderReady: () =>
+    isReady: () => isResolved,
+
+    isReadyResolver: () =>
       _prefetchFromAsyncStorage(inMemoryStore).finally(() => {
         isResolved = true;
       }),
 
-    _getItem: function (key: string): string | null {
+    getItem: function (key: string): string | null {
       if (!enforceIsResolved()) {
         return null;
       }
@@ -35,7 +37,7 @@ export function _createPreloadedAsyncStorage(): StorageProvider {
       return inMemoryStore[key] ?? null;
     },
 
-    _setItem: function (key: string, value: string): void {
+    setItem: function (key: string, value: string): void {
       inMemoryStore[key] = value;
       if (!enforceIsResolved()) {
         return;
@@ -44,7 +46,7 @@ export function _createPreloadedAsyncStorage(): StorageProvider {
       AsyncStorage.setItem(key, value).catch(Log.error);
     },
 
-    _removeItem: function (key: string): void {
+    removeItem: function (key: string): void {
       delete inMemoryStore[key];
       if (!enforceIsResolved()) {
         return;
@@ -53,7 +55,7 @@ export function _createPreloadedAsyncStorage(): StorageProvider {
       AsyncStorage.removeItem(key).catch(Log.error);
     },
 
-    _getAllKeys: function (): readonly string[] {
+    getAllKeys: function (): readonly string[] {
       if (!enforceIsResolved()) {
         return [];
       }

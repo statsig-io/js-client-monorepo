@@ -91,7 +91,10 @@ export default class StatsigOnDeviceEvalClient
   }
 
   async initializeAsync(options?: AsyncUpdateOptions): Promise<void> {
-    Storage._isProviderReady() && (await Storage._isProviderReady());
+    if (!Storage.isReady()) {
+      await Storage.isReadyResolver();
+    }
+
     this._logger.start();
     return this.updateAsync(options);
   }
@@ -133,7 +136,6 @@ export default class StatsigOnDeviceEvalClient
       errorBoundary: this._errorBoundary,
       session: StatsigSession.get(this._sdkKey),
       stableID: StableID.get(this._sdkKey),
-      storageProvider: Storage,
     };
   }
 

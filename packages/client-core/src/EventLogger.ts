@@ -273,13 +273,16 @@ export class EventLogger {
   private _retryFailedLogs() {
     const storageKey = this._getStorageKey();
     (async () => {
-      Storage._isProviderReady() && (await Storage._isProviderReady());
+      if (!Storage.isReady()) {
+        await Storage.isReadyResolver();
+      }
+
       const events = _getObjectFromStorage<EventQueue>(storageKey);
       if (!events) {
         return;
       }
 
-      Storage._removeItem(storageKey);
+      Storage.removeItem(storageKey);
       await this._sendEvents(events);
     })().catch(() => {
       Log.warn('Failed to flush stored logs');

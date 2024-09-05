@@ -16,7 +16,7 @@ const service = {
     await new Promise<void>((r) => setTimeout(r, 1000));
     const userID = `user-${_DJB2(data.email)}`;
     const user = { userID, email: data.email };
-    Storage._setItem(storageKey, JSON.stringify(user));
+    Storage.setItem(storageKey, JSON.stringify(user));
 
     const authorizedUser = user;
 
@@ -26,7 +26,7 @@ const service = {
   },
 
   getUser: (): StatsigUser => {
-    const data = Storage._getItem(storageKey);
+    const data = Storage.getItem(storageKey);
     if (!data) {
       return { userID: '' };
     }
@@ -34,7 +34,7 @@ const service = {
     return JSON.parse(data) as StatsigUser;
   },
   logout: (): void => {
-    Storage._removeItem(storageKey);
+    Storage.removeItem(storageKey);
   },
 };
 

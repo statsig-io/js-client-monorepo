@@ -24,7 +24,6 @@ import {
   ParameterStore,
 } from './StatsigTypes';
 import { StatsigUser } from './StatsigUser';
-import { StorageProvider } from './StorageProvider';
 import { Flatten } from './TypingUtils';
 
 export interface StatsigClientCommonInterface
@@ -42,7 +41,6 @@ export type CommonContext = {
   errorBoundary: ErrorBoundary;
   session: StatsigSession;
   stableID: string;
-  storageProvider: StorageProvider;
 };
 
 export type OnDeviceEvaluationsContext = CommonContext & {

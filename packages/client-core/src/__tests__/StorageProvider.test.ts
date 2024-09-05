@@ -21,7 +21,7 @@ describe('StorageProvider', () => {
     [
       'getItem',
       () => {
-        return Storage._getItem('my_thing');
+        return Storage.getItem('my_thing');
       },
     ],
   ])('Security Errors: %s', (_title, action) => {
@@ -41,7 +41,7 @@ describe('StorageProvider', () => {
     });
 
     it('switches to inMemory when security throws', () => {
-      expect(Storage._getProviderName()).toBe('InMemory');
+      expect(Storage.getProviderName()).toBe('InMemory');
     });
 
     it('gets a null value', () => {
@@ -49,8 +49,8 @@ describe('StorageProvider', () => {
     });
 
     it('continues to function afterwards', () => {
-      Storage._setItem('a_key', 'foo');
-      const foo = Storage._getItem('a_key');
+      Storage.setItem('a_key', 'foo');
+      const foo = Storage.getItem('a_key');
 
       expect(foo).toBe('foo');
     });

@@ -21,11 +21,13 @@ const storage = {
 };
 
 Storage._setProvider({
-  _getProviderName: () => 'JestStorage',
-  _getAllKeys: () => Object.keys(inMemoryStore),
-  _getItem: (key: string) => storage.getItem(key),
-  _setItem: (key: string, value: string) => storage.setItem(key, value),
-  _removeItem: (key: string) => storage.removeItem(key),
+  isReady: () => true,
+  isReadyResolver: () => null,
+  getProviderName: () => 'JestStorage',
+  getAllKeys: () => Object.keys(inMemoryStore),
+  getItem: (key: string) => storage.getItem(key),
+  setItem: (key: string, value: string) => storage.setItem(key, value),
+  removeItem: (key: string) => storage.removeItem(key),
 });
 
 describe('App', () => {

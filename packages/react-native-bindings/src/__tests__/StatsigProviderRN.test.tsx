@@ -1,13 +1,9 @@
 import { act, render, screen, waitFor } from '@testing-library/react';
 import * as React from 'react';
-import { MockRemoteServerEvalClient } from 'statsig-test-helpers';
 
-import {
-  PrecomputedEvaluationsInterface,
-  SDKType,
-  StatsigClientEventCallback,
-} from '@statsig/client-core';
+import { SDKType, StatsigClientEventCallback } from '@statsig/client-core';
 
+import { StatsigClientRN } from '../StatsigClientRN';
 import { StatsigProviderRN } from '../StatsigProviderRN';
 
 jest.mock('react-native', () => ({
@@ -28,13 +24,14 @@ jest.mock('react-native-device-info', () => ({
 
 describe('StatsigProviderRN', () => {
   let onStatusChange: StatsigClientEventCallback<any>;
-  let client: jest.Mocked<PrecomputedEvaluationsInterface>;
+  let client: StatsigClientRN;
 
   beforeAll(() => {
-    client = MockRemoteServerEvalClient.create();
-    client.flush.mockReturnValue(Promise.resolve());
+    client = new StatsigClientRN('', {});
 
-    client.$on.mockImplementation((event, callback) => {
+    jest.spyOn(client, 'flush').mockReturnValue(Promise.resolve());
+
+    jest.spyOn(client, '$on').mockImplementation((event, callback) => {
       if (event === 'values_updated') {
         onStatusChange = callback;
       }
@@ -57,6 +54,6 @@ describe('StatsigProviderRN', () => {
   });
 
   it('sets the rn binding type', () => {
-    expect(SDKType._get('')).toBe('js-mono-rn');
+    expect(SDKType._get('')).toBe('javascript-client-rn');
   });
 });

@@ -262,18 +262,20 @@ describe('SessionID', () => {
       const inMemoryStore = {};
 
       Storage._setProvider({
-        _getProviderName: () => 'JestStorage',
-        _getAllKeys: () => Object.keys(inMemoryStore),
-        _getItem: (_key: string) => {
+        isReady: () => true,
+        isReadyResolver: () => null,
+        getProviderName: () => 'JestStorage',
+        getAllKeys: () => Object.keys(inMemoryStore),
+        getItem: (_key: string) => {
           if (calls++ === 0) {
             return 'first';
           }
           return 'second';
         },
-        _setItem: (key: string, value: string) => {
+        setItem: (key: string, value: string) => {
           data[key] = value;
         },
-        _removeItem: (key: string) => {
+        removeItem: (key: string) => {
           delete data[key];
         },
       });

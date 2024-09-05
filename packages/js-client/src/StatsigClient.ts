@@ -127,7 +127,10 @@ export default class StatsigClient
    * @see {@link initializeSync} for the synchronous version of this method.
    */
   async initializeAsync(options?: AsyncUpdateOptions): Promise<void> {
-    Storage._isProviderReady() && (await Storage._isProviderReady());
+    if (!Storage.isReady()) {
+      await Storage.isReadyResolver();
+    }
+
     this._logger.start();
     return this.updateUserAsync(this._user, options);
   }
@@ -220,7 +223,6 @@ export default class StatsigClient
       errorBoundary: this._errorBoundary,
       session: StatsigSession.get(this._sdkKey),
       stableID: StableID.get(this._sdkKey),
-      storageProvider: Storage,
     };
   }
 

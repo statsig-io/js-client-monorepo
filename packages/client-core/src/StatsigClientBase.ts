@@ -27,7 +27,7 @@ import {
   AnyStatsigOptions,
   StatsigRuntimeMutableOptions,
 } from './StatsigOptionsCommon';
-import { Storage } from './StorageProvider';
+import { Storage, StorageProvider } from './StorageProvider';
 
 type EventListenersMap = {
   [K in StatsigClientEventName]: StatsigClientEventCallback<K>[];
@@ -53,6 +53,7 @@ export abstract class StatsigClientBase<
   loadingStatus: StatsigLoadingStatus = 'Uninitialized';
   public readonly dataAdapter: TAdapter;
   public readonly overrideAdapter: OverrideAdapter | null;
+  public readonly storageProvider: StorageProvider;
 
   protected readonly _sdkKey: string;
   protected readonly _options: AnyStatsigOptions;
@@ -105,6 +106,7 @@ export abstract class StatsigClientBase<
 
     this.dataAdapter = adapter;
     this.dataAdapter.attach(sdkKey, options);
+    this.storageProvider = Storage;
 
     this._primeReadyRipcord();
   }

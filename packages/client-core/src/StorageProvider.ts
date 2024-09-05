@@ -2,12 +2,13 @@ import { Log } from './Log';
 import { _getWindowSafe } from './SafeJs';
 
 export type StorageProvider = {
-  _isProviderReady: () => Promise<void> | null;
-  _getProviderName: () => string;
-  _getItem: (key: string) => string | null;
-  _setItem: (key: string, value: string) => void;
-  _removeItem: (key: string) => void;
-  _getAllKeys: () => readonly string[];
+  isReady: () => boolean;
+  isReadyResolver: () => Promise<void> | null;
+  getProviderName: () => string;
+  getItem: (key: string) => string | null;
+  setItem: (key: string, value: string) => void;
+  removeItem: (key: string) => void;
+  getAllKeys: () => readonly string[];
 };
 
 type StorageProviderManagment = {
@@ -18,17 +19,18 @@ type StorageProviderManagment = {
 const inMemoryStore: Record<string, string> = {};
 
 const _inMemoryProvider: StorageProvider = {
-  _isProviderReady: () => null,
-  _getProviderName: () => 'InMemory',
-  _getItem: (key: string): string | null =>
+  isReady: () => true,
+  isReadyResolver: () => null,
+  getProviderName: () => 'InMemory',
+  getItem: (key: string): string | null =>
     inMemoryStore[key] ? inMemoryStore[key] : null,
-  _setItem: (key: string, value: string): void => {
+  setItem: (key: string, value: string): void => {
     inMemoryStore[key] = value;
   },
-  _removeItem: (key: string): void => {
+  removeItem: (key: string): void => {
     delete inMemoryStore[key];
   },
-  _getAllKeys: (): readonly string[] => Object.keys(inMemoryStore),
+  getAllKeys: (): readonly string[] => Object.keys(inMemoryStore),
 };
 
 let _localStorageProvider: StorageProvider | null = null;
@@ -40,13 +42,14 @@ try {
     typeof win.localStorage.getItem === 'function'
   ) {
     _localStorageProvider = {
-      _isProviderReady: () => null,
-      _getProviderName: () => 'LocalStorage',
-      _getItem: (key: string): string | null => win.localStorage.getItem(key),
-      _setItem: (key: string, value: string): void =>
+      isReady: () => true,
+      isReadyResolver: () => null,
+      getProviderName: () => 'LocalStorage',
+      getItem: (key: string): string | null => win.localStorage.getItem(key),
+      setItem: (key: string, value: string): void =>
         win.localStorage.setItem(key, value),
-      _removeItem: (key: string): void => win.localStorage.removeItem(key),
-      _getAllKeys: (): string[] => Object.keys(win.localStorage),
+      removeItem: (key: string): void => win.localStorage.removeItem(key),
+      getAllKeys: (): string[] => Object.keys(win.localStorage),
     };
   }
 } catch (error) {
@@ -69,14 +72,15 @@ function _inMemoryBreaker<T>(get: () => T) {
 }
 
 export const Storage: StorageProvider & StorageProviderManagment = {
-  _isProviderReady: () => _current._isProviderReady() ?? null,
-  _getProviderName: () => _current._getProviderName(),
+  isReady: () => _current.isReady(),
+  isReadyResolver: () => _current.isReadyResolver(),
+  getProviderName: () => _current.getProviderName(),
 
-  _getItem: (key: string) => _inMemoryBreaker(() => _current._getItem(key)),
+  getItem: (key: string) => _inMemoryBreaker(() => _current.getItem(key)),
 
-  _setItem: (key: string, value: string) => _current._setItem(key, value),
-  _removeItem: (key: string) => _current._removeItem(key),
-  _getAllKeys: () => _current._getAllKeys(),
+  setItem: (key: string, value: string) => _current.setItem(key, value),
+  removeItem: (key: string) => _current.removeItem(key),
+  getAllKeys: () => _current.getAllKeys(),
 
   // StorageProviderManagment
   _setProvider: (newProvider: StorageProvider) => {
@@ -94,10 +98,10 @@ export const Storage: StorageProvider & StorageProviderManagment = {
 };
 
 export function _getObjectFromStorage<T>(key: string): T | null {
-  const value = Storage._getItem(key);
+  const value = Storage.getItem(key);
   return JSON.parse(value ?? 'null') as T | null;
 }
 
 export function _setObjectInStorage(key: string, obj: unknown): void {
-  Storage._setItem(key, JSON.stringify(obj));
+  Storage.setItem(key, JSON.stringify(obj));
 }

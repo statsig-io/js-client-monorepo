@@ -74,7 +74,9 @@ export abstract class DataAdapterCore {
     user?: StatsigUserInternal,
     options?: DataAdapterAsyncOptions,
   ): Promise<DataAdapterResult | null> {
-    Storage._isProviderReady() && (await Storage._isProviderReady());
+    if (!Storage.isReady()) {
+      await Storage.isReadyResolver();
+    }
 
     const cache = current ?? this.getDataSync(user);
 
@@ -173,7 +175,7 @@ export abstract class DataAdapterCore {
   }
 
   private _loadFromCache(cacheKey: string): DataAdapterResult | null {
-    const cache = Storage._getItem?.(cacheKey);
+    const cache = Storage.getItem?.(cacheKey);
     if (cache == null) {
       return null;
     }
@@ -188,7 +190,7 @@ export abstract class DataAdapterCore {
   }
 
   private _writeToCache(cacheKey: string, result: DataAdapterResult): void {
-    Storage._setItem(cacheKey, JSON.stringify(result));
+    Storage.setItem(cacheKey, JSON.stringify(result));
     this._runLocalStorageCacheEviction(cacheKey);
   }
 
@@ -202,7 +204,7 @@ export abstract class DataAdapterCore {
     const evictable = _getEvictableKey(lastModifiedTimeMap, CACHE_LIMIT);
     if (evictable) {
       delete lastModifiedTimeMap[evictable];
-      Storage._removeItem(evictable);
+      Storage.removeItem(evictable);
     }
 
     _setObjectInStorage(this._lastModifiedStoreKey, lastModifiedTimeMap);
