@@ -1,6 +1,6 @@
 {
   "name": "sidecar",
-  "version": "2.1.1",
+  "version": "3.0.0",
   "dependencies": {},
   "type": "commonjs",
   "main": "./src/index.js",
