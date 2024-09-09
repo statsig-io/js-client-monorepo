@@ -1,21 +1,5 @@
 import { StatsigMetadataProvider } from '@statsig/client-core';
 
-jest.mock('react-native', () => ({
-  NativeModules: {},
-  Platform: {},
-  AppState: { addEventListener: jest.fn() },
-}));
-
-jest.mock('react-native-device-info', () => ({
-  default: {
-    getVersion: () => '1.2.3',
-    getSystemVersion: () => '4.20.0',
-    getSystemName: () => 'Android',
-    getModel: () => 'Pixel 2',
-    getDeviceId: () => 'goldfish',
-  },
-}));
-
 describe('StatsigMetadataProvider', () => {
   let metadata: Record<string, unknown>;
 

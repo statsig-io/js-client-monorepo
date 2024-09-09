@@ -1,3 +1,4 @@
 node_modules
 .babelrc.js
 *.min.js
+jest-setup.js

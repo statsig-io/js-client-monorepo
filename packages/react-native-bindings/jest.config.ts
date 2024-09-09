@@ -1,3 +1,5 @@
+import path = require('path');
+
 /* eslint-disable */
 export default {
   displayName: 'react-native-bindings',
@@ -8,4 +10,5 @@ export default {
   },
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx'],
   coverageDirectory: '../../coverage/packages/react-native-bindings',
+  setupFiles: [path.resolve(__dirname, './jest-setup.js')],
 };

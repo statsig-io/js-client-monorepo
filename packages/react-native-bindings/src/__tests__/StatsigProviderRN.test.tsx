@@ -6,22 +6,6 @@ import { SDKType, StatsigClientEventCallback } from '@statsig/client-core';
 import { StatsigClientRN } from '../StatsigClientRN';
 import { StatsigProviderRN } from '../StatsigProviderRN';
 
-jest.mock('react-native', () => ({
-  NativeModules: {},
-  Platform: {},
-  AppState: { addEventListener: jest.fn() },
-}));
-
-jest.mock('react-native-device-info', () => ({
-  default: {
-    getVersion: () => '1.2.3',
-    getSystemVersion: () => '4.20.0',
-    getSystemName: () => 'Android',
-    getModel: () => 'Pixel 2',
-    getDeviceId: () => 'goldfish',
-  },
-}));
-
 describe('StatsigProviderRN', () => {
   let onStatusChange: StatsigClientEventCallback<any>;
   let client: StatsigClientRN;

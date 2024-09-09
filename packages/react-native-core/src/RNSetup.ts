@@ -1,5 +1,6 @@
 import {
   AnyStatsigOptions,
+  NetworkArgs,
   SDKType,
   StatsigMetadataProvider,
 } from '@statsig/client-core';
@@ -22,4 +23,29 @@ export function _setupStatsigForReactNative(
   if (options.storageProvider == null) {
     options.storageProvider = _createPreloadedAsyncStorage();
   }
+
+  if (type === 'rn') {
+    _applyReactNativeNetworkFix(options);
+  }
+}
+
+function _applyReactNativeNetworkFix(options: AnyStatsigOptions) {
+  if (options.networkConfig?.networkOverrideFunc != null) {
+    return;
+  }
+
+  const networkOverrideFunc = (url: string, args: NetworkArgs) => {
+    if (args.body != null && args.method === 'POST') {
+      args.headers = {
+        'Content-Type': 'application/json',
+        ...args.headers,
+      };
+    }
+    return fetch(url, args);
+  };
+
+  options.networkConfig = {
+    networkOverrideFunc,
+    ...options.networkConfig,
+  };
 }

@@ -22,6 +22,7 @@
           "error",
           {
             "ignoredDependencies": [
+              "jest-fetch-mock",
               "statsig-test-helpers",
               "@testing-library/react"
             ]
