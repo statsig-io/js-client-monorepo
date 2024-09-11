@@ -28,6 +28,8 @@ const SAMPLES = [
     import('./samples/precomputed-client/sample-precomp-evaluation-details'),
   () => import('./samples/precomputed-client/sample-precomp-static-instance'),
   () => import('./samples/precomputed-client/sample-precomp-gdpr'),
+  () => import('./samples/precomputed-client/sample-precomp-jest-setup'),
+  () => import('./samples/precomputed-client/sample-precomp-jest-test'),
 
   // On Device Eval
   () => import('./samples/OnDeviceClientBasic'),
@@ -49,6 +51,9 @@ const SAMPLES = [
   () => import('./samples/react-precomp/sample-react-init-strat-await-async'),
   () => import('./samples/react-precomp/sample-react-init-strat-bootstrap'),
   () => import('./samples/react-precomp/sample-react-init-strat-cache'),
+  () => import('./samples/react-precomp/sample-react-init-strat-cache'),
+  () => import('./samples/react-precomp/sample-react-jest-setup'),
+  () => import('./samples/react-precomp/sample-react-jest-test'),
 
   // React Native
   () => import('./samples/react-native/react-native-on-device-eval'),

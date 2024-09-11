@@ -188,7 +188,9 @@
       "$_enqueueDiagnosticsEvent": "Tn",
       "$_disabledEvents": "In",
       "$_isProviderReady": "_i",
-      "$_getSafeNetworkInformation": "gi"
+      "$_getSafeNetworkInformation": "gi",
+      "$_initializePromise": "xn",
+      "$_initializeAsyncImpl": "Dn"
     }
   }
 }
