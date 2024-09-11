@@ -136,7 +136,7 @@ describe('User Persisted Storage', () => {
     storage.values = JSON.parse(STORAGE_VALUES_TEST_GROUP_USER);
 
     client.dataAdapter.setData(DCS_RESPONSE_INACTIVE_EXP);
-    client.initializeSync();
+    client.updateSync();
 
     client.getExperiment('an_experiment', userInTestGroup, {
       userPersistedValues: {},

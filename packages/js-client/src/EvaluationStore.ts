@@ -51,6 +51,7 @@ export default class EvaluationStore {
     if (!result) {
       return false;
     }
+
     const values = _typedJsonParse<InitializeResponse>(
       result.data,
       'has_updates',

@@ -239,9 +239,8 @@ export default class Evaluator {
 
       case 'user_bucket': {
         const salt = String(condition.additionalValues?.['salt'] ?? '');
-        const userHash = _computeUserHash(
-          salt + '.' + _getUnitIDFromUser(user, idType) ?? '',
-        );
+        const unitID = _getUnitIDFromUser(user, idType) ?? '';
+        const userHash = _computeUserHash(salt + '.' + unitID);
         value = Number(userHash % BigInt(USER_BUCKET_COUNT));
         break;
       }

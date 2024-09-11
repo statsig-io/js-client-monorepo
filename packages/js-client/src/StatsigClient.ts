@@ -53,6 +53,7 @@ export default class StatsigClient
 {
   private _store: EvaluationStore;
   private _user: StatsigUserInternal;
+  private _initializePromise: Promise<void> | null = null;
 
   /**
    * Retrieves an instance of the StatsigClient based on the provided SDK key.
@@ -112,6 +113,10 @@ export default class StatsigClient
    * @see {@link initializeAsync} for the asynchronous version of this method.
    */
   initializeSync(options?: SyncUpdateOptions): void {
+    if (this.loadingStatus !== 'Uninitialized') {
+      return;
+    }
+
     this._logger.start();
     this.updateUserSync(this._user, options);
   }
@@ -127,12 +132,12 @@ export default class StatsigClient
    * @see {@link initializeSync} for the synchronous version of this method.
    */
   async initializeAsync(options?: AsyncUpdateOptions): Promise<void> {
-    if (!Storage.isReady()) {
-      await Storage.isReadyResolver();
+    if (this._initializePromise) {
+      return this._initializePromise;
     }
 
-    this._logger.start();
-    return this.updateUserAsync(this._user, options);
+    this._initializePromise = this._initializeAsyncImpl(options);
+    return this._initializePromise;
   }
 
   /**
@@ -150,6 +155,7 @@ export default class StatsigClient
     this._store.setValues(result);
 
     this._finalizeUpdate(result);
+
     if (!options?.disableBackgroundCacheRefresh) {
       this._runPostUpdate(result ?? null, this._user);
     }
@@ -195,7 +201,9 @@ export default class StatsigClient
         success: isUsingNetworkValues,
       });
     }
+
     this._finalizeUpdate(result);
+
     Diagnostics._markInitOverallEnd(
       this._sdkKey,
       isUsingNetworkValues,
@@ -407,6 +415,17 @@ export default class StatsigClient
     this.$on('error', () => {
       this.loadingStatus === 'Loading' && this._finalizeUpdate(null);
     });
+  }
+
+  private async _initializeAsyncImpl(
+    options?: AsyncUpdateOptions,
+  ): Promise<void> {
+    if (!Storage.isReady()) {
+      await Storage.isReadyResolver();
+    }
+
+    this._logger.start();
+    return this.updateUserAsync(this._user, options);
   }
 
   private _finalizeUpdate(values: DataAdapterResult | null) {

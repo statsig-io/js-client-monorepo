@@ -55,6 +55,7 @@ export default class StatsigOnDeviceEvalClient
 {
   private _store: SpecStore;
   private _evaluator: Evaluator;
+  private _initializePromise: Promise<void> | null = null;
 
   static instance(sdkKey?: string): StatsigOnDeviceEvalClient {
     const instance = _getStatsigGlobal().instance(sdkKey);
@@ -86,17 +87,21 @@ export default class StatsigOnDeviceEvalClient
   }
 
   initializeSync(options?: SyncUpdateOptions): void {
+    if (this.loadingStatus !== 'Uninitialized') {
+      return;
+    }
+
     this._logger.start();
     this.updateSync(options);
   }
 
   async initializeAsync(options?: AsyncUpdateOptions): Promise<void> {
-    if (!Storage.isReady()) {
-      await Storage.isReadyResolver();
+    if (this._initializePromise) {
+      return this._initializePromise;
     }
 
-    this._logger.start();
-    return this.updateAsync(options);
+    this._initializePromise = this._initializeAsyncImpl(options);
+    return this._initializePromise;
   }
 
   updateSync(options?: SyncUpdateOptions): void {
@@ -273,6 +278,17 @@ export default class StatsigOnDeviceEvalClient
     this.$on('error', () => {
       this.loadingStatus === 'Loading' && this._finalizeUpdate(null);
     });
+  }
+
+  private async _initializeAsyncImpl(
+    options?: AsyncUpdateOptions,
+  ): Promise<void> {
+    if (!Storage.isReady()) {
+      await Storage.isReadyResolver();
+    }
+
+    this._logger.start();
+    return this.updateAsync(options);
   }
 
   private _finalizeUpdate(values: DataAdapterResult | null) {
