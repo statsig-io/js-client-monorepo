@@ -1,16 +1,21 @@
 import {
   AnyEvaluation,
+  BootstrapMetadata,
   DataAdapterResult,
   DataSource,
   DetailedStoreResult,
   DynamicConfigEvaluation,
   EvaluationDetails,
+  EvaluationWarning,
   GateEvaluation,
   InitializeResponse,
   InitializeResponseWithUpdates,
   LayerEvaluation,
   ParamStoreConfig,
+  StableID,
+  StatsigUser,
   _DJB2,
+  _getFullUserHash,
   _typedJsonParse,
 } from '@statsig/client-core';
 
@@ -20,6 +25,10 @@ export default class EvaluationStore {
   private _source: DataSource = 'Uninitialized';
   private _lcut = 0;
   private _receivedAt = 0;
+  private _bootstrapMetadata: BootstrapMetadata | null = null;
+  private _warnings: Set<EvaluationWarning> = new Set();
+
+  constructor(private _sdkKey: string) {}
 
   reset(): void {
     this._values = null;
@@ -27,6 +36,7 @@ export default class EvaluationStore {
     this._source = 'Loading';
     this._lcut = 0;
     this._receivedAt = 0;
+    this._bootstrapMetadata = null;
   }
 
   finalize(): void {
@@ -47,7 +57,7 @@ export default class EvaluationStore {
       : null;
   }
 
-  setValues(result: DataAdapterResult | null): boolean {
+  setValues(result: DataAdapterResult | null, user: StatsigUser): boolean {
     if (!result) {
       return false;
     }
@@ -72,6 +82,14 @@ export default class EvaluationStore {
     this._lcut = values.time;
     this._receivedAt = result.receivedAt;
     this._values = values;
+    this._bootstrapMetadata = this._extractBootstrapMetadata(
+      result.source,
+      values,
+    );
+
+    if (result.source && values.user) {
+      this._setWarningState(user, values);
+    }
     return true;
   }
 
@@ -91,6 +109,26 @@ export default class EvaluationStore {
     return this._getDetailedStoreResult(this._values?.param_stores, name);
   }
 
+  private _extractBootstrapMetadata(
+    source: DataSource,
+    values: InitializeResponseWithUpdates,
+  ): BootstrapMetadata | null {
+    if (source !== 'Bootstrap') {
+      return null;
+    }
+
+    const bootstrapMetadata: BootstrapMetadata = {};
+    if (values.user) {
+      bootstrapMetadata.user = values.user;
+    }
+    if (values.sdkInfo) {
+      bootstrapMetadata.generatorSDKInfo = values.sdkInfo;
+    }
+    bootstrapMetadata.lcut = values.time;
+
+    return bootstrapMetadata;
+  }
+
   private _getDetailedStoreResult<T extends AnyEvaluation | ParamStoreConfig>(
     lookup: Record<string, T> | undefined,
     name: string,
@@ -106,25 +144,62 @@ export default class EvaluationStore {
     };
   }
 
+  private _setWarningState(
+    user: StatsigUser,
+    values: InitializeResponse,
+  ): void {
+    const stableID = StableID.get(this._sdkKey);
+    if (user.customIDs?.stableID !== stableID) {
+      this._warnings.add('StableIDMismatch');
+      return;
+    }
+    if ('user' in values) {
+      const bootstrapUser = values['user'] as StatsigUser;
+      if (_getFullUserHash(user) !== _getFullUserHash(bootstrapUser)) {
+        this._warnings.add('PartialUserMatch');
+      }
+    }
+  }
+
   getCurrentSourceDetails(): EvaluationDetails {
     if (this._source === 'Uninitialized' || this._source === 'NoValues') {
       return { reason: this._source };
     }
 
-    return {
+    const sourceDetails: EvaluationDetails = {
       reason: this._source,
       lcut: this._lcut,
       receivedAt: this._receivedAt,
     };
+
+    if (this._warnings.size > 0) {
+      sourceDetails.warnings = Array.from(this._warnings);
+    }
+
+    return sourceDetails;
   }
 
   private _getDetails(isUnrecognized: boolean): EvaluationDetails {
     const sourceDetails = this.getCurrentSourceDetails();
 
     let reason = sourceDetails.reason;
+    const warnings = sourceDetails.warnings ?? [];
+    if (this._source === 'Bootstrap' && warnings.length > 0) {
+      reason = reason + warnings[0];
+    }
+
     if (reason !== 'Uninitialized' && reason !== 'NoValues') {
       const subreason = isUnrecognized ? 'Unrecognized' : 'Recognized';
       reason = `${reason}:${subreason}`;
+    }
+
+    const bootstrapMetadata =
+      this._source === 'Bootstrap'
+        ? this._bootstrapMetadata ?? undefined
+        : undefined;
+
+    if (bootstrapMetadata) {
+      sourceDetails.bootstrapMetadata = bootstrapMetadata;
     }
 
     return {

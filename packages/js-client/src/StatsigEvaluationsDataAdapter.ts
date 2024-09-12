@@ -62,7 +62,9 @@ export class StatsigEvaluationsDataAdapter
     if (values && 'user' in values) {
       super.setData(data, values.user);
     } else {
-      Log.error('StatsigUser not found');
+      Log.error(
+        'StatsigUser not found. You may be using an older server SDK version. Please upgrade your SDK or use setDataLegacy.',
+      );
     }
   }
 

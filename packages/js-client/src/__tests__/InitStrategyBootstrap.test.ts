@@ -1,5 +1,8 @@
 import fetchMock from 'jest-fetch-mock';
-import { InitResponseString, MockLocalStorage } from 'statsig-test-helpers';
+import {
+  InitResponseStableIDString,
+  MockLocalStorage,
+} from 'statsig-test-helpers';
 
 import {
   DataAdapterCachePrefix,
@@ -10,7 +13,12 @@ import StatsigClient from '../StatsigClient';
 
 describe('Init Strategy - Bootstrap', () => {
   const sdkKey = 'client-key';
-  const user = { userID: 'a-user' };
+  const user = {
+    userID: 'a-user',
+    customIDs: {
+      stableID: 'a-stable-id',
+    },
+  };
   const cacheKey = `${DataAdapterCachePrefix}.evaluations.${_getUserStorageKey(sdkKey, user)}`;
 
   let client: StatsigClient;
@@ -21,10 +29,10 @@ describe('Init Strategy - Bootstrap', () => {
     storageMock.clear();
 
     fetchMock.enableMocks();
-    fetchMock.mockResponse(InitResponseString);
+    fetchMock.mockResponse(InitResponseStableIDString);
 
     client = new StatsigClient(sdkKey, user);
-    client.dataAdapter.setData(InitResponseString);
+    client.dataAdapter.setData(InitResponseStableIDString);
 
     client.initializeSync();
   });

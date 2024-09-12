@@ -11,6 +11,8 @@ export * from './MockLocalStorage';
 export * from './TestPromise';
 
 const InitResponseString = JSON.stringify(InitResponse);
+const InitResponseStableID = updateUserWithStableID(InitResponse);
+const InitResponseStableIDString = JSON.stringify(InitResponseStableID);
 const DcsResponseString = JSON.stringify(DcsResponse);
 
 const noop = (..._args: unknown[]): void => {
@@ -26,11 +28,26 @@ const nullthrows = <T>(input: T | undefined | null): T => {
 
 const skipFrame = (): Promise<void> => new Promise((r) => setTimeout(r, 1));
 
+function updateUserWithStableID(response: any) {
+  const clonedResponse = JSON.parse(JSON.stringify(response));
+
+  clonedResponse.user = {
+    ...clonedResponse.user,
+    customIDs: {
+      stableID: 'a-stable-id',
+    },
+  };
+
+  return clonedResponse;
+}
+
 export {
   InitResponse,
   InitResponseString,
   DcsResponse,
   DcsResponseString,
+  InitResponseStableID,
+  InitResponseStableIDString,
   getDcsResponseWithConfigValue,
   getInitializeResponseWithConfigValue,
   noop,

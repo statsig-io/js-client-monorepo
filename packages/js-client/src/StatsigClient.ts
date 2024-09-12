@@ -101,7 +101,7 @@ export default class StatsigClient
       options,
     );
 
-    this._store = new EvaluationStore();
+    this._store = new EvaluationStore(sdkKey);
     this._user = _normalizeUser(user, options);
   }
 
@@ -152,7 +152,7 @@ export default class StatsigClient
     this._resetForUser(user);
 
     const result = this.dataAdapter.getDataSync(this._user);
-    this._store.setValues(result);
+    this._store.setValues(result, this._user);
 
     this._finalizeUpdate(result);
 
@@ -182,7 +182,7 @@ export default class StatsigClient
     Diagnostics._markInitOverallStart(this._sdkKey);
 
     let result = this.dataAdapter.getDataSync(initiator);
-    this._store.setValues(result);
+    this._store.setValues(result, this._user);
 
     this._setStatus('Loading', result);
 
@@ -196,7 +196,7 @@ export default class StatsigClient
 
     if (result != null) {
       Diagnostics._markInitProcessStart(this._sdkKey);
-      isUsingNetworkValues = this._store.setValues(result);
+      isUsingNetworkValues = this._store.setValues(result, this._user);
       Diagnostics._markInitProcessEnd(this._sdkKey, {
         success: isUsingNetworkValues,
       });

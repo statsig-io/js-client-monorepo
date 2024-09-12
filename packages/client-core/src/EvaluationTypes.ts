@@ -1,4 +1,5 @@
 import { ParamStoreConfig } from './ParamStoreTypes';
+import { BootstrapMetadata } from './StatsigEvent';
 import { Flatten } from './TypingUtils';
 
 type EvaluationBase<T> = {
@@ -48,9 +49,13 @@ export type EvaluationDetails = {
   reason: string;
   lcut?: number;
   receivedAt?: number;
+  warnings?: EvaluationWarning[];
+  bootstrapMetadata?: BootstrapMetadata;
 };
 
 export type DetailedStoreResult<T extends AnyEvaluation | ParamStoreConfig> = {
   result: T | null;
   details: EvaluationDetails;
 };
+
+export type EvaluationWarning = 'PartialUserMatch' | 'StableIDMismatch';

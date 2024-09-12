@@ -28,6 +28,7 @@ export type InitializeResponseWithUpdates = SessionReplayFields &
     hash_used: 'none' | 'sha256' | 'djb2';
     derived_fields?: Record<string, unknown>;
     user?: StatsigUser;
+    sdkInfo?: Record<string, string>;
   };
 
 export type InitializeResponse =

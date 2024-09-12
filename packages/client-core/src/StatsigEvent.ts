@@ -8,6 +8,12 @@ export type StatsigEvent = {
   metadata?: { [key: string]: string | undefined } | null;
 };
 
+export type BootstrapMetadata = {
+  generatorSDKInfo?: Record<string, string>;
+  lcut?: number;
+  user?: Record<string, unknown>;
+};
+
 export type StatsigEventInternal = Omit<StatsigEvent, 'metadata'> & {
   user: StatsigUserInternal | null;
   time: number;
@@ -23,9 +29,12 @@ const _createExposure = (
   eventName: string,
   user: StatsigUserInternal,
   details: EvaluationDetails,
-  metadata: Record<string, string>,
+  metadata: Record<string, unknown>,
   secondaryExposures: SecondaryExposure[],
 ) => {
+  if (details.bootstrapMetadata) {
+    metadata['bootstrapMetadata'] = details.bootstrapMetadata;
+  }
   return {
     eventName,
     user,
@@ -108,8 +117,8 @@ export const _createLayerParameterExposure = (
 
 const _addEvaluationDetailsToMetadata = (
   details: EvaluationDetails,
-  metadata: Record<string, string>,
-): Record<string, string> => {
+  metadata: Record<string, unknown>,
+): Record<string, unknown> => {
   metadata['reason'] = details.reason;
 
   if (details.lcut) {

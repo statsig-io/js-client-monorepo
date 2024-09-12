@@ -16,14 +16,22 @@ import { StatsigClient } from '@statsig/js-client';
 import { StatsigOnDeviceEvalClient } from '@statsig/js-on-device-eval-client';
 
 describe('Client Evaluations Callback', () => {
-  const user = { userID: 'a-user' };
+  const user = {
+    userID: 'a-user',
+    customIDs: { stableID: 'a-stable-id' },
+  };
+  const evalDetails = {
+    lcut: 123456,
+    reason: 'Network:Recognized',
+    receivedAt: anyNumber(),
+  };
 
   describe.each([
     [
       'StatsigOnDeviceEvalClient',
       () => {
         fetchMock.mockResponse(
-          JSON.stringify({ ...DcsResponse, time: 123456 }),
+          JSON.stringify({ ...DcsResponse, time: 123456, user: user }),
         );
         return new StatsigOnDeviceEvalClient('client-on-device');
       },
@@ -32,7 +40,7 @@ describe('Client Evaluations Callback', () => {
       'StatsigClient',
       () => {
         fetchMock.mockResponse(
-          JSON.stringify({ ...InitResponse, time: 123456 }),
+          JSON.stringify({ ...InitResponse, time: 123456, user: user }),
         );
         return new StatsigClient('client-precomp', user);
       },
@@ -59,17 +67,22 @@ describe('Client Evaluations Callback', () => {
 
     it('fires the gate_evaluation event', () => {
       client.checkGate('a_gate', user);
+
+      let expectedDetails: any = evalDetails;
+
+      if (client instanceof StatsigClient) {
+        expectedDetails = {
+          ...expectedDetails,
+        };
+      }
+
       expect(events).toEqual([
         {
           name: 'gate_evaluation',
           gate: {
             name: 'a_gate',
             ruleID: '2QWhVkWdUEXR6Q3KYgV73O',
-            details: {
-              lcut: 123456,
-              reason: 'Network:Recognized',
-              receivedAt: anyNumber(),
-            },
+            details: expectedDetails,
             value: true,
             __evaluation: anyObject(),
           },
@@ -79,17 +92,22 @@ describe('Client Evaluations Callback', () => {
 
     it('fires the dynamic_config_evaluation event', () => {
       client.getDynamicConfig('a_dynamic_config', user);
+
+      let expectedDetails: any = evalDetails;
+
+      if (client instanceof StatsigClient) {
+        expectedDetails = {
+          ...expectedDetails,
+        };
+      }
+
       expect(events).toEqual([
         {
           name: 'dynamic_config_evaluation',
           dynamicConfig: {
             name: 'a_dynamic_config',
             ruleID: 'default',
-            details: {
-              lcut: 123456,
-              reason: 'Network:Recognized',
-              receivedAt: anyNumber(),
-            },
+            details: expectedDetails,
             value: {
               blue: '#00FF00',
               green: '#0000FF',
@@ -104,6 +122,15 @@ describe('Client Evaluations Callback', () => {
 
     it('fires the experiment_evaluation event', () => {
       client.getExperiment('an_experiment', user);
+
+      let expectedDetails: any = evalDetails;
+
+      if (client instanceof StatsigClient) {
+        expectedDetails = {
+          ...expectedDetails,
+        };
+      }
+
       expect(events).toEqual([
         {
           name: 'experiment_evaluation',
@@ -111,11 +138,7 @@ describe('Client Evaluations Callback', () => {
             name: 'an_experiment',
             ruleID: '49CGlTB7z97PEdqJapQplA',
             groupName: 'Test',
-            details: {
-              lcut: 123456,
-              reason: 'Network:Recognized',
-              receivedAt: anyNumber(),
-            },
+            details: expectedDetails,
             value: {
               a_string: 'Experiment Test Value',
             },
@@ -128,6 +151,15 @@ describe('Client Evaluations Callback', () => {
 
     it('fires the layer_evaluation event', () => {
       client.getLayer('a_layer', user);
+
+      let expectedDetails: any = evalDetails;
+
+      if (client instanceof StatsigClient) {
+        expectedDetails = {
+          ...expectedDetails,
+        };
+      }
+
       expect(events).toEqual([
         {
           name: 'layer_evaluation',
@@ -135,11 +167,7 @@ describe('Client Evaluations Callback', () => {
             name: 'a_layer',
             ruleID: '49CGlTB7z97PEdqJapQplA',
             groupName: 'Test',
-            details: {
-              lcut: 123456,
-              reason: 'Network:Recognized',
-              receivedAt: anyNumber(),
-            },
+            details: expectedDetails,
             get: anyFunction(),
             __value: anyObject(),
             __evaluation: anyObject(),

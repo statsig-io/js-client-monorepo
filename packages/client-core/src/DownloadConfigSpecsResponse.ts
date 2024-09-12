@@ -1,3 +1,5 @@
+import { StatsigUser } from './StatsigUser';
+
 export type SpecCondition = {
   type: string;
   targetValue: unknown;
@@ -41,4 +43,6 @@ export type DownloadConfigSpecsResponse = {
   layer_configs: Spec[];
   time: number;
   has_updates: boolean;
+  sdkInfo?: Record<string, string>;
+  user?: StatsigUser;
 };
