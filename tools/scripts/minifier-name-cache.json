@@ -190,7 +190,11 @@
       "$_isProviderReady": "_i",
       "$_getSafeNetworkInformation": "gi",
       "$_initializePromise": "xn",
-      "$_initializeAsyncImpl": "Dn"
+      "$_initializeAsyncImpl": "Dn",
+      "$_bootstrapMetadata": "bi",
+      "$_warnings": "mi",
+      "$_extractBootstrapMetadata": "pi",
+      "$_setWarningState": "yi"
     }
   }
 }

@@ -38,7 +38,7 @@ function Foo() {
   // <snippet>
 jest.mock('@statsig/js-client');
 
-test('gated string transformations', async () => {
+test('string transformations', async () => {
   jest
     .spyOn(StatsigClient.prototype, 'checkGate')
     .mockImplementation(() => true);
