@@ -101,8 +101,8 @@ export default function SamplesPage(): ReactNode {
 
       {filteredSnippets.length > 0 && (
         <pre>
-          <code className="language-javascript">
-            {filteredSnippets[snippetIndex].content}
+          <code className="language-typescript">
+            {filteredSnippets[snippetIndex]?.content}
           </code>
         </pre>
       )}
