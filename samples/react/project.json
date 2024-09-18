@@ -16,13 +16,7 @@
         "baseHref": "/",
         "main": "samples/react/src/main.tsx",
         "tsConfig": "samples/react/tsconfig.app.json",
-        "assets": [
-          {
-            "glob": "**/*",
-            "input": "samples/react/src/samples",
-            "output": "/assets/samples"
-          }
-        ],
+        "assets": ["samples/react/src/samples"],
         "styles": [],
         "scripts": [],
         "isolatedConfig": true,
