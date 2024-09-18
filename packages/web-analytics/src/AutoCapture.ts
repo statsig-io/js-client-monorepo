@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import {
   ErrorBoundary,
   Log,
@@ -31,6 +32,7 @@ export class AutoCapture {
   private _startTime = Date.now();
   private _deepestScroll = 0;
   private _disabledEvents: Record<string, boolean> = {};
+  private _previousLoggedPageViewUrl: URL | null = null;
 
   constructor(private _client: PrecomputedEvaluationsInterface) {
     const { sdkKey, errorBoundary, values } = _client.getContext();
@@ -73,6 +75,25 @@ export class AutoCapture {
     _registerEventHandler(win, 'scroll', () => this._scrollEventHandler());
   }
 
+  private _addPageViewTracking() {
+    const win = _getWindowSafe();
+    const doc = _getDocumentSafe();
+    if (!win || !doc) {
+      return;
+    }
+
+    _registerEventHandler(win, 'popstate', () => this._tryLogPageView());
+
+    window.history.pushState = new Proxy(window.history.pushState, {
+      apply: (target, thisArg, [state, unused, url]) => {
+        target.apply(thisArg, [state, unused, url]);
+        this._tryLogPageView();
+      },
+    });
+
+    this._tryLogPageView();
+  }
+
   private _autoLogEvent(event: Event) {
     let eventType = event.type?.toLowerCase();
     if (eventType === 'error' && event instanceof ErrorEvent) {
@@ -98,8 +119,8 @@ export class AutoCapture {
 
   private _initialize() {
     this._addEventHandlers();
+    this._addPageViewTracking();
     this._logSessionStart();
-    this._logPageView();
     this._logPerformance();
   }
 
@@ -146,16 +167,22 @@ export class AutoCapture {
     }
   }
 
-  private _logPageView() {
-    setTimeout(() => {
-      const url = _getSafeUrl();
-      const payload = _gatherPageViewPayload(url);
+  private _tryLogPageView() {
+    const url = _getSafeUrl();
 
-      this._enqueueAutoCapture('page_view', _getSanitizedPageUrl(), payload, {
-        flushImmediately: true,
-        addNewSessionMetadata: true,
-      });
-    }, 1);
+    const last = this._previousLoggedPageViewUrl;
+    if (last && url.href === last.href) {
+      return;
+    }
+
+    this._previousLoggedPageViewUrl = url;
+
+    const payload = _gatherPageViewPayload(url);
+
+    this._enqueueAutoCapture('page_view', _getSanitizedPageUrl(), payload, {
+      flushImmediately: true,
+      addNewSessionMetadata: true,
+    });
   }
 
   private _logPerformance() {

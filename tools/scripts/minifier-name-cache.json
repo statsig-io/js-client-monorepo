@@ -194,7 +194,10 @@
       "$_bootstrapMetadata": "bi",
       "$_warnings": "mi",
       "$_extractBootstrapMetadata": "pi",
-      "$_setWarningState": "yi"
+      "$_setWarningState": "yi",
+      "$_previousLoggedPageViewUrl": "Si",
+      "$_addPageViewTracking": "Oi",
+      "$_tryLogPageView": "ji"
     }
   }
 }

@@ -41,10 +41,25 @@ function getLastPerformanceEvent(
   return getLastEvent(requests, 'auto_capture::performance');
 }
 
+Object.defineProperty(window, 'innerWidth', {
+  value: 4000,
+  writable: true,
+});
+
+Object.defineProperty(window, 'innerHeight', {
+  value: 2000,
+  writable: true,
+});
+
 describe('Autocapture Tests', () => {
   let autoCapture: AutoCapture;
+  let client: StatsigClient;
   let pageViewResolver: ((v: unknown) => void) | null = null;
+
   const requestDataList: Record<string, any>[] = [];
+  const resetLastLoggedPageViewUrl = () => {
+    autoCapture['_previousLoggedPageViewUrl'] = null;
+  };
 
   beforeAll(async () => {
     __STATSIG__ = { ..._getStatsigGlobal(), 'no-encode': 1 };
@@ -55,12 +70,13 @@ describe('Autocapture Tests', () => {
       pageViewResolver = null;
       return '{}';
     });
-    const client = new StatsigClient('client-key', { userID: '' });
+    client = new StatsigClient('client-key', { userID: '' });
     await client.initializeAsync();
     autoCapture = runStatsigAutoCapture(client);
   });
 
   beforeEach(() => {
+    resetLastLoggedPageViewUrl();
     requestDataList.length = 0;
   });
 
@@ -73,21 +89,14 @@ describe('Autocapture Tests', () => {
       },
       writable: true,
     });
-    Object.defineProperty(window, 'innerWidth', {
-      value: 4000,
-      writable: true,
-    });
-    Object.defineProperty(window, 'innerHeight', {
-      value: 2000,
-      writable: true,
-    });
-    autoCapture['_logPageView']();
+
+    autoCapture['_tryLogPageView']();
     await new Promise((f) => {
       pageViewResolver = f;
     });
 
     const eventData = getLastPageViewEvent(requestDataList);
-    expect(eventData).toMatchObject({});
+    expect(eventData).toEqual({});
 
     autoCapture['_disabledEvents'] = {};
   });
@@ -99,15 +108,8 @@ describe('Autocapture Tests', () => {
       },
       writable: true,
     });
-    Object.defineProperty(window, 'innerWidth', {
-      value: 4000,
-      writable: true,
-    });
-    Object.defineProperty(window, 'innerHeight', {
-      value: 2000,
-      writable: true,
-    });
-    autoCapture['_logPageView']();
+
+    autoCapture['_tryLogPageView']();
     await new Promise((f) => {
       pageViewResolver = f;
     });
@@ -137,7 +139,7 @@ describe('Autocapture Tests', () => {
       writable: true,
     });
 
-    autoCapture['_logPageView']();
+    autoCapture['_tryLogPageView']();
     await new Promise((f) => {
       pageViewResolver = f;
     });
@@ -181,7 +183,8 @@ describe('Autocapture Tests', () => {
         writable: true,
       });
 
-      autoCapture['_logPageView']();
+      resetLastLoggedPageViewUrl();
+      autoCapture['_tryLogPageView']();
       // eslint-disable-next-line no-await-in-loop
       await new Promise((f) => {
         pageViewResolver = f;
@@ -205,7 +208,7 @@ describe('Autocapture Tests', () => {
       writable: true,
     });
 
-    autoCapture['_logPageView']();
+    autoCapture['_tryLogPageView']();
     await new Promise((f) => {
       pageViewResolver = f;
     });
@@ -251,10 +254,11 @@ describe('Autocapture Tests', () => {
       value: { connection: mockConnection },
       writable: true,
     });
+
     autoCapture['_logPerformance']();
-    await new Promise((f) => {
-      pageViewResolver = f;
-    });
+    await new Promise((r) => setTimeout(r, 2));
+    await client.flush();
+
     const eventData = getLastPerformanceEvent(requestDataList);
     const metadata = eventData['metadata'];
     expect(metadata['effective_connection_type']).toEqual('4g');
@@ -269,9 +273,10 @@ describe('Autocapture Tests', () => {
       writable: true,
     });
     autoCapture['_logPerformance']();
-    await new Promise((f) => {
-      pageViewResolver = f;
-    });
+
+    await new Promise((r) => setTimeout(r, 2));
+    await client.flush();
+
     const eventData = getLastPerformanceEvent(requestDataList);
     const metadata = eventData['metadata'];
     expect(metadata['effective_connection_type']).toBeUndefined();

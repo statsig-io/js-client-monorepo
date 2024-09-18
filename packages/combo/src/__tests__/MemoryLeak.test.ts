@@ -14,6 +14,13 @@ import { StatsigClient } from '@statsig/js-client';
 setFlagsFromString('--expose_gc');
 const gc = runInNewContext('gc');
 
+async function runGarbageCollection() {
+  gc();
+
+  // Delay to ensure GC has completed
+  await new Promise((resolve) => setTimeout(resolve, 100));
+}
+
 describe('Memory Usage', () => {
   beforeAll(() => {
     fetchMock.enableMocks();
@@ -45,7 +52,7 @@ describe('Memory Usage', () => {
       instance.checkGate('gate1');
     }
 
-    gc();
+    await runGarbageCollection();
 
     const finalMemory = process.memoryUsage().heapUsed;
     const memoryIncrease = finalMemory - initialMemory;

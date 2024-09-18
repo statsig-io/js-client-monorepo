@@ -28,7 +28,8 @@
               "webpack-bundle-analyzer",
               "typescript",
               "@testing-library/react",
-              "react"
+              "react",
+              "react-router-dom"
             ]
           }
         ]
