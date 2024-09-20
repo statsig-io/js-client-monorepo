@@ -45,9 +45,10 @@ export type DataAdapterAsyncOptions = {
 export type DataAdapterSyncOptions = {
   /**
    * The flag to disable background cache refresh.
-   * If set to true, the cache will not be updated in the background and will only use the data adatpter values.
+   * If set to true, a network request to update the cache for future sessions will not fired.
+   * if "explicitly" set to false, a network request to update the cache for future sessions will be fired, even in bootstrap cases.
    *
-   * default: false
+   * default: implicit false
    */
   readonly disableBackgroundCacheRefresh?: boolean;
 };

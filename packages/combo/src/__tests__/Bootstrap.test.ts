@@ -4,12 +4,15 @@ import {
   InitResponseStableID,
   MockLocalStorage,
   nullthrows,
-  skipFrame,
 } from 'statsig-test-helpers';
 
-import { StatsigClient, StatsigUser } from '@statsig/js-client';
+import { StatsigClient } from '@statsig/js-client';
 
-describe('Bootstrap', () => {
+beforeAll(() => {
+  fetchMock.enableMocks();
+});
+
+describe('Bootstrap with explicit background refresh', () => {
   const user = {
     userID: 'a-user',
     customIDs: {
@@ -20,7 +23,7 @@ describe('Bootstrap', () => {
   let storage: MockLocalStorage;
 
   beforeAll(async () => {
-    fetchMock.enableMocks();
+    fetchMock.mock.calls = [];
     fetchMock.mockResponse(
       JSON.stringify({ ...InitResponseStableID, time: 2, generator: 'mock' }),
     );
@@ -33,9 +36,7 @@ describe('Bootstrap', () => {
       JSON.stringify({ ...InitResponseStableID, time: 1 }),
     );
 
-    client.initializeSync();
-
-    await skipFrame();
+    client.initializeSync({ disableBackgroundCacheRefresh: false });
   });
 
   it('should have the reason "Bootstrap" ', () => {
@@ -64,7 +65,7 @@ describe('Bootstrap', () => {
   });
 });
 
-describe('Bootstrap with no background refresh', () => {
+describe('Bootstrap', () => {
   const user = {
     userID: 'a-user',
     customIDs: {
@@ -75,10 +76,20 @@ describe('Bootstrap with no background refresh', () => {
   let storage: MockLocalStorage;
 
   beforeAll(async () => {
-    fetchMock.mockClear();
+    fetchMock.mock.calls = [];
+    fetchMock.mockResponse(
+      JSON.stringify({ ...InitResponseStableID, time: 2, generator: 'mock' }),
+    );
 
     storage = MockLocalStorage.enabledMockStorage();
-    client = initializeBootstrapClient(InitResponseStableID, user, true);
+
+    client = new StatsigClient('client-sdk-key', user);
+
+    client.dataAdapter.setData(
+      JSON.stringify({ ...InitResponseStableID, time: 1 }),
+    );
+
+    client.initializeSync();
   });
 
   it('should have the reason "Bootstrap" ', () => {
@@ -110,9 +121,11 @@ describe('Bootstrap with no background refresh', () => {
 
 describe('Bad Bootstrap', () => {
   it('logs correctly for stableID mismatch', async () => {
-    const client = initializeBootstrapClient(InitResponse, {
+    const client = new StatsigClient('client-sdk-key', {
       userID: 'a-user',
     });
+    client.dataAdapter.setData(JSON.stringify({ ...InitResponse, time: 1 }));
+    client.initializeSync();
 
     expect(client.getFeatureGate('a_gate').details.reason).toBe(
       'BootstrapStableIDMismatch:Recognized',
@@ -124,13 +137,17 @@ describe('Bad Bootstrap', () => {
   });
 
   it('logs correctly for partial user match', async () => {
-    const client = initializeBootstrapClient(InitResponseStableID, {
+    const client = new StatsigClient('client-sdk-key', {
       userID: 'a-user',
       email: 'user@statsig.com',
       customIDs: {
         stableID: 'a-stable-id',
       },
     });
+    client.dataAdapter.setData(
+      JSON.stringify({ ...InitResponseStableID, time: 1 }),
+    );
+    client.initializeSync();
 
     expect(client.getFeatureGate('a_gate').details.reason).toBe(
       'BootstrapPartialUserMatch:Recognized',
@@ -141,15 +158,3 @@ describe('Bad Bootstrap', () => {
     ]);
   });
 });
-
-function initializeBootstrapClient(
-  response: any,
-  user: StatsigUser,
-  disableBackgroundCacheRefresh = false,
-) {
-  fetchMock.mockResponse(JSON.stringify(response));
-  const client = new StatsigClient('client-sdk-key', user);
-  client.dataAdapter.setData(JSON.stringify({ ...response, time: 1 }));
-  client.initializeSync({ disableBackgroundCacheRefresh });
-  return client;
-}

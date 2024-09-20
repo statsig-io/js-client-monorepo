@@ -34,7 +34,7 @@ describe('Init Strategy - Bootstrap', () => {
     client = new StatsigClient(sdkKey, user);
     client.dataAdapter.setData(InitResponseStableIDString);
 
-    client.initializeSync();
+    client.initializeSync({ disableBackgroundCacheRefresh: false });
   });
 
   afterAll(() => {

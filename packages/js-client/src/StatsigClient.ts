@@ -156,9 +156,15 @@ export default class StatsigClient
 
     this._finalizeUpdate(result);
 
-    if (!options?.disableBackgroundCacheRefresh) {
-      this._runPostUpdate(result ?? null, this._user);
+    const disable = options?.disableBackgroundCacheRefresh;
+    if (
+      disable === true ||
+      (disable == null && result?.source === 'Bootstrap')
+    ) {
+      return;
     }
+
+    this._runPostUpdate(result ?? null, this._user);
   }
 
   /**
