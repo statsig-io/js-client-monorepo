@@ -50,7 +50,7 @@ export default function BundleSizeExamplePage(): ReactNode {
     <>
       <BundleDetails
         title="@statsig/js-client"
-        url="https://cdn.jsdelivr.net/npm/@statsig/js-client@1/build/statsig-js-client.min.js"
+        url="https://cdn.jsdelivr.net/npm/@statsig/js-client@3/build/statsig-js-client.min.js"
       />
 
       <BundleDetails
@@ -60,7 +60,7 @@ export default function BundleSizeExamplePage(): ReactNode {
 
       <BundleDetails
         title="@statsig/js-client+web-analytics+session-replay"
-        url="https://cdn.jsdelivr.net/npm/@statsig/js-client@1/build/statsig-js-client+session-replay+web-analytics.min.js"
+        url="https://cdn.jsdelivr.net/npm/@statsig/js-client@3/build/statsig-js-client+session-replay+web-analytics.min.js"
       />
     </>
   );
