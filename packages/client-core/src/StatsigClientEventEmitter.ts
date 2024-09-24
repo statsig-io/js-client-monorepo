@@ -13,6 +13,7 @@ type EventNameToEventDataMap = {
   error: { error: unknown };
   logs_flushed: { events: Record<string, unknown>[] };
   pre_shutdown: object;
+  initialization_failure: object;
 
   gate_evaluation: { gate: FeatureGate };
   dynamic_config_evaluation: { dynamicConfig: DynamicConfig };

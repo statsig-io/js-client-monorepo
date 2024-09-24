@@ -210,6 +210,10 @@ export default class StatsigClient
 
     this._finalizeUpdate(result);
 
+    if (!isUsingNetworkValues) {
+      this.$emt({ name: 'initialization_failure' });
+    }
+
     Diagnostics._markInitOverallEnd(
       this._sdkKey,
       isUsingNetworkValues,
