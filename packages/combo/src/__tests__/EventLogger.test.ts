@@ -8,11 +8,11 @@ const timeout = async (ms: number) => {
   return new Promise((r) => setTimeout(r, ms));
 };
 
-const getLogEventCalls = () => {
+function getLogEventCalls(): typeof fetchMock.mock.calls {
   return fetchMock.mock.calls.filter((call) =>
     String(call[0]).includes('rgstr'),
   );
-};
+}
 
 describe('Event Logger', () => {
   beforeEach(() => {

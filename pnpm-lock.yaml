@@ -49,6 +49,9 @@ importers:
       '@react-native-async-storage/async-storage':
         specifier: ^1.19.3
         version: 1.21.0(react-native@0.74.1)
+      '@rrweb/types':
+        specifier: 2.0.0-alpha.17
+        version: 2.0.0-alpha.17
       expo:
         specifier: ~51.0.12
         version: 51.0.12(@babel/core@7.23.9)(encoding@0.1.13)
@@ -8293,6 +8296,12 @@ packages:
     resolution: {integrity: sha512-dHFMvVBA9JD8MBV+waHtJs8lIeTPCVeT3h+WZ5s8a+EX42TQ08t+ObFMK0OYEszvWgJMJ5WZi5lXTvF46P27Hg==}
     dependencies:
       rrweb-snapshot: 2.0.0-alpha.12
+
+  /@rrweb/types@2.0.0-alpha.17:
+    resolution: {integrity: sha512-AfDTVUuCyCaIG0lTSqYtrZqJX39ZEYzs4fYKnexhQ+id+kbZIpIJtaut5cto6dWZbB3SEe4fW0o90Po3LvTmfg==}
+    dependencies:
+      rrweb-snapshot: 2.0.0-alpha.17
+    dev: false
 
   /@rushstack/eslint-patch@1.7.2:
     resolution: {integrity: sha512-RbhOOTCNoCrbfkRyoXODZp75MlpiHMgbE5MEBZAnnnLyQNgrigEj4p0lzsMDyc1zVsJDLrivB58tgg3emX0eEA==}
@@ -20213,6 +20222,12 @@ packages:
 
   /rrweb-snapshot@2.0.0-alpha.12:
     resolution: {integrity: sha512-i4sz9469dbsEGFiBzCkq+7I7M+imPeC3NrKgrrdJ2tXu9H+/eegNe4SrQgCsLBeSZHZDHU0o9L5rxTAiapWbGg==}
+
+  /rrweb-snapshot@2.0.0-alpha.17:
+    resolution: {integrity: sha512-GBg5pV8LHOTbeVmH2VHLEFR0mc2QpQMzAvcoxEGfPNWgWHc8UvKCyq7pqN1vA+fDZ+yXXbixeO0kB2pzVvFCBw==}
+    dependencies:
+      postcss: 8.4.38
+    dev: false
 
   /rrweb@2.0.0-alpha.12:
     resolution: {integrity: sha512-lUGwBV7gmbwz1dIgzo9EEayIVyxoTIF6NBF6+Jctqs4Uy45QkyARtikpQlCUfxVCGTCQ0FOee9jeVYsG39oq1g==}

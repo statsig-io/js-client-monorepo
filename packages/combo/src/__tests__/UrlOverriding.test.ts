@@ -1,4 +1,5 @@
 import fetchMock from 'jest-fetch-mock';
+import { MockLocalStorage } from 'statsig-test-helpers';
 
 import { StatsigGlobal, _notifyVisibilityChanged } from '@statsig/client-core';
 import { StatsigClient, StatsigOptions } from '@statsig/js-client';
@@ -11,9 +12,11 @@ describe('Url Overriding', () => {
   const user = { userID: 'a-user' };
 
   let sendBeaconMock: jest.Mock;
+  let storageMock: MockLocalStorage;
 
   beforeAll(() => {
     fetchMock.enableMocks();
+    storageMock = MockLocalStorage.enabledMockStorage();
     sendBeaconMock = jest.fn();
 
     Object.defineProperty(window, 'navigator', {
@@ -24,6 +27,8 @@ describe('Url Overriding', () => {
   });
 
   beforeEach(() => {
+    storageMock.clear();
+
     __STATSIG__ = {} as StatsigGlobal;
     fetchMock.mock.calls = [];
     sendBeaconMock.mock.calls = [];

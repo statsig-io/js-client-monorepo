@@ -11,7 +11,7 @@
       "options": {
         "outputPath": "dist/packages/test-helpers",
         "main": "packages/test-helpers/src/index.ts",
-        "tsConfig": "packages/test-helpers/tsconfig.lib.json",
+        "tsConfig": "packages/test-helpers/tsconfig.json",
         "assets": ["README.md"]
       }
     },

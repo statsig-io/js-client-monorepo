@@ -1,10 +1,11 @@
 'use client';
 
+import { EventType } from '@rrweb/types';
 import { useContext, useEffect } from 'react';
 
 import {
-  AnyStatsigClientEvent,
   LogLevel,
+  StatsigClientEvent,
   StatsigUser,
 } from '@statsig/client-core';
 import {
@@ -18,8 +19,32 @@ import { runStatsigSessionReplay } from '@statsig/session-replay';
 import { runStatsigAutoCapture } from '@statsig/web-analytics';
 
 import { DEMO_CLIENT_KEY } from '../../utils/constants';
+import { Logo } from './Logo';
 
 /* eslint-disable no-console */
+
+function printEventTypes(events: Record<string, unknown>[]) {
+  const recordingEvents = events.filter(
+    (event) => event['eventName'] === 'statsig::session_recording',
+  );
+
+  const eventTypes = recordingEvents.flatMap((event) => {
+    if (event['metadata'] == null || typeof event['metadata'] !== 'object') {
+      return [];
+    }
+
+    const metadata = event['metadata'] as Record<string, string>;
+    const rrwebEvents = JSON.parse(metadata['rrweb_events']) as {
+      type: EventType;
+    }[];
+
+    return rrwebEvents.map((event) => EventType[event.type]);
+  });
+
+  if (eventTypes.length > 0) {
+    console.log(eventTypes);
+  }
+}
 
 function Content() {
   const { client } = useStatsigClient();
@@ -28,6 +53,7 @@ function Content() {
 
   return (
     <div style={{ padding: 16 }}>
+      <Logo />
       <div>Render Version: {renderVersion}</div>
       <div>
         a_gate: {value ? 'Passing' : 'Failing'} ({details.reason})
@@ -66,12 +92,11 @@ export default function SessionReplayExample({
     });
     runStatsigAutoCapture(client);
 
-    const onClientEvent = (event: AnyStatsigClientEvent) => {
-      console.log('StatsigClientEvent', event);
-    };
+    const onLogsFlushed = (event: StatsigClientEvent<'logs_flushed'>) =>
+      printEventTypes(event.events);
 
-    client.on('*', onClientEvent);
-    return () => client.off('*', onClientEvent);
+    client.on('logs_flushed', onLogsFlushed);
+    return () => client.off('logs_flushed', onLogsFlushed);
   }, [client]);
 
   return (

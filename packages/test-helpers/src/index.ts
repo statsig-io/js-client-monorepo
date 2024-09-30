@@ -28,11 +28,14 @@ const nullthrows = <T>(input: T | undefined | null): T => {
 
 const skipFrame = (): Promise<void> => new Promise((r) => setTimeout(r, 1));
 
-function updateUserWithStableID(response: any) {
-  const clonedResponse = JSON.parse(JSON.stringify(response));
+function updateUserWithStableID(response: unknown): Record<string, unknown> {
+  const clonedResponse = JSON.parse(JSON.stringify(response)) as Record<
+    string,
+    unknown
+  >;
 
-  clonedResponse.user = {
-    ...clonedResponse.user,
+  clonedResponse['user'] = {
+    ...(clonedResponse['user'] as object),
     customIDs: {
       stableID: 'a-stable-id',
     },

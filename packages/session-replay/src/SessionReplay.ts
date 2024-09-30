@@ -78,6 +78,7 @@ export class SessionReplay {
   private _subscribeToVisibilityChanged() {
     // Note: this exists as a separate function to ensure closure scope only contains `sdkKey`
     const { sdkKey } = this._client.getContext();
+
     _subscribeToVisiblityChanged((vis) => {
       const inst = __STATSIG__?.srInstances?.[sdkKey];
       if (inst instanceof SessionReplay) {
@@ -175,6 +176,7 @@ export class SessionReplay {
         session_end_ts: String(data.endTime),
         clicks_captured_cumulative: String(data.clickCount),
         rrweb_events: payload,
+        rrweb_payload_size: String(payload.length),
         session_replay_sdk_version: SDK_VERSION,
       } as Record<string, string>,
     };

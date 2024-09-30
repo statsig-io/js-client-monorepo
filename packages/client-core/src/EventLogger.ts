@@ -43,11 +43,10 @@ type StatsigEventExtras = {
 
 type EventQueue = (StatsigEventInternal & StatsigEventExtras)[];
 
-const _safeFlushAndForget = (sdkKey: string) => {
-  EVENT_LOGGER_MAP[sdkKey]?.flush().catch(() => {
-    // noop
-  });
-};
+enum RetryFailedLogsTrigger {
+  Startup,
+  GainedFocus,
+}
 
 export class EventLogger {
   private _queue: EventQueue = [];
@@ -59,6 +58,18 @@ export class EventLogger {
   private _creationTime = Date.now();
   private _isLoggingDisabled: boolean;
   private _logEventUrl: string;
+
+  private static _safeFlushAndForget(sdkKey: string) {
+    EVENT_LOGGER_MAP[sdkKey]?.flush().catch(() => {
+      // noop
+    });
+  }
+
+  private static _safeRetryFailedLogs(sdkKey: string) {
+    EVENT_LOGGER_MAP[sdkKey]?._retryFailedLogs(
+      RetryFailedLogsTrigger.GainedFocus,
+    );
+  }
 
   constructor(
     private _sdkKey: string,
@@ -89,7 +100,7 @@ export class EventLogger {
     this._normalizeAndAppendEvent(event);
     this._quickFlushIfNeeded();
     if (this._queue.length > this._maxQueueSize) {
-      _safeFlushAndForget(this._sdkKey);
+      EventLogger._safeFlushAndForget(this._sdkKey);
     }
   }
 
@@ -111,11 +122,13 @@ export class EventLogger {
 
     _subscribeToVisiblityChanged((visibility) => {
       if (visibility === 'background') {
-        _safeFlushAndForget(this._sdkKey);
+        EventLogger._safeFlushAndForget(this._sdkKey);
+      } else if (visibility === 'foreground') {
+        EventLogger._safeRetryFailedLogs(this._sdkKey);
       }
     });
 
-    this._retryFailedLogs();
+    this._retryFailedLogs(RetryFailedLogsTrigger.Startup);
     this._startBackgroundFlushInterval();
   }
 
@@ -138,7 +151,7 @@ export class EventLogger {
     const events = this._queue;
     this._queue = [];
 
-    return this._sendEvents(events);
+    await this._sendEvents(events);
   }
 
   /**
@@ -155,7 +168,10 @@ export class EventLogger {
       return;
     }
 
-    setTimeout(() => _safeFlushAndForget(this._sdkKey), QUICK_FLUSH_WINDOW_MS);
+    setTimeout(
+      () => EventLogger._safeFlushAndForget(this._sdkKey),
+      QUICK_FLUSH_WINDOW_MS,
+    );
   }
 
   private _shouldLogEvent(event: StatsigEventInternal): boolean {
@@ -193,10 +209,10 @@ export class EventLogger {
     return true;
   }
 
-  private async _sendEvents(events: EventQueue): Promise<void> {
+  private async _sendEvents(events: EventQueue): Promise<boolean> {
     if (this._isLoggingDisabled) {
       this._saveFailedLogsToStorage(events);
-      return;
+      return false;
     }
 
     try {
@@ -216,11 +232,15 @@ export class EventLogger {
           name: 'logs_flushed',
           events,
         });
+        return true;
       } else {
+        Log.warn('Failed to flush events.');
         this._saveFailedLogsToStorage(events);
+        return false;
       }
     } catch {
       Log.warn('Failed to flush events.');
+      return false;
     }
   }
 
@@ -270,7 +290,7 @@ export class EventLogger {
     }
   }
 
-  private _retryFailedLogs() {
+  private _retryFailedLogs(trigger: RetryFailedLogsTrigger) {
     const storageKey = this._getStorageKey();
     (async () => {
       if (!Storage.isReady()) {
@@ -282,8 +302,14 @@ export class EventLogger {
         return;
       }
 
-      Storage.removeItem(storageKey);
-      await this._sendEvents(events);
+      if (trigger === RetryFailedLogsTrigger.Startup) {
+        Storage.removeItem(storageKey);
+      }
+
+      const isSuccess = await this._sendEvents(events);
+      if (isSuccess && trigger === RetryFailedLogsTrigger.GainedFocus) {
+        Storage.removeItem(storageKey);
+      }
     })().catch(() => {
       Log.warn('Failed to flush stored logs');
     });
@@ -348,7 +374,7 @@ export class EventLogger {
       if (logger._flushIntervalId !== intervalId) {
         clearInterval(intervalId);
       } else {
-        _safeFlushAndForget(this._sdkKey);
+        EventLogger._safeFlushAndForget(this._sdkKey);
       }
     }, flushInterval);
     this._flushIntervalId = intervalId;

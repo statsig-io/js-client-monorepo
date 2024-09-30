@@ -1,9 +1,5 @@
 import fetchMock from 'jest-fetch-mock';
-import {
-  anyObject,
-  anyString,
-  anyStringContaining,
-} from 'statsig-test-helpers';
+import { anyObject, anyStringContaining } from 'statsig-test-helpers';
 
 import { StatsigClient } from '@statsig/js-client';
 
@@ -51,7 +47,6 @@ describe('Event Emitter Error Logs', () => {
 
     it('logs to console', () => {
       expect(logSpy).toHaveBeenCalledWith(
-        anyString(),
         ' ERROR ',
         '[Statsig]',
         'An error occurred in a StatsigClientEvent listener. This is not an issue with Statsig.',
