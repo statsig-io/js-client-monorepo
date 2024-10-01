@@ -24,7 +24,8 @@
             "ignoredDependencies": [
               "jest-fetch-mock",
               "statsig-test-helpers",
-              "@testing-library/react"
+              "@testing-library/react",
+              "react-native"
             ]
           }
         ]
