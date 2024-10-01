@@ -13,7 +13,10 @@ type Request = {
 type Response = {
   json: (input: ResponseType) => void;
 };
-type RequestHandler = (req: Request, res: Response) => Promise<void>;
+type RequestHandler = (
+  req: Request & { cookies: Record<string, string> },
+  res: Response & { cookie: (k: string, v: string, m: unknown) => void },
+) => Promise<void>;
 type ResponseType = {
   values: string;
   user: StatsigUser;
@@ -30,21 +33,43 @@ function generateStableID(): string {
 }
 
 // <snippet>
-// -- Server Side --
+// --------------
+//  Server Side
+// --------------
 const isStatsigServerReady = Statsig.initialize(
   process.env['STATSIG_SERVER_KEY']!,
 );
+
+function getCookieFromRequest(req: Request, name: string): string {
+  // reads the value from a cookie
+  // </snippet>
+  console.log(req, name);
+  return '';
+  // <snippet>
+}
+
+function setCookieOnResponse(res: Response, name: string, value: string): void {
+  // stores the cookie on the response
+  // </snippet>
+  console.log(res, name, value);
+  // <snippet>
+}
 
 app.post('/init-statsig-client', async (req, res) => {
   await isStatsigServerReady;
 
   const user = req.body.user;
-  if (!user.customIDs || !user.customIDs['stableID']) {
-    user.customIDs = {
-      ...user.customIDs,
-      stableID: generateStableID(),
-    };
+  let stableID = getCookieFromRequest(req, 'my_stable_id');
+
+  if (!stableID) {
+    stableID = generateStableID();
+    setCookieOnResponse(res, 'my_stable_id', stableID);
   }
+
+  user.customIDs = {
+    ...user.customIDs,
+    stableID,
+  };
 
   const values = Statsig.getClientInitializeResponse(
     user,
@@ -61,9 +86,11 @@ app.post('/init-statsig-client', async (req, res) => {
 // prettier-ignore
 //<snippet>
 
-// -- Client Side --
+// --------------
+//  Client Side
+// --------------
 function loadUserData(): string {
-  // Returns the request body containing you user with optional stableID 
+  // Creates a JSON string for your request containing your StatsigUser object. 
 // </snippet>
   return '';
 //<snippet>
@@ -74,10 +101,13 @@ function loadUserData(): string {
 // prettier-ignore
 export async function Sample(): Promise<void> {
   // <snippet>
-const { values, user: serverVerifiedUser } = await fetch('/init-statsig-client', {
-  method: 'POST',
-  body: loadUserData(),
-}).then((res) => res.json() as Promise<ResponseType>);
+const { values, user: serverVerifiedUser } = await fetch(
+  '/init-statsig-client', 
+  {
+    method: 'POST',
+    body: loadUserData(),
+  }
+).then((res) => res.json() as Promise<ResponseType>);
 
 const myStatsigClient = new StatsigClient(YOUR_CLIENT_KEY, serverVerifiedUser);
 myStatsigClient.dataAdapter.setData(values);
