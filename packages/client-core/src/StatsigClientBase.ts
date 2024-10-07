@@ -59,6 +59,7 @@ export abstract class StatsigClientBase<
   protected readonly _options: AnyStatsigOptions;
   protected readonly _errorBoundary: ErrorBoundary;
   protected readonly _logger: EventLogger;
+  protected _initializePromise: Promise<void> | null = null;
 
   private _listeners = {} as EventListenersMap;
 
@@ -143,6 +144,8 @@ export abstract class StatsigClientBase<
    */
   async shutdown(): Promise<void> {
     this.$emt({ name: 'pre_shutdown' });
+    this._setStatus('Uninitialized', null);
+    this._initializePromise = null;
     await this._logger.stop();
   }
 

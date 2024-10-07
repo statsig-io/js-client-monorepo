@@ -55,7 +55,6 @@ export default class StatsigOnDeviceEvalClient
 {
   private _store: SpecStore;
   private _evaluator: Evaluator;
-  private _initializePromise: Promise<void> | null = null;
 
   static instance(sdkKey?: string): StatsigOnDeviceEvalClient {
     const instance = _getStatsigGlobal().instance(sdkKey);

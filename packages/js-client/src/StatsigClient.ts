@@ -53,7 +53,6 @@ export default class StatsigClient
 {
   private _store: EvaluationStore;
   private _user: StatsigUserInternal;
-  private _initializePromise: Promise<void> | null = null;
 
   /**
    * Retrieves an instance of the StatsigClient based on the provided SDK key.

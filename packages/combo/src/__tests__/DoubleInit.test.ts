@@ -1,70 +1,200 @@
 import fetchMock from 'jest-fetch-mock';
-import { CreateTestPromise, InitResponseString } from 'statsig-test-helpers';
+import {
+  CreateTestPromise,
+  InitResponseString,
+  anyObject,
+  anyStringContaining,
+} from 'statsig-test-helpers';
 
 import { Storage } from '@statsig/client-core';
 import { StatsigClient } from '@statsig/js-client';
 import { StatsigOnDeviceEvalClient } from '@statsig/js-on-device-eval-client';
 
-const USER = { userID: 'a-user' };
+/* eslint-disable @typescript-eslint/no-floating-promises */
+
+function expectOneNetworkRequest(endpoint: string) {
+  expect(fetchMock).toHaveBeenCalledTimes(1);
+  expect(fetchMock).toHaveBeenCalledWith(
+    anyStringContaining(endpoint),
+    anyObject(),
+  );
+}
+
+function setDelayedStorageProvider() {
+  const promise = CreateTestPromise<void>();
+  Storage.isReady = () => false;
+  Storage.isReadyResolver = () => promise;
+  setTimeout(() => promise.resolve(), 2);
+}
 
 describe('Double Init', () => {
-  let startLoggerSpy: jest.SpyInstance;
+  const logger = {
+    start: jest.fn(),
+    stop: jest.fn(),
+    reset: jest.fn(),
+    enqueue: jest.fn(),
+  };
+
+  const clearMocks = () => {
+    logger.start.mockClear();
+    fetchMock.mockClear();
+  };
 
   beforeAll(() => {
     fetchMock.enableMocks();
     fetchMock.mockResponse(InitResponseString);
   });
 
-  describe.each([
-    [
-      'asynchronous',
-      async (client: StatsigClient | StatsigOnDeviceEvalClient) => {
-        const promise = CreateTestPromise<void>();
-        Storage.isReady = () => false;
-        Storage.isReadyResolver = () => promise;
-        setTimeout(() => promise.resolve(), 2);
+  describe('StatsigClient', () => {
+    let client: StatsigClient;
 
-        client.initializeAsync().catch(() => {
-          throw 'bad';
-        });
-        await client.initializeAsync();
-      },
-    ],
-    [
-      'synchronous',
-      (client: StatsigClient | StatsigOnDeviceEvalClient) => {
-        client.initializeSync();
-        client.initializeSync();
-        return Promise.resolve();
-      },
-    ],
-  ])('', (syncness, setup) => {
-    describe.each(['Precomputed', 'OnDevice'])(`${syncness} %s`, (type) => {
-      beforeAll(async () => {
-        fetchMock.mock.calls = [];
+    beforeAll(() => {
+      client = new StatsigClient('client-key', {});
+      (client as any)._logger = logger;
+    });
 
-        const sdkKey = 'sdk-key-' + type + syncness;
-        const client =
-          type === 'Precomputed'
-            ? new StatsigClient(sdkKey, USER)
-            : new StatsigOnDeviceEvalClient(sdkKey);
+    describe('synchronous', () => {
+      beforeAll(() => {
+        clearMocks();
 
-        startLoggerSpy = jest.spyOn((client as any)._logger, 'start');
+        client.initializeSync(); // once
+        client.initializeSync(); // twice
+      });
 
-        await setup(client);
+      it('calls logger start once', () => {
+        expect(logger.start).toHaveBeenCalledTimes(1);
       });
 
       it('only makes one /initialize request', () => {
-        expect(fetchMock.mock.calls).toHaveLength(1);
-        expect(fetchMock.mock.calls[0][0]).toContain(
-          type === 'Precomputed'
-            ? '/v1/initialize'
-            : '/v1/download_config_specs',
-        );
+        expectOneNetworkRequest('/v1/initialize');
       });
 
-      it('only starts the logger once', () => {
-        expect(startLoggerSpy).toHaveBeenCalledTimes(1);
+      describe('re-init', () => {
+        beforeAll(() => {
+          clearMocks();
+
+          client.shutdown();
+          client.initializeSync();
+        });
+
+        it('re-calls logger start once', () => {
+          expect(logger.start).toHaveBeenCalledTimes(1);
+        });
+
+        it('requests /initialize again', () => {
+          expectOneNetworkRequest('/v1/initialize');
+        });
+      });
+    });
+
+    describe('asynchronous', () => {
+      beforeAll(async () => {
+        clearMocks();
+        setDelayedStorageProvider();
+
+        await Promise.all([client.initializeAsync(), client.initializeAsync()]);
+      });
+
+      it('calls logger start once', () => {
+        expect(logger.start).toHaveBeenCalledTimes(1);
+      });
+
+      it('only makes one /initialize request', () => {
+        expectOneNetworkRequest('/v1/initialize');
+      });
+
+      describe('re-init', () => {
+        beforeAll(async () => {
+          clearMocks();
+
+          client.shutdown();
+          await client.initializeAsync();
+        });
+
+        it('re-calls logger start once', () => {
+          expect(logger.start).toHaveBeenCalledTimes(1);
+        });
+
+        it('requests /initialize again', () => {
+          expectOneNetworkRequest('/v1/initialize');
+        });
+      });
+    });
+  });
+
+  describe('StatsigOnDeviceEvalClient', () => {
+    let client: StatsigOnDeviceEvalClient;
+
+    beforeAll(() => {
+      client = new StatsigOnDeviceEvalClient('client-key');
+      (client as any)._logger = logger;
+    });
+
+    describe('synchronous', () => {
+      beforeAll(() => {
+        clearMocks();
+
+        client.initializeSync(); // once
+        client.initializeSync(); // twice
+      });
+
+      it('calls logger start once', () => {
+        expect(logger.start).toHaveBeenCalledTimes(1);
+      });
+
+      it('only makes one /download_config_specs request', () => {
+        expectOneNetworkRequest('/v1/download_config_specs');
+      });
+
+      describe('re-init', () => {
+        beforeAll(() => {
+          clearMocks();
+
+          client.shutdown();
+          client.initializeSync();
+        });
+
+        it('re-calls logger start once', () => {
+          expect(logger.start).toHaveBeenCalledTimes(1);
+        });
+
+        it('requests /download_config_specs again', () => {
+          expectOneNetworkRequest('/v1/download_config_specs');
+        });
+      });
+    });
+
+    describe('asynchronous', () => {
+      beforeAll(async () => {
+        clearMocks();
+        setDelayedStorageProvider();
+
+        await Promise.all([client.initializeAsync(), client.initializeAsync()]);
+      });
+
+      it('calls logger start once', () => {
+        expect(logger.start).toHaveBeenCalledTimes(1);
+      });
+
+      it('only makes one /download_config_specs request', () => {
+        expectOneNetworkRequest('/v1/download_config_specs');
+      });
+
+      describe('re-init', () => {
+        beforeAll(async () => {
+          clearMocks();
+
+          client.shutdown();
+          await client.initializeAsync();
+        });
+
+        it('re-calls logger start once', () => {
+          expect(logger.start).toHaveBeenCalledTimes(1);
+        });
+
+        it('requests /download_config_specs again', () => {
+          expectOneNetworkRequest('/v1/download_config_specs');
+        });
       });
     });
   });
