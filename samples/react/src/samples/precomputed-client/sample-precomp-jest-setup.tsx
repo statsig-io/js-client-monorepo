@@ -12,7 +12,8 @@ export async function transform(input: string): Promise<string> {
     { userID: 'a-user' },
     {
       networkConfig: {
-        preventAllNetworkTraffic: process.env['NODE_ENV'] === 'test',
+        preventAllNetworkTraffic:
+          typeof process !== 'undefined' && process.env['NODE_ENV'] === 'test',
       },
     },
   );

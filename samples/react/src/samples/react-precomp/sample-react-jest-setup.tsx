@@ -37,7 +37,9 @@ function App() {
       options={{
         networkConfig: {
           // Optional - disable all network traffic in tests
-          preventAllNetworkTraffic: process.env['NODE_ENV'] === 'test',
+          preventAllNetworkTraffic:
+            typeof process !== 'undefined' &&
+            process.env['NODE_ENV'] === 'test',
         },
       }}
     >
