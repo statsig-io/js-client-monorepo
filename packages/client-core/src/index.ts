@@ -36,6 +36,7 @@ export * from './StatsigOptionsCommon';
 export * from './StatsigTypeFactories';
 export * from './StatsigTypes';
 export * from './StatsigUser';
+export * from './StatsigPlugin';
 export * from './StorageProvider';
 export * from './TypedJsonParse';
 export * from './TypingUtils';

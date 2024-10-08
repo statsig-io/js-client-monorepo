@@ -102,6 +102,11 @@ export default class StatsigClient
 
     this._store = new EvaluationStore(sdkKey);
     this._user = _normalizeUser(user, options);
+
+    const plugins = options?.plugins ?? [];
+    for (const plugin of plugins) {
+      plugin.bind(this);
+    }
   }
 
   /**

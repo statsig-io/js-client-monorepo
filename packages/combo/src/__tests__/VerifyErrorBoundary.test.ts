@@ -11,6 +11,9 @@ const ebCapture = 'return this._capture(name';
 
 const dir = '../../../../packages';
 
+const SR_IGNORE = ['StatsigSessionReplayPlugin'];
+const AC_IGNORE = ['StatsigAutoCapturePlugin'];
+
 describe.each([
   [
     'ClientBase',
@@ -31,12 +34,12 @@ describe.each([
   ],
   [
     'SessionReplay',
-    getMethods(dir + '/session-replay/src/SessionReplay.ts'),
+    getMethods(dir + '/session-replay/src/SessionReplay.ts', SR_IGNORE),
     () => new SessionReplay(new StatsigClient('client-key', {})),
   ],
   [
     'AutoCapture',
-    getMethods(dir + '/web-analytics/src/AutoCapture.ts'),
+    getMethods(dir + '/web-analytics/src/AutoCapture.ts', AC_IGNORE),
     () => new AutoCapture(new StatsigClient('client-key', {})),
   ],
 ])('%s', (_title, methods, factory) => {
@@ -48,7 +51,7 @@ describe.each([
   });
 });
 
-function getMethods(sourcePath: string): string[] {
+function getMethods(sourcePath: string, ignore?: string[]): string[] {
   const filePath = path.resolve(__dirname, sourcePath);
   const fileContent = readFileSync(filePath, { encoding: 'utf8' });
 
@@ -67,9 +70,13 @@ function getMethods(sourcePath: string): string[] {
         (mod) => mod.kind === ts.SyntaxKind.StaticKeyword,
       );
 
+      const parent = node.parent;
+      const shouldIgnore =
+        'name' in parent &&
+        ignore?.includes(String(parent.name?.getText(sourceFile)));
       const methodName = node.name.getText(sourceFile);
 
-      if (!isStatic) {
+      if (!isStatic && !shouldIgnore) {
         methods.push(methodName);
       }
     }

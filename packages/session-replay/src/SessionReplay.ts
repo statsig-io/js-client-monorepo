@@ -3,6 +3,7 @@ import {
   PrecomputedEvaluationsInterface,
   SDK_VERSION,
   StatsigMetadataProvider,
+  StatsigPlugin,
   Visibility,
   _getStatsigGlobal,
   _isCurrentlyVisible,
@@ -26,6 +27,18 @@ type SessionReplayOptions = {
 };
 
 type EndReason = 'is_leaving_page' | 'session_expired';
+
+export class StatsigSessionReplayPlugin
+  implements StatsigPlugin<PrecomputedEvaluationsInterface>
+{
+  readonly __plugin = 'session-replay';
+
+  constructor(private readonly options?: SessionReplayOptions) {}
+
+  bind(client: PrecomputedEvaluationsInterface): void {
+    runStatsigSessionReplay(client, this.options);
+  }
+}
 
 export function runStatsigSessionReplay(
   client: PrecomputedEvaluationsInterface,

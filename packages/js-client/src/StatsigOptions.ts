@@ -4,7 +4,10 @@ import {
   Flatten,
   NetworkConfigCommon,
   StatsigOptionsCommon,
+  StatsigPlugin,
 } from '@statsig/client-core';
+
+import StatsigClient from './StatsigClient';
 
 type UrlOverrideOptions = Flatten<
   NetworkConfigCommon & {
@@ -35,5 +38,10 @@ export type StatsigOptions = Flatten<
      * default: Cache key is a hash of the sdkKey + user.userID + user.customIDs.
      */
     customUserCacheKeyFunc?: CustomCacheKeyGenerator;
+
+    /**
+     * Register various plugins to run along with your StatsigClient (eg SessionReplay or AutoCapture)
+     */
+    plugins?: StatsigPlugin<StatsigClient>[];
   }
 >;

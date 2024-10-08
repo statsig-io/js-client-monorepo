@@ -10,9 +10,12 @@ export type {
   StatsigEvent,
   StatsigUser,
   InitializeResponse,
+  StatsigPlugin,
 } from '@statsig/client-core';
 
-export { StatsigClient, StatsigOptions };
+export type { StatsigOptions };
+
+export { StatsigClient };
 
 __STATSIG__ = {
   ...(__STATSIG__ ?? {}),

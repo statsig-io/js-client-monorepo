@@ -1,8 +1,8 @@
-/* eslint-disable no-console */
 import {
   ErrorBoundary,
   Log,
   PrecomputedEvaluationsInterface,
+  StatsigPlugin,
   StatsigSession,
   _getDocumentSafe,
   _getStatsigGlobal,
@@ -20,6 +20,16 @@ import {
   _shouldLogEvent,
 } from './Utils';
 import { _gatherPageViewPayload } from './payloadUtils';
+
+export class StatsigAutoCapturePlugin
+  implements StatsigPlugin<PrecomputedEvaluationsInterface>
+{
+  readonly __plugin = 'auto-capture';
+
+  bind(client: PrecomputedEvaluationsInterface): void {
+    runStatsigAutoCapture(client);
+  }
+}
 
 export function runStatsigAutoCapture(
   client: PrecomputedEvaluationsInterface,

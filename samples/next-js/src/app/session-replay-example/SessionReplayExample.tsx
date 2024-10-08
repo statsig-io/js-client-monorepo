@@ -15,8 +15,8 @@ import {
   useFeatureGate,
   useStatsigClient,
 } from '@statsig/react-bindings';
-import { runStatsigSessionReplay } from '@statsig/session-replay';
-import { runStatsigAutoCapture } from '@statsig/web-analytics';
+import { StatsigSessionReplayPlugin } from '@statsig/session-replay';
+import { StatsigAutoCapturePlugin } from '@statsig/web-analytics';
 
 import { DEMO_CLIENT_KEY } from '../../utils/constants';
 import { Logo } from './Logo';
@@ -84,14 +84,15 @@ export default function SessionReplayExample({
 }): JSX.Element {
   const client = useClientBootstrapInit(DEMO_CLIENT_KEY, user, values, {
     logLevel: LogLevel.Debug,
+    plugins: [
+      new StatsigSessionReplayPlugin({
+        rrwebConfig: { blockClass: 'do-not-record' },
+      }),
+      new StatsigAutoCapturePlugin(),
+    ],
   });
 
   useEffect(() => {
-    runStatsigSessionReplay(client, {
-      rrwebConfig: { blockClass: 'do-not-record' },
-    });
-    runStatsigAutoCapture(client);
-
     const onLogsFlushed = (event: StatsigClientEvent<'logs_flushed'>) =>
       printEventTypes(event.events);
 
