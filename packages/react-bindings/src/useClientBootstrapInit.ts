@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useRef } from 'react';
 
 import { StatsigUser } from '@statsig/client-core';
 import { StatsigClient, StatsigOptions } from '@statsig/js-client';
@@ -9,14 +9,19 @@ export function useClientBootstrapInit(
   initialValues: string,
   statsigOptions: StatsigOptions | null = null,
 ): StatsigClient {
-  const [args] = useState(() => {
-    const client = new StatsigClient(sdkKey, initialUser, statsigOptions);
+  const clientRef = useRef<StatsigClient | null>(null);
 
-    client.dataAdapter.setData(initialValues);
-    client.initializeSync();
+  return useMemo(() => {
+    if (clientRef.current) {
+      return clientRef.current;
+    }
 
-    return { client, initialValues, initialUser, sdkKey };
-  });
+    const inst = new StatsigClient(sdkKey, initialUser, statsigOptions);
+    clientRef.current = inst;
 
-  return args.client;
+    inst.dataAdapter.setData(initialValues);
+    inst.initializeSync();
+
+    return inst;
+  }, []);
 }

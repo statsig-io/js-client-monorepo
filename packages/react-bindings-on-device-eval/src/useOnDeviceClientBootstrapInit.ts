@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useRef } from 'react';
 
 import {
   StatsigOnDeviceEvalClient,
@@ -10,14 +10,19 @@ export function useOnDeviceClientBootstrapInit(
   initialValues: string,
   statsigOptions: StatsigOptions | null = null,
 ): StatsigOnDeviceEvalClient {
-  const [args] = useState(() => {
-    const client = new StatsigOnDeviceEvalClient(sdkKey, statsigOptions);
+  const clientRef = useRef<StatsigOnDeviceEvalClient | null>(null);
 
-    client.dataAdapter.setData(initialValues);
-    client.initializeSync();
+  return useMemo(() => {
+    if (clientRef.current) {
+      return clientRef.current;
+    }
 
-    return { client, initialValues, sdkKey };
-  });
+    const inst = new StatsigOnDeviceEvalClient(sdkKey, statsigOptions);
+    clientRef.current = inst;
 
-  return args.client;
+    inst.dataAdapter.setData(initialValues);
+    inst.initializeSync();
+
+    return inst;
+  }, []);
 }

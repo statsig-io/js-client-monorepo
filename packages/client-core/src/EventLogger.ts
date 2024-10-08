@@ -138,6 +138,8 @@ export class EventLogger {
       this._flushIntervalId = null;
     }
 
+    delete EVENT_LOGGER_MAP[this._sdkKey];
+
     await this.flush();
   }
 

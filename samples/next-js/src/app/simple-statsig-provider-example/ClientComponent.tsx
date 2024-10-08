@@ -45,6 +45,9 @@ export default function ClientComponent(): JSX.Element {
       <StatsigProvider
         sdkKey={DEMO_CLIENT_KEY_WITH_DCS_ENABLED}
         user={{ userID: 'a-user' }}
+        loadingComponent={
+          <div style={{ height: 100, width: 300, padding: 16 }}>Loading...</div>
+        }
       >
         <Content />
       </StatsigProvider>

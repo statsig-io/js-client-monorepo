@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 
 import { Log } from '@statsig/client-core';
 import {
@@ -11,17 +11,22 @@ export function useOnDeviceClientAsyncInit(
   statsigOptions: StatsigOptions | null = null,
 ): { isLoading: boolean; client: StatsigOnDeviceEvalClient } {
   const [isLoading, setIsLoading] = useState(true);
+  const clientRef = useRef<StatsigOnDeviceEvalClient | null>(null);
+  const client = useMemo(() => {
+    if (clientRef.current) {
+      return clientRef.current;
+    }
 
-  const [args] = useState(() => {
-    const client = new StatsigOnDeviceEvalClient(sdkKey, statsigOptions);
+    const inst = new StatsigOnDeviceEvalClient(sdkKey, statsigOptions);
+    clientRef.current = inst;
 
-    client
+    inst
       .initializeAsync()
       .catch(Log.error)
       .finally(() => setIsLoading(false));
 
-    return { client, sdkKey };
-  });
+    return inst;
+  }, []);
 
-  return { client: args.client, isLoading };
+  return { client, isLoading };
 }

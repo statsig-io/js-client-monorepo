@@ -88,28 +88,13 @@ export abstract class StatsigClientBase<
     this._errorBoundary.wrap(adapter);
     this._errorBoundary.wrap(this._logger);
 
-    if (!_isServerEnv()) {
-      const statsigGlobal = _getStatsigGlobal();
-      const instances = statsigGlobal.instances ?? {};
-      const inst = this as unknown as StatsigClientInterface;
-
-      if (instances[sdkKey] != null) {
-        Log.warn(
-          'Creating multiple Statsig clients with the same SDK key can lead to unexpected behavior. Multi-instance support requires different SDK keys.',
-        );
-      }
-
-      instances[sdkKey] = inst;
-      statsigGlobal.lastInstance = inst;
-      statsigGlobal.instances = instances;
-      __STATSIG__ = statsigGlobal;
-    }
-
     this.dataAdapter = adapter;
     this.dataAdapter.attach(sdkKey, options);
     this.storageProvider = Storage;
 
     this._primeReadyRipcord();
+
+    _assignGlobalInstance(sdkKey, this as unknown as StatsigClientInterface);
   }
 
   /**
@@ -244,4 +229,25 @@ export abstract class StatsigClientBase<
   }
 
   protected abstract _primeReadyRipcord(): void;
+}
+
+function _assignGlobalInstance(sdkKey: string, client: StatsigClientInterface) {
+  if (_isServerEnv()) {
+    return;
+  }
+
+  const statsigGlobal = _getStatsigGlobal();
+  const instances = statsigGlobal.instances ?? {};
+  const inst = client;
+
+  if (instances[sdkKey] != null) {
+    Log.warn(
+      'Creating multiple Statsig clients with the same SDK key can lead to unexpected behavior. Multi-instance support requires different SDK keys.',
+    );
+  }
+
+  instances[sdkKey] = inst;
+  statsigGlobal.lastInstance = inst;
+  statsigGlobal.instances = instances;
+  __STATSIG__ = statsigGlobal;
 }
