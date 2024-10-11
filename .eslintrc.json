@@ -84,7 +84,15 @@
             "location": "anywhere"
           }
         ],
-        "eqeqeq": ["warn", "smart"]
+        "eqeqeq": ["warn", "smart"],
+        "no-restricted-syntax": [
+          "error",
+          {
+            "selector": "TSEnumDeclaration",
+            // This avoids issues where enums are stripped out due to tree-shaking
+            "message": "Use object literals with 'as const' instead of enums"
+          }
+        ]
         // "require-await": "error"
       }
     },

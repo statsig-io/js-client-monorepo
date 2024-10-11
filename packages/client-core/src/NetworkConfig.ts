@@ -10,13 +10,15 @@ export type NetworkArgs = RequestInit & {
   priority?: NetworkPriority;
 };
 
-export enum NetworkParam {
-  EventCount = 'ec',
-  SdkKey = 'k',
-  SdkType = 'st',
-  SdkVersion = 'sv',
-  Time = 't',
-  SessionID = 'sid',
-  StatsigEncoded = 'se',
-  IsGzipped = 'gz',
-}
+export const NetworkParam = {
+  EventCount: 'ec',
+  SdkKey: 'k',
+  SdkType: 'st',
+  SdkVersion: 'sv',
+  Time: 't',
+  SessionID: 'sid',
+  StatsigEncoded: 'se',
+  IsGzipped: 'gz',
+} as const;
+
+export type NetworkParam = (typeof NetworkParam)[keyof typeof NetworkParam];

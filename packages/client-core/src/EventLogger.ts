@@ -43,10 +43,13 @@ type StatsigEventExtras = {
 
 type EventQueue = (StatsigEventInternal & StatsigEventExtras)[];
 
-enum RetryFailedLogsTrigger {
-  Startup,
-  GainedFocus,
-}
+const RetryFailedLogsTrigger = {
+  Startup: 'startup',
+  GainedFocus: 'gained_focus',
+} as const;
+
+type RetryFailedLogsTrigger =
+  (typeof RetryFailedLogsTrigger)[keyof typeof RetryFailedLogsTrigger];
 
 export class EventLogger {
   private _queue: EventQueue = [];

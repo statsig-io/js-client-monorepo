@@ -213,7 +213,7 @@ export class NetworkCore {
       [NetworkParam.SdkType]: SDKType._get(args.sdkKey),
       [NetworkParam.SdkVersion]: SDK_VERSION,
       [NetworkParam.Time]: String(Date.now()),
-      [NetworkParam.SessionID]: await SessionID.get(args.sdkKey),
+      [NetworkParam.SessionID]: SessionID.get(args.sdkKey),
       ...args.params,
     };
 

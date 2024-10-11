@@ -11,13 +11,15 @@ function addTag(args: unknown[]) {
   return args; // ['[Statsig]', ...args];
 }
 
-export enum LogLevel {
-  None = 0,
-  Error,
-  Warn,
-  Info,
-  Debug,
-}
+export const LogLevel = {
+  None: 0,
+  Error: 1,
+  Warn: 2,
+  Info: 3,
+  Debug: 4,
+} as const;
+
+export type LogLevel = (typeof LogLevel)[keyof typeof LogLevel];
 
 export abstract class Log {
   static level: LogLevel = LogLevel.Warn;
