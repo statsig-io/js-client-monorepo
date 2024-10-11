@@ -5,7 +5,6 @@ import {
   anyStringContaining,
 } from 'statsig-test-helpers';
 
-import { _notifyVisibilityChanged } from '@statsig/client-core';
 import { StatsigClient } from '@statsig/js-client';
 
 describe('Network Override', () => {
@@ -29,7 +28,7 @@ describe('Network Override', () => {
       },
     );
 
-    _notifyVisibilityChanged('background');
+    window.dispatchEvent(new Event('beforeunload'));
 
     // /v1/initialize
     await client.initializeAsync();

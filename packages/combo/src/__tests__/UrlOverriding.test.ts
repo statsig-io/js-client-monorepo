@@ -1,7 +1,7 @@
 import fetchMock from 'jest-fetch-mock';
 import { MockLocalStorage } from 'statsig-test-helpers';
 
-import { StatsigGlobal, _notifyVisibilityChanged } from '@statsig/client-core';
+import { StatsigGlobal } from '@statsig/client-core';
 import { StatsigClient, StatsigOptions } from '@statsig/js-client';
 import {
   StatsigOptions as OnDeviceEvalStatsigOptions,
@@ -36,7 +36,7 @@ describe('Url Overriding', () => {
 
   describe('StatsigOnDeviceEvalClient', () => {
     const run = async (options: OnDeviceEvalStatsigOptions) => {
-      _notifyVisibilityChanged('foreground');
+      window.dispatchEvent(new Event('focus'));
 
       const client = new StatsigOnDeviceEvalClient('client-key', options);
       // /download_config_specs
@@ -47,7 +47,7 @@ describe('Url Overriding', () => {
       await client.flush();
 
       // /rgstr (sendBeacon)
-      _notifyVisibilityChanged('background');
+      window.dispatchEvent(new Event('beforeunload'));
       client.logEvent({ eventName: 'my-event' }, user);
       await client.shutdown();
     };
@@ -103,7 +103,7 @@ describe('Url Overriding', () => {
 
   describe('StatsigClient', () => {
     const run = async (options: StatsigOptions) => {
-      _notifyVisibilityChanged('foreground');
+      window.dispatchEvent(new Event('focus'));
 
       const client = new StatsigClient('client-key', user, options);
       // /initialize
@@ -114,7 +114,7 @@ describe('Url Overriding', () => {
       await client.flush();
 
       // /rgstr (sendBeacon)
-      _notifyVisibilityChanged('background');
+      window.dispatchEvent(new Event('beforeunload'));
       client.logEvent({ eventName: 'my-event' });
       await client.shutdown();
     };

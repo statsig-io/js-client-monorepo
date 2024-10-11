@@ -17,7 +17,7 @@ import {
 } from './StorageProvider';
 import { _getOverridableUrl } from './UrlOverrides';
 import {
-  _isCurrentlyVisible,
+  _isUnloading,
   _subscribeToVisiblityChanged,
 } from './VisibilityObserving';
 
@@ -221,10 +221,10 @@ export class EventLogger {
     }
 
     try {
-      const isInBackground = !_isCurrentlyVisible();
+      const isClosing = _isUnloading();
 
       const shouldUseBeacon =
-        isInBackground &&
+        isClosing &&
         this._network.isBeaconSupported() &&
         this._options?.networkConfig?.networkOverrideFunc == null;
 
