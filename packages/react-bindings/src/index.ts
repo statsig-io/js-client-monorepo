@@ -11,6 +11,8 @@ import useGateValue from './useGateValue';
 import useLayer from './useLayer';
 import useParameterStore from './useParameterStore';
 import { useStatsigClient } from './useStatsigClient';
+import { useStatsigInternalClientFactoryAsync } from './useStatsigInternalClientFactoryAsync';
+import { useStatsigInternalClientFactoryBootstrap } from './useStatsigInternalClientFactoryBootstrap';
 import { useStatsigUser } from './useStatsigUser';
 
 export type { StatsigProviderProps };
@@ -29,6 +31,8 @@ export {
   useLayer,
   useParameterStore,
   useStatsigClient,
+  useStatsigInternalClientFactoryAsync,
+  useStatsigInternalClientFactoryBootstrap,
   useStatsigUser,
 };
 
@@ -45,5 +49,7 @@ __STATSIG__ = {
   useLayer,
   useParameterStore,
   useStatsigClient,
+  useStatsigInternalClientFactoryAsync,
+  useStatsigInternalClientFactoryBootstrap,
   useStatsigUser,
 } as StatsigGlobal;
