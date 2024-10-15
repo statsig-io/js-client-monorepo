@@ -1,14 +1,14 @@
 /* eslint-disable no-console */
 import { StatsigClient } from '@statsig/js-client';
-import { runStatsigSessionReplay } from '@statsig/session-replay';
-import { runStatsigAutoCapture } from '@statsig/web-analytics';
+import { StatsigSessionReplayPlugin } from '@statsig/session-replay';
+import { StatsigAutoCapturePlugin } from '@statsig/web-analytics';
 
 import { STATSIG_CLIENT_KEY as YOUR_CLIENT_KEY } from '../../Contants';
 
 type Bundle = {
   StatsigClient: typeof StatsigClient;
-  runStatsigSessionReplay: typeof runStatsigSessionReplay;
-  runStatsigAutoCapture: typeof runStatsigAutoCapture;
+  StatsigSessionReplayPlugin: typeof StatsigSessionReplayPlugin;
+  StatsigAutoCapturePlugin: typeof StatsigAutoCapturePlugin;
 };
 
 const noop = () => {
@@ -19,8 +19,8 @@ const window = {
   myStatsigClient: {} as StatsigClient,
   Statsig: {
     StatsigClient,
-    runStatsigSessionReplay: noop,
-    runStatsigAutoCapture: noop,
+    StatsigSessionReplayPlugin: noop,
+    StatsigAutoCapturePlugin: noop,
   } as unknown as Bundle,
 };
 
@@ -35,16 +35,18 @@ export default async function Sample(): Promise<void> {
   {
     (() => {
       // <snippet>
-  const { StatsigClient, runStatsigAutoCapture, runStatsigSessionReplay } = window.Statsig;
+  const { StatsigClient, StatsigAutoCapturePlugin, StatsigSessionReplayPlugin } = window.Statsig;
 
   
   const client = new StatsigClient(
     YOUR_CLIENT_KEY,       // put your client sdk key here - "client-XXXX"
-    { userID: 'optional' } // set a userID here if you have one
+    { userID: 'optional' }, // set a userID here if you have one
+    { plugins: [
+      new StatsigAutoCapturePlugin(),
+      new StatsigSessionReplayPlugin()
+    ]}
   ); 
 
-  runStatsigAutoCapture(client);
-  runStatsigSessionReplay(client);
 
   client.initializeAsync().catch((err) => console.error(err));
       // </snippet>
