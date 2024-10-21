@@ -4,7 +4,7 @@ import React from 'react';
 import { Link, RouterProvider, createBrowserRouter } from 'react-router-dom';
 import { anyObjectContaining } from 'statsig-test-helpers';
 
-import { StatsigClient } from '@statsig/js-client';
+import { Log, LogLevel, StatsigClient } from '@statsig/js-client';
 import { runStatsigAutoCapture } from '@statsig/web-analytics';
 
 function SimplePage({ name }: { name: string }) {
@@ -42,6 +42,10 @@ describe('AutoCapture Page Views in React SPA', () => {
   let client: StatsigClient;
   let loggerSpy: jest.SpyInstance;
   let result: RenderResult;
+
+  afterAll(() => {
+    Log.level = LogLevel.None;
+  });
 
   beforeEach(async () => {
     fetchMock.enableMocks();

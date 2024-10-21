@@ -1,7 +1,7 @@
 import fetchMock from 'jest-fetch-mock';
 import { anyObject, anyStringContaining } from 'statsig-test-helpers';
 
-import { StatsigClient } from '@statsig/js-client';
+import { Log, LogLevel, StatsigClient } from '@statsig/js-client';
 
 describe('Event Emitter Error Logs', () => {
   let client: StatsigClient;
@@ -15,6 +15,8 @@ describe('Event Emitter Error Logs', () => {
 
   beforeAll(() => {
     fetchMock.enableMocks();
+
+    Log.level = LogLevel.Warn;
 
     client = new StatsigClient('client-key', { userID: '' });
 
@@ -35,6 +37,8 @@ describe('Event Emitter Error Logs', () => {
   });
 
   afterAll(() => {
+    Log.level = LogLevel.None;
+
     jest.clearAllMocks();
   });
 

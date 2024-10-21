@@ -191,7 +191,12 @@ export class NetworkCore {
         currentAttempt > retries ||
         !RETRYABLE_CODES.has(response?.status ?? 500)
       ) {
-        this._emitter?.({ name: 'error', error, tag: ErrorTag.NetworkError });
+        this._emitter?.({
+          name: 'error',
+          error,
+          tag: ErrorTag.NetworkError,
+          requestArgs: args,
+        });
         Log.error(
           `A networking error occured during ${method} request to ${url}.`,
           errorMessage,

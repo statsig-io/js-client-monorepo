@@ -1,10 +1,8 @@
 import 'jest-fetch-mock';
 import { anyString } from 'statsig-test-helpers';
 
-import { Log, LogLevel } from '../Log';
+import { Log } from '../Log';
 import { NetworkCore } from '../NetworkCore';
-
-Log.level = LogLevel.None;
 
 const urlActual = URL;
 const urlSpy = jest.fn();
@@ -101,6 +99,10 @@ describe('Network Core', () => {
         name: 'error',
         error,
         tag: 'NetworkError',
+        requestArgs: expect.objectContaining({
+          method: 'POST',
+          url,
+        }),
       });
     });
   });

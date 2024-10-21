@@ -10,16 +10,24 @@ export const ErrorTag = {
 
 export type ErrorTag = (typeof ErrorTag)[keyof typeof ErrorTag];
 
+type ErrorEventData =
+  | {
+      error: unknown;
+      tag: ErrorTag | string;
+    }
+  | {
+      error: unknown;
+      tag: 'NetworkError';
+      requestArgs: Record<string, unknown>;
+    };
+
 type EventNameToEventDataMap = {
   values_updated: {
     status: StatsigLoadingStatus;
     values: DataAdapterResult | null;
   };
   session_expired: object;
-  error: {
-    error: unknown;
-    tag: ErrorTag | string;
-  };
+  error: ErrorEventData;
   logs_flushed: { events: Record<string, unknown>[] };
   pre_shutdown: object;
   initialization_failure: object;
@@ -35,11 +43,15 @@ type EventNameToEventDataMap = {
  *
  * `values_updated` - When the Statsig clients internal values change as the result of an initialize/update operation.
  *
+ * `session_expired` - When the current session has expired.
+ *
  * `error` - When an unexpected error occurs within the Statsig client.
  *
  * `logs_flushed` - When queued StatsigEvents are flushed to Statsig servers.
  *
  * `pre_shutdown` - Fired just before the SDK is shutdown
+ *
+ * `initialization_failure` - Fired when the client fails to initialize.
  *
  * `gate_evaluation` - Fired when any gate is checked from the Statsig client.
  *
