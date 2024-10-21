@@ -69,7 +69,11 @@ export class ErrorBoundary {
         this._seen.add(name);
 
         if (this._options?.networkConfig?.preventAllNetworkTraffic) {
-          this._emitter?.({ name: 'error', error });
+          this._emitter?.({
+            name: 'error',
+            error,
+            tag,
+          });
           return;
         }
 
@@ -95,7 +99,11 @@ export class ErrorBoundary {
           body,
         });
 
-        this._emitter?.({ name: 'error', error });
+        this._emitter?.({
+          name: 'error',
+          error,
+          tag,
+        });
       };
 
       impl()

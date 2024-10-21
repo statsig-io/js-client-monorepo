@@ -8,6 +8,7 @@ import { _getWindowSafe } from './SafeJs';
 import { SessionID } from './SessionID';
 import { StableID } from './StableID';
 import { StatsigClientEmitEventFunc } from './StatsigClientBase';
+import { ErrorTag } from './StatsigClientEventEmitter';
 import { SDK_VERSION, StatsigMetadataProvider } from './StatsigMetadata';
 import { AnyStatsigOptions, NetworkConfigCommon } from './StatsigOptionsCommon';
 import { Flatten } from './TypingUtils';
@@ -190,7 +191,7 @@ export class NetworkCore {
         currentAttempt > retries ||
         !RETRYABLE_CODES.has(response?.status ?? 500)
       ) {
-        this._emitter?.({ name: 'error', error });
+        this._emitter?.({ name: 'error', error, tag: ErrorTag.NetworkError });
         Log.error(
           `A networking error occured during ${method} request to ${url}.`,
           errorMessage,

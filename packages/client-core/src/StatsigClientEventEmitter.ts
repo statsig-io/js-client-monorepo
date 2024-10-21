@@ -4,13 +4,22 @@ import { Flatten } from './TypingUtils';
 
 export type StatsigLoadingStatus = 'Uninitialized' | 'Loading' | 'Ready';
 
+export const ErrorTag = {
+  NetworkError: 'NetworkError',
+} as const;
+
+export type ErrorTag = (typeof ErrorTag)[keyof typeof ErrorTag];
+
 type EventNameToEventDataMap = {
   values_updated: {
     status: StatsigLoadingStatus;
     values: DataAdapterResult | null;
   };
   session_expired: object;
-  error: { error: unknown };
+  error: {
+    error: unknown;
+    tag: ErrorTag | string;
+  };
   logs_flushed: { events: Record<string, unknown>[] };
   pre_shutdown: object;
   initialization_failure: object;

@@ -13,7 +13,8 @@ describe('Network Core', () => {
   const sdkKey = 'a-key';
   const data = { foo: 'bar' };
   const url = 'http://localhost';
-  const network = new NetworkCore(null);
+  const emitter = jest.fn();
+  const network = new NetworkCore(null, emitter);
 
   beforeAll(() => {
     (global as any).URL = urlSpy;
@@ -81,15 +82,26 @@ describe('Network Core', () => {
   });
 
   describe('Error', () => {
+    const error = new Error('Lost Connection');
+
     beforeAll(async () => {
       fetchMock.mockClear();
-      fetchMock.mockReject(new Error('Lost Connection'));
+      fetchMock.mockReject(error);
+      emitter.mockClear();
 
       await network.post({ sdkKey, url, data: {}, retries: 2 });
     });
 
     it('make 1 initial and then 2 retries', () => {
       expect(fetchMock).toHaveBeenCalledTimes(3);
+    });
+
+    it('emits an error', () => {
+      expect(emitter).toHaveBeenCalledWith({
+        name: 'error',
+        error,
+        tag: 'NetworkError',
+      });
     });
   });
 
@@ -97,12 +109,27 @@ describe('Network Core', () => {
     beforeAll(async () => {
       fetchMock.mockClear();
       fetchMock.mockResponse('', { status: 500 });
+      emitter.mockClear();
 
       await network.post({ sdkKey, url, data: {}, retries: 2 });
     });
 
     it('make 1 initial and then 2 retries', () => {
       expect(fetchMock).toHaveBeenCalledTimes(3);
+    });
+
+    it('emits an error', () => {
+      const calls = emitter.mock.calls;
+      expect(calls).toHaveLength(1);
+
+      const call = calls[0][0];
+      expect(call).toMatchObject({
+        name: 'error',
+        tag: 'NetworkError',
+      });
+
+      expect(call.error).toBeInstanceOf(Error);
+      expect(call.error.name).toBe('NetworkError');
     });
   });
 
