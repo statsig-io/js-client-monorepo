@@ -173,11 +173,16 @@ function _replaceAwaiters(input) {
       .length;
 
   const matches = input.match(pattern);
-  for (let i = 0; i < matches.length; i++) {
-    if (matches[i].length == len) {
-      return input.replaceAll(matches[i], 'this.__awaiter||$A()');
+  if (matches) {
+    for (let i = 0; i < matches.length; i++) {
+      if (matches[i].length == len) {
+        return input.replaceAll(matches[i], 'this.__awaiter||$A()');
+      }
     }
   }
 
-  throw "[Statsig Build]: Failed to find valid '__awaiters' to replace";
+  const errorMessage =
+    "[Statsig Build]: Failed to find valid '__awaiters' to replace";
+  console.error(errorMessage);
+  throw errorMessage;
 }

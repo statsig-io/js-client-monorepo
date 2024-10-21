@@ -11,6 +11,7 @@
         "^build",
         "build-webpack-js-client+session-replay+web-analytics",
         "build-webpack-js-client+web-analytics",
+        "build-webpack-js-client+session-replay",
         "build-webpack-js-client",
         "build-webpack-js-on-device-eval-client"
       ]
@@ -68,6 +69,20 @@
         "webpackConfig": "packages/combo/webpack[js-client+web-analytics].config.js"
       },
       "dependsOn": ["build-ts", "js-client:build", "web-analytics:build"]
+    },
+    "build-webpack-js-client+session-replay": {
+      "executor": "@nx/webpack:webpack",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
+      "options": {
+        "statsJson": true,
+        "verbose": true,
+        "outputPath": "overridden in webpack config",
+        "main": "overridden in webpack config",
+        "tsConfig": "packages/combo/tsconfig.lib.json",
+        "webpackConfig": "packages/combo/webpack[js-client+session-replay].config.js"
+      },
+      "dependsOn": ["build-ts", "js-client:build", "session-replay:build"]
     },
     "build-webpack-js-client": {
       "executor": "@nx/webpack:webpack",
