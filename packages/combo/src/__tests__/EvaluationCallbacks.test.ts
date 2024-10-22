@@ -81,7 +81,7 @@ describe('Client Evaluations Callback', () => {
           name: 'gate_evaluation',
           gate: {
             name: 'a_gate',
-            ruleID: '2QWhVkWdUEXR6Q3KYgV73O',
+            ruleID: '2QWhVkWdUEXR6Q3KYgV73O:100.00:4',
             details: expectedDetails,
             value: true,
             __evaluation: anyObject(),
@@ -136,11 +136,12 @@ describe('Client Evaluations Callback', () => {
           name: 'experiment_evaluation',
           experiment: {
             name: 'an_experiment',
-            ruleID: '49CGlTB7z97PEdqJapQplA',
+            ruleID: '49CGlTB7z97PEdqJapQplA:override',
             groupName: 'Test',
             details: expectedDetails,
             value: {
               a_string: 'Experiment Test Value',
+              my_obj: {},
             },
             get: anyFunction(),
             __evaluation: anyObject(),
@@ -165,7 +166,7 @@ describe('Client Evaluations Callback', () => {
           name: 'layer_evaluation',
           layer: {
             name: 'a_layer',
-            ruleID: '49CGlTB7z97PEdqJapQplA',
+            ruleID: '49CGlTB7z97PEdqJapQplA:override',
             groupName: 'Test',
             details: expectedDetails,
             get: anyFunction(),

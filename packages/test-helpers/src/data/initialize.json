@@ -1,17 +1,57 @@
 {
   "__note": "Sample Response using the SDK Demo project",
+
+  "user": { "userID": "a-user" },
   "feature_gates": {
     "610600137": {
       "name": "610600137",
-      "value": false,
-      "rule_id": "59nkHdlmIytrqNG9iT7gkd:50.00:2",
+      "value": true,
+      "rule_id": "59nkHdlmIytrqNG9iT7gkd:50.00:4",
       "id_type": "userID",
       "secondary_exposures": []
+    },
+    "735029418": {
+      "name": "735029418",
+      "value": true,
+      "rule_id": "3Ozepo7GXKQVPIRDk1z7V9",
+      "id_type": "userID",
+      "secondary_exposures": []
+    },
+    "2199665205": {
+      "name": "2199665205",
+      "value": true,
+      "rule_id": "8OsAMPTg8F2Zx80ZialJ4",
+      "id_type": "userID",
+      "secondary_exposures": [
+        {
+          "gate": "11d8snmVuqwfApXyUo6Vjt",
+          "gateValue": "false",
+          "ruleID": "7MfLa1sxHKhPjAKKIYIZ3D"
+        },
+        {
+          "gate": "xTl2K32QDdjkpKnWgOGGA",
+          "gateValue": "true",
+          "ruleID": "2mCqBq3xjKqKxPDJzrcrkq"
+        }
+      ]
+    },
+    "2199665206": {
+      "name": "2199665206",
+      "value": true,
+      "rule_id": "2mCqBq3xjKqKxPDJzrcrkq",
+      "id_type": "userID",
+      "secondary_exposures": [
+        {
+          "gate": "11d8snmVuqwfApXyUo6Vjt",
+          "gateValue": "false",
+          "ruleID": "7MfLa1sxHKhPjAKKIYIZ3D"
+        }
+      ]
     },
     "2867927529": {
       "name": "2867927529",
       "value": true,
-      "rule_id": "2QWhVkWdUEXR6Q3KYgV73O",
+      "rule_id": "2QWhVkWdUEXR6Q3KYgV73O:100.00:4",
       "id_type": "userID",
       "secondary_exposures": []
     },
@@ -24,15 +64,51 @@
     }
   },
   "dynamic_configs": {
+    "445124509": {
+      "name": "445124509",
+      "value": {
+        "a_string": "Experiment Control Value"
+      },
+      "rule_id": "2Ai2OVWKSewJZ3uuSUrc4P",
+      "group": "2Ai2OVWKSewJZ3uuSUrc4P",
+      "group_name": "Control",
+      "is_device_based": true,
+      "id_type": "stableID",
+      "is_experiment_active": true,
+      "is_user_in_experiment": true,
+      "secondary_exposures": []
+    },
+    "639097499": {
+      "name": "639097499",
+      "value": {
+        "a_string": "Layer Default Value",
+        "my_obj": {}
+      },
+      "rule_id": "prestart",
+      "group": "prestart",
+      "is_device_based": false,
+      "id_type": "userID",
+      "is_experiment_active": false,
+      "is_user_in_experiment": false,
+      "is_in_layer": true,
+      "explicit_parameters": ["a_bool", "a_string"],
+      "secondary_exposures": [
+        {
+          "gate": "11d8snmVuqwfApXyUo6Vjt",
+          "gateValue": "false",
+          "ruleID": "7MfLa1sxHKhPjAKKIYIZ3D"
+        }
+      ]
+    },
     "782154425": {
       "name": "782154425",
       "value": {
-        "a_string": "test",
-        "a_bool": true
+        "a_string": "control",
+        "a_bool": false
       },
-      "rule_id": "3cOnAc0cD6eI8mYw6Ofpgb",
-      "group": "3cOnAc0cD6eI8mYw6Ofpgb",
-      "group_name": "Test",
+      "rule_id": "4k8adllBkpISH3DrpsCauO",
+      "group": "4k8adllBkpISH3DrpsCauO",
+      "group_name": "Control",
       "is_device_based": false,
       "id_type": "userID",
       "is_experiment_active": true,
@@ -42,15 +118,16 @@
     "2493531029": {
       "name": "2493531029",
       "value": {
-        "a_string": "c"
+        "a_string": "t2",
+        "a_num": 2
       },
-      "rule_id": "1J6QLlETnyrV1XE2um2XiS",
-      "group": "1J6QLlETnyrV1XE2um2XiS",
-      "group_name": "Control",
+      "rule_id": "3dqkQaDNCt2eZzw0niHTic:userID:id_override",
+      "group": "3dqkQaDNCt2eZzw0niHTic:userID:id_override",
+      "group_name": "Test #2",
       "is_device_based": false,
       "id_type": "userID",
-      "is_experiment_active": true,
-      "is_user_in_experiment": true,
+      "is_experiment_active": false,
+      "is_user_in_experiment": false,
       "secondary_exposures": []
     },
     "3495537376": {
@@ -69,48 +146,122 @@
     "3921852239": {
       "name": "3921852239",
       "value": {
-        "a_string": "Experiment Test Value"
+        "a_string": "Experiment Test Value",
+        "my_obj": {}
       },
-      "rule_id": "49CGlTB7z97PEdqJapQplA",
-      "group": "49CGlTB7z97PEdqJapQplA",
+      "rule_id": "49CGlTB7z97PEdqJapQplA:override",
+      "group": "49CGlTB7z97PEdqJapQplA:override",
       "group_name": "Test",
       "is_device_based": false,
       "id_type": "userID",
       "is_experiment_active": true,
-      "is_user_in_experiment": true,
+      "is_user_in_experiment": false,
       "is_in_layer": true,
       "explicit_parameters": ["a_string"],
-      "secondary_exposures": []
+      "secondary_exposures": [
+        {
+          "gate": "1fhAMqeFVUKtLmpG0k5qAS",
+          "gateValue": "true",
+          "ruleID": "59nkHdlmIytrqNG9iT7gkd:50.00:4"
+        }
+      ]
     }
   },
   "layer_configs": {
     "3011030003": {
       "name": "3011030003",
       "value": {
-        "a_string": "Experiment Test Value"
+        "a_string": "Experiment Test Value",
+        "my_obj": {}
       },
-      "rule_id": "49CGlTB7z97PEdqJapQplA",
-      "group": "49CGlTB7z97PEdqJapQplA",
+      "rule_id": "49CGlTB7z97PEdqJapQplA:override",
+      "group": "49CGlTB7z97PEdqJapQplA:override",
       "group_name": "Test",
       "allocated_experiment_name": "3921852239",
       "is_device_based": false,
       "is_experiment_active": true,
       "explicit_parameters": ["a_string"],
-      "is_user_in_experiment": true,
-      "secondary_exposures": [],
-      "undelegated_secondary_exposures": []
+      "is_user_in_experiment": false,
+      "secondary_exposures": [
+        {
+          "gate": "1fhAMqeFVUKtLmpG0k5qAS",
+          "gateValue": "true",
+          "ruleID": "59nkHdlmIytrqNG9iT7gkd:50.00:4"
+        }
+      ],
+      "undelegated_secondary_exposures": [
+        {
+          "gate": "1fhAMqeFVUKtLmpG0k5qAS",
+          "gateValue": "true",
+          "ruleID": "59nkHdlmIytrqNG9iT7gkd:50.00:4"
+        }
+      ]
     }
   },
   "sdkParams": {},
   "has_updates": true,
   "generator": "scrapi-nest",
-  "time": 1705543730484,
-  "company_lcut": 1705543730484,
-  "evaluated_keys": {},
+  "time": 1729634260223,
+  "company_lcut": 1729634260223,
+  "evaluated_keys": {
+    "userID": "a-user"
+  },
+  "hash_used": "djb2",
   "derived_fields": {
-    "user_agent": "PostmanRuntime/7.36.3",
+    "user_agent": "PostmanRuntime/7.41.2",
     "ip": "4.38.114.186",
     "country": "US"
   },
-  "user": { "userID": "a-user" }
+  "hashed_sdk_key_used": "1295945792",
+  "can_record_session": true,
+  "session_recording_rate": 1,
+  "auto_capture_settings": {
+    "disabled_events": {}
+  },
+  "param_stores": {
+    "2146298833": {
+      "a_string_param": {
+        "name": "a_string_param",
+        "gate_name": "610600137",
+        "ref_type": "gate",
+        "param_type": "string",
+        "pass_value": "Yea",
+        "fail_value": "Nah"
+      },
+      "a_bool_param": {
+        "name": "a_bool_param",
+        "ref_type": "experiment",
+        "param_type": "boolean",
+        "experiment_name": "782154425",
+        "param_name": "a_bool"
+      },
+      "a_num_param": {
+        "name": "a_num_param",
+        "ref_type": "experiment",
+        "param_type": "number",
+        "experiment_name": "2493531029",
+        "param_name": "a_num"
+      },
+      "an_object_param": {
+        "name": "an_object_param",
+        "ref_type": "layer",
+        "param_type": "object",
+        "layer_name": "3011030003",
+        "param_name": "my_obj"
+      },
+      "an_array_param": {
+        "name": "an_array_param",
+        "ref_type": "static",
+        "param_type": "array",
+        "value": []
+      },
+      "another_string_param": {
+        "name": "another_string_param",
+        "ref_type": "dynamic_config",
+        "param_type": "string",
+        "config_name": "3495537376",
+        "param_name": "red"
+      }
+    }
+  }
 }

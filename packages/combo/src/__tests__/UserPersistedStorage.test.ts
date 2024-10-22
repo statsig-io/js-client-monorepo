@@ -27,6 +27,7 @@ const DCS_RESPONSE_INACTIVE_EXP = (() => {
 
   return JSON.stringify(dcsClone);
 })();
+
 const STORAGE_VALUES_TEST_GROUP_USER = JSON.stringify({
   'test-group-user-11:userID': {
     an_experiment: {
@@ -39,6 +40,24 @@ const STORAGE_VALUES_TEST_GROUP_USER = JSON.stringify({
     },
   },
 });
+
+const SECONDARY_EXPOSURES = [
+  {
+    gate: 'partial_gate',
+    gateValue: 'false',
+    ruleID: '59nkHdlmIytrqNG9iT7gkd:50.00:4',
+  },
+  {
+    gate: 'a_holdout',
+    gateValue: 'false',
+    ruleID: '7MfLa1sxHKhPjAKKIYIZ3D',
+  },
+  {
+    gate: 'a_holdout',
+    gateValue: 'false',
+    ruleID: '7MfLa1sxHKhPjAKKIYIZ3D',
+  },
+];
 
 describe('User Persisted Storage', () => {
   const useInControlGroup = { userID: 'control-group-user-3' };
@@ -87,7 +106,7 @@ describe('User Persisted Storage', () => {
         group_name: 'Control',
         json_value: { a_string: 'Experiment Control Value' },
         rule_id: '49CGlRW56QYlkNSNzhUM2y',
-        secondary_exposures: [],
+        secondary_exposures: SECONDARY_EXPOSURES,
         time: anyNumber(),
         value: true,
       },
@@ -104,7 +123,7 @@ describe('User Persisted Storage', () => {
         group_name: 'Test',
         json_value: { a_string: 'Experiment Test Value' },
         rule_id: '49CGlTB7z97PEdqJapQplA',
-        secondary_exposures: [],
+        secondary_exposures: SECONDARY_EXPOSURES,
         time: anyNumber(),
         value: true,
       },
