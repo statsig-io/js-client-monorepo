@@ -54,13 +54,13 @@ describe('Local Overrides - StatsigClient', () => {
     });
 
     it('has the eval reason to "LocalOverride"', () => {
-      expect(gate.details.reason).toBe('LocalOverride');
+      expect(gate.details.reason).toBe('LocalOverride:Recognized');
     });
 
     it('emits the correct client event', () => {
       const emission = emissions[0] as any;
       expect(emission.name).toBe('gate_evaluation');
-      expect(emission.gate.details.reason).toBe('LocalOverride');
+      expect(emission.gate.details.reason).toBe('LocalOverride:Recognized');
       expect(emission.gate.value).toBe(true);
     });
 
@@ -71,7 +71,7 @@ describe('Local Overrides - StatsigClient', () => {
       const body = JSON.parse(String(payload?.body)) as any;
       const event = body.events[0];
       expect(event.metadata.gate).toBe('a_gate');
-      expect(event.metadata.reason).toBe('LocalOverride');
+      expect(event.metadata.reason).toBe('LocalOverride:Recognized');
     });
   });
 
@@ -93,13 +93,15 @@ describe('Local Overrides - StatsigClient', () => {
     });
 
     it('has the eval reason to "LocalOverride"', () => {
-      expect(config.details.reason).toBe('LocalOverride');
+      expect(config.details.reason).toBe('LocalOverride:Recognized');
     });
 
     it('emits the correct client event', () => {
       const emission = emissions[0] as any;
       expect(emission.name).toBe('dynamic_config_evaluation');
-      expect(emission.dynamicConfig.details.reason).toBe('LocalOverride');
+      expect(emission.dynamicConfig.details.reason).toBe(
+        'LocalOverride:Recognized',
+      );
       expect(emission.dynamicConfig.value).toEqual({ a_string: 'foo' });
     });
 
@@ -110,7 +112,7 @@ describe('Local Overrides - StatsigClient', () => {
       const body = JSON.parse(String(payload?.body)) as any;
       const event = body.events[0];
       expect(event.metadata.config).toBe('a_config');
-      expect(event.metadata.reason).toBe('LocalOverride');
+      expect(event.metadata.reason).toBe('LocalOverride:Recognized');
     });
   });
 
@@ -134,13 +136,13 @@ describe('Local Overrides - StatsigClient', () => {
     });
 
     it('has the eval reason to "LocalOverride"', () => {
-      expect(layer.details.reason).toBe('LocalOverride');
+      expect(layer.details.reason).toBe('LocalOverride:Recognized');
     });
 
     it('emits the correct client event', () => {
       const emission = emissions[0] as any;
       expect(emission.name).toBe('layer_evaluation');
-      expect(emission.layer.details.reason).toBe('LocalOverride');
+      expect(emission.layer.details.reason).toBe('LocalOverride:Recognized');
       expect(emission.layer.__value).toEqual({ a_string: 'foo' });
     });
 
@@ -151,7 +153,7 @@ describe('Local Overrides - StatsigClient', () => {
       const body = JSON.parse(String(payload?.body)) as any;
       const event = body.events[0];
       expect(event.metadata.config).toBe('a_layer');
-      expect(event.metadata.reason).toBe('LocalOverride');
+      expect(event.metadata.reason).toBe('LocalOverride:Recognized');
     });
   });
 });

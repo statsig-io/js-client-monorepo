@@ -1,4 +1,5 @@
 import {
+  _DJB2,
   _makeDynamicConfig,
   _makeExperiment,
   _makeFeatureGate,
@@ -30,18 +31,47 @@ describe('Local Overrides', () => {
     provider.overrideDynamicConfig(dynamicConfig.name, { dc: 'value' });
     const overridden = provider.getDynamicConfigOverride(dynamicConfig, user);
     expect(overridden?.value).toEqual({ dc: 'value' });
+    expect(overridden?.get('dc')).toEqual('value');
+    expect(overridden?.details.reason).toBe('LocalOverride:Recognized');
   });
 
   it('returns overidden experiment', () => {
     provider.overrideExperiment(experiment.name, { exp: 'value' });
     const overridden = provider.getExperimentOverride(experiment, user);
     expect(overridden?.value).toEqual({ exp: 'value' });
+    expect(overridden?.get('exp')).toEqual('value');
+    expect(overridden?.details.reason).toBe('LocalOverride:Recognized');
   });
 
   it('returns overidden layer', () => {
     provider.overrideLayer(layer.name, { layer_key: 'value' });
     const overridden = provider.getLayerOverride(layer, user);
     expect(overridden?.__value).toEqual({ layer_key: 'value' });
+    expect(overridden?.get('layer_key')).toEqual('value');
+    expect(overridden?.details.reason).toBe('LocalOverride:Recognized');
+  });
+
+  it('returns null for unrecognized overrides', () => {
+    provider.removeAllOverrides();
+
+    const overriddenGate = provider.getGateOverride(gate, user);
+
+    const overriddenDynamicConfig = provider.getDynamicConfigOverride(
+      dynamicConfig,
+      user,
+    );
+
+    const overriddenExperiment = provider.getExperimentOverride(
+      experiment,
+      user,
+    );
+
+    const overriddenLayer = provider.getLayerOverride(layer, user);
+
+    expect(overriddenGate).toBeNull();
+    expect(overriddenDynamicConfig).toBeNull();
+    expect(overriddenExperiment).toBeNull();
+    expect(overriddenLayer).toBeNull();
   });
 
   it('returns all overrides', () => {
@@ -51,10 +81,21 @@ describe('Local Overrides', () => {
     provider.overrideLayer(layer.name, { layer_key: 'value' });
 
     expect(provider.getAllOverrides()).toEqual({
-      dynamicConfig: { a_config: { dc: 'value' } },
-      experiment: { an_experiment: { exp: 'value' } },
-      gate: { a_gate: true },
-      layer: { a_layer: { layer_key: 'value' } },
+      dynamicConfig: {
+        a_config: { dc: 'value' },
+        '2902556896': {
+          dc: 'value',
+        },
+      },
+      experiment: {
+        an_experiment: { exp: 'value' },
+        '3921852239': { exp: 'value' },
+      },
+      gate: { a_gate: true, '2867927529': true },
+      layer: {
+        a_layer: { layer_key: 'value' },
+        '3011030003': { layer_key: 'value' },
+      },
     });
   });
 
@@ -80,7 +121,10 @@ describe('Local Overrides', () => {
 
     provider.removeGateOverride('gate_a');
 
-    expect(provider.getAllOverrides().gate).toEqual({ gate_b: true });
+    expect(provider.getAllOverrides().gate).toEqual({
+      gate_b: true,
+      [_DJB2('gate_b')]: true,
+    });
   });
 
   it('removes single dynamic config overrides', () => {
@@ -91,6 +135,7 @@ describe('Local Overrides', () => {
 
     expect(provider.getAllOverrides().dynamicConfig).toEqual({
       config_b: { b: 2 },
+      [_DJB2('config_b')]: { b: 2 },
     });
   });
 
@@ -102,6 +147,7 @@ describe('Local Overrides', () => {
 
     expect(provider.getAllOverrides().experiment).toEqual({
       experiment_b: { b: 2 },
+      [_DJB2('experiment_b')]: { b: 2 },
     });
   });
 
@@ -113,6 +159,7 @@ describe('Local Overrides', () => {
 
     expect(provider.getAllOverrides().layer).toEqual({
       layer_b: { b: 2 },
+      [_DJB2('layer_b')]: { b: 2 },
     });
   });
 });

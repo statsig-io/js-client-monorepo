@@ -5,9 +5,11 @@ import {
   Layer,
   OverrideAdapter,
   StatsigUser,
+  _DJB2,
+  _makeTypedGet,
 } from '@statsig/client-core';
 
-const LOCAL_OVERRIDE_REASON = 'LocalOverride';
+const LOCAL_OVERRIDE_REASON = 'LocalOverride:Recognized';
 
 export type OverrideStore = {
   gate: Record<string, boolean>;
@@ -30,17 +32,21 @@ export class LocalOverrideAdapter implements OverrideAdapter {
 
   overrideGate(name: string, value: boolean): void {
     this._overrides.gate[name] = value;
+    this._overrides.gate[_DJB2(name)] = value;
   }
 
   removeGateOverride(name: string): void {
     delete this._overrides.gate[name];
+    delete this._overrides.gate[_DJB2(name)];
   }
 
   getGateOverride(
     current: FeatureGate,
     _user: StatsigUser,
   ): FeatureGate | null {
-    const overridden = this._overrides.gate[current.name];
+    const overridden =
+      this._overrides.gate[current.name] ??
+      this._overrides.gate[_DJB2(current.name)];
     if (overridden == null) {
       return null;
     }
@@ -54,10 +60,12 @@ export class LocalOverrideAdapter implements OverrideAdapter {
 
   overrideDynamicConfig(name: string, value: Record<string, unknown>): void {
     this._overrides.dynamicConfig[name] = value;
+    this._overrides.dynamicConfig[_DJB2(name)] = value;
   }
 
   removeDynamicConfigOverride(name: string): void {
     delete this._overrides.dynamicConfig[name];
+    delete this._overrides.dynamicConfig[_DJB2(name)];
   }
 
   getDynamicConfigOverride(
@@ -69,10 +77,12 @@ export class LocalOverrideAdapter implements OverrideAdapter {
 
   overrideExperiment(name: string, value: Record<string, unknown>): void {
     this._overrides.experiment[name] = value;
+    this._overrides.experiment[_DJB2(name)] = value;
   }
 
   removeExperimentOverride(name: string): void {
     delete this._overrides.experiment[name];
+    delete this._overrides.experiment[_DJB2(name)];
   }
 
   getExperimentOverride(
@@ -84,10 +94,12 @@ export class LocalOverrideAdapter implements OverrideAdapter {
 
   overrideLayer(name: string, value: Record<string, unknown>): void {
     this._overrides.layer[name] = value;
+    this._overrides.layer[_DJB2(name)] = value;
   }
 
   removeLayerOverride(name: string): void {
     delete this._overrides.layer[name];
+    delete this._overrides.layer[_DJB2(name)];
   }
 
   getAllOverrides(): OverrideStore {
@@ -99,7 +111,9 @@ export class LocalOverrideAdapter implements OverrideAdapter {
   }
 
   getLayerOverride(current: Layer, _user: StatsigUser): Layer | null {
-    const overridden = this._overrides.layer[current.name];
+    const overridden =
+      this._overrides.layer[current.name] ??
+      this._overrides.layer[_DJB2(current.name)];
     if (overridden == null) {
       return null;
     }
@@ -107,6 +121,7 @@ export class LocalOverrideAdapter implements OverrideAdapter {
     return {
       ...current,
       __value: overridden,
+      get: _makeTypedGet(overridden),
       details: { ...current.details, reason: LOCAL_OVERRIDE_REASON },
     };
   }
@@ -115,7 +130,7 @@ export class LocalOverrideAdapter implements OverrideAdapter {
     current: T,
     lookup: Record<string, Record<string, unknown>>,
   ): T | null {
-    const overridden = lookup[current.name];
+    const overridden = lookup[current.name] ?? lookup[_DJB2(current.name)];
     if (overridden == null) {
       return null;
     }
@@ -123,6 +138,7 @@ export class LocalOverrideAdapter implements OverrideAdapter {
     return {
       ...current,
       value: overridden,
+      get: _makeTypedGet(overridden),
       details: { ...current.details, reason: LOCAL_OVERRIDE_REASON },
     };
   }

@@ -1,12 +1,11 @@
 'use client';
 
 import { useEffect } from 'react';
-import { StatsigUser } from 'statsig-node';
 
 import { AnyStatsigClientEvent } from '@statsig/client-core';
 import {
   StatsigProvider,
-  useClientBootstrapInit,
+  useClientAsyncInit,
   useParameterStore,
 } from '@statsig/react-bindings';
 
@@ -24,31 +23,31 @@ function ResultRow({ title, result }: { title: string; result: string }) {
 }
 
 function Content() {
-  const store = useParameterStore('my_param_store');
-  const noExposureStore = useParameterStore('my_param_store', {
+  const store = useParameterStore('a_param_store');
+  const noExposureStore = useParameterStore('a_param_store', {
     disableExposureLog: true,
   });
 
   return (
     <div style={{ padding: 16 }}>
       <ResultRow
-        title="my_static_value_string"
-        result={store.get('my_static_value_string', 'fallback')}
+        title="a_string_param"
+        result={store.get('a_string_param', 'fallback')}
       />
 
       <ResultRow
-        title="my_gated_value_boolean"
-        result={store.get('my_gated_value_boolean', false) ? 'Yes' : 'No'}
+        title="a_bool_param"
+        result={store.get('a_bool_param', false) ? 'Yes' : 'No'}
       />
 
       <ResultRow
-        title="my_gated_value_string"
-        result={store.get('my_gated_value_string', 'fallback')}
+        title="a_num_param"
+        result={String(store.get('a_num_param', -1))}
       />
 
       <ResultRow
-        title="my_gated_value_string (No Exposure)"
-        result={noExposureStore.get('my_gated_value_string', 'fallback')}
+        title="a_string_param (No Exposure)"
+        result={noExposureStore.get('a_string_param', 'fallback')}
       />
 
       <ResultRow
@@ -61,14 +60,10 @@ function Content() {
   );
 }
 
-export default function ParamStoreExample({
-  user,
-  values,
-}: {
-  user: StatsigUser;
-  values: string;
-}): JSX.Element {
-  const client = useClientBootstrapInit(DEMO_CLIENT_KEY, user, values);
+export default function ParamStoreExample(): JSX.Element {
+  const { client, isLoading } = useClientAsyncInit(DEMO_CLIENT_KEY, {
+    userID: 'a-user',
+  });
 
   useEffect(() => {
     const onAnyClientEvent = (event: AnyStatsigClientEvent) =>
@@ -76,6 +71,10 @@ export default function ParamStoreExample({
     client.on('*', onAnyClientEvent);
     return () => client.off('*', onAnyClientEvent);
   }, [client]);
+
+  if (isLoading) {
+    return <div>Statsig Loading...</div>;
+  }
 
   return (
     <StatsigProvider client={client}>

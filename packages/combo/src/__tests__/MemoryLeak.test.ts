@@ -22,14 +22,12 @@ async function runGarbageCollection() {
 }
 
 describe('Memory Usage', () => {
-  beforeAll(() => {
+  beforeAll(async () => {
     fetchMock.enableMocks();
     fetchMock.mockResponse(InitResponseString);
 
     MockLocalStorage.enabledMockStorage();
-  });
 
-  it('clears all used memory when done', async () => {
     for (let i = 0; i < 1000; i++) {
       const instance = new StatsigClient(
         'client-key',
@@ -39,6 +37,9 @@ describe('Memory Usage', () => {
       await instance.initializeAsync();
       instance.checkGate('gate1');
     }
+  });
+
+  it('clears all used memory when done', async () => {
     const initialMemory = process.memoryUsage().heapUsed;
 
     for (let i = 0; i < 10000; i++) {
