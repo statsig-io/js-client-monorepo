@@ -247,7 +247,9 @@ function _assignGlobalInstance(sdkKey: string, client: StatsigClientInterface) {
   }
 
   instances[sdkKey] = inst;
-  statsigGlobal.lastInstance = inst;
+  if (!statsigGlobal.firstInstance) {
+    statsigGlobal.firstInstance = inst;
+  }
   statsigGlobal.instances = instances;
   __STATSIG__ = statsigGlobal;
 }
