@@ -92,7 +92,7 @@
     "cypress": "^13.0.0",
     "encoding": "^0.1.13",
     "eslint": "8.48.0",
-    "eslint-config-next": "14.0.4",
+    "eslint-config-next": "14.2.3",
     "eslint-config-prettier": "9.1.0",
     "eslint-plugin-cypress": "^2.13.4",
     "eslint-plugin-import": "2.27.5",

@@ -1,0 +1,57 @@
+{
+  "name": "next-js-pages-router-sample",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "samples/next-js-pages-router-sample",
+  "projectType": "application",
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "@nx/next:build",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
+      "options": {
+        "outputPath": "dist/samples/next-js-pages-router-sample"
+      },
+      "configurations": {
+        "development": {
+          "outputPath": "samples/next-js-pages-router-sample"
+        },
+        "production": {}
+      }
+    },
+    "serve": {
+      "executor": "@nx/next:server",
+      "defaultConfiguration": "development",
+      "options": {
+        "buildTarget": "next-js-pages-router-sample:build",
+        "dev": true
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "next-js-pages-router-sample:build:development",
+          "dev": true
+        },
+        "production": {
+          "buildTarget": "next-js-pages-router-sample:build:production",
+          "dev": false
+        }
+      }
+    },
+    "export": {
+      "executor": "@nx/next:export",
+      "options": {
+        "buildTarget": "next-js-pages-router-sample:build:production"
+      }
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "samples/next-js-pages-router-sample/jest.config.ts"
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    }
+  }
+}
