@@ -121,7 +121,7 @@ export class LocalOverrideAdapter implements OverrideAdapter {
     return {
       ...current,
       __value: overridden,
-      get: _makeTypedGet(overridden),
+      get: _makeTypedGet(current.name, overridden),
       details: { ...current.details, reason: LOCAL_OVERRIDE_REASON },
     };
   }
@@ -138,7 +138,7 @@ export class LocalOverrideAdapter implements OverrideAdapter {
     return {
       ...current,
       value: overridden,
-      get: _makeTypedGet(overridden),
+      get: _makeTypedGet(current.name, overridden),
       details: { ...current.details, reason: LOCAL_OVERRIDE_REASON },
     };
   }

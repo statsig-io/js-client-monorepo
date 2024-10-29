@@ -5,6 +5,7 @@ import {
   GateEvaluation,
   LayerEvaluation,
 } from './EvaluationTypes';
+import { Log } from './Log';
 import {
   AnyConfigBasedStatsigType,
   DynamicConfig,
@@ -49,7 +50,7 @@ export function _makeDynamicConfig(
   const value = evaluation?.value ?? {};
   return {
     ..._makeEvaluation(name, details, evaluation, value),
-    get: _makeTypedGet(evaluation?.value),
+    get: _makeTypedGet(name, evaluation?.value),
   };
 }
 
@@ -73,7 +74,7 @@ export function _makeLayer(
 ): Layer {
   return {
     ..._makeEvaluation(name, details, evaluation, undefined),
-    get: _makeTypedGet(evaluation?.value, exposeFunc),
+    get: _makeTypedGet(name, evaluation?.value, exposeFunc),
     groupName: evaluation?.group_name ?? null,
     __value: evaluation?.value ?? {},
   };
@@ -88,11 +89,12 @@ export function _mergeOverride<T extends AnyConfigBasedStatsigType>(
   return {
     ...original,
     ...overridden,
-    get: _makeTypedGet(value, exposeFunc),
+    get: _makeTypedGet(original.name, value, exposeFunc),
   };
 }
 
 export function _makeTypedGet(
+  name: string,
   value: Record<string, unknown> | undefined,
   exposeFunc?: (param: string) => void,
 ): TypedGet {
@@ -104,6 +106,9 @@ export function _makeTypedGet(
     }
 
     if (fallback != null && !_isTypeMatch(found, fallback)) {
+      Log.warn(
+        `Parameter type mismatch. '${name}.${param}' was found to be type '${typeof found}' but fallback/return type is '${typeof fallback}'. See https://docs.statsig.com/client/javascript-sdk/#typed-getters`,
+      );
       return (fallback ?? null) as TypedReturn<T>;
     }
 
