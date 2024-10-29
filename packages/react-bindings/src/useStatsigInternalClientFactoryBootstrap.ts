@@ -1,6 +1,6 @@
 import { useMemo, useRef } from 'react';
 
-import { StatsigUser } from '@statsig/client-core';
+import { StatsigUser, _getInstance } from '@statsig/client-core';
 import { StatsigClient, StatsigOptions } from '@statsig/js-client';
 
 type FactoryArgs = {
@@ -13,7 +13,7 @@ type FactoryArgs = {
 export function useStatsigInternalClientFactoryBootstrap<
   T extends StatsigClient,
 >(factory: (args: FactoryArgs) => T, args: FactoryArgs): T {
-  const clientRef = useRef<T | null>(null);
+  const clientRef = useRef<T | null>(_getInstance(args.sdkKey) as T | null);
 
   return useMemo(() => {
     if (clientRef.current) {
