@@ -451,145 +451,145 @@ importers:
   packages/combo:
     dependencies:
       '@statsig/client-core':
-        specifier: 3.3.0
+        specifier: 3.4.0
         version: link:../client-core
       '@statsig/js-client':
-        specifier: 3.3.0
+        specifier: 3.4.0
         version: link:../js-client
       '@statsig/js-local-overrides':
-        specifier: 3.3.0
+        specifier: 3.4.0
         version: link:../js-local-overrides
       '@statsig/js-on-device-eval-client':
-        specifier: 3.3.0
+        specifier: 3.4.0
         version: link:../js-on-device-eval-client
       '@statsig/js-user-persisted-storage':
-        specifier: 3.3.0
+        specifier: 3.4.0
         version: link:../js-user-persisted-storage
       '@statsig/react-bindings':
-        specifier: 3.3.0
+        specifier: 3.4.0
         version: link:../react-bindings
       '@statsig/session-replay':
-        specifier: 3.3.0
+        specifier: 3.4.0
         version: link:../session-replay
       '@statsig/web-analytics':
-        specifier: 3.3.0
+        specifier: 3.4.0
         version: link:../web-analytics
 
   packages/expo-bindings:
     dependencies:
       '@statsig/client-core':
-        specifier: 3.3.0
+        specifier: 3.4.0
         version: link:../client-core
       '@statsig/js-client':
-        specifier: 3.3.0
+        specifier: 3.4.0
         version: link:../js-client
       '@statsig/react-bindings':
-        specifier: 3.3.0
+        specifier: 3.4.0
         version: link:../react-bindings
       '@statsig/react-native-core':
-        specifier: 3.3.0
+        specifier: 3.4.0
         version: link:../react-native-core
 
   packages/expo-bindings-on-device-eval:
     dependencies:
       '@statsig/client-core':
-        specifier: 3.3.0
+        specifier: 3.4.0
         version: link:../client-core
       '@statsig/js-on-device-eval-client':
-        specifier: 3.3.0
+        specifier: 3.4.0
         version: link:../js-on-device-eval-client
       '@statsig/react-bindings-on-device-eval':
-        specifier: 3.3.0
+        specifier: 3.4.0
         version: link:../react-bindings-on-device-eval
       '@statsig/react-native-core':
-        specifier: 3.3.0
+        specifier: 3.4.0
         version: link:../react-native-core
 
   packages/js-client:
     dependencies:
       '@statsig/client-core':
-        specifier: 3.3.0
+        specifier: 3.4.0
         version: link:../client-core
 
   packages/js-local-overrides:
     dependencies:
       '@statsig/client-core':
-        specifier: 3.3.0
+        specifier: 3.4.0
         version: link:../client-core
 
   packages/js-on-device-eval-client:
     dependencies:
       '@statsig/client-core':
-        specifier: 3.3.0
+        specifier: 3.4.0
         version: link:../client-core
       '@statsig/sha256':
-        specifier: 3.3.0
+        specifier: 3.4.0
         version: link:../sha256
 
   packages/js-user-persisted-storage:
     dependencies:
       '@statsig/client-core':
-        specifier: 3.3.0
+        specifier: 3.4.0
         version: link:../client-core
 
   packages/react-bindings:
     dependencies:
       '@statsig/client-core':
-        specifier: 3.3.0
+        specifier: 3.4.0
         version: link:../client-core
       '@statsig/js-client':
-        specifier: 3.3.0
+        specifier: 3.4.0
         version: link:../js-client
 
   packages/react-bindings-on-device-eval:
     dependencies:
       '@statsig/client-core':
-        specifier: 3.3.0
+        specifier: 3.4.0
         version: link:../client-core
       '@statsig/js-on-device-eval-client':
-        specifier: 3.3.0
+        specifier: 3.4.0
         version: link:../js-on-device-eval-client
 
   packages/react-native-bindings:
     dependencies:
       '@statsig/client-core':
-        specifier: 3.3.0
+        specifier: 3.4.0
         version: link:../client-core
       '@statsig/js-client':
-        specifier: 3.3.0
+        specifier: 3.4.0
         version: link:../js-client
       '@statsig/react-bindings':
-        specifier: 3.3.0
+        specifier: 3.4.0
         version: link:../react-bindings
       '@statsig/react-native-core':
-        specifier: 3.3.0
+        specifier: 3.4.0
         version: link:../react-native-core
 
   packages/react-native-bindings-on-device-eval:
     dependencies:
       '@statsig/client-core':
-        specifier: 3.3.0
+        specifier: 3.4.0
         version: link:../client-core
       '@statsig/js-on-device-eval-client':
-        specifier: 3.3.0
+        specifier: 3.4.0
         version: link:../js-on-device-eval-client
       '@statsig/react-bindings-on-device-eval':
-        specifier: 3.3.0
+        specifier: 3.4.0
         version: link:../react-bindings-on-device-eval
       '@statsig/react-native-core':
-        specifier: 3.3.0
+        specifier: 3.4.0
         version: link:../react-native-core
 
   packages/react-native-core:
     dependencies:
       '@statsig/client-core':
-        specifier: 3.3.0
+        specifier: 3.4.0
         version: link:../client-core
 
   packages/session-replay:
     dependencies:
       '@statsig/client-core':
-        specifier: 3.3.0
+        specifier: 3.4.0
         version: link:../client-core
       rrweb:
         specifier: 2.0.0-alpha.12
@@ -616,10 +616,10 @@ importers:
   packages/web-analytics:
     dependencies:
       '@statsig/client-core':
-        specifier: 3.3.0
+        specifier: 3.4.0
         version: link:../client-core
       '@statsig/js-client':
-        specifier: 3.3.0
+        specifier: 3.4.0
         version: link:../js-client
 
 packages:
