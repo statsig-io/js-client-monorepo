@@ -1,7 +1,9 @@
 import {
   ErrorBoundary,
+  Log,
   PrecomputedEvaluationsInterface,
   SDK_VERSION,
+  StatsigEvent,
   StatsigMetadataProvider,
   StatsigPlugin,
   Visibility,
@@ -10,6 +12,7 @@ import {
   _isServerEnv,
   _isUnloading,
   _subscribeToVisiblityChanged,
+  getUUID,
 } from '@statsig/client-core';
 
 import {
@@ -18,8 +21,11 @@ import {
   ReplaySessionData,
   SessionReplayClient,
 } from './SessionReplayClient';
+import { _fastApproxSizeOf } from './SizeOf';
 
-const MAX_REPLAY_PAYLOAD_BYTES = 2048;
+const REPLAY_ENQUEUE_TRIGGER_BYTES = 1024 * 10; // 10 KB
+const REPLAY_SLICE_BYTES = 1024 * 1024; // 1 MB
+const MAX_INDIVIDUAL_EVENT_BYTES = 1024 * 1024 * 10; // 10 MB
 
 type SessionReplayOptions = {
   rrwebConfig?: RRWebConfig;
@@ -27,6 +33,21 @@ type SessionReplayOptions = {
 };
 
 type EndReason = 'is_leaving_page' | 'session_expired';
+
+type RRWebPayload = {
+  session_start_ts: string;
+  session_end_ts: string;
+  clicks_captured_cumulative: string;
+  rrweb_events: string;
+  rrweb_payload_size: string;
+  session_replay_sdk_version: string;
+  sliced_id?: string;
+  slice_index?: string;
+  slice_count?: string;
+  slice_byte_size?: string;
+  is_leaving_page?: string;
+  session_expired?: string;
+};
 
 export class StatsigSessionReplayPlugin
   implements StatsigPlugin<PrecomputedEvaluationsInterface>
@@ -117,15 +138,37 @@ export class SessionReplay {
 
   private _onRecordingEvent(event: ReplayEvent, data: ReplaySessionData) {
     this._sessionData = data;
+
+    const eventApproxSize = _fastApproxSizeOf(
+      event,
+      MAX_INDIVIDUAL_EVENT_BYTES,
+    );
+
+    if (eventApproxSize > MAX_INDIVIDUAL_EVENT_BYTES) {
+      Log.warn(
+        `SessionReplay event is too large (~${eventApproxSize} bytes) and will not be logged`,
+        event,
+      );
+      return;
+    }
+
+    const approxArraySizeBefore = _fastApproxSizeOf(
+      this._events,
+      REPLAY_ENQUEUE_TRIGGER_BYTES,
+    );
     this._events.push(event);
 
-    const payload = JSON.stringify(this._events);
-    if (payload.length > MAX_REPLAY_PAYLOAD_BYTES) {
-      if (_isCurrentlyVisible()) {
-        this._bumpSessionIdleTimerAndLogRecording();
-      } else {
-        this._logRecording();
-      }
+    if (
+      approxArraySizeBefore + eventApproxSize <
+      REPLAY_ENQUEUE_TRIGGER_BYTES
+    ) {
+      return;
+    }
+
+    if (_isCurrentlyVisible()) {
+      this._bumpSessionIdleTimerAndLogRecording();
+    } else {
+      this._logRecording();
     }
   }
 
@@ -181,24 +224,36 @@ export class SessionReplay {
     }
 
     const payload = JSON.stringify(this._events);
-    const event = {
-      eventName: 'statsig::session_recording',
-      value: sessionID,
-      metadata: {
-        session_start_ts: String(data.startTime),
-        session_end_ts: String(data.endTime),
-        clicks_captured_cumulative: String(data.clickCount),
-        rrweb_events: payload,
-        rrweb_payload_size: String(payload.length),
-        session_replay_sdk_version: SDK_VERSION,
-      } as Record<string, string>,
-    };
+    const parts = _slicePayload(payload);
 
-    if (endReason) {
-      event.metadata[endReason] = 'true';
+    const slicedID = parts.length > 1 ? getUUID() : null;
+
+    for (let i = 0; i < parts.length; i++) {
+      const slice = parts[i];
+      const event = _makeLoggableRrwebEvent(slice, payload, sessionID, data);
+
+      if (slicedID != null) {
+        _appendSlicedMetadata(
+          event.metadata,
+          slicedID,
+          i,
+          parts.length,
+          slice.length,
+        );
+      }
+
+      if (endReason) {
+        event.metadata[endReason] = 'true';
+      }
+
+      this._client.logEvent(event);
+
+      if (slicedID != null) {
+        this._client.flush().catch((e) => {
+          Log.error(e);
+        });
+      }
     }
-
-    this._client.logEvent(event);
 
     this._events = [];
   }
@@ -211,4 +266,51 @@ export class SessionReplay {
   private async _getSessionIdFromClient() {
     return this._client.getContext().session.data.sessionID;
   }
+}
+
+function _slicePayload(payload: string): string[] {
+  const parts = [];
+
+  for (let i = 0; i < payload.length; i += REPLAY_SLICE_BYTES) {
+    parts.push(payload.slice(i, i + REPLAY_SLICE_BYTES));
+  }
+
+  return parts;
+}
+
+function _makeLoggableRrwebEvent(
+  slice: string,
+  payload: string,
+  sessionID: string,
+  data: ReplaySessionData,
+): StatsigEvent & { metadata: RRWebPayload } {
+  const metadata: RRWebPayload = {
+    session_start_ts: String(data.startTime),
+    session_end_ts: String(data.endTime),
+    clicks_captured_cumulative: String(data.clickCount),
+
+    rrweb_events: slice,
+    rrweb_payload_size: String(payload.length),
+
+    session_replay_sdk_version: SDK_VERSION,
+  };
+
+  return {
+    eventName: 'statsig::session_recording',
+    value: sessionID,
+    metadata,
+  };
+}
+
+function _appendSlicedMetadata(
+  metadata: RRWebPayload,
+  slicedID: string,
+  sliceIndex: number,
+  sliceCount: number,
+  sliceByteSize: number,
+) {
+  metadata.sliced_id = slicedID;
+  metadata.slice_index = String(sliceIndex);
+  metadata.slice_count = String(sliceCount);
+  metadata.slice_byte_size = String(sliceByteSize);
 }

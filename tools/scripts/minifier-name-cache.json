@@ -199,7 +199,8 @@
       "$_addPageViewTracking": "Oi",
       "$_tryLogPageView": "ji",
       "$_safeFlushAndForget": "wi",
-      "$_safeRetryFailedLogs": "Ti"
+      "$_safeRetryFailedLogs": "Ti",
+      "$_fastApproxSizeOf": "Ii"
     }
   }
 }

@@ -29,7 +29,11 @@ function printEventTypes(events: Record<string, unknown>[]) {
   );
 
   const eventTypes = recordingEvents.flatMap((event) => {
-    if (event['metadata'] == null || typeof event['metadata'] !== 'object') {
+    if (
+      event['metadata'] == null ||
+      typeof event['metadata'] !== 'object' ||
+      (event['metadata'] as Record<string, string>)['sliced_id'] != null
+    ) {
       return [];
     }
 
