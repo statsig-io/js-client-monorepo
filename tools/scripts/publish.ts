@@ -22,11 +22,26 @@ if (!existsSync(configPath)) {
   throw new Error(`Failed to find package.json at ${configPath}`);
 }
 
+const isBeta = true;
+
+const parts = [
+  `npm publish`,
+  `--registry=https://registry.npmjs.org/`,
+  `--userconfig=${root}/.npmrc`,
+  `--access public`,
+  isBeta ? `--tag beta` : '',
+];
+
+const command = parts.join(' ');
+if (
+  command !==
+  `npm publish --registry=https://registry.npmjs.org/ --userconfig=${root}/.npmrc --access public --tag beta`
+) {
+  throw new Error(`Invalid command: ${command}`);
+}
+
 try {
-  execSync(
-    `npm publish --registry=https://registry.npmjs.org/ --userconfig=${root}/.npmrc --access public`,
-    { cwd: dir },
-  );
+  execSync(command, { cwd: dir });
 } catch {
   throw new Error(`Failed to publish ${packageName}`);
 }

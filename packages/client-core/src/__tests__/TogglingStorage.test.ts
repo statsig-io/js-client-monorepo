@@ -15,6 +15,9 @@ class TestClient extends StatsigClientBase<SpecsDataAdapter> {
   }
 }
 
+const MOCK_NETWORK = jest.fn() as any;
+MOCK_NETWORK.setErrorBoundary = jest.fn();
+
 class TestDataAdapter extends DataAdapterCore implements SpecsDataAdapter {
   constructor() {
     super('', '');
@@ -71,7 +74,7 @@ describe('Toggle Storage', () => {
 
     beforeEach(() => {
       storageMock.clear();
-      client = new TestClient('client-key', adapter, jest.fn() as any, options);
+      client = new TestClient('client-key', adapter, MOCK_NETWORK, options);
     });
 
     it('does not write to local storage', async () => {
@@ -90,7 +93,7 @@ describe('Toggle Storage', () => {
   describe('when enabled', () => {
     beforeEach(() => {
       storageMock.clear();
-      client = new TestClient('client-key', adapter, jest.fn() as any, null);
+      client = new TestClient('client-key', adapter, MOCK_NETWORK, null);
     });
 
     it('writes to local storage', async () => {

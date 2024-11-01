@@ -84,9 +84,9 @@ export abstract class StatsigClientBase<
 
     this._errorBoundary = new ErrorBoundary(sdkKey, options, emitter);
     this._errorBoundary.wrap(this);
-    this._errorBoundary.wrap(network);
     this._errorBoundary.wrap(adapter);
     this._errorBoundary.wrap(this._logger);
+    network.setErrorBoundary(this._errorBoundary);
 
     this.dataAdapter = adapter;
     this.dataAdapter.attach(sdkKey, options);

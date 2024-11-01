@@ -200,7 +200,17 @@
       "$_tryLogPageView": "ji",
       "$_safeFlushAndForget": "wi",
       "$_safeRetryFailedLogs": "Ti",
-      "$_fastApproxSizeOf": "Ii"
+      "$_fastApproxSizeOf": "Ii",
+      "$_fetchTxtRecords": "kn",
+      "$_fallbackResolver": "En",
+      "$_getInternalRequestArgs": "An",
+      "$_isDomainFailure": "Mn",
+      "$_isDefaultUrl": "Nn",
+      "$_fallbackInfo": "Rn",
+      "$_cooldowns": "Pn",
+      "$_networkOverrideFunc": "Cn",
+      "$_fetchFallbackUrl": "Un",
+      "$_updateFallbackInfoWithNewUrl": "Fn"
     }
   }
 }

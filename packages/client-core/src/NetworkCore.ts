@@ -1,8 +1,13 @@
 import './$_StatsigGlobal';
 import { _getStatsigGlobalFlag } from './$_StatsigGlobal';
 import { Diagnostics } from './Diagnostics';
+import { ErrorBoundary } from './ErrorBoundary';
 import { Log } from './Log';
 import { NetworkArgs, NetworkParam, NetworkPriority } from './NetworkConfig';
+import {
+  FallbackResolverArgs,
+  NetworkFallbackResolver,
+} from './NetworkFallbackResolver';
 import { SDKType } from './SDKType';
 import { _getWindowSafe } from './SafeJs';
 import { SessionID } from './SessionID';
@@ -45,10 +50,13 @@ type BeaconRequestArgs = Pick<
   'data' | 'sdkKey' | 'url' | 'params' | 'isCompressable' | 'attempt'
 >;
 
-type RequestArgsInternal = RequestArgs & {
-  method: 'POST' | 'GET';
-  body?: BodyInit;
-};
+type RequestArgsInternal = Flatten<
+  RequestArgs &
+    FallbackResolverArgs & {
+      method: 'POST' | 'GET';
+      body?: BodyInit;
+    }
+>;
 
 type NetworkResponse = {
   body: string | null;
@@ -59,6 +67,9 @@ export class NetworkCore {
   private readonly _timeout: number = DEFAULT_TIMEOUT_MS;
   private readonly _netConfig: NetworkConfigCommon = {};
   private readonly _options: AnyStatsigOptions = {};
+  private readonly _fallbackResolver: NetworkFallbackResolver;
+
+  private _errorBoundary: ErrorBoundary | null = null;
 
   constructor(
     options: AnyStatsigOptions | null,
@@ -75,23 +86,14 @@ export class NetworkCore {
     if (this._netConfig.networkTimeoutMs) {
       this._timeout = this._netConfig.networkTimeoutMs;
     }
+    this._fallbackResolver = new NetworkFallbackResolver(this._options);
   }
 
-  async post(args: RequestArgsWithData): Promise<NetworkResponse | null> {
-    let body: BodyInit = await this._getPopulatedBody(args);
-    if (args.isStatsigEncodable) {
-      body = this._attemptToEncodeString(args, body);
-    }
-
-    return this._sendRequest({
-      method: 'POST',
-      body,
-      ...args,
-    });
-  }
-
-  get(args: RequestArgs): Promise<NetworkResponse | null> {
-    return this._sendRequest({ method: 'GET', ...args });
+  setErrorBoundary(errorBoundary: ErrorBoundary): void {
+    this._errorBoundary = errorBoundary;
+    this._errorBoundary.wrap(this);
+    this._errorBoundary.wrap(this._fallbackResolver);
+    this._fallbackResolver.setErrorBoundary(errorBoundary);
   }
 
   isBeaconSupported(): boolean {
@@ -106,10 +108,33 @@ export class NetworkCore {
       return false;
     }
 
-    const body: BodyInit = await this._getPopulatedBody(args);
-    const url = await this._getPopulatedURL(args);
+    const argsInternal = this._getInternalRequestArgs('POST', args);
+    const body: BodyInit = await this._getPopulatedBody(
+      argsInternal,
+      args.data,
+    );
+    const url = await this._getPopulatedURL(argsInternal);
     const nav = navigator;
     return nav.sendBeacon.bind(nav)(url, body);
+  }
+
+  async post(args: RequestArgsWithData): Promise<NetworkResponse | null> {
+    const argsInternal = this._getInternalRequestArgs('POST', args);
+
+    argsInternal.body = await this._getPopulatedBody(argsInternal, args.data);
+    if (args.isStatsigEncodable) {
+      argsInternal.body = this._attemptToEncodeString(
+        argsInternal,
+        argsInternal.body,
+      );
+    }
+
+    return this._sendRequest(argsInternal);
+  }
+
+  get(args: RequestArgs): Promise<NetworkResponse | null> {
+    const argsInternal = this._getInternalRequestArgs('GET', args);
+    return this._sendRequest(argsInternal);
   }
 
   private async _sendRequest(
@@ -126,13 +151,14 @@ export class NetworkCore {
     const { method, body, retries, attempt } = args;
     const currentAttempt = attempt ?? 1;
 
-    const controller =
+    const abortController =
       typeof AbortController !== 'undefined' ? new AbortController() : null;
-    const handle = setTimeout(
-      () => controller?.abort(`Timeout of ${this._timeout}ms expired.`),
-      this._timeout,
-    );
-    const url = await this._getPopulatedURL(args);
+
+    const timeoutHandle = setTimeout(() => {
+      abortController?.abort(`Timeout of ${this._timeout}ms expired.`);
+    }, this._timeout);
+
+    const populatedUrl = await this._getPopulatedURL(args);
 
     let response: Response | null = null;
     const keepalive = _isUnloading();
@@ -144,45 +170,51 @@ export class NetworkCore {
         headers: {
           ...args.headers,
         },
-        signal: controller?.signal,
+        signal: abortController?.signal,
         priority: args.priority,
         keepalive,
       };
-      if (args.isInitialize) {
-        Diagnostics._markInitNetworkReqStart(args.sdkKey, {
-          attempt: currentAttempt,
-        });
-      }
+
+      _tryMarkInitStart(args, currentAttempt);
+
       const func = this._netConfig.networkOverrideFunc ?? fetch;
-      response = await func(url, config);
-      clearTimeout(handle);
+      response = await func(populatedUrl, config);
+      clearTimeout(timeoutHandle);
 
       if (!response.ok) {
         const text = await response.text().catch(() => 'No Text');
-        const err = new Error(`NetworkError: ${url} ${text}`);
+        const err = new Error(`NetworkError: ${populatedUrl} ${text}`);
         err.name = 'NetworkError';
         throw err;
       }
 
       const text = await response.text();
 
-      if (args.isInitialize) {
-        Diagnostics._markInitNetworkReqEnd(
-          args.sdkKey,
-          Diagnostics._getDiagnosticsData(response, currentAttempt, text),
-        );
-      }
+      _tryMarkInitEnd(args, response, currentAttempt, text);
+      this._fallbackResolver.tryBumpExpiryTime(args.sdkKey, populatedUrl);
 
       return {
         body: text,
         code: response.status,
       };
     } catch (error) {
-      const errorMessage = _getErrorMessage(controller, error);
-      if (args.isInitialize) {
-        Diagnostics._markInitNetworkReqEnd(
+      const errorMessage = _getErrorMessage(abortController, error);
+      const timedOut = _didTimeout(abortController);
+
+      _tryMarkInitEnd(args, response, currentAttempt, '', error);
+
+      const fallbackUpdated =
+        await this._fallbackResolver.tryFetchUpdatedFallbackInfo(
           args.sdkKey,
-          Diagnostics._getDiagnosticsData(response, currentAttempt, '', error),
+          populatedUrl,
+          errorMessage,
+          timedOut,
+        );
+
+      if (fallbackUpdated) {
+        args.fallbackUrl = this._fallbackResolver.getFallbackUrl(
+          args.sdkKey,
+          args.url,
         );
       }
 
@@ -198,7 +230,7 @@ export class NetworkCore {
           requestArgs: args,
         });
         Log.error(
-          `A networking error occured during ${method} request to ${url}.`,
+          `A networking error occured during ${method} request to ${populatedUrl}.`,
           errorMessage,
           error,
         );
@@ -207,13 +239,15 @@ export class NetworkCore {
 
       return this._sendRequest({
         ...args,
-        retries: retries,
+        retries,
         attempt: currentAttempt + 1,
       });
     }
   }
 
-  private async _getPopulatedURL(args: RequestArgs): Promise<string> {
+  private async _getPopulatedURL(args: RequestArgsInternal): Promise<string> {
+    const url = args.fallbackUrl ?? args.url;
+
     const params: Record<string, string> = {
       [NetworkParam.SdkKey]: args.sdkKey,
       [NetworkParam.SdkType]: SDKType._get(args.sdkKey),
@@ -229,11 +263,14 @@ export class NetworkCore {
       })
       .join('&');
 
-    return `${args.url}${query ? `?${query}` : ''}`;
+    return `${url}${query ? `?${query}` : ''}`;
   }
 
-  private async _getPopulatedBody(args: RequestArgsWithData): Promise<string> {
-    const { data, sdkKey } = args;
+  private async _getPopulatedBody(
+    args: RequestArgsInternal,
+    data: Record<string, unknown>,
+  ): Promise<string> {
+    const { sdkKey, fallbackUrl } = args;
     const stableID = StableID.get(sdkKey);
     const sessionID = SessionID.get(sdkKey);
     const sdkType = SDKType._get(sdkKey);
@@ -245,17 +282,17 @@ export class NetworkCore {
         stableID,
         sessionID,
         sdkType,
+        fallbackUrl,
       },
     });
   }
 
   private _attemptToEncodeString(
-    args: RequestArgsWithData,
+    args: RequestArgsInternal,
     input: string,
   ): string {
     const win = _getWindowSafe();
     if (
-      !args.isStatsigEncodable ||
       this._options.disableStatsigEncoding ||
       _getStatsigGlobalFlag('no-encode') != null ||
       !win?.btoa
@@ -274,6 +311,22 @@ export class NetworkCore {
       Log.warn('/initialize request encoding failed');
       return input;
     }
+  }
+
+  private _getInternalRequestArgs(
+    method: 'GET' | 'POST',
+    args: RequestArgs,
+  ): RequestArgsInternal {
+    const fallbackUrl = this._fallbackResolver.getFallbackUrl(
+      args.sdkKey,
+      args.url,
+    );
+
+    return {
+      ...args,
+      method,
+      fallbackUrl,
+    };
   }
 }
 
@@ -305,4 +358,40 @@ function _getErrorMessage(
   }
 
   return 'Unknown Error';
+}
+
+function _didTimeout(controller: AbortController | null): boolean {
+  const timeout =
+    controller?.signal.aborted &&
+    typeof controller.signal.reason === 'string' &&
+    controller.signal.reason.includes('Timeout');
+
+  return timeout || false;
+}
+
+function _tryMarkInitStart(args: RequestArgsInternal, attempt: number) {
+  if (!args.isInitialize) {
+    return;
+  }
+
+  Diagnostics._markInitNetworkReqStart(args.sdkKey, {
+    attempt,
+  });
+}
+
+function _tryMarkInitEnd(
+  args: RequestArgsInternal,
+  response: Response | null,
+  attempt: number,
+  body: string,
+  err?: unknown,
+) {
+  if (!args.isInitialize) {
+    return;
+  }
+
+  Diagnostics._markInitNetworkReqEnd(
+    args.sdkKey,
+    Diagnostics._getDiagnosticsData(response, attempt, body, err),
+  );
 }

@@ -62,6 +62,13 @@ export default function Index(): JSX.Element {
             <a href="/on-device-eval-example">On Device Evaluation</a>
           </button>
         </li>
+        <li>
+          <button>
+            <a href="/statsig-network-resolver-example">
+              Statsig Network Resolver
+            </a>
+          </button>
+        </li>
       </ul>
     </div>
   );

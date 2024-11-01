@@ -144,7 +144,12 @@ describe('Network Core', () => {
       fetchMock.mockClear();
       fetchMock.mockResponse('', { status: 401 });
 
-      await network.post({ sdkKey: '', url, data: {}, retries: 2 });
+      await network.post({
+        sdkKey: '',
+        url,
+        data: {},
+        retries: 2,
+      });
     });
 
     it('does not make any requests', () => {
