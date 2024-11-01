@@ -14,6 +14,14 @@ module.exports = [
     running: false,
   },
   {
+    name: 'statsig-js-client + session-replay',
+    limit: '33 kB',
+    path: 'dist/packages/combo/build/js-client/statsig-js-client+session-replay.min.js',
+    import: '{ StatsigClient }',
+    ignore: ['rrwebRecord'],
+    running: false,
+  },
+  {
     name: 'statsig-js-client + session-replay + web-analytics',
     limit: '36 kB',
     path: 'dist/packages/combo/build/js-client/statsig-js-client+session-replay+web-analytics.min.js',
