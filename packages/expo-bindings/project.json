@@ -12,7 +12,7 @@
         "outputPath": "dist/packages/expo-bindings",
         "main": "packages/expo-bindings/src/index.ts",
         "tsConfig": "packages/expo-bindings/tsconfig.lib.json",
-        "assets": ["README.md"]
+        "assets": ["README.md", "LICENSE"]
       }
     },
     "publish": {

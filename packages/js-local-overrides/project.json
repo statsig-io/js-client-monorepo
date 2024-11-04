@@ -12,7 +12,7 @@
         "outputPath": "dist/packages/js-local-overrides",
         "main": "packages/js-local-overrides/src/index.ts",
         "tsConfig": "packages/js-local-overrides/tsconfig.lib.json",
-        "assets": ["README.md"]
+        "assets": ["README.md", "LICENSE"]
       }
     },
     "publish": {

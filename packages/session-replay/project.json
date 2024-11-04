@@ -16,7 +16,7 @@
         "outputPath": "dist/packages/session-replay",
         "main": "packages/session-replay/src/index.ts",
         "tsConfig": "packages/session-replay/tsconfig.lib.json",
-        "assets": ["README.md"]
+        "assets": ["README.md", "LICENSE"]
       }
     },
     "publish": {

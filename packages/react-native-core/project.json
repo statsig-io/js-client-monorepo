@@ -12,7 +12,7 @@
         "outputPath": "dist/packages/react-native-core",
         "main": "packages/react-native-core/src/index.ts",
         "tsConfig": "packages/react-native-core/tsconfig.lib.json",
-        "assets": ["README.md"]
+        "assets": ["README.md", "LICENSE"]
       }
     },
     "publish": {

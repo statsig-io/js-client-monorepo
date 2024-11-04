@@ -12,7 +12,7 @@
         "outputPath": "dist/packages/react-bindings-on-device-eval",
         "main": "packages/react-bindings-on-device-eval/src/index.ts",
         "tsConfig": "packages/react-bindings-on-device-eval/tsconfig.lib.json",
-        "assets": ["README.md"]
+        "assets": ["README.md", "LICENSE"]
       }
     },
     "publish": {

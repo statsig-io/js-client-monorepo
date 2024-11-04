@@ -12,7 +12,7 @@
         "outputPath": "dist/packages/react-native-bindings",
         "main": "packages/react-native-bindings/src/index.ts",
         "tsConfig": "packages/react-native-bindings/tsconfig.lib.json",
-        "assets": ["README.md"]
+        "assets": ["README.md", "LICENSE"]
       }
     },
     "publish": {

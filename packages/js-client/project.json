@@ -31,7 +31,7 @@
         "outputPath": "dist/packages/js-client",
         "main": "packages/js-client/src/index.ts",
         "tsConfig": "packages/js-client/tsconfig.lib.json",
-        "assets": ["README.md"]
+        "assets": ["README.md", "LICENSE"]
       }
     },
     "verify-min-files": {
