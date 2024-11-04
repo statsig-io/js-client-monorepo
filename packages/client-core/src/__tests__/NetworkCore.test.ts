@@ -2,7 +2,9 @@ import 'jest-fetch-mock';
 import { anyString } from 'statsig-test-helpers';
 
 import { Log } from '../Log';
+import { Endpoint } from '../NetworkConfig';
 import { NetworkCore } from '../NetworkCore';
+import { UrlConfiguration } from '../UrlConfiguration';
 
 const urlActual = URL;
 const urlSpy = jest.fn();
@@ -10,7 +12,12 @@ const urlSpy = jest.fn();
 describe('Network Core', () => {
   const sdkKey = 'a-key';
   const data = { foo: 'bar' };
-  const url = 'http://localhost';
+  const urlConfig = new UrlConfiguration(
+    Endpoint._initialize,
+    'http://localhost',
+    null,
+    null,
+  );
   const emitter = jest.fn();
   const network = new NetworkCore(null, emitter);
 
@@ -29,7 +36,7 @@ describe('Network Core', () => {
       fetchMock.mockClear();
       fetchMock.mockResponseOnce(JSON.stringify({ result: '12345' }));
 
-      await network.post({ sdkKey, url, data });
+      await network.post({ sdkKey, urlConfig, data });
       body = JSON.parse(fetchMock.mock.calls[0]?.[1]?.body?.toString() ?? '{}');
     });
 
@@ -60,7 +67,7 @@ describe('Network Core', () => {
       bindSpy.mockImplementation(() => navigator.sendBeacon);
       navigator.sendBeacon.bind = bindSpy;
 
-      await network.beacon({ sdkKey, url, data });
+      await network.beacon({ sdkKey, urlConfig, data });
       body = JSON.parse(sendSpy.mock.calls[0]?.[1] ?? '{}');
     });
 
@@ -87,7 +94,7 @@ describe('Network Core', () => {
       fetchMock.mockReject(error);
       emitter.mockClear();
 
-      await network.post({ sdkKey, url, data: {}, retries: 2 });
+      await network.post({ sdkKey, urlConfig, data: {}, retries: 2 });
     });
 
     it('make 1 initial and then 2 retries', () => {
@@ -101,7 +108,7 @@ describe('Network Core', () => {
         tag: 'NetworkError',
         requestArgs: expect.objectContaining({
           method: 'POST',
-          url,
+          urlConfig,
         }),
       });
     });
@@ -113,7 +120,7 @@ describe('Network Core', () => {
       fetchMock.mockResponse('', { status: 500 });
       emitter.mockClear();
 
-      await network.post({ sdkKey, url, data: {}, retries: 2 });
+      await network.post({ sdkKey, urlConfig, data: {}, retries: 2 });
     });
 
     it('make 1 initial and then 2 retries', () => {
@@ -146,7 +153,7 @@ describe('Network Core', () => {
 
       await network.post({
         sdkKey: '',
-        url,
+        urlConfig,
         data: {},
         retries: 2,
       });

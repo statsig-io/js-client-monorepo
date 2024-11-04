@@ -1,24 +1,24 @@
 import {
+  Endpoint,
   NetworkCore,
-  NetworkDefault,
   NetworkPriority,
-  _getOverridableUrl,
+  UrlConfiguration,
 } from '@statsig/client-core';
 
 import { StatsigOptions } from './StatsigOptions';
 
 export default class StatsigNetwork extends NetworkCore {
-  private _downloadConfigSpecsUrl: string;
+  private _downloadConfigSpecsUrlConfig: UrlConfiguration;
 
   constructor(options: StatsigOptions | null = null) {
     super(options);
 
     const config = options?.networkConfig;
-    this._downloadConfigSpecsUrl = _getOverridableUrl(
+    this._downloadConfigSpecsUrlConfig = new UrlConfiguration(
+      Endpoint._download_config_specs,
       config?.downloadConfigSpecsUrl,
       config?.api,
-      '/download_config_specs',
-      NetworkDefault.specsApi,
+      config?.downloadConfigSpecsFallbackUrls,
     );
   }
 
@@ -28,7 +28,7 @@ export default class StatsigNetwork extends NetworkCore {
   ): Promise<string | null> {
     const response = await this.get({
       sdkKey: sdkKey,
-      url: this._downloadConfigSpecsUrl,
+      urlConfig: this._downloadConfigSpecsUrlConfig,
       priority,
     });
 

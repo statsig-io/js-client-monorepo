@@ -13,6 +13,11 @@ type UrlOverrideOptions = Flatten<
      * default: `https://api.statsigcdn.com/v1/download_config_specs`
      */
     downloadConfigSpecsUrl?: string;
+
+    /**
+     * A list of URLs to try if the primary downloadConfigSpecsUrl fails.
+     */
+    downloadConfigSpecsFallbackUrls?: string[];
   }
 >;
 

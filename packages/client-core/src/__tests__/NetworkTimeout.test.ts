@@ -1,8 +1,10 @@
 import 'jest-fetch-mock';
-import { anyString } from 'statsig-test-helpers';
+import { anyInstanceOf } from 'statsig-test-helpers';
 
 import { Log, LogLevel } from '../Log';
+import { Endpoint } from '../NetworkConfig';
 import { NetworkCore } from '../NetworkCore';
+import { UrlConfiguration } from '../UrlConfiguration';
 
 const SDK_KEY = 'client-sdk-key';
 
@@ -34,7 +36,7 @@ describe('NetworkTimeout', () => {
     );
 
     result = await network.post({
-      url: 'https://statsig.com',
+      urlConfig: new UrlConfiguration(Endpoint._initialize, null, null, null),
       sdkKey: SDK_KEY,
       data: {},
     });
@@ -47,7 +49,7 @@ describe('NetworkTimeout', () => {
   it('attempts to update the fallback url', () => {
     expect(resolverSpy).toHaveBeenCalledWith(
       SDK_KEY,
-      anyString(),
+      anyInstanceOf(UrlConfiguration),
       'Timeout of 1ms expired.',
       true,
     );

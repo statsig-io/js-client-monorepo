@@ -55,9 +55,18 @@ function Content() {
 }
 
 export default function NetworkResolutionExample(): JSX.Element {
-  const { client, isLoading } = useClientAsyncInit(DEMO_CLIENT_KEY, {
-    userID: 'a-user',
-  });
+  const { client, isLoading } = useClientAsyncInit(
+    DEMO_CLIENT_KEY,
+    {
+      userID: 'a-user',
+    },
+    {
+      networkConfig: {
+        initializeFallbackUrls: ['https://api.statsig.com/v1/initialize'],
+        logEventFallbackUrls: ['https://api.statsig.com/v1/log_event'],
+      },
+    },
+  );
 
   if (isLoading) {
     return <div>Statsig Loading...</div>;

@@ -33,6 +33,11 @@ export type NetworkConfigCommon = {
   logEventUrl?: string;
 
   /**
+   * A list of URLs to try if the primary logEventUrl fails.
+   */
+  logEventFallbackUrls?: string[];
+
+  /**
    * Overrides the default networking layer used by the Statsig client.
    * By default, the client use `fetch`, but overriding this
    * you could use `axios` or raw `XMLHttpRequest`

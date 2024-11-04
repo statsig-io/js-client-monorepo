@@ -1,11 +1,11 @@
 import {
+  Endpoint,
   InitializeResponse,
   NetworkCore,
-  NetworkDefault,
   NetworkPriority,
   StatsigClientEmitEventFunc,
   StatsigUser,
-  _getOverridableUrl,
+  UrlConfiguration,
   _typedJsonParse,
 } from '@statsig/client-core';
 
@@ -21,7 +21,7 @@ type EvaluationsFetchArgs = {
 };
 
 export default class StatsigNetwork extends NetworkCore {
-  private _initializeUrl: string;
+  private _initializeUrlConfig: UrlConfiguration;
 
   constructor(
     options: StatsigOptions | null,
@@ -30,11 +30,11 @@ export default class StatsigNetwork extends NetworkCore {
     super(options, emitter);
 
     const config = options?.networkConfig;
-    this._initializeUrl = _getOverridableUrl(
+    this._initializeUrlConfig = new UrlConfiguration(
+      Endpoint._initialize,
       config?.initializeUrl,
       config?.api,
-      '/initialize',
-      NetworkDefault.initializeApi,
+      config?.initializeFallbackUrls,
     );
   }
 
@@ -79,12 +79,11 @@ export default class StatsigNetwork extends NetworkCore {
   ): Promise<string | null> {
     const response = await this.post({
       sdkKey,
-      url: this._initializeUrl,
+      urlConfig: this._initializeUrlConfig,
       data,
       retries: 2,
       isStatsigEncodable: true,
       priority,
-      isInitialize: true,
     });
 
     if (response?.code === 204) {

@@ -26,6 +26,10 @@ export function anyObject(): unknown {
   return expect.any(Object);
 }
 
+export function anyInstanceOf(type: unknown): unknown {
+  return expect.any(type);
+}
+
 export function anyObjectContaining(input: Record<string, unknown>): unknown {
   return expect.objectContaining(input);
 }

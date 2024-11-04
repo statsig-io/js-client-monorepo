@@ -40,7 +40,7 @@ export * from './StatsigUser';
 export * from './StorageProvider';
 export * from './TypedJsonParse';
 export * from './TypingUtils';
-export * from './UrlOverrides';
+export * from './UrlConfiguration';
 export * from './UUID';
 export * from './VisibilityObserving';
 

@@ -2,11 +2,10 @@ import { _fetchTxtRecords } from './DnsTxtQuery';
 import { ErrorBoundary } from './ErrorBoundary';
 import { _DJB2 } from './Hashing';
 import { Log } from './Log';
-import { NetworkArgs, NetworkDefault } from './NetworkConfig';
+import { Endpoint, NetworkArgs } from './NetworkConfig';
 import { AnyStatsigOptions } from './StatsigOptionsCommon';
 import { Storage } from './StorageProvider';
-
-type DomainKey = 'i' | 'e' | 'd';
+import { UrlConfiguration } from './UrlConfiguration';
 
 export type FallbackResolverArgs = {
   fallbackUrl: string | null;
@@ -19,7 +18,7 @@ type FallbackInfoEntry = {
 };
 
 type FallbackInfo = {
-  [key in DomainKey]?: FallbackInfoEntry;
+  [key in Endpoint]?: FallbackInfoEntry;
 };
 
 type NetworkFunc = (url: string, args: NetworkArgs) => Promise<Response>;
@@ -31,7 +30,7 @@ export class NetworkFallbackResolver {
   private _fallbackInfo: FallbackInfo | null = null;
   private _errorBoundary: ErrorBoundary | null = null;
   private _networkOverrideFunc?: NetworkFunc;
-  private _cooldowns: Record<string, number> = {};
+  private _dnsQueryCooldowns: Record<string, number> = {};
 
   constructor(options: AnyStatsigOptions) {
     this._networkOverrideFunc = options.networkConfig?.networkOverrideFunc;
@@ -41,13 +40,8 @@ export class NetworkFallbackResolver {
     this._errorBoundary = errorBoundary;
   }
 
-  public tryBumpExpiryTime(sdkKey: string, url: string): void {
-    const domainKey = _getDomainKeyFromEndpoint(url);
-    if (!domainKey) {
-      return;
-    }
-
-    const info = this._fallbackInfo?.[domainKey];
+  public tryBumpExpiryTime(sdkKey: string, urlConfig: UrlConfiguration): void {
+    const info = this._fallbackInfo?.[urlConfig.endpoint];
     if (!info) {
       return;
     }
@@ -55,33 +49,40 @@ export class NetworkFallbackResolver {
     info.expiryTime = Date.now() + DEFAULT_TTL_MS;
     _tryWriteFallbackInfoToCache(sdkKey, {
       ...this._fallbackInfo,
-      [domainKey]: info,
+      [urlConfig.endpoint]: info,
     });
   }
 
-  public getFallbackUrl(sdkKey: string, url: string): string | null {
-    const domainKey = _getDomainKeyFromEndpoint(url);
-    if (!_isDefaultUrl(url) || !domainKey) {
-      return null;
-    }
-
+  public getActiveFallbackUrl(
+    sdkKey: string,
+    urlConfig: UrlConfiguration,
+  ): string | null {
     let info = this._fallbackInfo;
     if (info == null) {
       info = _readFallbackInfoFromCache(sdkKey) ?? {};
       this._fallbackInfo = info;
     }
 
-    const entry = info[domainKey];
+    const entry = info[urlConfig.endpoint];
     if (!entry || Date.now() > (entry.expiryTime ?? 0)) {
-      delete info[domainKey];
+      delete info[urlConfig.endpoint];
+
       this._fallbackInfo = info;
       _tryWriteFallbackInfoToCache(sdkKey, this._fallbackInfo);
       return null;
     }
 
-    const endpoint = _extractEndpointForUrl(url);
     if (entry.url) {
-      return `https://${entry.url}/${endpoint}`;
+      return entry.url;
+    }
+
+    return null;
+  }
+
+  public getFallbackFromProvided(url: string): string | null {
+    const path = _extractPathFromUrl(url);
+    if (path) {
+      return url.replace(path, '');
     }
 
     return null;
@@ -89,30 +90,31 @@ export class NetworkFallbackResolver {
 
   public async tryFetchUpdatedFallbackInfo(
     sdkKey: string,
-    url: string,
+    urlConfig: UrlConfiguration,
     errorMessage: string | null,
     timedOut: boolean,
   ): Promise<boolean> {
     try {
-      const domainKey = _getDomainKeyFromEndpoint(url);
-      if (!_isDomainFailure(errorMessage, timedOut) || !domainKey) {
+      if (!_isDomainFailure(errorMessage, timedOut)) {
         return false;
       }
 
-      if (
-        this._cooldowns[domainKey] &&
-        Date.now() < this._cooldowns[domainKey]
-      ) {
-        return false;
-      }
-      this._cooldowns[domainKey] = Date.now() + COOLDOWN_TIME_MS;
+      const canUseNetworkFallbacks =
+        urlConfig.customUrl == null && urlConfig.fallbackUrls == null;
 
-      const newUrl = await this._fetchFallbackUrl(domainKey);
+      const urls = canUseNetworkFallbacks
+        ? await this._tryFetchFallbackUrlsFromNetwork(urlConfig)
+        : urlConfig.fallbackUrls;
+
+      const newUrl = this._pickNewFallbackUrl(
+        this._fallbackInfo?.[urlConfig.endpoint],
+        urls,
+      );
       if (!newUrl) {
         return false;
       }
 
-      this._updateFallbackInfoWithNewUrl(sdkKey, domainKey, newUrl);
+      this._updateFallbackInfoWithNewUrl(sdkKey, urlConfig.endpoint, newUrl);
 
       return true;
     } catch (error) {
@@ -123,7 +125,7 @@ export class NetworkFallbackResolver {
 
   private _updateFallbackInfoWithNewUrl(
     sdkKey: string,
-    domainKey: DomainKey,
+    endpoint: Endpoint,
     newUrl: string,
   ): void {
     const newFallbackInfo: FallbackInfoEntry = {
@@ -132,7 +134,7 @@ export class NetworkFallbackResolver {
       previous: [],
     };
 
-    const previousInfo = this._fallbackInfo?.[domainKey];
+    const previousInfo = this._fallbackInfo?.[endpoint];
     if (previousInfo) {
       newFallbackInfo.previous.push(...previousInfo.previous);
     }
@@ -141,42 +143,68 @@ export class NetworkFallbackResolver {
       newFallbackInfo.previous = [];
     }
 
-    const previousUrl = this._fallbackInfo?.[domainKey]?.url;
+    const previousUrl = this._fallbackInfo?.[endpoint]?.url;
     if (previousUrl != null) {
       newFallbackInfo.previous.push(previousUrl);
     }
 
     this._fallbackInfo = {
       ...this._fallbackInfo,
-      [domainKey]: newFallbackInfo,
+      [endpoint]: newFallbackInfo,
     };
     _tryWriteFallbackInfoToCache(sdkKey, this._fallbackInfo);
   }
 
-  private async _fetchFallbackUrl(
-    domainKey: DomainKey,
-  ): Promise<string | null> {
-    const records = await _fetchTxtRecords(this._networkOverrideFunc ?? fetch);
-    if (records.length === 0) {
+  private async _tryFetchFallbackUrlsFromNetwork(
+    urlConfig: UrlConfiguration,
+  ): Promise<string[] | null> {
+    const cooldown = this._dnsQueryCooldowns[urlConfig.endpoint];
+    if (cooldown && Date.now() < cooldown) {
       return null;
     }
 
-    const seen = new Set(this._fallbackInfo?.[domainKey]?.previous ?? []);
-    const currentUrl = this._fallbackInfo?.[domainKey]?.url;
+    this._dnsQueryCooldowns[urlConfig.endpoint] = Date.now() + COOLDOWN_TIME_MS;
 
-    let found: string | null = null;
+    const result: string[] = [];
+    const records = await _fetchTxtRecords(this._networkOverrideFunc ?? fetch);
+
+    const path = _extractPathFromUrl(urlConfig.defaultUrl);
+
     for (const record of records) {
-      const [recordKey, recordUrl] = record.split('=');
-      if (!recordUrl || recordKey !== domainKey) {
+      if (!record.startsWith(urlConfig.endpointDnsKey + '=')) {
         continue;
       }
 
-      let url = recordUrl;
-      if (recordUrl.endsWith('/')) {
-        url = recordUrl.slice(0, -1);
-      }
+      const parts = record.split('=');
+      if (parts.length > 1) {
+        let baseUrl = parts[1];
+        if (baseUrl.endsWith('/')) {
+          baseUrl = baseUrl.slice(0, -1);
+        }
 
-      if (!seen.has(recordUrl) && url !== currentUrl) {
+        result.push(`https://${baseUrl}${path}`);
+      }
+    }
+
+    return result;
+  }
+
+  private _pickNewFallbackUrl(
+    currentFallbackInfo: FallbackInfoEntry | null | undefined,
+    urls: string[] | null,
+  ): string | null {
+    if (urls == null) {
+      return null;
+    }
+
+    const previouslyUsed = new Set(currentFallbackInfo?.previous ?? []);
+    const currentFallbackUrl = currentFallbackInfo?.url;
+
+    let found: string | null = null;
+    for (const loopUrl of urls) {
+      const url = loopUrl.endsWith('/') ? loopUrl.slice(0, -1) : loopUrl;
+
+      if (!previouslyUsed.has(loopUrl) && url !== currentFallbackUrl) {
         found = url;
         break;
       }
@@ -184,15 +212,6 @@ export class NetworkFallbackResolver {
 
     return found;
   }
-}
-
-export function _isDefaultUrl(url: string): boolean {
-  for (const key in NetworkDefault) {
-    if (url.startsWith(NetworkDefault[key as keyof typeof NetworkDefault])) {
-      return true;
-    }
-  }
-  return false;
 }
 
 export function _isDomainFailure(
@@ -241,28 +260,11 @@ function _readFallbackInfoFromCache(sdkKey: string): FallbackInfo | null {
   }
 }
 
-function _extractEndpointForUrl(urlString: string): string {
+function _extractPathFromUrl(urlString: string): string | null {
   try {
     const url = new URL(urlString);
-    const endpoint = url.pathname.substring(1);
-    return endpoint;
+    return url.pathname;
   } catch (error) {
-    return '';
+    return null;
   }
-}
-
-function _getDomainKeyFromEndpoint(endpoint: string): 'i' | 'e' | 'd' | null {
-  if (endpoint.includes('initialize')) {
-    return 'i';
-  }
-
-  if (endpoint.includes('rgstr')) {
-    return 'e';
-  }
-
-  if (endpoint.includes('download_config_specs')) {
-    return 'd';
-  }
-
-  return null;
 }

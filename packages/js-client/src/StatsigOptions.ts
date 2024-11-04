@@ -17,6 +17,11 @@ type UrlOverrideOptions = Flatten<
      * default: `https://featuregates.org/v1/initialize`
      */
     initializeUrl?: string;
+
+    /**
+     * A list of URLs to try if the primary initializeUrl fails.
+     */
+    initializeFallbackUrls?: string[];
   }
 >;
 

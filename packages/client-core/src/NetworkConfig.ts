@@ -1,7 +1,15 @@
+export const Endpoint = {
+  _initialize: 'initialize',
+  _rgstr: 'rgstr',
+  _download_config_specs: 'download_config_specs',
+} as const;
+
+export type Endpoint = (typeof Endpoint)[keyof typeof Endpoint];
+
 export const NetworkDefault = {
-  eventsApi: 'https://prodregistryv2.org/v1' as const,
-  initializeApi: 'https://featureassets.org/v1' as const,
-  specsApi: 'https://assetsconfigcdn.org/v1' as const,
+  [Endpoint._rgstr]: 'https://prodregistryv2.org/v1' as const,
+  [Endpoint._initialize]: 'https://featureassets.org/v1' as const,
+  [Endpoint._download_config_specs]: 'https://assetsconfigcdn.org/v1' as const,
 };
 
 export type NetworkPriority = 'high' | 'low' | 'auto';

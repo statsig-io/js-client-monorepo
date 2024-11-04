@@ -1,7 +1,7 @@
 import { _getUserStorageKey } from './CacheKey';
 import { _DJB2 } from './Hashing';
 import { Log } from './Log';
-import { NetworkDefault, NetworkParam } from './NetworkConfig';
+import { Endpoint, NetworkParam } from './NetworkConfig';
 import { NetworkCore, RequestArgsWithData } from './NetworkCore';
 import { _getCurrentPageUrlSafe, _isServerEnv } from './SafeJs';
 import { StatsigClientEmitEventFunc } from './StatsigClientBase';
@@ -15,7 +15,7 @@ import {
   _getObjectFromStorage,
   _setObjectInStorage,
 } from './StorageProvider';
-import { _getOverridableUrl } from './UrlOverrides';
+import { UrlConfiguration } from './UrlConfiguration';
 import {
   _isUnloading,
   _subscribeToVisiblityChanged,
@@ -60,7 +60,7 @@ export class EventLogger {
   private _hasRunQuickFlush = false;
   private _creationTime = Date.now();
   private _isLoggingDisabled: boolean;
-  private _logEventUrl: string;
+  private _logEventUrlConfig: UrlConfiguration;
 
   private static _safeFlushAndForget(sdkKey: string) {
     EVENT_LOGGER_MAP[sdkKey]?.flush().catch(() => {
@@ -84,11 +84,11 @@ export class EventLogger {
     this._maxQueueSize = _options?.loggingBufferMaxSize ?? DEFAULT_QUEUE_SIZE;
 
     const config = _options?.networkConfig;
-    this._logEventUrl = _getOverridableUrl(
+    this._logEventUrlConfig = new UrlConfiguration(
+      Endpoint._rgstr,
       config?.logEventUrl,
       config?.api,
-      '/rgstr',
-      NetworkDefault.eventsApi,
+      config?.logEventFallbackUrls,
     );
   }
 
@@ -272,7 +272,7 @@ export class EventLogger {
       data: {
         events,
       },
-      url: this._logEventUrl,
+      urlConfig: this._logEventUrlConfig,
       retries: 3,
       isCompressable: true,
       params: {

@@ -3,7 +3,12 @@ import { _getStatsigGlobalFlag } from './$_StatsigGlobal';
 import { Diagnostics } from './Diagnostics';
 import { ErrorBoundary } from './ErrorBoundary';
 import { Log } from './Log';
-import { NetworkArgs, NetworkParam, NetworkPriority } from './NetworkConfig';
+import {
+  Endpoint,
+  NetworkArgs,
+  NetworkParam,
+  NetworkPriority,
+} from './NetworkConfig';
 import {
   FallbackResolverArgs,
   NetworkFallbackResolver,
@@ -17,6 +22,7 @@ import { ErrorTag } from './StatsigClientEventEmitter';
 import { SDK_VERSION, StatsigMetadataProvider } from './StatsigMetadata';
 import { AnyStatsigOptions, NetworkConfigCommon } from './StatsigOptionsCommon';
 import { Flatten } from './TypingUtils';
+import { UrlConfiguration } from './UrlConfiguration';
 import { _isUnloading } from './VisibilityObserving';
 
 const DEFAULT_TIMEOUT_MS = 10_000;
@@ -25,11 +31,10 @@ const RETRYABLE_CODES = new Set([408, 500, 502, 503, 504, 522, 524, 599]);
 
 type RequestArgs = {
   sdkKey: string;
-  url: string;
+  urlConfig: UrlConfiguration;
   priority?: NetworkPriority;
   retries?: number;
   attempt?: number;
-  isInitialize?: boolean;
   params?: Record<string, string>;
   headers?: /* Warn: Using headers leads to preflight requests */ Record<
     string,
@@ -47,7 +52,7 @@ export type RequestArgsWithData = Flatten<
 
 type BeaconRequestArgs = Pick<
   RequestArgsWithData,
-  'data' | 'sdkKey' | 'url' | 'params' | 'isCompressable' | 'attempt'
+  'data' | 'sdkKey' | 'urlConfig' | 'params' | 'isCompressable' | 'attempt'
 >;
 
 type RequestArgsInternal = Flatten<
@@ -191,7 +196,7 @@ export class NetworkCore {
       const text = await response.text();
 
       _tryMarkInitEnd(args, response, currentAttempt, text);
-      this._fallbackResolver.tryBumpExpiryTime(args.sdkKey, populatedUrl);
+      this._fallbackResolver.tryBumpExpiryTime(args.sdkKey, args.urlConfig);
 
       return {
         body: text,
@@ -206,15 +211,15 @@ export class NetworkCore {
       const fallbackUpdated =
         await this._fallbackResolver.tryFetchUpdatedFallbackInfo(
           args.sdkKey,
-          populatedUrl,
+          args.urlConfig,
           errorMessage,
           timedOut,
         );
 
       if (fallbackUpdated) {
-        args.fallbackUrl = this._fallbackResolver.getFallbackUrl(
+        args.fallbackUrl = this._fallbackResolver.getActiveFallbackUrl(
           args.sdkKey,
-          args.url,
+          args.urlConfig,
         );
       }
 
@@ -246,7 +251,7 @@ export class NetworkCore {
   }
 
   private async _getPopulatedURL(args: RequestArgsInternal): Promise<string> {
-    const url = args.fallbackUrl ?? args.url;
+    const url = args.fallbackUrl ?? args.urlConfig.getUrl();
 
     const params: Record<string, string> = {
       [NetworkParam.SdkKey]: args.sdkKey,
@@ -308,7 +313,7 @@ export class NetworkCore {
       };
       return result;
     } catch {
-      Log.warn('/initialize request encoding failed');
+      Log.warn(`Request encoding failed for ${args.urlConfig.getUrl()}`);
       return input;
     }
   }
@@ -317,9 +322,9 @@ export class NetworkCore {
     method: 'GET' | 'POST',
     args: RequestArgs,
   ): RequestArgsInternal {
-    const fallbackUrl = this._fallbackResolver.getFallbackUrl(
+    const fallbackUrl = this._fallbackResolver.getActiveFallbackUrl(
       args.sdkKey,
-      args.url,
+      args.urlConfig,
     );
 
     return {
@@ -370,7 +375,7 @@ function _didTimeout(controller: AbortController | null): boolean {
 }
 
 function _tryMarkInitStart(args: RequestArgsInternal, attempt: number) {
-  if (!args.isInitialize) {
+  if (args.urlConfig.endpoint !== Endpoint._initialize) {
     return;
   }
 
@@ -386,7 +391,7 @@ function _tryMarkInitEnd(
   body: string,
   err?: unknown,
 ) {
-  if (!args.isInitialize) {
+  if (args.urlConfig.endpoint !== Endpoint._initialize) {
     return;
   }
 

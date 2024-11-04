@@ -3,10 +3,17 @@ import { noop, nullthrows } from 'statsig-test-helpers';
 import { URLSearchParams } from 'url';
 
 import { StatsigGlobal } from '../$_StatsigGlobal';
+import { Endpoint } from '../NetworkConfig';
 import { NetworkCore } from '../NetworkCore';
+import { UrlConfiguration } from '../UrlConfiguration';
 
 describe('Statsig Encoding', () => {
-  const url = 'http://statsig.io/foo';
+  const urlConfig = new UrlConfiguration(
+    Endpoint._initialize,
+    'http://statsig.io/foo',
+    null,
+    null,
+  );
   const sdkKey = 'client-foo';
   let network: NetworkCore;
 
@@ -20,7 +27,7 @@ describe('Statsig Encoding', () => {
       fetchMock.mockClear();
 
       await network.post({
-        url,
+        urlConfig,
         data: { key: 'value' },
         sdkKey,
         isStatsigEncodable: true,
@@ -65,7 +72,7 @@ describe('Statsig Encoding', () => {
       setup();
 
       await network.post({
-        url,
+        urlConfig,
         data: { key: 'value' },
         sdkKey,
         ...args,
@@ -97,7 +104,7 @@ describe('Statsig Encoding', () => {
         };
 
         await network.post({
-          url,
+          urlConfig,
           data: { key: 'value' },
           sdkKey,
           isStatsigEncodable: true,
@@ -122,7 +129,7 @@ describe('Statsig Encoding', () => {
         (window as any).btoa = undefined;
 
         await network.post({
-          url,
+          urlConfig,
           data: { key: 'value' },
           sdkKey,
           isStatsigEncodable: true,
