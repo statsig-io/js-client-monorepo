@@ -8,6 +8,7 @@ type EvaluationBase<T> = {
   rule_id: string;
   secondary_exposures: SecondaryExposure[];
   value: T;
+  version?: string;
 };
 
 export type SecondaryExposure = {
@@ -26,6 +27,7 @@ export type ExperimentEvaluation = Flatten<
     is_device_based: boolean;
     is_experiment_active?: boolean;
     is_user_in_experiment?: boolean;
+    passed?: boolean;
   }
 >;
 

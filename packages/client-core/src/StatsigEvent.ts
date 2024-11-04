@@ -55,15 +55,19 @@ export const _createGateExposure = (
   user: StatsigUserInternal,
   gate: FeatureGate,
 ): StatsigEventInternal => {
+  const metadata: Record<string, string> = {
+    gate: gate.name,
+    gateValue: String(gate.value),
+    ruleID: gate.ruleID,
+  };
+  if (gate.__evaluation?.version != null) {
+    metadata['configVersion'] = gate.__evaluation.version;
+  }
   return _createExposure(
     GATE_EXPOSURE_NAME,
     user,
     gate.details,
-    {
-      gate: gate.name,
-      gateValue: String(gate.value),
-      ruleID: gate.ruleID,
-    },
+    metadata,
     gate.__evaluation?.secondary_exposures ?? [],
   );
 };
@@ -72,14 +76,21 @@ export const _createConfigExposure = (
   user: StatsigUserInternal,
   config: DynamicConfig,
 ): StatsigEventInternal => {
+  const metadata: Record<string, string> = {
+    config: config.name,
+    ruleID: config.ruleID,
+  };
+  if (config.__evaluation?.version != null) {
+    metadata['configVersion'] = config.__evaluation.version;
+  }
+  if (config.__evaluation?.passed != null) {
+    metadata['rulePassed'] = String(config.__evaluation.passed);
+  }
   return _createExposure(
     CONFIG_EXPOSURE_NAME,
     user,
     config.details,
-    {
-      config: config.name,
-      ruleID: config.ruleID,
-    },
+    metadata,
     config.__evaluation?.secondary_exposures ?? [],
   );
 };
@@ -100,17 +111,22 @@ export const _createLayerParameterExposure = (
     secondaryExposures = evaluation.secondary_exposures;
   }
 
+  const metadata: Record<string, string> = {
+    config: layer.name,
+    parameterName,
+    ruleID: layer.ruleID,
+    allocatedExperiment,
+    isExplicitParameter: String(isExplicit),
+  };
+  if (layer.__evaluation?.version != null) {
+    metadata['configVersion'] = layer.__evaluation.version;
+  }
+
   return _createExposure(
     LAYER_EXPOSURE_NAME,
     user,
     layer.details,
-    {
-      config: layer.name,
-      parameterName,
-      ruleID: layer.ruleID,
-      allocatedExperiment,
-      isExplicitParameter: String(isExplicit),
-    },
+    metadata,
     secondaryExposures,
   );
 };

@@ -48,6 +48,7 @@ export function resultToGateEval(
     rule_id: result.rule_id,
     value: result.bool_value,
     secondary_exposures: result.secondary_exposures,
+    version: spec.version?.toString(),
   };
 }
 
@@ -66,6 +67,8 @@ export function resultToConfigEval(
     is_device_based: false,
     is_experiment_active: spec.isActive,
     is_user_in_experiment: result.is_experiment_group,
+    version: spec.version?.toString(),
+    passed: result.bool_value,
   };
 }
 
@@ -87,5 +90,6 @@ export function resultToLayerEval(
     is_device_based: false,
     is_experiment_active: experimentSpec?.isActive,
     is_user_in_experiment: result.is_experiment_group,
+    version: layerSpec.version?.toString(),
   };
 }

@@ -35,6 +35,7 @@ export type Spec = {
   hasSharedParams: boolean;
   isActive?: boolean;
   targetAppIDs?: string[];
+  version?: number;
 };
 
 export type DownloadConfigSpecsResponse = {
