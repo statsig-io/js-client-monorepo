@@ -1,0 +1,38 @@
+<div class="container">
+  <div>
+    <h4>Load User With Login</h4>
+    <p class="subtext">This gate passes with valid email</p>
+  </div>
+  <div class="content-container">
+    <form (ngSubmit)="login()">
+      <div class="form-group">
+        <label for="email">email:</label>
+        <input
+          type="text"
+          id="email"
+          name="email"
+          [(ngModel)]="email"
+          required
+        />
+      </div>
+      <div class="form-group">
+        <label for="password">password:</label>
+        <input
+          type="password"
+          id="password"
+          name="password"
+          [(ngModel)]="password"
+          required
+        />
+      </div>
+      <button type="submit">{{ buttonText }}</button>
+    </form>
+    <p *ngIf="gatePasses; else noAccessText">Gate passes</p>
+    <ng-template #noAccessText>
+      <p>Gate does not pass, login with a valid email & password</p>
+    </ng-template>
+
+    <button *ngIf="gatePasses" (click)="logout()">Logout</button>
+  </div>
+  <app-code-snippet [code]="snippet"></app-code-snippet>
+</div>

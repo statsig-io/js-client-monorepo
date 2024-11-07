@@ -1,24 +1,35 @@
+import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
+import { Observable } from 'rxjs';
 
 import { StatsigModule, StatsigService } from '@statsig/angular-bindings';
-import { Log } from '@statsig/client-core';
 
 @Component({
   standalone: true,
-  imports: [RouterModule, StatsigModule],
+  imports: [CommonModule, RouterModule, StatsigModule],
   selector: 'app-root',
-  template: `<h1>Welcome angular-sample</h1>
-    <div *stgCheckGate="'a_gate'">a_gate: Pass</div>
-    <button (click)="checkGate()">Check Gate</button>
-    <router-outlet></router-outlet> `,
-  styles: ``,
+  template: `
+    <div>
+      <nav class="container nav">
+        <a routerLink="/">Home</a>
+        <a routerLink="/auth">Login with Auth Example</a>
+      </nav>
+      <div *ngIf="isLoading | async; else content">Loading...</div>
+      <ng-template #content>
+        <router-outlet></router-outlet>
+      </ng-template>
+    </div>
+  `,
+  styleUrls: ['./app.component.css'],
 })
 export class AppComponent {
-  constructor(private _statsigService: StatsigService) {}
+  isLoading: Observable<boolean>;
 
-  checkGate(): void {
-    const gate = this._statsigService.checkGate('a_gate');
-    Log.debug(`Gate 'a_gate' is ${gate ? 'enabled' : 'disabled'}`);
+  constructor(
+    private router: Router,
+    private statsigService: StatsigService,
+  ) {
+    this.isLoading = this.statsigService.isLoading$;
   }
 }

@@ -1,0 +1,15 @@
+<div class="container">
+  <div class="content-container" *stgCheckGate="'a_gate'">Gate passes</div>
+  <div>
+    <h4>Check gate using directive</h4>
+  </div>
+  <app-code-snippet [code]="snippet"></app-code-snippet>
+  <div>
+    <h4>Check gate using statsig service</h4>
+  </div>
+  <app-code-snippet [code]="statsigServiceSnippet"></app-code-snippet>
+  <div>
+    <h4>Check gate using statsig client</h4>
+  </div>
+  <app-code-snippet [code]="instanceSnippet"></app-code-snippet>
+</div>

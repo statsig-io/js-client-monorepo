@@ -39,7 +39,9 @@ export class CheckGateDirective implements OnInit {
     private _viewContainer: ViewContainerRef,
     private _statsigService: StatsigService,
   ) {
-    Log.debug('CheckGateDirective created');
+    _statsigService.getClient().$on('values_updated', () => {
+      this._updateView();
+    });
   }
 
   ngOnInit(): void {

@@ -1,18 +1,36 @@
-import { InjectionToken } from '@angular/core';
-import { NgModule } from '@angular/core';
+import { InjectionToken, NgModule } from '@angular/core';
 
-import { StatsigClientInterface } from '@statsig/client-core';
+import {
+  FeatureGateEvaluationOptions,
+  StatsigClient,
+  StatsigOptions,
+  StatsigUser,
+} from '@statsig/js-client';
 
 import { CheckGateDirective } from './checkGate.directive';
-import { StatsigService } from './statsig.service';
 
-export const STATSIG_CLIENT = new InjectionToken<StatsigClientInterface>(
-  'STATSIG_CLIENT',
-);
+type WithClient<T extends StatsigClient> = { client: T };
+type WithConfiguration = {
+  sdkKey: string;
+  user: StatsigUser;
+  options?: StatsigOptions;
+};
+
+export type StatsigInitConfig<T extends StatsigClient> =
+  | WithClient<T>
+  | WithConfiguration;
+
+export const STATSIG_INIT_CONFIG = new InjectionToken<
+  StatsigInitConfig<StatsigClient>
+>('StatsigProvider');
+
+export type FeatureGateOptions = FeatureGateEvaluationOptions & {
+  user: StatsigUser | null;
+};
 
 @NgModule({
   declarations: [CheckGateDirective],
   exports: [CheckGateDirective],
-  providers: [StatsigService],
+  providers: [],
 })
 export class StatsigModule {}
