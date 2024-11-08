@@ -210,7 +210,15 @@
       "$_cooldowns": "Pn",
       "$_networkOverrideFunc": "Cn",
       "$_fetchFallbackUrl": "Un",
-      "$_updateFallbackInfoWithNewUrl": "Fn"
+      "$_updateFallbackInfoWithNewUrl": "Fn",
+      "$_logEventUrlConfig": "ki",
+      "$_rgstr": "Di",
+      "$_download_config_specs": "Ai",
+      "$_dnsQueryCooldowns": "Ei",
+      "$_tryFetchFallbackUrlsFromNetwork": "Mi",
+      "$_pickNewFallbackUrl": "Ri",
+      "$_initializeUrlConfig": "xi",
+      "$_downloadConfigSpecsUrlConfig": "Gn"
     }
   }
 }

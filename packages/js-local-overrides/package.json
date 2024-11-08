@@ -1,8 +1,8 @@
 {
   "name": "@statsig/js-local-overrides",
-  "version": "3.4.0-beta.1",
+  "version": "3.5.0",
   "dependencies": {
-    "@statsig/client-core": "3.4.0-beta.1"
+    "@statsig/client-core": "3.5.0"
   },
   "type": "commonjs",
   "main": "./src/index.js",
