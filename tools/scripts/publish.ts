@@ -22,9 +22,9 @@ if (!existsSync(configPath)) {
   throw new Error(`Failed to find package.json at ${configPath}`);
 }
 
-const isBeta = true;
+const isBeta = false;
 
-const parts = [
+const publish = [
   `npm publish`,
   `--registry=https://registry.npmjs.org/`,
   `--userconfig=${root}/.npmrc`,
@@ -32,13 +32,23 @@ const parts = [
   isBeta ? `--tag beta` : '',
 ];
 
-const command = parts.join(' ');
-if (
-  command !==
-  `npm publish --registry=https://registry.npmjs.org/ --userconfig=${root}/.npmrc --access public --tag beta`
-) {
-  throw new Error(`Invalid command: ${command}`);
-}
+// If you need to promote a version to latest
+// const promote = [
+//   'npm dist-tag add',
+//   `@statsig/${packageName}@${VERSION} latest`,
+//   `--registry=https://registry.npmjs.org/`,
+//   `--userconfig=${root}/.npmrc`,
+// ];
+
+// If you need to remove the beta tag from a version
+// const rmBeta = [
+//   'npm dist-tag rm',
+//   `@statsig/${packageName}@${VERSION} beta`,
+//   `--registry=https://registry.npmjs.org/`,
+//   `--userconfig=${root}/.npmrc`,
+// ];
+
+const command = publish.join(' ');
 
 try {
   execSync(command, { cwd: dir });
