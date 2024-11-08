@@ -70,6 +70,7 @@ describe('Autocapture Tests', () => {
       pageViewResolver = null;
       return '{}';
     });
+
     client = new StatsigClient('client-key', { userID: '' });
     await client.initializeAsync();
     autoCapture = runStatsigAutoCapture(client);

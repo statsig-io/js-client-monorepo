@@ -10,6 +10,7 @@ import {
   _isServerEnv,
 } from '@statsig/client-core';
 
+import { AutoCaptureEvent, AutoCaptureEventName } from './AutoCaptureEvent';
 import {
   _gatherEventData,
   _getSafeNetworkInformation,
@@ -21,20 +22,32 @@ import {
 } from './Utils';
 import { _gatherPageViewPayload } from './payloadUtils';
 
+const AUTO_EVENT_MAPPING: Record<string, AutoCaptureEventName> = {
+  submit: AutoCaptureEventName.FORM_SUBMIT,
+  click: AutoCaptureEventName.CLICK,
+} as const;
+
+export type AutoCaptureOptions = {
+  eventFilterFunc?: (event: AutoCaptureEvent) => boolean;
+};
+
 export class StatsigAutoCapturePlugin
   implements StatsigPlugin<PrecomputedEvaluationsInterface>
 {
   readonly __plugin = 'auto-capture';
 
+  constructor(private _options?: AutoCaptureOptions) {}
+
   bind(client: PrecomputedEvaluationsInterface): void {
-    runStatsigAutoCapture(client);
+    runStatsigAutoCapture(client, this._options);
   }
 }
 
 export function runStatsigAutoCapture(
   client: PrecomputedEvaluationsInterface,
+  options?: AutoCaptureOptions,
 ): AutoCapture {
-  return new AutoCapture(client);
+  return new AutoCapture(client, options);
 }
 
 export class AutoCapture {
@@ -43,12 +56,18 @@ export class AutoCapture {
   private _deepestScroll = 0;
   private _disabledEvents: Record<string, boolean> = {};
   private _previousLoggedPageViewUrl: URL | null = null;
+  private _eventFilterFunc?: (event: AutoCaptureEvent) => boolean;
 
-  constructor(private _client: PrecomputedEvaluationsInterface) {
+  constructor(
+    private _client: PrecomputedEvaluationsInterface,
+    options?: AutoCaptureOptions,
+  ) {
     const { sdkKey, errorBoundary, values } = _client.getContext();
     this._disabledEvents = values?.auto_capture_settings?.disabled_events ?? {};
     this._errorBoundary = errorBoundary;
     this._errorBoundary.wrap(this);
+
+    this._eventFilterFunc = options?.eventFilterFunc;
 
     const doc = _getDocumentSafe();
 
@@ -105,7 +124,7 @@ export class AutoCapture {
   }
 
   private _autoLogEvent(event: Event) {
-    let eventType = event.type?.toLowerCase();
+    const eventType = event.type?.toLowerCase();
     if (eventType === 'error' && event instanceof ErrorEvent) {
       this._logError(event);
       return;
@@ -120,11 +139,13 @@ export class AutoCapture {
       return;
     }
 
-    if (eventType === 'submit') {
-      eventType = 'form_submit';
+    const eventName = AUTO_EVENT_MAPPING[eventType];
+    if (!eventName) {
+      return;
     }
+
     const { value, metadata } = _gatherEventData(target);
-    this._enqueueAutoCapture(eventType, value, metadata);
+    this._enqueueAutoCapture(eventName, value, metadata);
   }
 
   private _initialize() {
@@ -149,7 +170,7 @@ export class AutoCapture {
       }
     }
 
-    this._enqueueAutoCapture('error', event.message, {
+    this._enqueueAutoCapture(AutoCaptureEventName.ERROR, event.message, {
       message: event.message,
       filename: event.filename,
       lineno: event.lineno,
@@ -167,7 +188,7 @@ export class AutoCapture {
       }
 
       this._enqueueAutoCapture(
-        'session_start',
+        AutoCaptureEventName.SESSION_START,
         _getSanitizedPageUrl(),
         { sessionID: session.data.sessionID },
         { flushImmediately: true },
@@ -189,10 +210,15 @@ export class AutoCapture {
 
     const payload = _gatherPageViewPayload(url);
 
-    this._enqueueAutoCapture('page_view', _getSanitizedPageUrl(), payload, {
-      flushImmediately: true,
-      addNewSessionMetadata: true,
-    });
+    this._enqueueAutoCapture(
+      AutoCaptureEventName.PAGE_VIEW,
+      _getSanitizedPageUrl(),
+      payload,
+      {
+        flushImmediately: true,
+        addNewSessionMetadata: true,
+      },
+    );
   }
 
   private _logPerformance() {
@@ -243,13 +269,17 @@ export class AutoCapture {
         metadata['save_data'] = networkInfo.saveData;
       }
 
-      this._enqueueAutoCapture('performance', _getSanitizedPageUrl(), metadata);
+      this._enqueueAutoCapture(
+        AutoCaptureEventName.PERFORMANCE,
+        _getSanitizedPageUrl(),
+        metadata,
+      );
     }, 1);
   }
 
   private _pageUnloadHandler() {
     this._enqueueAutoCapture(
-      'page_view_end',
+      AutoCaptureEventName.PAGE_VIEW_END,
       _getSanitizedPageUrl(),
       {
         scrollDepth: this._deepestScroll,
@@ -260,14 +290,16 @@ export class AutoCapture {
   }
 
   private _enqueueAutoCapture(
-    name: string,
+    eventName: AutoCaptureEventName,
     value: string,
     metadata: Record<string, unknown>,
     options?: { flushImmediately?: boolean; addNewSessionMetadata?: boolean },
   ) {
-    if (this._disabledEvents[name]) {
+    const subname = eventName.slice('auto_capture::'.length);
+    if (this._disabledEvents[eventName] || this._disabledEvents[subname]) {
       return;
     }
+
     const session = this._getSessionFromClient();
     try {
       const logMetadata: Record<string, string> = {
@@ -280,11 +312,15 @@ export class AutoCapture {
         logMetadata['isNewSession'] = String(this._isNewSession(session));
       }
 
-      const event = {
-        eventName: `auto_capture::${name}`,
+      const event: AutoCaptureEvent = {
+        eventName,
         value,
         metadata: logMetadata,
       };
+
+      if (this._eventFilterFunc && !this._eventFilterFunc(event)) {
+        return;
+      }
 
       this._client.logEvent(event);
 
