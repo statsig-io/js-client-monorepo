@@ -181,6 +181,32 @@ export default {
       return false;
     }
   },
+
+  arrayHasValue(value: unknown[], target: string[]): boolean {
+    const valueSet = new Set(value);
+    for (let i = 0; i < target.length; i++) {
+      if (
+        valueSet.has(target[i]) ||
+        valueSet.has(parseFloat(target[i] as string))
+      ) {
+        return true;
+      }
+    }
+    return false;
+  },
+
+  arrayHasAllValues(value: unknown[], target: string[]): boolean {
+    const valueSet = new Set(value);
+    for (let i = 0; i < target.length; i++) {
+      if (
+        !valueSet.has(target[i]) &&
+        !valueSet.has(parseFloat(target[i] as string))
+      ) {
+        return false;
+      }
+    }
+    return true;
+  },
 };
 
 function _startOfDay(date: Date): number {

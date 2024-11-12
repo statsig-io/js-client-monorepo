@@ -306,6 +306,42 @@ export default class Evaluator {
       case 'in_segment_list':
       case 'not_in_segment_list':
         return makeEvalResult({ unsupported: true });
+
+      case 'array_contains_any':
+      case 'array_contains_none': {
+        if (!Array.isArray(target)) {
+          pass = false;
+          break;
+        }
+        if (!Array.isArray(value)) {
+          pass = false;
+          break;
+        }
+        const res = Compare.arrayHasValue(
+          value as unknown[],
+          target as string[],
+        );
+        pass = operator === 'array_contains_any' ? res : !res;
+        break;
+      }
+      case 'array_contains_all':
+      case 'not_array_contains_all': {
+        if (!Array.isArray(target)) {
+          pass = false;
+          break;
+        }
+        if (!Array.isArray(value)) {
+          pass = false;
+          break;
+        }
+
+        const res = Compare.arrayHasAllValues(
+          value as unknown[],
+          target as string[],
+        );
+        pass = operator === 'array_contains_all' ? res : !res;
+        break;
+      }
     }
 
     return makeEvalResult({ bool_value: pass });
