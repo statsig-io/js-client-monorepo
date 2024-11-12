@@ -38,7 +38,7 @@ describe('Init Strategy - Awaited', () => {
   it('calls /download_config_specs from network', () => {
     expect(fetchMock.mock.calls).toHaveLength(1);
     expect(fetchMock.mock.calls[0][0]).toContain(
-      'https://assetsconfigcdn.org/v1/download_config_specs?k=client-key',
+      'https://api.statsigcdn.com/v1/download_config_specs?k=client-key',
     );
   });
 

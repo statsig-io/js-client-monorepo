@@ -56,7 +56,7 @@ describe('Url Overriding', () => {
       await run({});
 
       expect(fetchMock.mock.calls[0][0]).toContain(
-        'https://assetsconfigcdn.org/v1/download_config_specs?k=',
+        'https://api.statsigcdn.com/v1/download_config_specs?k=',
       );
 
       expect(fetchMock.mock.calls[1][0]).toContain(

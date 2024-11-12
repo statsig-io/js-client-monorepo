@@ -9,7 +9,7 @@ export type Endpoint = (typeof Endpoint)[keyof typeof Endpoint];
 export const NetworkDefault = {
   [Endpoint._rgstr]: 'https://prodregistryv2.org/v1' as const,
   [Endpoint._initialize]: 'https://featureassets.org/v1' as const,
-  [Endpoint._download_config_specs]: 'https://assetsconfigcdn.org/v1' as const,
+  [Endpoint._download_config_specs]: 'https://api.statsigcdn.com/v1' as const,
 };
 
 export type NetworkPriority = 'high' | 'low' | 'auto';
