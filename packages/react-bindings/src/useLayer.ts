@@ -19,7 +19,12 @@ export default function (layerName: string, options?: UseLayerOptions): Layer {
     }
 
     return client.getLayer(layerName, options);
-  }, [layerName, client, renderVersion, options]);
+  }, [
+    layerName,
+    client,
+    renderVersion,
+    ...(options ? Object.values(options) : []),
+  ]);
 
   return layer;
 }

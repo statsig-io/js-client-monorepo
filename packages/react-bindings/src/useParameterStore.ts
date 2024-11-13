@@ -26,7 +26,12 @@ export default function (
     }
 
     return client.getParameterStore(storeName, options);
-  }, [storeName, client, renderVersion, options]);
+  }, [
+    storeName,
+    client,
+    renderVersion,
+    ...(options ? Object.values(options) : []),
+  ]);
 
   return store;
 }

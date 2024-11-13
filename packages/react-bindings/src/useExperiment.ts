@@ -26,5 +26,10 @@ export default function (
     }
 
     return client.getExperiment(experimentName, options);
-  }, [experimentName, client, renderVersion, options]);
+  }, [
+    experimentName,
+    client,
+    renderVersion,
+    ...(options ? Object.values(options) : []),
+  ]);
 }

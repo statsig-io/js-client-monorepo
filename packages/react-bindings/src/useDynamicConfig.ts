@@ -26,5 +26,10 @@ export default function (
     }
 
     return client.getDynamicConfig(configName, options);
-  }, [configName, client, renderVersion, options]);
+  }, [
+    configName,
+    client,
+    renderVersion,
+    ...(options ? Object.values(options) : []),
+  ]);
 }

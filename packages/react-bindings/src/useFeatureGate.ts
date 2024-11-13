@@ -26,7 +26,12 @@ export default function (
     }
 
     return client.getFeatureGate(gateName, options);
-  }, [gateName, client, renderVersion, options]);
+  }, [
+    gateName,
+    client,
+    renderVersion,
+    ...(options ? Object.values(options) : []),
+  ]);
 
   return gate;
 }

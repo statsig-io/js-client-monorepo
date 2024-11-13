@@ -22,7 +22,12 @@ export default function (
     }
 
     return client.checkGate(gateName, options);
-  }, [gateName, client, renderVersion, options]);
+  }, [
+    gateName,
+    client,
+    renderVersion,
+    ...(options ? Object.values(options) : []),
+  ]);
 
   return gate;
 }
