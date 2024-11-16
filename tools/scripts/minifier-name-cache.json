@@ -184,7 +184,26 @@
       "$_downloadConfigSpecsUrlConfig": "Pn",
       "$_getSpecs": "Cn",
       "$_evaluator": "Un",
-      "$_getOutputs": "Gn"
+      "$_getOutputs": "Gn",
+      "$_sessionData": "ti",
+      "$_events": "ei",
+      "$_currentSessionID": "ii",
+      "$_getSessionIdFromClient": "ni",
+      "$_replayer": "si",
+      "$_shutdown": "ri",
+      "$_attemptToStartRecording": "li",
+      "$_logRecording": "oi",
+      "$_subscribeToVisibilityChanged": "ui",
+      "$_onVisibilityChanged": "ai",
+      "$_onRecordingEvent": "ci",
+      "$_fastApproxSizeOf": "hi",
+      "$_bumpSessionIdleTimerAndLogRecording": "di",
+      "$_logRecordingWithSessionID": "vi",
+      "$_startTimestamp": "fi",
+      "$_endTimestamp": "_i",
+      "$_clickCount": "gi",
+      "$_stopCallback": "bi",
+      "$_stopFn": "pi"
     }
   }
 }

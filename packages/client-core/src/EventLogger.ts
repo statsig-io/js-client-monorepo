@@ -192,12 +192,17 @@ export class EventLogger {
     const userKey = _getUserStorageKey(this._sdkKey, user);
 
     const metadata = event.metadata ? event.metadata : {};
+
     const key = [
       event.eventName,
       userKey,
       metadata['gate'],
       metadata['config'],
       metadata['ruleID'],
+      metadata['allocatedExperiment'],
+      metadata['parameterName'],
+      String(metadata['isExplicitParameter']),
+      metadata['reason'],
     ].join('|');
     const previous = this._lastExposureTimeMap[key];
     const now = Date.now();

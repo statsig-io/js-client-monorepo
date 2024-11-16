@@ -48,7 +48,11 @@ const _createExposure = (
 export const _isExposureEvent = ({
   eventName,
 }: StatsigEventInternal): boolean => {
-  return eventName === GATE_EXPOSURE_NAME || eventName === CONFIG_EXPOSURE_NAME;
+  return (
+    eventName === GATE_EXPOSURE_NAME ||
+    eventName === CONFIG_EXPOSURE_NAME ||
+    eventName === LAYER_EXPOSURE_NAME
+  );
 };
 
 export const _createGateExposure = (
