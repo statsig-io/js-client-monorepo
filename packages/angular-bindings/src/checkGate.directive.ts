@@ -8,7 +8,8 @@ import {
 
 import { Log } from '@statsig/client-core';
 
-import { FeatureGateOptions, StatsigService } from './statsig.service';
+import { FeatureGateOptions } from './statsig.module';
+import { StatsigService } from './statsig.service';
 
 @Directive({
   selector: '[stgCheckGate]',
@@ -16,7 +17,7 @@ import { FeatureGateOptions, StatsigService } from './statsig.service';
 export class CheckGateDirective implements OnInit {
   private _gate = '';
   private _isHidden = true;
-  private _options: FeatureGateOptions = { user: null };
+  private _options: FeatureGateOptions = {};
 
   @Input() set stgCheckGate(val: string) {
     Log.debug('Setting gate', val);

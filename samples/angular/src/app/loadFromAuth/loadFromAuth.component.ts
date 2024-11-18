@@ -25,7 +25,7 @@ export class LoadFromAuthComponent implements OnInit {
   email = '';
   password = '';
   buttonText = 'Login';
-  snippet = `statsigService.getClient().updateUserSync({
+  snippet = `statsigService.updateUserAsync({
     userID: USER_ID,
     email: USER_EMAIL,
     ... other attributes
@@ -50,20 +50,28 @@ export class LoadFromAuthComponent implements OnInit {
       this.buttonText = 'Login';
 
       if (success) {
-        this.statsigService.getClient().updateUserSync({
-          userID: `user-${this.email}`,
-          email: this.email,
-        });
+        this.statsigService
+          .updateUserAsync({
+            userID: `user-${this.email}`,
+            email: this.email,
+          })
+          .then(() => {
+            this.gatePasses = this.statsigService.checkGate('third_gate');
+            this.cdr.detectChanges();
+          })
+          .catch(() => {
+            // noop
+          });
+      } else {
+        this.gatePasses = this.statsigService.checkGate('third_gate');
+        this.cdr.detectChanges();
       }
-
-      this.gatePasses = this.statsigService.checkGate('third_gate');
-      this.cdr.detectChanges();
     });
   }
 
   logout(): void {
     this.authService.logout();
-    this.statsigService.getClient().updateUserSync({ userID: undefined });
+    this.statsigService.getClient().updateUserSync({});
     this.gatePasses = false;
     this.cdr.detectChanges();
   }

@@ -15,10 +15,7 @@ import { StatsigModule, StatsigService } from '@statsig/angular-bindings';
         <a routerLink="/">Home</a>
         <a routerLink="/auth">Login with Auth Example</a>
       </nav>
-      <div *ngIf="isLoading | async; else content">Loading...</div>
-      <ng-template #content>
-        <router-outlet></router-outlet>
-      </ng-template>
+      <router-outlet></router-outlet>
     </div>
   `,
   styleUrls: ['./app.component.css'],

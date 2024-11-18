@@ -24,9 +24,7 @@ export const STATSIG_INIT_CONFIG = new InjectionToken<
   StatsigInitConfig<StatsigClient>
 >('StatsigProvider');
 
-export type FeatureGateOptions = FeatureGateEvaluationOptions & {
-  user: StatsigUser | null;
-};
+export type FeatureGateOptions = FeatureGateEvaluationOptions;
 
 @NgModule({
   declarations: [CheckGateDirective],

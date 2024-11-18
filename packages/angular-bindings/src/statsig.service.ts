@@ -2,19 +2,24 @@ import { Inject, Injectable, OnDestroy } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 
 import {
+  DataAdapterAsyncOptions,
+  DataAdapterSyncOptions,
+  DynamicConfig,
+  DynamicConfigEvaluationOptions,
+  Experiment,
+  ExperimentEvaluationOptions,
   FeatureGateEvaluationOptions,
+  Layer,
+  LayerEvaluationOptions,
   Log,
   SDKType,
+  StatsigEvent,
   StatsigUser,
 } from '@statsig/client-core';
 import { StatsigClient } from '@statsig/js-client';
 
 import { Memoize } from './memoizeDecorator';
 import { STATSIG_INIT_CONFIG, StatsigInitConfig } from './statsig.module';
-
-export type FeatureGateOptions = FeatureGateEvaluationOptions & {
-  user: StatsigUser | null;
-};
 
 @Injectable({
   providedIn: 'root',
@@ -65,10 +70,61 @@ export class StatsigService implements OnDestroy {
     this._client.off('values_updated', this._onValuesUpdated);
   }
 
-  checkGate(gateName: string, options?: FeatureGateOptions): boolean {
+  checkGate(gateName: string, options?: FeatureGateEvaluationOptions): boolean {
     Log.debug(`checkGate caled for ${gateName}, rv: ${this._renderVersion}`);
 
     return this._checkGateImpl(this._renderVersion, gateName, options);
+  }
+
+  getDynamicConfig(
+    configName: string,
+    options?: DynamicConfigEvaluationOptions,
+  ): DynamicConfig {
+    Log.debug(
+      `getDynamicConfig called for ${configName}, rv: ${this._renderVersion}`,
+    );
+
+    return this._getDynamicConfigImpl(this._renderVersion, configName, options);
+  }
+
+  getExperiment(
+    experimentName: string,
+    options?: ExperimentEvaluationOptions,
+  ): Experiment {
+    Log.debug(
+      `getExperiment caled for ${experimentName}, rv: ${this._renderVersion}`,
+    );
+
+    return this._getExperimentImpl(
+      this._renderVersion,
+      experimentName,
+      options,
+    );
+  }
+
+  getLayer(layerName: string, options?: LayerEvaluationOptions): Layer {
+    Log.debug(`getLayer caled for ${layerName}, rv: ${this._renderVersion}`);
+
+    return this._getLayerImpl(this._renderVersion, layerName, options);
+  }
+
+  logEvent(
+    eventName: StatsigEvent | string,
+    value?: string | number,
+    metadata?: Record<string, string>,
+  ): void {
+    this._client.logEvent(eventName, value, metadata);
+  }
+
+  updateUserAsync(
+    user: StatsigUser,
+    options?: DataAdapterAsyncOptions,
+  ): Promise<void> {
+    return this._client.updateUserAsync(user, options);
+  }
+
+  updateUserSync(user: StatsigUser, options?: DataAdapterSyncOptions): void {
+    this._client.updateUserSync(user, options);
   }
 
   getClient(): StatsigClient {
@@ -76,15 +132,59 @@ export class StatsigService implements OnDestroy {
   }
 
   @Memoize((...args: unknown[]) => {
-    const [rv, gn, opt] = args as [number, string, FeatureGateOptions];
+    const [rv, gn, opt] = args as [
+      number,
+      string,
+      FeatureGateEvaluationOptions,
+    ];
     return `${rv}-${gn}-${JSON.stringify(opt)}`;
   })
   private _checkGateImpl(
     _rv: number,
     gateName: string,
-    options?: FeatureGateOptions,
+    options?: FeatureGateEvaluationOptions,
   ): boolean {
     return this._client.checkGate(gateName, options);
+  }
+
+  @Memoize((...args: unknown[]) => {
+    const [rv, gn, opt] = args as [
+      number,
+      string,
+      DynamicConfigEvaluationOptions,
+    ];
+    return `${rv}-${gn}-${JSON.stringify(opt)}`;
+  })
+  private _getDynamicConfigImpl(
+    _rv: number,
+    configName: string,
+    options?: DynamicConfigEvaluationOptions,
+  ): DynamicConfig {
+    return this._client.getDynamicConfig(configName, options);
+  }
+
+  @Memoize((...args: unknown[]) => {
+    const [rv, en, opt] = args as [number, string, ExperimentEvaluationOptions];
+    return `${rv}-${en}-${JSON.stringify(opt)}`;
+  })
+  private _getExperimentImpl(
+    _rv: number,
+    experimentName: string,
+    options?: ExperimentEvaluationOptions,
+  ): Experiment {
+    return this._client.getExperiment(experimentName, options);
+  }
+
+  @Memoize((...args: unknown[]) => {
+    const [rv, ln, opt] = args as [number, string, LayerEvaluationOptions];
+    return `${rv}-${ln}-${JSON.stringify(opt)}`;
+  })
+  private _getLayerImpl(
+    _rv: number,
+    layerName: string,
+    options?: LayerEvaluationOptions,
+  ): Layer {
+    return this._client.getLayer(layerName, options);
   }
 
   private _checkAndEmitLoadingStatus(): void {
