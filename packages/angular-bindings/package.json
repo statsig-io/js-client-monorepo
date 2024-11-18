@@ -1,12 +1,11 @@
 {
-  "private": true,
   "name": "@statsig/angular-bindings",
-  "version": "3.5.1",
+  "version": "3.6.0",
   "dependencies": {},
   "peerDependencies": {
     "@angular/core": ">=12.0.0",
-    "@statsig/js-client": "3.5.1",
-    "@statsig/client-core": "3.5.1",
+    "@statsig/js-client": "3.6.0",
+    "@statsig/client-core": "3.6.0",
     "rxjs": "^6.0.0 || ^7.0.0"
   },
   "sideEffects": false
