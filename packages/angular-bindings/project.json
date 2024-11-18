@@ -6,6 +6,10 @@
   "projectType": "library",
   "tags": [],
   "targets": {
+    "publish": {
+      "command": "ts-node ./tools/scripts/publish.ts angular-bindings",
+      "dependsOn": ["build"]
+    },
     "build": {
       "executor": "@nx/angular:package",
       "outputs": ["{workspaceRoot}/dist/{projectRoot}"],
