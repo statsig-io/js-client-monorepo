@@ -21,6 +21,7 @@ import {
   StatsigEvent,
   StatsigSession,
   StatsigUser,
+  StatsigUserInternal,
   Storage,
   _createConfigExposure,
   _createGateExposure,
@@ -156,7 +157,7 @@ export default class StatsigOnDeviceEvalClient
     user: StatsigUser,
     options?: FeatureGateEvaluationOptions,
   ): FeatureGate {
-    const normalized = _normalizeUser(user, this._options);
+    const normalized = this._normalizeUser(user);
     const { evaluation, details } = this._evaluator.evaluateGate(
       name,
       normalized,
@@ -176,7 +177,7 @@ export default class StatsigOnDeviceEvalClient
     user: StatsigUser,
     options?: DynamicConfigEvaluationOptions,
   ): DynamicConfig {
-    const normalized = _normalizeUser(user, this._options);
+    const normalized = this._normalizeUser(user);
     const { evaluation, details } = this._evaluator.evaluateConfig(
       name,
       normalized,
@@ -204,7 +205,7 @@ export default class StatsigOnDeviceEvalClient
     user: StatsigUser,
     options?: ExperimentEvaluationOptions,
   ): Experiment {
-    const normalized = _normalizeUser(user, this._options);
+    const normalized = this._normalizeUser(user);
     const { evaluation, details } = this._evaluator.evaluateConfig(
       name,
       normalized,
@@ -232,7 +233,7 @@ export default class StatsigOnDeviceEvalClient
     user: StatsigUser,
     options?: LayerEvaluationOptions,
   ): Layer {
-    const normalized = _normalizeUser(user, this._options);
+    const normalized = this._normalizeUser(user);
     const { evaluation, details } = this._evaluator.evaluateLayer(
       name,
       normalized,
@@ -268,7 +269,7 @@ export default class StatsigOnDeviceEvalClient
 
     this._logger.enqueue({
       ...event,
-      user: _normalizeUser(user, this._options),
+      user: this._normalizeUser(user),
       time: Date.now(),
     });
   }
@@ -293,6 +294,14 @@ export default class StatsigOnDeviceEvalClient
   private _finalizeUpdate(values: DataAdapterResult | null) {
     this._store.finalize();
     this._setStatus('Ready', values);
+  }
+
+  private _normalizeUser(user: StatsigUser): StatsigUserInternal {
+    return _normalizeUser(
+      user,
+      this._options,
+      this._store.getDefaultEnvironment(),
+    );
   }
 
   private _runPostUpdate(current: DataAdapterResult | null): void {

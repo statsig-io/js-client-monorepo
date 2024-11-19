@@ -46,4 +46,5 @@ export type DownloadConfigSpecsResponse = {
   has_updates: boolean;
   sdkInfo?: Record<string, string>;
   user?: StatsigUser;
+  default_environment?: string;
 };

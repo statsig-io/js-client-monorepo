@@ -29,9 +29,14 @@ export default class SpecStore {
   private _source: DataSource = 'Uninitialized';
   private _lcut = 0;
   private _receivedAt = 0;
+  private _defaultEnvironment: string | null = null;
 
   getValues(): DownloadConfigSpecsResponse | null {
     return this._rawValues ? _parseResponse(this._rawValues) : null;
+  }
+
+  getDefaultEnvironment(): string | null {
+    return this._defaultEnvironment;
   }
 
   setValuesFromDataAdapter(result: DataAdapterResult | null): void {
@@ -49,6 +54,7 @@ export default class SpecStore {
     this._source = result.source;
     this._values = values;
     this._rawValues = result.data;
+    this._defaultEnvironment = values.default_environment ?? null;
   }
 
   reset(): void {

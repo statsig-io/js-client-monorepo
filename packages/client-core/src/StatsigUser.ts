@@ -35,12 +35,15 @@ export type StatsigUserInternal = StatsigUser & {
 export function _normalizeUser(
   original: StatsigUser,
   options?: AnyStatsigOptions | null,
+  fallbackEnvironment?: string | null,
 ): StatsigUserInternal {
   try {
     const copy = JSON.parse(JSON.stringify(original)) as StatsigUserInternal;
 
     if (options != null && options.environment != null) {
       copy.statsigEnvironment = options.environment;
+    } else if (fallbackEnvironment != null) {
+      copy.statsigEnvironment = { tier: fallbackEnvironment };
     }
 
     return copy;
