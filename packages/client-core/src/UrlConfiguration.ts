@@ -29,7 +29,9 @@ export class UrlConfiguration {
     }
 
     if (!customUrl && customApi) {
-      this.customUrl = `${customApi}/${endpoint}`;
+      this.customUrl = customApi.endsWith('/')
+        ? `${customApi}${endpoint}`
+        : `${customApi}/${endpoint}`;
     }
 
     if (fallbackUrls) {
