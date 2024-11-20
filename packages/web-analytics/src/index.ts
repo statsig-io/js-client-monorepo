@@ -6,6 +6,11 @@ import {
   runStatsigAutoCapture,
 } from './AutoCapture';
 
+export type {
+  AutoCaptureEvent,
+  AutoCaptureEventName,
+} from './AutoCaptureEvent';
+
 export { AutoCapture, runStatsigAutoCapture, StatsigAutoCapturePlugin };
 
 __STATSIG__ = {
