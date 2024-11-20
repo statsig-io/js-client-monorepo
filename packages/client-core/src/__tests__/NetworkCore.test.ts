@@ -86,6 +86,20 @@ describe('Network Core', () => {
     });
   });
 
+  describe('Too Many Requests', () => {
+    beforeAll(async () => {
+      fetchMock.mockClear();
+      fetchMock.mockResponse('Slow Down!', { status: 429 });
+      emitter.mockClear();
+
+      await network.post({ sdkKey, urlConfig, data: {}, retries: 2 });
+    });
+
+    it('does not make any retry requests', () => {
+      expect(fetchMock).toHaveBeenCalledTimes(1);
+    });
+  });
+
   describe('Error', () => {
     const error = new Error('Lost Connection');
 
