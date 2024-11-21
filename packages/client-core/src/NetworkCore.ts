@@ -26,6 +26,8 @@ import { UrlConfiguration } from './UrlConfiguration';
 import { _isUnloading } from './VisibilityObserving';
 
 const DEFAULT_TIMEOUT_MS = 10_000;
+const BACKOFF_BASE_MS = 500;
+const BACKOFF_MAX_MS = 30_000;
 
 const RETRYABLE_CODES = new Set([408, 500, 502, 503, 504, 522, 524, 599]);
 
@@ -242,6 +244,8 @@ export class NetworkCore {
         return null;
       }
 
+      await _exponentialBackoff(currentAttempt);
+
       return this._sendRequest({
         ...args,
         retries,
@@ -398,5 +402,19 @@ function _tryMarkInitEnd(
   Diagnostics._markInitNetworkReqEnd(
     args.sdkKey,
     Diagnostics._getDiagnosticsData(response, attempt, body, err),
+  );
+}
+
+async function _exponentialBackoff(attempt: number): Promise<void> {
+  // 1*1*1000 1s
+  // 2*2*1000 4s
+  // 3*3*1000 9s
+  // 4*4*1000 16s
+  // 5*5*1000 25s
+  await new Promise((r) =>
+    setTimeout(
+      r,
+      Math.min(BACKOFF_BASE_MS * (attempt * attempt), BACKOFF_MAX_MS),
+    ),
   );
 }
