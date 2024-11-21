@@ -4,7 +4,9 @@
     "outDir": "../../dist/out-tsc",
     "declaration": true,
     "declarationMap": true,
-    "types": []
+    "types": [],
+    "module": "ES2020",
+    "target": "ES2020"
   },
   "exclude": [
     "src/**/*.spec.ts",
