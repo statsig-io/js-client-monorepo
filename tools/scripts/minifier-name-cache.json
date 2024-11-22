@@ -203,7 +203,8 @@
       "$_endTimestamp": "_i",
       "$_clickCount": "gi",
       "$_stopCallback": "bi",
-      "$_stopFn": "pi"
+      "$_stopFn": "pi",
+      "$_defaultEnvironment": "zn"
     }
   }
 }
