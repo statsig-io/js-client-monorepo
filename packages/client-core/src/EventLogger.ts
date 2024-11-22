@@ -29,7 +29,7 @@ const DEDUPER_WINDOW_DURATION_MS = 60_000;
 const MAX_FAILED_LOGS = 500;
 
 const QUICK_FLUSH_WINDOW_MS = 200;
-const EVENT_LOGGER_MAP: Record<string, EventLogger> = {};
+const EVENT_LOGGER_MAP: Record<string, EventLogger | undefined> = {};
 
 type SendEventsResponse = {
   success: boolean;
@@ -381,7 +381,7 @@ export class EventLogger {
 
     const intervalId = setInterval(() => {
       const logger = EVENT_LOGGER_MAP[this._sdkKey];
-      if (logger._flushIntervalId !== intervalId) {
+      if (!logger || logger._flushIntervalId !== intervalId) {
         clearInterval(intervalId);
       } else {
         EventLogger._safeFlushAndForget(this._sdkKey);
