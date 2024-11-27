@@ -81,10 +81,27 @@ export abstract class AutoInit {
       }
 
       if (!client) {
+        let callbackFn: ((client: StatsigClient) => void) | null = null;
+        const callbackName = doc.currentScript.dataset['onStatsigInit'];
+        if (callbackName) {
+          callbackFn =
+            ((win as unknown as Record<string, unknown>)[callbackName] as (
+              client: StatsigClient,
+            ) => void) ?? null;
+        }
         client = new StatsigClient(sdkKey, _constructUser(), options);
-        client.initializeAsync().catch((err) => {
-          Log.error(err);
-        });
+        client
+          .initializeAsync()
+          .then(() => {
+            if (callbackFn && typeof callbackFn === 'function') {
+              (callbackFn as (client: StatsigClient) => void)(
+                client as StatsigClient,
+              );
+            }
+          })
+          .catch((err) => {
+            Log.error(err);
+          });
       }
 
       action({ sdkKey, client });
