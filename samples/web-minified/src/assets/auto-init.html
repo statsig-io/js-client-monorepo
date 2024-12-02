@@ -13,11 +13,16 @@
         __requests.push({ url, args });
         return actual(url, args);
       };
+
+      window.myStatsigInitCallback = (client) => {
+        console.log('Init Callback Fired', client);
+      };
     </script>
 
     <script
       src="statsig-js-client+session-replay+web-analytics.min.js?sdkKey=client-rfLvYGag3eyU0jYW5zcIJTQip7GXxSrhOFN69IGMjvq"
       onload="__STATSIG__['no-compress']=true"
+      data-on-statsig-init="myStatsigInitCallback"
     ></script>
 
     <script>

@@ -23,13 +23,16 @@ function _constructUser() {
 
   let userOverride =
     (win as unknown as Record<string, unknown>)['statsigUser'] || {};
+
   if (typeof userOverride !== 'object') {
     userOverride = {};
   }
+
   const customOverride =
     (userOverride as Record<string, unknown>)['custom'] || {};
   const customIDsOverride =
     (userOverride as Record<string, unknown>)['customIDs'] || {};
+
   return {
     ...userOverride,
     customIDs: {
@@ -80,33 +83,46 @@ export abstract class AutoInit {
         client = current;
       }
 
-      if (!client) {
-        let callbackFn: ((client: StatsigClient) => void) | null = null;
-        const callbackName = doc.currentScript.dataset['onStatsigInit'];
-        if (callbackName) {
-          callbackFn =
-            ((win as unknown as Record<string, unknown>)[callbackName] as (
-              client: StatsigClient,
-            ) => void) ?? null;
-        }
-        client = new StatsigClient(sdkKey, _constructUser(), options);
-        client
-          .initializeAsync()
-          .then(() => {
-            if (callbackFn && typeof callbackFn === 'function') {
-              (callbackFn as (client: StatsigClient) => void)(
-                client as StatsigClient,
-              );
-            }
-          })
-          .catch((err) => {
-            Log.error(err);
-          });
+      if (client) {
+        action({ sdkKey, client });
+        return;
       }
 
-      action({ sdkKey, client });
+      const dataset = doc.currentScript.dataset;
+      const callbackName = dataset['onstatsiginit'] ?? dataset['onStatsigInit'];
+      const callbackFn = _getCallbackFromWindow(callbackName, win);
+
+      const newClient = new StatsigClient(sdkKey, _constructUser(), options);
+      newClient
+        .initializeAsync()
+        .then(() => {
+          if (callbackFn) {
+            callbackFn(newClient);
+          }
+        })
+        .catch((err) => {
+          Log.error(err);
+        });
+
+      action({ sdkKey, client: newClient });
     } catch (error) {
       Log.error('AutoInit failed', error);
     }
   }
+}
+
+function _getCallbackFromWindow(
+  cbName: string | null | undefined,
+  win: Window,
+): ((client: StatsigClient) => void) | null {
+  if (!cbName) {
+    return null;
+  }
+
+  const cbKey = cbName as keyof typeof win;
+  if (cbKey in win && typeof win[cbKey] === 'function') {
+    return win[cbKey] as (client: StatsigClient) => void;
+  }
+
+  return null;
 }
