@@ -1,11 +1,11 @@
 {
   "name": "@statsig/expo-bindings-on-device-eval",
-  "version": "3.7.0",
+  "version": "3.8.0",
   "dependencies": {
-    "@statsig/client-core": "3.7.0",
-    "@statsig/js-on-device-eval-client": "3.7.0",
-    "@statsig/react-bindings-on-device-eval": "3.7.0",
-    "@statsig/react-native-core": "3.7.0"
+    "@statsig/client-core": "3.8.0",
+    "@statsig/js-on-device-eval-client": "3.8.0",
+    "@statsig/react-bindings-on-device-eval": "3.8.0",
+    "@statsig/react-native-core": "3.8.0"
   },
   "peerDependencies": {
     "react": "^16.6.3 || ^17.0.0 || ^18.0.0"
