@@ -1,17 +1,17 @@
 {
   "name": "@statsig/expo-bindings",
-  "version": "3.8.0",
+  "version": "3.8.1",
   "dependencies": {
-    "@statsig/client-core": "3.8.0",
-    "@statsig/js-client": "3.8.0",
-    "@statsig/react-bindings": "3.8.0",
-    "@statsig/react-native-core": "3.8.0"
+    "@statsig/client-core": "3.8.1",
+    "@statsig/js-client": "3.8.1",
+    "@statsig/react-bindings": "3.8.1",
+    "@statsig/react-native-core": "3.8.1"
   },
   "peerDependencies": {
     "react": "^16.6.3 || ^17.0.0 || ^18.0.0",
     "react-native": "0.*",
     "expo-application": "5.* || 6.*",
-    "expo-device": "5.* || 6.* || 7.*" 
+    "expo-device": "5.* || 6.* || 7.*"
   },
   "type": "commonjs",
   "main": "./src/index.js",
