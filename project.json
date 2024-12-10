@@ -7,7 +7,7 @@
       "dependsOn": ["sync-version"]
     },
     "sync-version": {
-      "command": "pnpm format:write && pnpm install && echo 'Version Sync Complete.'",
+      "command": "pnpm format:write && pnpm install --no-frozen-lockfile && echo 'Version Sync Complete.'",
       "dependsOn": [
         "sync-version-statsig-metadata",
         "sync-version-package-json",
