@@ -1,19 +1,23 @@
 // <snippet>
-import { StatsigClient } from '@statsig/js-client';
+import { StatsigProvider } from '@statsig/react-bindings';
 import { StatsigAutoCapturePlugin } from '@statsig/web-analytics';
 
 // </snippet>
 import { STATSIG_CLIENT_KEY as YOUR_CLIENT_KEY } from '../../Contants';
 
 // prettier-ignore
-export default async function Sample(): Promise<void> {
+export default function Sample(): JSX.Element {
 // <snippet>
-const myStatsigClient = new StatsigClient(
-  YOUR_CLIENT_KEY,
-  { userID: 'a-user' },
-  { plugins: [ new StatsigAutoCapturePlugin() ] },
-);
-
-await myStatsigClient.initializeAsync();
+  return (
+    <StatsigProvider
+      sdkKey={YOUR_CLIENT_KEY}
+      user={{ userID: 'a-user' }}
+      loadingComponent={
+        <div style={{ height: 100, width: 300, padding: 16 }}>Loading...</div>
+      }
+      options={{ plugins: [ new StatsigAutoCapturePlugin() ] }}>
+      <div>Hello</div>
+    </StatsigProvider>
+  );
 // </snippet>
 }
