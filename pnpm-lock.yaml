@@ -76,25 +76,25 @@ importers:
         version: 1.12.1
       next:
         specifier: 14.2.10
-        version: 14.2.10(@babel/core@7.23.9)(@playwright/test@1.44.0)(react-dom@18.3.1)(react@18.3.1)
+        version: 14.2.10(@babel/core@7.23.9)(@playwright/test@1.44.0)(react-dom@19.0.0)(react@19.0.0)
       prismjs:
         specifier: 1.29.0
         version: 1.29.0
       react:
-        specifier: 18.3.1
-        version: 18.3.1
+        specifier: 19.0.0
+        version: 19.0.0
       react-dom:
-        specifier: 18.3.1
-        version: 18.3.1(react@18.3.1)
+        specifier: 19.0.0
+        version: 19.0.0(react@19.0.0)
       react-native:
         specifier: 0.74.1
-        version: 0.74.1(@babel/core@7.23.9)(@types/react@18.3.1)(encoding@0.1.13)(react@18.3.1)
+        version: 0.74.1(@babel/core@7.23.9)(@types/react@18.3.1)(encoding@0.1.13)(react@19.0.0)
       react-native-device-info:
         specifier: ^10.11.0
         version: 10.12.0(react-native@0.74.1)
       react-native-mmkv:
         specifier: 2.* || 3.*
-        version: 2.12.2(react-native@0.74.1)(react@18.3.1)
+        version: 2.12.2(react-native@0.74.1)(react@19.0.0)
       rxjs:
         specifier: ~7.8.0
         version: 7.8.1
@@ -149,10 +149,10 @@ importers:
         version: 17.8.1
       '@emotion/react':
         specifier: ^11.11.1
-        version: 11.11.3(@types/react@18.3.1)(react@18.3.1)
+        version: 11.11.3(@types/react@18.3.1)(react@19.0.0)
       '@emotion/styled':
         specifier: ^11.11.0
-        version: 11.11.0(@emotion/react@11.11.3)(@types/react@18.3.1)(react@18.3.1)
+        version: 11.11.0(@emotion/react@11.11.3)(@types/react@18.3.1)(react@19.0.0)
       '@expo/cli':
         specifier: ~0.18.17
         version: 0.18.17(encoding@0.1.13)
@@ -164,10 +164,10 @@ importers:
         version: 29.7.0
       '@mui/icons-material':
         specifier: ^5.14.12
-        version: 5.15.10(@mui/material@5.15.10)(@types/react@18.3.1)(react@18.3.1)
+        version: 5.15.10(@mui/material@5.15.10)(@types/react@18.3.1)(react@19.0.0)
       '@mui/material':
         specifier: ^5.14.12
-        version: 5.15.10(@emotion/react@11.11.3)(@emotion/styled@11.11.0)(@types/react@18.3.1)(react-dom@18.3.1)(react@18.3.1)
+        version: 5.15.10(@emotion/react@11.11.3)(@emotion/styled@11.11.0)(@types/react@18.3.1)(react-dom@19.0.0)(react@19.0.0)
       '@nx/angular':
         specifier: 19.3.0
         version: 19.3.0(@angular-devkit/build-angular@17.3.8)(@angular-devkit/core@17.1.4)(@angular-devkit/schematics@17.1.4)(@schematics/angular@17.1.4)(@swc-node/register@1.9.2)(@swc/core@1.5.29)(@types/node@18.19.18)(eslint@8.48.0)(nx@19.3.0)(rxjs@7.8.1)(typescript@5.3.3)(uglify-js@3.17.4)
@@ -233,10 +233,10 @@ importers:
         version: 0.74.87(@babel/core@7.23.9)(encoding@0.1.13)
       '@react-navigation/native':
         specifier: ^6.1.8
-        version: 6.1.10(react-native@0.74.1)(react@18.3.1)
+        version: 6.1.10(react-native@0.74.1)(react@19.0.0)
       '@react-navigation/native-stack':
         specifier: ^6.9.14
-        version: 6.9.18(@react-navigation/native@6.1.10)(react-native-safe-area-context@4.9.0)(react-native-screens@3.29.0)(react-native@0.74.1)(react@18.3.1)
+        version: 6.9.18(@react-navigation/native@6.1.10)(react-native-safe-area-context@4.9.0)(react-native-screens@3.29.0)(react-native@0.74.1)(react@19.0.0)
       '@rollup/plugin-url':
         specifier: ^8.0.2
         version: 8.0.2
@@ -266,13 +266,13 @@ importers:
         version: 6.4.2(@jest/globals@29.7.0)(@types/jest@29.5.12)(jest@29.7.0)
       '@testing-library/jest-native':
         specifier: ~5.4.3
-        version: 5.4.3(react-native@0.74.1)(react-test-renderer@18.2.0)(react@18.3.1)
+        version: 5.4.3(react-native@0.74.1)(react-test-renderer@18.2.0)(react@19.0.0)
       '@testing-library/react':
         specifier: 15.0.6
-        version: 15.0.6(@types/react@18.3.1)(react-dom@18.3.1)(react@18.3.1)
+        version: 15.0.6(@types/react@18.3.1)(react-dom@19.0.0)(react@19.0.0)
       '@testing-library/react-native':
         specifier: ~12.5.0
-        version: 12.5.3(jest@29.7.0)(react-native@0.74.1)(react-test-renderer@18.2.0)(react@18.3.1)
+        version: 12.5.3(jest@29.7.0)(react-native@0.74.1)(react-test-renderer@18.2.0)(react@19.0.0)
       '@trivago/prettier-plugin-sort-imports':
         specifier: ^4.2.0
         version: 4.3.0(prettier@3.2.5)
@@ -359,7 +359,7 @@ importers:
         version: 29.7.0
       jest-expo:
         specifier: ~51.0.2
-        version: 51.0.4(@babel/core@7.23.9)(jest@29.7.0)(react@18.3.1)
+        version: 51.0.4(@babel/core@7.23.9)(jest@29.7.0)(react@19.0.0)
       jest-fetch-mock:
         specifier: ^3.0.3
         version: 3.0.3(encoding@0.1.13)
@@ -392,28 +392,28 @@ importers:
         version: 3.2.5
       react-native-safe-area-context:
         specifier: ^4.7.2
-        version: 4.9.0(react-native@0.74.1)(react@18.3.1)
+        version: 4.9.0(react-native@0.74.1)(react@19.0.0)
       react-native-screens:
         specifier: ^3.25.0
-        version: 3.29.0(react-native@0.74.1)(react@18.3.1)
+        version: 3.29.0(react-native@0.74.1)(react@19.0.0)
       react-native-svg:
         specifier: 15.2.0
-        version: 15.2.0(react-native@0.74.1)(react@18.3.1)
+        version: 15.2.0(react-native@0.74.1)(react@19.0.0)
       react-native-svg-transformer:
         specifier: 1.3.0
         version: 1.3.0(react-native-svg@15.2.0)(react-native@0.74.1)(typescript@5.3.3)
       react-native-web:
         specifier: ^0.19.11
-        version: 0.19.12(encoding@0.1.13)(react-dom@18.3.1)(react@18.3.1)
+        version: 0.19.12(encoding@0.1.13)(react-dom@19.0.0)(react@19.0.0)
       react-refresh:
         specifier: ^0.10.0
         version: 0.10.0
       react-router-dom:
         specifier: ^6.26.2
-        version: 6.26.2(react-dom@18.3.1)(react@18.3.1)
+        version: 6.26.2(react-dom@19.0.0)(react@19.0.0)
       react-test-renderer:
         specifier: 18.2.0
-        version: 18.2.0(react@18.3.1)
+        version: 18.2.0(react@19.0.0)
       reflect-metadata:
         specifier: ^0.1.13
         version: 0.1.14
@@ -4128,7 +4128,7 @@ packages:
     resolution: {integrity: sha512-W2P2c/VRW1/1tLox0mVUalvnWXxavmv/Oum2aPsRcoDJuob75FC3Y8FbpfLwUegRcxINtGUMPq0tFCvYNTBXNA==}
     dev: true
 
-  /@emotion/react@11.11.3(@types/react@18.3.1)(react@18.3.1):
+  /@emotion/react@11.11.3(@types/react@18.3.1)(react@19.0.0):
     resolution: {integrity: sha512-Cnn0kuq4DoONOMcnoVsTOR8E+AdnKFf//6kUWc4LCdnxj31pZWn7rIULd6Y7/Js1PiPHzn7SKCM9vB/jBni8eA==}
     peerDependencies:
       '@types/react': '*'
@@ -4141,12 +4141,12 @@ packages:
       '@emotion/babel-plugin': 11.11.0
       '@emotion/cache': 11.11.0
       '@emotion/serialize': 1.1.3
-      '@emotion/use-insertion-effect-with-fallbacks': 1.0.1(react@18.3.1)
+      '@emotion/use-insertion-effect-with-fallbacks': 1.0.1(react@19.0.0)
       '@emotion/utils': 1.2.1
       '@emotion/weak-memoize': 0.3.1
       '@types/react': 18.3.1
       hoist-non-react-statics: 3.3.2
-      react: 18.3.1
+      react: 19.0.0
     dev: true
 
   /@emotion/serialize@1.1.3:
@@ -4163,7 +4163,7 @@ packages:
     resolution: {integrity: sha512-0QBtGvaqtWi+nx6doRwDdBIzhNdZrXUppvTM4dtZZWEGTXL/XE/yJxLMGlDT1Gt+UHH5IX1n+jkXyytE/av7OA==}
     dev: true
 
-  /@emotion/styled@11.11.0(@emotion/react@11.11.3)(@types/react@18.3.1)(react@18.3.1):
+  /@emotion/styled@11.11.0(@emotion/react@11.11.3)(@types/react@18.3.1)(react@19.0.0):
     resolution: {integrity: sha512-hM5Nnvu9P3midq5aaXj4I+lnSfNi7Pmd4EWk1fOZ3pxookaQTNew6bp4JaCBYM4HVFZF9g7UjJmsUmC2JlxOng==}
     peerDependencies:
       '@emotion/react': ^11.0.0-rc.0
@@ -4176,24 +4176,24 @@ packages:
       '@babel/runtime': 7.24.5
       '@emotion/babel-plugin': 11.11.0
       '@emotion/is-prop-valid': 1.2.1
-      '@emotion/react': 11.11.3(@types/react@18.3.1)(react@18.3.1)
+      '@emotion/react': 11.11.3(@types/react@18.3.1)(react@19.0.0)
       '@emotion/serialize': 1.1.3
-      '@emotion/use-insertion-effect-with-fallbacks': 1.0.1(react@18.3.1)
+      '@emotion/use-insertion-effect-with-fallbacks': 1.0.1(react@19.0.0)
       '@emotion/utils': 1.2.1
       '@types/react': 18.3.1
-      react: 18.3.1
+      react: 19.0.0
     dev: true
 
   /@emotion/unitless@0.8.1:
     resolution: {integrity: sha512-KOEGMu6dmJZtpadb476IsZBclKvILjopjUii3V+7MnXIQCYh8W3NgNcgwo21n9LXZX6EDIKvqfjYxXebDwxKmQ==}
     dev: true
 
-  /@emotion/use-insertion-effect-with-fallbacks@1.0.1(react@18.3.1):
+  /@emotion/use-insertion-effect-with-fallbacks@1.0.1(react@19.0.0):
     resolution: {integrity: sha512-jT/qyKZ9rzLErtrjGgdkMBn2OP8wl0G3sQlBb3YPryvKHsjvINUhVaPFfP+fpBcOkmrVOVEEHQFJ7nbj2TH2gw==}
     peerDependencies:
       react: '>=16.8.0'
     dependencies:
-      react: 18.3.1
+      react: 19.0.0
     dev: true
 
   /@emotion/utils@1.2.1:
@@ -5196,7 +5196,7 @@ packages:
     peerDependencies:
       react-native: '*'
     dependencies:
-      react-native: 0.74.1(@babel/core@7.23.9)(@types/react@18.3.1)(encoding@0.1.13)(react@18.3.1)
+      react-native: 0.74.1(@babel/core@7.23.9)(@types/react@18.3.1)(encoding@0.1.13)(react@19.0.0)
     dev: false
 
   /@expo/osascript@2.1.0:
@@ -5320,15 +5320,15 @@ packages:
       '@floating-ui/utils': 0.2.1
     dev: true
 
-  /@floating-ui/react-dom@2.0.8(react-dom@18.3.1)(react@18.3.1):
+  /@floating-ui/react-dom@2.0.8(react-dom@19.0.0)(react@19.0.0):
     resolution: {integrity: sha512-HOdqOt3R3OGeTKidaLvJKcgg75S6tibQ3Tif4eyd91QnIJWr0NLvoXFpJA/j8HqkFSL68GDca9AuyWEHlhyClw==}
     peerDependencies:
       react: '>=16.8.0'
       react-dom: '>=16.8.0'
     dependencies:
       '@floating-ui/dom': 1.6.3
-      react: 18.3.1
-      react-dom: 18.3.1(react@18.3.1)
+      react: 19.0.0
+      react-dom: 19.0.0(react@19.0.0)
     dev: true
 
   /@floating-ui/utils@0.2.1:
@@ -5702,7 +5702,7 @@ packages:
       call-bind: 1.0.7
     dev: true
 
-  /@mui/base@5.0.0-beta.36(@types/react@18.3.1)(react-dom@18.3.1)(react@18.3.1):
+  /@mui/base@5.0.0-beta.36(@types/react@18.3.1)(react-dom@19.0.0)(react@19.0.0):
     resolution: {integrity: sha512-6A8fYiXgjqTO6pgj31Hc8wm1M3rFYCxDRh09dBVk0L0W4cb2lnurRJa3cAyic6hHY+we1S58OdGYRbKmOsDpGQ==}
     engines: {node: '>=12.0.0'}
     peerDependencies:
@@ -5714,22 +5714,22 @@ packages:
         optional: true
     dependencies:
       '@babel/runtime': 7.24.5
-      '@floating-ui/react-dom': 2.0.8(react-dom@18.3.1)(react@18.3.1)
+      '@floating-ui/react-dom': 2.0.8(react-dom@19.0.0)(react@19.0.0)
       '@mui/types': 7.2.13(@types/react@18.3.1)
-      '@mui/utils': 5.15.9(@types/react@18.3.1)(react@18.3.1)
+      '@mui/utils': 5.15.9(@types/react@18.3.1)(react@19.0.0)
       '@popperjs/core': 2.11.8
       '@types/react': 18.3.1
       clsx: 2.1.0
       prop-types: 15.8.1
-      react: 18.3.1
-      react-dom: 18.3.1(react@18.3.1)
+      react: 19.0.0
+      react-dom: 19.0.0(react@19.0.0)
     dev: true
 
   /@mui/core-downloads-tracker@5.15.10:
     resolution: {integrity: sha512-qPv7B+LeMatYuzRjB3hlZUHqinHx/fX4YFBiaS19oC02A1e9JFuDKDvlyRQQ5oRSbJJt0QlaLTlr0IcauVcJRQ==}
     dev: true
 
-  /@mui/icons-material@5.15.10(@mui/material@5.15.10)(@types/react@18.3.1)(react@18.3.1):
+  /@mui/icons-material@5.15.10(@mui/material@5.15.10)(@types/react@18.3.1)(react@19.0.0):
     resolution: {integrity: sha512-9cF8oUHZKo9oQ7EQ3pxPELaZuZVmphskU4OI6NiJNDVN7zcuvrEsuWjYo1Zh4fLiC39Nrvm30h/B51rcUjvSGA==}
     engines: {node: '>=12.0.0'}
     peerDependencies:
@@ -5741,12 +5741,12 @@ packages:
         optional: true
     dependencies:
       '@babel/runtime': 7.24.5
-      '@mui/material': 5.15.10(@emotion/react@11.11.3)(@emotion/styled@11.11.0)(@types/react@18.3.1)(react-dom@18.3.1)(react@18.3.1)
+      '@mui/material': 5.15.10(@emotion/react@11.11.3)(@emotion/styled@11.11.0)(@types/react@18.3.1)(react-dom@19.0.0)(react@19.0.0)
       '@types/react': 18.3.1
-      react: 18.3.1
+      react: 19.0.0
     dev: true
 
-  /@mui/material@5.15.10(@emotion/react@11.11.3)(@emotion/styled@11.11.0)(@types/react@18.3.1)(react-dom@18.3.1)(react@18.3.1):
+  /@mui/material@5.15.10(@emotion/react@11.11.3)(@emotion/styled@11.11.0)(@types/react@18.3.1)(react-dom@19.0.0)(react@19.0.0):
     resolution: {integrity: sha512-YJJGHjwDOucecjDEV5l9ISTCo+l9YeWrho623UajzoHRYxuKUmwrGVYOW4PKwGvCx9SU9oklZnbbi2Clc5XZHw==}
     engines: {node: '>=12.0.0'}
     peerDependencies:
@@ -5764,25 +5764,25 @@ packages:
         optional: true
     dependencies:
       '@babel/runtime': 7.24.5
-      '@emotion/react': 11.11.3(@types/react@18.3.1)(react@18.3.1)
-      '@emotion/styled': 11.11.0(@emotion/react@11.11.3)(@types/react@18.3.1)(react@18.3.1)
-      '@mui/base': 5.0.0-beta.36(@types/react@18.3.1)(react-dom@18.3.1)(react@18.3.1)
+      '@emotion/react': 11.11.3(@types/react@18.3.1)(react@19.0.0)
+      '@emotion/styled': 11.11.0(@emotion/react@11.11.3)(@types/react@18.3.1)(react@19.0.0)
+      '@mui/base': 5.0.0-beta.36(@types/react@18.3.1)(react-dom@19.0.0)(react@19.0.0)
       '@mui/core-downloads-tracker': 5.15.10
-      '@mui/system': 5.15.9(@emotion/react@11.11.3)(@emotion/styled@11.11.0)(@types/react@18.3.1)(react@18.3.1)
+      '@mui/system': 5.15.9(@emotion/react@11.11.3)(@emotion/styled@11.11.0)(@types/react@18.3.1)(react@19.0.0)
       '@mui/types': 7.2.13(@types/react@18.3.1)
-      '@mui/utils': 5.15.9(@types/react@18.3.1)(react@18.3.1)
+      '@mui/utils': 5.15.9(@types/react@18.3.1)(react@19.0.0)
       '@types/react': 18.3.1
       '@types/react-transition-group': 4.4.10
       clsx: 2.1.0
       csstype: 3.1.3
       prop-types: 15.8.1
-      react: 18.3.1
-      react-dom: 18.3.1(react@18.3.1)
+      react: 19.0.0
+      react-dom: 19.0.0(react@19.0.0)
       react-is: 18.2.0
-      react-transition-group: 4.4.5(react-dom@18.3.1)(react@18.3.1)
+      react-transition-group: 4.4.5(react-dom@19.0.0)(react@19.0.0)
     dev: true
 
-  /@mui/private-theming@5.15.9(@types/react@18.3.1)(react@18.3.1):
+  /@mui/private-theming@5.15.9(@types/react@18.3.1)(react@19.0.0):
     resolution: {integrity: sha512-/aMJlDOxOTAXyp4F2rIukW1O0anodAMCkv1DfBh/z9vaKHY3bd5fFf42wmP+0GRmwMinC5aWPpNfHXOED1fEtg==}
     engines: {node: '>=12.0.0'}
     peerDependencies:
@@ -5793,13 +5793,13 @@ packages:
         optional: true
     dependencies:
       '@babel/runtime': 7.24.5
-      '@mui/utils': 5.15.9(@types/react@18.3.1)(react@18.3.1)
+      '@mui/utils': 5.15.9(@types/react@18.3.1)(react@19.0.0)
       '@types/react': 18.3.1
       prop-types: 15.8.1
-      react: 18.3.1
+      react: 19.0.0
     dev: true
 
-  /@mui/styled-engine@5.15.9(@emotion/react@11.11.3)(@emotion/styled@11.11.0)(react@18.3.1):
+  /@mui/styled-engine@5.15.9(@emotion/react@11.11.3)(@emotion/styled@11.11.0)(react@19.0.0):
     resolution: {integrity: sha512-NRKtYkL5PZDH7dEmaLEIiipd3mxNnQSO+Yo8rFNBNptY8wzQnQ+VjayTq39qH7Sast5cwHKYFusUrQyD+SS4Og==}
     engines: {node: '>=12.0.0'}
     peerDependencies:
@@ -5814,14 +5814,14 @@ packages:
     dependencies:
       '@babel/runtime': 7.24.5
       '@emotion/cache': 11.11.0
-      '@emotion/react': 11.11.3(@types/react@18.3.1)(react@18.3.1)
-      '@emotion/styled': 11.11.0(@emotion/react@11.11.3)(@types/react@18.3.1)(react@18.3.1)
+      '@emotion/react': 11.11.3(@types/react@18.3.1)(react@19.0.0)
+      '@emotion/styled': 11.11.0(@emotion/react@11.11.3)(@types/react@18.3.1)(react@19.0.0)
       csstype: 3.1.3
       prop-types: 15.8.1
-      react: 18.3.1
+      react: 19.0.0
     dev: true
 
-  /@mui/system@5.15.9(@emotion/react@11.11.3)(@emotion/styled@11.11.0)(@types/react@18.3.1)(react@18.3.1):
+  /@mui/system@5.15.9(@emotion/react@11.11.3)(@emotion/styled@11.11.0)(@types/react@18.3.1)(react@19.0.0):
     resolution: {integrity: sha512-SxkaaZ8jsnIJ77bBXttfG//LUf6nTfOcaOuIgItqfHv60ZCQy/Hu7moaob35kBb+guxVJnoSZ+7vQJrA/E7pKg==}
     engines: {node: '>=12.0.0'}
     peerDependencies:
@@ -5838,17 +5838,17 @@ packages:
         optional: true
     dependencies:
       '@babel/runtime': 7.24.5
-      '@emotion/react': 11.11.3(@types/react@18.3.1)(react@18.3.1)
-      '@emotion/styled': 11.11.0(@emotion/react@11.11.3)(@types/react@18.3.1)(react@18.3.1)
-      '@mui/private-theming': 5.15.9(@types/react@18.3.1)(react@18.3.1)
-      '@mui/styled-engine': 5.15.9(@emotion/react@11.11.3)(@emotion/styled@11.11.0)(react@18.3.1)
+      '@emotion/react': 11.11.3(@types/react@18.3.1)(react@19.0.0)
+      '@emotion/styled': 11.11.0(@emotion/react@11.11.3)(@types/react@18.3.1)(react@19.0.0)
+      '@mui/private-theming': 5.15.9(@types/react@18.3.1)(react@19.0.0)
+      '@mui/styled-engine': 5.15.9(@emotion/react@11.11.3)(@emotion/styled@11.11.0)(react@19.0.0)
       '@mui/types': 7.2.13(@types/react@18.3.1)
-      '@mui/utils': 5.15.9(@types/react@18.3.1)(react@18.3.1)
+      '@mui/utils': 5.15.9(@types/react@18.3.1)(react@19.0.0)
       '@types/react': 18.3.1
       clsx: 2.1.0
       csstype: 3.1.3
       prop-types: 15.8.1
-      react: 18.3.1
+      react: 19.0.0
     dev: true
 
   /@mui/types@7.2.13(@types/react@18.3.1):
@@ -5862,7 +5862,7 @@ packages:
       '@types/react': 18.3.1
     dev: true
 
-  /@mui/utils@5.15.9(@types/react@18.3.1)(react@18.3.1):
+  /@mui/utils@5.15.9(@types/react@18.3.1)(react@19.0.0):
     resolution: {integrity: sha512-yDYfr61bCYUz1QtwvpqYy/3687Z8/nS4zv7lv/ih/6ZFGMl1iolEvxRmR84v2lOYxlds+kq1IVYbXxDKh8Z9sg==}
     engines: {node: '>=12.0.0'}
     peerDependencies:
@@ -5876,7 +5876,7 @@ packages:
       '@types/prop-types': 15.7.11
       '@types/react': 18.3.1
       prop-types: 15.8.1
-      react: 18.3.1
+      react: 19.0.0
       react-is: 18.2.0
     dev: true
 
@@ -6864,7 +6864,7 @@ packages:
       file-loader: 6.2.0
       fs-extra: 11.2.0
       ignore: 5.3.1
-      next: 14.2.10(@babel/core@7.23.9)(@playwright/test@1.44.0)(react-dom@18.3.1)(react@18.3.1)
+      next: 14.2.10(@babel/core@7.23.9)(@playwright/test@1.44.0)(react-dom@19.0.0)(react@19.0.0)
       semver: 7.6.0
       tslib: 2.6.2
       webpack-merge: 5.10.0
@@ -7373,7 +7373,7 @@ packages:
       react-native: ^0.0.0-0 || >=0.60 <1.0
     dependencies:
       merge-options: 3.0.4
-      react-native: 0.74.1(@babel/core@7.23.9)(@types/react@18.3.1)(encoding@0.1.13)(react@18.3.1)
+      react-native: 0.74.1(@babel/core@7.23.9)(@types/react@18.3.1)(encoding@0.1.13)(react@19.0.0)
     dev: false
 
   /@react-native-community/cli-clean@13.6.6(encoding@0.1.13):
@@ -7957,7 +7957,7 @@ packages:
   /@react-native/normalize-colors@0.74.84:
     resolution: {integrity: sha512-Y5W6x8cC5RuakUcTVUFNAIhUZ/tYpuqHZlRBoAuakrTwVuoNHXfQki8lj1KsYU7rW6e3VWgdEx33AfOQpdNp6A==}
 
-  /@react-native/virtualized-lists@0.74.83(@types/react@18.3.1)(react-native@0.74.1)(react@18.3.1):
+  /@react-native/virtualized-lists@0.74.83(@types/react@18.3.1)(react-native@0.74.1)(react@19.0.0):
     resolution: {integrity: sha512-rmaLeE34rj7py4FxTod7iMTC7BAsm+HrGA8WxYmEJeyTV7WSaxAkosKoYBz8038mOiwnG9VwA/7FrB6bEQvn1A==}
     engines: {node: '>=18'}
     peerDependencies:
@@ -7971,10 +7971,10 @@ packages:
       '@types/react': 18.3.1
       invariant: 2.2.4
       nullthrows: 1.1.1
-      react: 18.3.1
-      react-native: 0.74.1(@babel/core@7.23.9)(@types/react@18.3.1)(encoding@0.1.13)(react@18.3.1)
+      react: 19.0.0
+      react-native: 0.74.1(@babel/core@7.23.9)(@types/react@18.3.1)(encoding@0.1.13)(react@19.0.0)
 
-  /@react-navigation/core@6.4.10(react@18.3.1):
+  /@react-navigation/core@6.4.10(react@19.0.0):
     resolution: {integrity: sha512-oYhqxETRHNHKsipm/BtGL0LI43Hs2VSFoWMbBdHK9OqgQPjTVUitslgLcPpo4zApCcmBWoOLX2qPxhsBda644A==}
     peerDependencies:
       react: '*'
@@ -7983,12 +7983,12 @@ packages:
       escape-string-regexp: 4.0.0
       nanoid: 3.3.7
       query-string: 7.1.3
-      react: 18.3.1
+      react: 19.0.0
       react-is: 16.13.1
-      use-latest-callback: 0.1.9(react@18.3.1)
+      use-latest-callback: 0.1.9(react@19.0.0)
     dev: true
 
-  /@react-navigation/elements@1.3.22(@react-navigation/native@6.1.10)(react-native-safe-area-context@4.9.0)(react-native@0.74.1)(react@18.3.1):
+  /@react-navigation/elements@1.3.22(@react-navigation/native@6.1.10)(react-native-safe-area-context@4.9.0)(react-native@0.74.1)(react@19.0.0):
     resolution: {integrity: sha512-HYKucs0TwQT8zMvgoZbJsY/3sZfzeP8Dk9IDv4agst3zlA7ReTx4+SROCG6VGC7JKqBCyQykHIwkSwxhapoc+Q==}
     peerDependencies:
       '@react-navigation/native': ^6.0.0
@@ -7996,13 +7996,13 @@ packages:
       react-native: '*'
       react-native-safe-area-context: '>= 3.0.0'
     dependencies:
-      '@react-navigation/native': 6.1.10(react-native@0.74.1)(react@18.3.1)
-      react: 18.3.1
-      react-native: 0.74.1(@babel/core@7.23.9)(@types/react@18.3.1)(encoding@0.1.13)(react@18.3.1)
-      react-native-safe-area-context: 4.9.0(react-native@0.74.1)(react@18.3.1)
+      '@react-navigation/native': 6.1.10(react-native@0.74.1)(react@19.0.0)
+      react: 19.0.0
+      react-native: 0.74.1(@babel/core@7.23.9)(@types/react@18.3.1)(encoding@0.1.13)(react@19.0.0)
+      react-native-safe-area-context: 4.9.0(react-native@0.74.1)(react@19.0.0)
     dev: true
 
-  /@react-navigation/native-stack@6.9.18(@react-navigation/native@6.1.10)(react-native-safe-area-context@4.9.0)(react-native-screens@3.29.0)(react-native@0.74.1)(react@18.3.1):
+  /@react-navigation/native-stack@6.9.18(@react-navigation/native@6.1.10)(react-native-safe-area-context@4.9.0)(react-native-screens@3.29.0)(react-native@0.74.1)(react@19.0.0):
     resolution: {integrity: sha512-PSe0qjROy8zD78ehW048NSuzWRktioSCJmB8LzWSR65ndgVaC2rO+xvgyjhHjqm01YdyVM1XTct2EorSjDV2Ow==}
     peerDependencies:
       '@react-navigation/native': ^6.0.0
@@ -8011,27 +8011,27 @@ packages:
       react-native-safe-area-context: '>= 3.0.0'
       react-native-screens: '>= 3.0.0'
     dependencies:
-      '@react-navigation/elements': 1.3.22(@react-navigation/native@6.1.10)(react-native-safe-area-context@4.9.0)(react-native@0.74.1)(react@18.3.1)
-      '@react-navigation/native': 6.1.10(react-native@0.74.1)(react@18.3.1)
-      react: 18.3.1
-      react-native: 0.74.1(@babel/core@7.23.9)(@types/react@18.3.1)(encoding@0.1.13)(react@18.3.1)
-      react-native-safe-area-context: 4.9.0(react-native@0.74.1)(react@18.3.1)
-      react-native-screens: 3.29.0(react-native@0.74.1)(react@18.3.1)
+      '@react-navigation/elements': 1.3.22(@react-navigation/native@6.1.10)(react-native-safe-area-context@4.9.0)(react-native@0.74.1)(react@19.0.0)
+      '@react-navigation/native': 6.1.10(react-native@0.74.1)(react@19.0.0)
+      react: 19.0.0
+      react-native: 0.74.1(@babel/core@7.23.9)(@types/react@18.3.1)(encoding@0.1.13)(react@19.0.0)
+      react-native-safe-area-context: 4.9.0(react-native@0.74.1)(react@19.0.0)
+      react-native-screens: 3.29.0(react-native@0.74.1)(react@19.0.0)
       warn-once: 0.1.1
     dev: true
 
-  /@react-navigation/native@6.1.10(react-native@0.74.1)(react@18.3.1):
+  /@react-navigation/native@6.1.10(react-native@0.74.1)(react@19.0.0):
     resolution: {integrity: sha512-jDG89TbZItY7W7rIcS1RqT63vWOPD4XuQLNKqZO0DY7mKnKh/CGBd0eg3nDMXUl143Qp//IxJKe2TfBQRDEU4A==}
     peerDependencies:
       react: '*'
       react-native: '*'
     dependencies:
-      '@react-navigation/core': 6.4.10(react@18.3.1)
+      '@react-navigation/core': 6.4.10(react@19.0.0)
       escape-string-regexp: 4.0.0
       fast-deep-equal: 3.1.3
       nanoid: 3.3.7
-      react: 18.3.1
-      react-native: 0.74.1(@babel/core@7.23.9)(@types/react@18.3.1)(encoding@0.1.13)(react@18.3.1)
+      react: 19.0.0
+      react-native: 0.74.1(@babel/core@7.23.9)(@types/react@18.3.1)(encoding@0.1.13)(react@19.0.0)
     dev: true
 
   /@react-navigation/routers@6.1.9:
@@ -8904,7 +8904,7 @@ packages:
       redent: 3.0.0
     dev: true
 
-  /@testing-library/jest-native@5.4.3(react-native@0.74.1)(react-test-renderer@18.2.0)(react@18.3.1):
+  /@testing-library/jest-native@5.4.3(react-native@0.74.1)(react-test-renderer@18.2.0)(react@19.0.0):
     resolution: {integrity: sha512-/sSDGaOuE+PJ1Z9Kp4u7PQScSVVXGud59I/qsBFFJvIbcn4P6yYw6cBnBmbPF+X9aRIsTJRDl6gzw5ZkJNm66w==}
     peerDependencies:
       react: '>=16.0.0'
@@ -8915,13 +8915,13 @@ packages:
       jest-diff: 29.7.0
       jest-matcher-utils: 29.7.0
       pretty-format: 29.7.0
-      react: 18.3.1
-      react-native: 0.74.1(@babel/core@7.23.9)(@types/react@18.3.1)(encoding@0.1.13)(react@18.3.1)
-      react-test-renderer: 18.2.0(react@18.3.1)
+      react: 19.0.0
+      react-native: 0.74.1(@babel/core@7.23.9)(@types/react@18.3.1)(encoding@0.1.13)(react@19.0.0)
+      react-test-renderer: 18.2.0(react@19.0.0)
       redent: 3.0.0
     dev: true
 
-  /@testing-library/react-native@12.5.3(jest@29.7.0)(react-native@0.74.1)(react-test-renderer@18.2.0)(react@18.3.1):
+  /@testing-library/react-native@12.5.3(jest@29.7.0)(react-native@0.74.1)(react-test-renderer@18.2.0)(react@19.0.0):
     resolution: {integrity: sha512-wSaplzjx51OVJI7MU8Mi2kxwfW0dYETn3jqSVHxtIXmEnmlWXk6f69sEaBbzdp6iDzhFB5E6rDWveqf5V/ap2A==}
     peerDependencies:
       jest: '>=28.0.0'
@@ -8935,13 +8935,13 @@ packages:
       jest: 29.7.0(@types/node@18.19.18)(ts-node@10.9.2)
       jest-matcher-utils: 29.7.0
       pretty-format: 29.7.0
-      react: 18.3.1
-      react-native: 0.74.1(@babel/core@7.23.9)(@types/react@18.3.1)(encoding@0.1.13)(react@18.3.1)
-      react-test-renderer: 18.2.0(react@18.3.1)
+      react: 19.0.0
+      react-native: 0.74.1(@babel/core@7.23.9)(@types/react@18.3.1)(encoding@0.1.13)(react@19.0.0)
+      react-test-renderer: 18.2.0(react@19.0.0)
       redent: 3.0.0
     dev: true
 
-  /@testing-library/react@15.0.6(@types/react@18.3.1)(react-dom@18.3.1)(react@18.3.1):
+  /@testing-library/react@15.0.6(@types/react@18.3.1)(react-dom@19.0.0)(react@19.0.0):
     resolution: {integrity: sha512-UlbazRtEpQClFOiYp+1BapMT+xyqWMnE+hh9tn5DQ6gmlE7AIZWcGpzZukmDZuFk3By01oiqOf8lRedLS4k6xQ==}
     engines: {node: '>=18'}
     peerDependencies:
@@ -8956,8 +8956,8 @@ packages:
       '@testing-library/dom': 10.4.0
       '@types/react': 18.3.1
       '@types/react-dom': 18.3.0
-      react: 18.3.1
-      react-dom: 18.3.1(react@18.3.1)
+      react: 19.0.0
+      react-dom: 19.0.0(react@19.0.0)
     dev: true
 
   /@tootallnate/once@2.0.0:
@@ -15631,7 +15631,7 @@ packages:
       jest-mock: 29.7.0
       jest-util: 29.7.0
 
-  /jest-expo@51.0.4(@babel/core@7.23.9)(jest@29.7.0)(react@18.3.1):
+  /jest-expo@51.0.4(@babel/core@7.23.9)(jest@29.7.0)(react@19.0.0):
     resolution: {integrity: sha512-WmlR4rUur1TNF/F14brKCmPdX3TWf7Bno/6A1PuxnflN79LEIXpXuPKMlMWwCCChTohGB5FRniknRibblWu1ug==}
     hasBin: true
     dependencies:
@@ -15645,7 +15645,7 @@ packages:
       jest-watch-typeahead: 2.2.1(jest@29.7.0)
       json5: 2.2.3
       lodash: 4.17.21
-      react-test-renderer: 18.2.0(react@18.3.1)
+      react-test-renderer: 18.2.0(react@19.0.0)
       stacktrace-js: 2.0.2
     transitivePeerDependencies:
       - '@babel/core'
@@ -15779,7 +15779,7 @@ packages:
     peerDependencies:
       react-native: '>=0.38.0'
     dependencies:
-      react-native: 0.74.1(@babel/core@7.23.9)(@types/react@18.3.1)(encoding@0.1.13)(react@18.3.1)
+      react-native: 0.74.1(@babel/core@7.23.9)(@types/react@18.3.1)(encoding@0.1.13)(react@19.0.0)
     dev: true
 
   /jest-regex-util@29.6.3:
@@ -17455,7 +17455,7 @@ packages:
     engines: {node: '>= 0.4.0'}
     dev: true
 
-  /next@14.2.10(@babel/core@7.23.9)(@playwright/test@1.44.0)(react-dom@18.3.1)(react@18.3.1):
+  /next@14.2.10(@babel/core@7.23.9)(@playwright/test@1.44.0)(react-dom@19.0.0)(react@19.0.0):
     resolution: {integrity: sha512-sDDExXnh33cY3RkS9JuFEKaS4HmlWmDKP1VJioucCG6z5KuA008DPsDZOzi8UfqEk3Ii+2NCQSJrfbEWtZZfww==}
     engines: {node: '>=18.17.0'}
     hasBin: true
@@ -17480,9 +17480,9 @@ packages:
       caniuse-lite: 1.0.30001632
       graceful-fs: 4.2.11
       postcss: 8.4.31
-      react: 18.3.1
-      react-dom: 18.3.1(react@18.3.1)
-      styled-jsx: 5.1.1(@babel/core@7.23.9)(react@18.3.1)
+      react: 19.0.0
+      react-dom: 19.0.0(react@19.0.0)
+      styled-jsx: 5.1.1(@babel/core@7.23.9)(react@19.0.0)
     optionalDependencies:
       '@next/swc-darwin-arm64': 14.2.10
       '@next/swc-darwin-x64': 14.2.10
@@ -19536,22 +19536,21 @@ packages:
       - bufferutil
       - utf-8-validate
 
-  /react-dom@18.3.1(react@18.3.1):
-    resolution: {integrity: sha512-5m4nQKp+rZRb09LNH59GM4BxTh9251/ylbKIbpe7TpGxfJ+9kv6BLkLBXIjjspbgbnIBNqlI23tRnTWT0snUIw==}
+  /react-dom@19.0.0(react@19.0.0):
+    resolution: {integrity: sha512-4GV5sHFG0e/0AD4X+ySy6UJd3jVl1iNsNHdpad0qhABJ11twS3TTBnseqsKurKcsNqCEFeGL3uLpVChpIO3QfQ==}
     peerDependencies:
-      react: ^18.3.1
+      react: ^19.0.0
     dependencies:
-      loose-envify: 1.4.0
-      react: 18.3.1
-      scheduler: 0.23.2
+      react: 19.0.0
+      scheduler: 0.25.0
 
-  /react-freeze@1.0.3(react@18.3.1):
+  /react-freeze@1.0.3(react@19.0.0):
     resolution: {integrity: sha512-ZnXwLQnGzrDpHBHiC56TXFXvmolPeMjTn1UOm610M4EXGzbEDR7oOIyS2ZiItgbs6eZc4oU/a0hpk8PrcKvv5g==}
     engines: {node: '>=10'}
     peerDependencies:
       react: '>=17.0.0'
     dependencies:
-      react: 18.3.1
+      react: 19.0.0
     dev: true
 
   /react-is@16.13.1:
@@ -19568,38 +19567,38 @@ packages:
     peerDependencies:
       react-native: '*'
     dependencies:
-      react-native: 0.74.1(@babel/core@7.23.9)(@types/react@18.3.1)(encoding@0.1.13)(react@18.3.1)
+      react-native: 0.74.1(@babel/core@7.23.9)(@types/react@18.3.1)(encoding@0.1.13)(react@19.0.0)
     dev: false
 
-  /react-native-mmkv@2.12.2(react-native@0.74.1)(react@18.3.1):
+  /react-native-mmkv@2.12.2(react-native@0.74.1)(react@19.0.0):
     resolution: {integrity: sha512-6058Aq0p57chPrUutLGe9fYoiDVDNMU2PKV+lLFUJ3GhoHvUrLdsS1PDSCLr00yqzL4WJQ7TTzH+V8cpyrNcfg==}
     peerDependencies:
       react: '*'
       react-native: '>=0.71.0'
     dependencies:
-      react: 18.3.1
-      react-native: 0.74.1(@babel/core@7.23.9)(@types/react@18.3.1)(encoding@0.1.13)(react@18.3.1)
+      react: 19.0.0
+      react-native: 0.74.1(@babel/core@7.23.9)(@types/react@18.3.1)(encoding@0.1.13)(react@19.0.0)
     dev: false
 
-  /react-native-safe-area-context@4.9.0(react-native@0.74.1)(react@18.3.1):
+  /react-native-safe-area-context@4.9.0(react-native@0.74.1)(react@19.0.0):
     resolution: {integrity: sha512-/OJD9Pb8IURyvn+1tWTszWPJqsbZ4hyHBU9P0xhOmk7h5owSuqL0zkfagU0pg7Vh0G2NKQkaPpUKUMMCUMDh/w==}
     peerDependencies:
       react: '*'
       react-native: '*'
     dependencies:
-      react: 18.3.1
-      react-native: 0.74.1(@babel/core@7.23.9)(@types/react@18.3.1)(encoding@0.1.13)(react@18.3.1)
+      react: 19.0.0
+      react-native: 0.74.1(@babel/core@7.23.9)(@types/react@18.3.1)(encoding@0.1.13)(react@19.0.0)
     dev: true
 
-  /react-native-screens@3.29.0(react-native@0.74.1)(react@18.3.1):
+  /react-native-screens@3.29.0(react-native@0.74.1)(react@19.0.0):
     resolution: {integrity: sha512-yB1GoAMamFAcYf4ku94uBPn0/ani9QG7NdI98beJ5cet2YFESYYzuEIuU+kt+CNRcO8qqKeugxlfgAa3HyTqlg==}
     peerDependencies:
       react: '*'
       react-native: '*'
     dependencies:
-      react: 18.3.1
-      react-freeze: 1.0.3(react@18.3.1)
-      react-native: 0.74.1(@babel/core@7.23.9)(@types/react@18.3.1)(encoding@0.1.13)(react@18.3.1)
+      react: 19.0.0
+      react-freeze: 1.0.3(react@19.0.0)
+      react-native: 0.74.1(@babel/core@7.23.9)(@types/react@18.3.1)(encoding@0.1.13)(react@19.0.0)
       warn-once: 0.1.1
     dev: true
 
@@ -19613,14 +19612,14 @@ packages:
       '@svgr/plugin-jsx': 8.1.0(@svgr/core@8.1.0)
       '@svgr/plugin-svgo': 8.1.0(@svgr/core@8.1.0)(typescript@5.3.3)
       path-dirname: 1.0.2
-      react-native: 0.74.1(@babel/core@7.23.9)(@types/react@18.3.1)(encoding@0.1.13)(react@18.3.1)
-      react-native-svg: 15.2.0(react-native@0.74.1)(react@18.3.1)
+      react-native: 0.74.1(@babel/core@7.23.9)(@types/react@18.3.1)(encoding@0.1.13)(react@19.0.0)
+      react-native-svg: 15.2.0(react-native@0.74.1)(react@19.0.0)
     transitivePeerDependencies:
       - supports-color
       - typescript
     dev: true
 
-  /react-native-svg@15.2.0(react-native@0.74.1)(react@18.3.1):
+  /react-native-svg@15.2.0(react-native@0.74.1)(react@19.0.0):
     resolution: {integrity: sha512-R0E6IhcJfVLsL0lRmnUSm72QO+mTqcAOM5Jb8FVGxJqX3NfJMlMP0YyvcajZiaRR8CqQUpEoqrY25eyZb006kw==}
     peerDependencies:
       react: '*'
@@ -19628,11 +19627,11 @@ packages:
     dependencies:
       css-select: 5.1.0
       css-tree: 1.1.3
-      react: 18.3.1
-      react-native: 0.74.1(@babel/core@7.23.9)(@types/react@18.3.1)(encoding@0.1.13)(react@18.3.1)
+      react: 19.0.0
+      react-native: 0.74.1(@babel/core@7.23.9)(@types/react@18.3.1)(encoding@0.1.13)(react@19.0.0)
     dev: true
 
-  /react-native-web@0.19.12(encoding@0.1.13)(react-dom@18.3.1)(react@18.3.1):
+  /react-native-web@0.19.12(encoding@0.1.13)(react-dom@19.0.0)(react@19.0.0):
     resolution: {integrity: sha512-o2T0oztoVDQjztt4YksO9S1XRjoH/AqcSvifgWLrPJgGVbMWsfhILgl6lfUdEamVZzZSVV/2gqDVMAk/qq7mZw==}
     peerDependencies:
       react: ^18.0.0
@@ -19645,14 +19644,14 @@ packages:
       memoize-one: 6.0.0
       nullthrows: 1.1.1
       postcss-value-parser: 4.2.0
-      react: 18.3.1
-      react-dom: 18.3.1(react@18.3.1)
+      react: 19.0.0
+      react-dom: 19.0.0(react@19.0.0)
       styleq: 0.1.3
     transitivePeerDependencies:
       - encoding
     dev: true
 
-  /react-native@0.74.1(@babel/core@7.23.9)(@types/react@18.3.1)(encoding@0.1.13)(react@18.3.1):
+  /react-native@0.74.1(@babel/core@7.23.9)(@types/react@18.3.1)(encoding@0.1.13)(react@19.0.0):
     resolution: {integrity: sha512-0H2XpmghwOtfPpM2LKqHIN7gxy+7G/r1hwJHKLV6uoyXGC/gCojRtoo5NqyKrWpFC8cqyT6wTYCLuG7CxEKilg==}
     engines: {node: '>=18'}
     hasBin: true
@@ -19673,7 +19672,7 @@ packages:
       '@react-native/gradle-plugin': 0.74.83
       '@react-native/js-polyfills': 0.74.83
       '@react-native/normalize-colors': 0.74.83
-      '@react-native/virtualized-lists': 0.74.83(@types/react@18.3.1)(react-native@0.74.1)(react@18.3.1)
+      '@react-native/virtualized-lists': 0.74.83(@types/react@18.3.1)(react-native@0.74.1)(react@19.0.0)
       '@types/react': 18.3.1
       abort-controller: 3.0.0
       anser: 1.4.10
@@ -19692,10 +19691,10 @@ packages:
       nullthrows: 1.1.1
       pretty-format: 26.6.2
       promise: 8.3.0
-      react: 18.3.1
+      react: 19.0.0
       react-devtools-core: 5.3.1
       react-refresh: 0.14.2
-      react-shallow-renderer: 16.15.0(react@18.3.1)
+      react-shallow-renderer: 16.15.0(react@19.0.0)
       regenerator-runtime: 0.13.11
       scheduler: 0.24.0-canary-efb381bbf-20230505
       stacktrace-parser: 0.1.10
@@ -19719,7 +19718,7 @@ packages:
     resolution: {integrity: sha512-jCvmsr+1IUSMUyzOkRcvnVbX3ZYC6g9TDrDbFuFmRDq7PD4yaGbLKNQL6k2jnArV8hjYxh7hVhAZB6s9HDGpZA==}
     engines: {node: '>=0.10.0'}
 
-  /react-router-dom@6.26.2(react-dom@18.3.1)(react@18.3.1):
+  /react-router-dom@6.26.2(react-dom@19.0.0)(react@19.0.0):
     resolution: {integrity: sha512-z7YkaEW0Dy35T3/QKPYB1LjMK2R1fxnHO8kWpUMTBdfVzZrWOiY9a7CtN8HqdWtDUWd5FY6Dl8HFsqVwH4uOtQ==}
     engines: {node: '>=14.0.0'}
     peerDependencies:
@@ -19727,42 +19726,42 @@ packages:
       react-dom: '>=16.8'
     dependencies:
       '@remix-run/router': 1.19.2
-      react: 18.3.1
-      react-dom: 18.3.1(react@18.3.1)
-      react-router: 6.26.2(react@18.3.1)
+      react: 19.0.0
+      react-dom: 19.0.0(react@19.0.0)
+      react-router: 6.26.2(react@19.0.0)
     dev: true
 
-  /react-router@6.26.2(react@18.3.1):
+  /react-router@6.26.2(react@19.0.0):
     resolution: {integrity: sha512-tvN1iuT03kHgOFnLPfLJ8V95eijteveqdOSk+srqfePtQvqCExB8eHOYnlilbOcyJyKnYkr1vJvf7YqotAJu1A==}
     engines: {node: '>=14.0.0'}
     peerDependencies:
       react: '>=16.8'
     dependencies:
       '@remix-run/router': 1.19.2
-      react: 18.3.1
+      react: 19.0.0
     dev: true
 
-  /react-shallow-renderer@16.15.0(react@18.3.1):
+  /react-shallow-renderer@16.15.0(react@19.0.0):
     resolution: {integrity: sha512-oScf2FqQ9LFVQgA73vr86xl2NaOIX73rh+YFqcOp68CWj56tSfgtGKrEbyhCj0rSijyG9M1CYprTh39fBi5hzA==}
     peerDependencies:
       react: ^16.0.0 || ^17.0.0 || ^18.0.0
     dependencies:
       object-assign: 4.1.1
-      react: 18.3.1
+      react: 19.0.0
       react-is: 18.2.0
 
-  /react-test-renderer@18.2.0(react@18.3.1):
+  /react-test-renderer@18.2.0(react@19.0.0):
     resolution: {integrity: sha512-JWD+aQ0lh2gvh4NM3bBM42Kx+XybOxCpgYK7F8ugAlpaTSnWsX+39Z4XkOykGZAHrjwwTZT3x3KxswVWxHPUqA==}
     peerDependencies:
       react: ^18.2.0
     dependencies:
-      react: 18.3.1
+      react: 19.0.0
       react-is: 18.2.0
-      react-shallow-renderer: 16.15.0(react@18.3.1)
+      react-shallow-renderer: 16.15.0(react@19.0.0)
       scheduler: 0.23.0
     dev: true
 
-  /react-transition-group@4.4.5(react-dom@18.3.1)(react@18.3.1):
+  /react-transition-group@4.4.5(react-dom@19.0.0)(react@19.0.0):
     resolution: {integrity: sha512-pZcd1MCJoiKiBR2NRxeCRg13uCXbydPnmB4EOeRrY7480qNWO8IIgQG6zlDkm6uRMsURXPuKq0GWtiM59a5Q6g==}
     peerDependencies:
       react: '>=16.6.0'
@@ -19772,15 +19771,13 @@ packages:
       dom-helpers: 5.2.1
       loose-envify: 1.4.0
       prop-types: 15.8.1
-      react: 18.3.1
-      react-dom: 18.3.1(react@18.3.1)
+      react: 19.0.0
+      react-dom: 19.0.0(react@19.0.0)
     dev: true
 
-  /react@18.3.1:
-    resolution: {integrity: sha512-wS+hAgJShR0KhEvPJArfuPVN1+Hz1t0Y6n5jLrGQbkb4urgPE/0Rve+1kMB1v/oWgHgm4WIcV+i7F2pTVj+2iQ==}
+  /react@19.0.0:
+    resolution: {integrity: sha512-V8AVnmPIICiWpGfm6GLzCR/W5FXLchHop40W4nXBmdlEceh16rCN8O8LNWm5bh5XUX91fh7KpA+W0TgMKmgTpQ==}
     engines: {node: '>=0.10.0'}
-    dependencies:
-      loose-envify: 1.4.0
 
   /read-cache@1.0.0:
     resolution: {integrity: sha512-Owdv/Ft7IjOgm/i0xvNDZ1LrRANRfew4b2prF3OWMQLxLfu3bS8FVhCsrSCMK4lR56Y9ya+AThoTpDCTxCmpRA==}
@@ -20396,15 +20393,13 @@ packages:
       loose-envify: 1.4.0
     dev: true
 
-  /scheduler@0.23.2:
-    resolution: {integrity: sha512-UOShsPwz7NrMUqhR6t0hWjFduvOzbtv7toDH1/hIrfRNIDBnnBWd0CwJTGvTpngVlmwGCdP9/Zl/tVrDqcuYzQ==}
-    dependencies:
-      loose-envify: 1.4.0
-
   /scheduler@0.24.0-canary-efb381bbf-20230505:
     resolution: {integrity: sha512-ABvovCDe/k9IluqSh4/ISoq8tIJnW8euVAWYt5j/bg6dRnqwQwiGO1F/V4AyK96NGF/FB04FhOUDuWj8IKfABA==}
     dependencies:
       loose-envify: 1.4.0
+
+  /scheduler@0.25.0:
+    resolution: {integrity: sha512-xFVuu11jh+xcO7JOAGJNOXld8/TcEHK/4CituBUeUb5hqxJLj9YuemAEuvm9gQ/+pgXYfbQuqAkiYu+u7YEsNA==}
 
   /schema-utils@3.3.0:
     resolution: {integrity: sha512-pN/yOAvcC+5rQ5nERGuwrjLlYvLTbCibnZ1I7B1LaiAz9BRBlE9GMgE/eqV30P7aJQUf7Ddimy/RsbYO/GrVGg==}
@@ -21179,7 +21174,7 @@ packages:
       webpack: 5.91.0(@swc/core@1.5.29)(uglify-js@3.17.4)
     dev: true
 
-  /styled-jsx@5.1.1(@babel/core@7.23.9)(react@18.3.1):
+  /styled-jsx@5.1.1(@babel/core@7.23.9)(react@19.0.0):
     resolution: {integrity: sha512-pW7uC1l4mBZ8ugbiZrcIsiIvVx1UmTfw7UkC3Um2tmfUq9Bhk8IiyEIPl6F8agHgjzku6j0xQEZbfA5uSgSaCw==}
     engines: {node: '>= 12.0.0'}
     peerDependencies:
@@ -21194,7 +21189,7 @@ packages:
     dependencies:
       '@babel/core': 7.23.9
       client-only: 0.0.1
-      react: 18.3.1
+      react: 19.0.0
 
   /stylehacks@5.1.1(postcss@8.4.38):
     resolution: {integrity: sha512-sBpcd5Hx7G6seo7b1LkpttvTz7ikD0LlH5RmdcBNb6fFR0Fl7LQwHDFr300q4cwUqi+IYrFGmsIHieMBfnN/Bw==}
@@ -22255,12 +22250,12 @@ packages:
     resolution: {integrity: sha512-H/A06tKD7sS1O1X2SshBVeA5FLycRpjqiBeqGKmBwBDBy28EnRjORxTNe269KSSr5un5qyWi1iL61wLxpd+ZOg==}
     dev: true
 
-  /use-latest-callback@0.1.9(react@18.3.1):
+  /use-latest-callback@0.1.9(react@19.0.0):
     resolution: {integrity: sha512-CL/29uS74AwreI/f2oz2hLTW7ZqVeV5+gxFeGudzQrgkCytrHw33G4KbnQOrRlAEzzAFXi7dDLMC9zhWcVpzmw==}
     peerDependencies:
       react: '>=16.8'
     dependencies:
-      react: 18.3.1
+      react: 19.0.0
     dev: true
 
   /util-deprecate@1.0.2:
