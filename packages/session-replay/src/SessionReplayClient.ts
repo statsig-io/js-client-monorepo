@@ -5,7 +5,7 @@ import { Flatten, _getDocumentSafe } from '@statsig/client-core';
 
 const TIMEOUT_MS = 1000 * 60 * 60 * 4; // 4 hours
 
-export type ReplayEvent = Flatten<eventWithTime>;
+export type ReplayEvent = Flatten<eventWithTime & { eventIndex: number }>;
 
 export type RRWebConfig = Omit<rrweb.recordOptions<unknown>, 'emit'>;
 
@@ -21,6 +21,7 @@ export class SessionReplayClient {
   private _startTimestamp: null | number = null;
   private _endTimestamp: null | number = null;
   private _clickCount = 0;
+  private _eventCounter = 0;
 
   public record(
     callback: (latest: ReplayEvent, data: ReplaySessionData) => void,
@@ -35,6 +36,7 @@ export class SessionReplayClient {
     this._startTimestamp = null;
     this._endTimestamp = null;
     this._clickCount = 0;
+    this._eventCounter = 0;
     this._stopCallback = stopCallback;
 
     if (this._stopFn) {
@@ -53,11 +55,17 @@ export class SessionReplayClient {
         this._clickCount++;
       }
 
-      callback(event, {
-        startTime: this._startTimestamp,
-        endTime: this._endTimestamp,
-        clickCount: this._clickCount,
-      });
+      callback(
+        {
+          ...event,
+          eventIndex: this._eventCounter++,
+        },
+        {
+          startTime: this._startTimestamp,
+          endTime: this._endTimestamp,
+          clickCount: this._clickCount,
+        },
+      );
 
       if (this._endTimestamp - this._startTimestamp > TIMEOUT_MS) {
         this._stopFn?.();

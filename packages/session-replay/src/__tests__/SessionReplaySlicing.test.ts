@@ -12,12 +12,14 @@ import {
 const DUMMY_DATA = 'a'.repeat(512 * 1024);
 
 const SMALL_EVENT = {
+  eventIndex: 0,
   type: 0,
   data: DUMMY_DATA, // 512 KB
   timestamp: 0,
 };
 
 const LARGE_EVENT = {
+  eventIndex: 0,
   type: 0,
   data: DUMMY_DATA + DUMMY_DATA + DUMMY_DATA, // 1.5 MB
   timestamp: 0,
@@ -105,7 +107,7 @@ describe('Session Replay Force', () => {
         sliced_id: anyUUID(),
         slice_index: '1',
         slice_count: '2',
-        slice_byte_size: '524324',
+        slice_byte_size: '524339',
       });
     });
 
