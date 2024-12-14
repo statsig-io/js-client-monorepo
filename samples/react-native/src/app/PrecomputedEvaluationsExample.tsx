@@ -1,3 +1,4 @@
+import * as React from 'react';
 import { Text, View } from 'react-native';
 
 import {
@@ -31,7 +32,7 @@ function Content() {
   );
 }
 
-export default function PrecomputedEvaluationsExample(): JSX.Element {
+export default function PrecomputedEvaluationsExample(): React.ReactElement {
   return (
     <StatsigProviderRN client={client}>
       <Content />

@@ -1,6 +1,6 @@
 'use client';
 
-import { useContext } from 'react';
+import React, { useContext } from 'react';
 
 import {
   StatsigContext,
@@ -54,7 +54,7 @@ function Content() {
   );
 }
 
-export default function NetworkResolutionExample(): JSX.Element {
+export default function NetworkResolutionExample(): React.ReactElement {
   const { client, isLoading } = useClientAsyncInit(
     DEMO_CLIENT_KEY,
     {

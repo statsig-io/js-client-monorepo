@@ -1,5 +1,7 @@
 'use client';
 
+import * as React from 'react';
+
 import {
   StatsigProvider,
   useClientAsyncInit,
@@ -40,7 +42,7 @@ function Content() {
   );
 }
 
-export default function LoginExample(): JSX.Element {
+export default function LoginExample(): React.ReactElement {
   const { client } = useClientAsyncInit(DEMO_CLIENT_KEY, {
     userID: 'initial-user',
   });

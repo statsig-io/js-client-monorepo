@@ -1,6 +1,6 @@
 'use client';
 
-import { useContext } from 'react';
+import React, { useContext } from 'react';
 
 import {
   LogLevel,
@@ -31,7 +31,7 @@ function Content() {
   );
 }
 
-export default function OnDeviceEvalExample(): JSX.Element {
+export default function OnDeviceEvalExample(): React.ReactElement {
   return (
     <StatsigProviderOnDeviceEval
       sdkKey={DEMO_CLIENT_KEY}

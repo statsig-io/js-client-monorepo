@@ -1,3 +1,5 @@
+import * as React from 'react';
+
 import BootstrappedStatsigProvider from './BootstrappedStatsigProvider';
 import { getStatsigValues } from './StatsigHelpers';
 import { MY_STATSIG_CLIENT_KEY } from './constants';
@@ -6,7 +8,7 @@ export default async function StatsigDemoLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
-}>): Promise<JSX.Element> {
+}>): Promise<React.ReactElement> {
   const user = { userID: 'my-user' };
   const values = await getStatsigValues(user);
 

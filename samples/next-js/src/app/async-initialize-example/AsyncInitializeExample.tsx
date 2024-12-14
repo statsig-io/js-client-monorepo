@@ -1,5 +1,6 @@
 'use client';
 
+import * as React from 'react';
 import { useContext } from 'react';
 
 import {
@@ -25,7 +26,7 @@ function Content() {
   );
 }
 
-export default function AsyncInitializeExample(): JSX.Element {
+export default function AsyncInitializeExample(): React.ReactElement {
   const { client, isLoading } = useClientAsyncInit(DEMO_CLIENT_KEY, {
     userID: 'a-user',
   });

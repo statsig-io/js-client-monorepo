@@ -1,7 +1,7 @@
 'use client';
 
 import { EventType } from '@rrweb/types';
-import { useContext, useEffect } from 'react';
+import React, { useContext, useEffect } from 'react';
 
 import {
   LogLevel,
@@ -85,7 +85,7 @@ export default function SessionReplayExample({
 }: {
   user: StatsigUser;
   values: string;
-}): JSX.Element {
+}): React.ReactElement {
   const client = useClientBootstrapInit(DEMO_CLIENT_KEY, user, values, {
     logLevel: LogLevel.Debug,
     plugins: [

@@ -204,7 +204,8 @@
       "$_clickCount": "gi",
       "$_stopCallback": "bi",
       "$_stopFn": "pi",
-      "$_defaultEnvironment": "zn"
+      "$_defaultEnvironment": "zn",
+      "$_tryEnqueueAutoCaptureEvent": "yi"
     }
   }
 }

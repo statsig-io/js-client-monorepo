@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 const DOMAIN_CHARS = [
   'i', // initialize
@@ -19,7 +19,7 @@ const DNS_HEADER = new Uint8Array([
     0x00, 0x00, // ARCOUNT (0 additional records)
 ]);
 
-export default function DnsQueryBuilder(): JSX.Element {
+export default function DnsQueryBuilder(): React.ReactElement {
   const [value, setValue] = useState('featureassets.org');
   const [response, setResponse] = useState('');
   const [query, setQuery] = useState(

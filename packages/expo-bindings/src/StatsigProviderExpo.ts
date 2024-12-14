@@ -1,3 +1,4 @@
+import * as React from 'react';
 import { useState } from 'react';
 
 import { Log, StatsigUser } from '@statsig/client-core';
@@ -24,7 +25,7 @@ function useClientFactory(
   return client;
 }
 
-export function StatsigProviderExpo(props: Props): JSX.Element | null {
+export function StatsigProviderExpo(props: Props): React.ReactElement | null {
   const { children, loadingComponent } = props;
 
   const client =

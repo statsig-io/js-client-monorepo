@@ -1,6 +1,6 @@
 'use client';
 
-import { useContext } from 'react';
+import React, { useContext } from 'react';
 
 import {
   StatsigContext,
@@ -29,7 +29,7 @@ function Content() {
   );
 }
 
-export default function ClientComponent(): JSX.Element {
+export default function ClientComponent(): React.ReactElement {
   return (
     <div>
       <StatsigProvider

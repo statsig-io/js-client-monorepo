@@ -185,11 +185,12 @@ describe('Autocapture Tests', () => {
       });
 
       resetLastLoggedPageViewUrl();
-      autoCapture['_tryLogPageView']();
-      // eslint-disable-next-line no-await-in-loop
-      await new Promise((f) => {
-        pageViewResolver = f;
-      });
+      const loggedEvent = autoCapture['_tryLogPageView']();
+      if (loggedEvent) {
+        await new Promise<void>((resolve) => {
+          pageViewResolver = resolve;
+        });
+      }
 
       const eventData = getLastPageViewEvent(requestDataList);
       expect(eventData['eventName']).toMatch('auto_capture::page_view');
@@ -230,10 +231,14 @@ describe('Autocapture Tests', () => {
       },
       writable: true,
     });
-    autoCapture['_logSessionStart']();
-    await new Promise((f) => {
-      pageViewResolver = f;
-    });
+
+    const loggedEvent = autoCapture['_logSessionStart']();
+    if (loggedEvent) {
+      await new Promise<void>((resolve) => {
+        pageViewResolver = resolve;
+      });
+    }
+    await client.flush();
 
     const eventData = getLastSessionStartEvent(requestDataList);
     expect(eventData['eventName']).toMatch('auto_capture::session_start');

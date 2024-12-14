@@ -1,3 +1,4 @@
+import * as React from 'react';
 import { Text, View } from 'react-native';
 
 import {
@@ -29,7 +30,7 @@ function Content() {
   );
 }
 
-export default function OnDeviceEvaluationsExample(): JSX.Element {
+export default function OnDeviceEvaluationsExample(): React.ReactElement {
   return (
     <StatsigProviderOnDeviceEvalRN client={client}>
       <Content />

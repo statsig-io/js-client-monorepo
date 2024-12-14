@@ -1,4 +1,6 @@
-export default function Index(): JSX.Element {
+import * as React from 'react';
+
+export default function Index(): React.ReactElement {
   return (
     <div>
       <h1>Samples</h1>

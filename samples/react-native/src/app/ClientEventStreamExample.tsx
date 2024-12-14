@@ -53,7 +53,7 @@ function Content() {
   );
 }
 
-export default function ClientEventStreamExample(): JSX.Element {
+export default function ClientEventStreamExample(): React.ReactElement {
   return (
     <StatsigProviderRN
       sdkKey={DEMO_CLIENT_KEY}

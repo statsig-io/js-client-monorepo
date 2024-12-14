@@ -1,6 +1,6 @@
 'use client';
 
-import { type PropsWithChildren } from 'react';
+import React, { type PropsWithChildren } from 'react';
 
 import { StatsigUser } from '@statsig/js-client';
 import {
@@ -19,7 +19,7 @@ export default function BootstrappedStatsigProvider({
   user,
   values,
   children,
-}: Props): JSX.Element {
+}: Props): React.ReactElement {
   const client = useClientBootstrapInit(clientSdkKey, user, values, {
     networkConfig: {
       api: 'http://localhost:4200/statsig-demo/proxy', // Your Next.js server

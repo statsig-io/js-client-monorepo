@@ -1,6 +1,6 @@
 'use client';
 
-import { useContext } from 'react';
+import React, { useContext } from 'react';
 import { StatsigUser } from 'statsig-node';
 
 import {
@@ -72,7 +72,7 @@ export default function ProxyExample({
 }: {
   user: StatsigUser;
   values: string;
-}): JSX.Element {
+}): React.ReactElement {
   const client = useClientBootstrapInit(DEMO_CLIENT_KEY, user, values, {
     networkConfig: {
       api: 'http://localhost:4200/api/statsig',

@@ -1,6 +1,6 @@
 'use client';
 
-import { useContext, useEffect } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { StatsigUser } from 'statsig-node';
 
 import { AnyStatsigClientEvent, LogLevel } from '@statsig/client-core';
@@ -35,7 +35,7 @@ export default function BootstrapExample({
 }: {
   user: StatsigUser;
   values: string;
-}): JSX.Element {
+}): React.ReactElement {
   const client = useClientBootstrapInit(DEMO_CLIENT_KEY, user, values, {
     logLevel: LogLevel.Debug,
   });

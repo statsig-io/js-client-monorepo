@@ -1,4 +1,6 @@
 // <snippet>
+import * as React from 'react';
+
 import { StatsigProvider } from '@statsig/react-bindings';
 import { StatsigAutoCapturePlugin } from '@statsig/web-analytics';
 
@@ -6,7 +8,7 @@ import { StatsigAutoCapturePlugin } from '@statsig/web-analytics';
 import { STATSIG_CLIENT_KEY as YOUR_CLIENT_KEY } from '../../Contants';
 
 // prettier-ignore
-export default function Sample(): JSX.Element {
+export default function Sample(): React.ReactElement {
 // <snippet>
   return (
     <StatsigProvider

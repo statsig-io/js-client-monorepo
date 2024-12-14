@@ -11,7 +11,10 @@ import StatsigClient from '../StatsigClient';
 describe('Init Strategy - Delayed', () => {
   const sdkKey = 'client-key';
   const user = { userID: 'a-user' };
-  const cacheKey = `${DataAdapterCachePrefix}.evaluations.${_getUserStorageKey(sdkKey, user)}`;
+  const cacheKey = `${DataAdapterCachePrefix}.evaluations.${_getUserStorageKey(
+    sdkKey,
+    user,
+  )}`;
 
   let client: StatsigClient;
   let storageMock: MockLocalStorage;

@@ -1,5 +1,6 @@
 'use client';
 
+import * as React from 'react';
 import { useEffect } from 'react';
 
 import { AnyStatsigClientEvent } from '@statsig/client-core';
@@ -60,7 +61,7 @@ function Content() {
   );
 }
 
-export default function ParamStoreExample(): JSX.Element {
+export default function ParamStoreExample(): React.ReactElement {
   const { client, isLoading } = useClientAsyncInit(DEMO_CLIENT_KEY, {
     userID: 'a-user',
   });

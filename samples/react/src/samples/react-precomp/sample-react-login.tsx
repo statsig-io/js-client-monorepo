@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-import { useState } from 'react';
+import React, { useState } from 'react';
 
 import {
   StatsigProvider,
@@ -20,7 +20,7 @@ console.log(App)
 
 // prettier-ignore
 // <snippet>
-function LoginForm(): JSX.Element {
+function LoginForm(): React.ReactElement {
   const { user } = useStatsigUser();
   const {client} = useStatsigClient();
 

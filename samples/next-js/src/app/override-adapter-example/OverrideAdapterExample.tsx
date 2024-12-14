@@ -1,5 +1,6 @@
 'use client';
 
+import * as React from 'react';
 import { useState } from 'react';
 
 import { Log, LogLevel } from '@statsig/client-core';
@@ -56,7 +57,7 @@ function Content() {
   );
 }
 
-export default function OverrideAdapterExample(): JSX.Element {
+export default function OverrideAdapterExample(): React.ReactElement {
   const { client, isLoading } = useClientWithOverrides();
 
   if (isLoading) {

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import React, { useState } from 'react';
 
 import {
   StickyValues,
@@ -98,7 +98,7 @@ function Content(props: { overrideAdapter: UserPersistentOverrideAdapter }) {
   );
 }
 
-export default function PersistedUserStorageExample(): JSX.Element {
+export default function PersistedUserStorageExample(): React.ReactElement {
   const overrideAdapter = useUserPersistentOverrideAdapter();
   const { client, isLoading } = useOnDeviceClientAsyncInit(DEMO_CLIENT_KEY, {
     overrideAdapter,

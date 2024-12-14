@@ -1,3 +1,4 @@
+import * as React from 'react';
 import { ReactNode, useEffect, useMemo, useState } from 'react';
 
 import { Log, SDKType, StatsigClientInterface } from '@statsig/client-core';
@@ -24,7 +25,7 @@ export type StatsigProviderOnDeviceEvalProps<
 
 export function StatsigProviderOnDeviceEval(
   props: StatsigProviderOnDeviceEvalProps<StatsigOnDeviceEvalClient>,
-): JSX.Element {
+): React.ReactElement {
   const [renderVersion, setRenderVersion] = useState(0);
 
   const client =

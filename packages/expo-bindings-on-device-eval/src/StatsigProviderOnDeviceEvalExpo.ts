@@ -1,3 +1,4 @@
+import * as React from 'react';
 import { useState } from 'react';
 
 import { Log } from '@statsig/client-core';
@@ -28,7 +29,7 @@ function useClientFactory(
 
 export function StatsigProviderOnDeviceEvalExpo(
   props: Props,
-): JSX.Element | null {
+): React.ReactElement | null {
   const { children, loadingComponent } = props;
 
   const client =

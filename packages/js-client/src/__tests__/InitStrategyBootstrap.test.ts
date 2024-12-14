@@ -19,7 +19,10 @@ describe('Init Strategy - Bootstrap', () => {
       stableID: 'a-stable-id',
     },
   };
-  const cacheKey = `${DataAdapterCachePrefix}.evaluations.${_getUserStorageKey(sdkKey, user)}`;
+  const cacheKey = `${DataAdapterCachePrefix}.evaluations.${_getUserStorageKey(
+    sdkKey,
+    user,
+  )}`;
 
   let client: StatsigClient;
   let storageMock: MockLocalStorage;

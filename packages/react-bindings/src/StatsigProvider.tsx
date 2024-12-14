@@ -1,3 +1,4 @@
+import * as React from 'react';
 import { ReactNode, useEffect, useMemo, useState } from 'react';
 
 import {
@@ -25,7 +26,7 @@ export type StatsigProviderProps<T extends StatsigClient> = {
 
 export function StatsigProvider(
   props: StatsigProviderProps<StatsigClient>,
-): JSX.Element {
+): React.ReactElement {
   const [renderVersion, setRenderVersion] = useState(0);
 
   const client =

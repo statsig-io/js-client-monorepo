@@ -1,4 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as React from 'react';
 import { useEffect, useState } from 'react';
 import { Button, Text, View } from 'react-native';
 
@@ -38,7 +39,7 @@ function Content() {
   );
 }
 
-export default function DelayedInitExample(): JSX.Element {
+export default function DelayedInitExample(): React.ReactElement {
   const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
