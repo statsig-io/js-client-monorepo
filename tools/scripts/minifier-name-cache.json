@@ -205,7 +205,8 @@
       "$_stopCallback": "bi",
       "$_stopFn": "pi",
       "$_defaultEnvironment": "zn",
-      "$_tryEnqueueAutoCaptureEvent": "yi"
+      "$_tryEnqueueAutoCaptureEvent": "yi",
+      "$_eventCounter": "mi"
     }
   }
 }

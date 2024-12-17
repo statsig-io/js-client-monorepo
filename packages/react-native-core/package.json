@@ -1,8 +1,8 @@
 {
   "name": "@statsig/react-native-core",
-  "version": "3.8.1",
+  "version": "3.8.2",
   "dependencies": {
-    "@statsig/client-core": "3.8.1"
+    "@statsig/client-core": "3.8.2"
   },
   "peerDependencies": {
     "react-native": "0.*",

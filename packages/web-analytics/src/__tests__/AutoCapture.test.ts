@@ -190,7 +190,7 @@ describe('Autocapture Tests', () => {
       await new Promise((f) => {
         pageViewResolver = f;
       });
-      
+
       const eventData = getLastPageViewEvent(requestDataList);
       expect(eventData['eventName']).toMatch('auto_capture::page_view');
       expect(eventData['metadata']).toMatchObject({
@@ -235,7 +235,6 @@ describe('Autocapture Tests', () => {
     await new Promise((f) => {
       pageViewResolver = f;
     });
-
 
     const eventData = getLastSessionStartEvent(requestDataList);
     expect(eventData['eventName']).toMatch('auto_capture::session_start');
