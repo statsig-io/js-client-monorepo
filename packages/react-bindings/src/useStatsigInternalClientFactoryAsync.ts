@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import { Log, StatsigUser, _getInstance } from '@statsig/client-core';
 import { StatsigClient, StatsigOptions } from '@statsig/js-client';
@@ -14,24 +14,25 @@ export function useStatsigInternalClientFactoryAsync<T extends StatsigClient>(
   args: FactoryArgs,
 ): { isLoading: boolean; client: T } {
   const [isLoading, setIsLoading] = useState(true);
-  const clientRef = useRef<T | null>(_getInstance(args.sdkKey) as T | null);
+  const clientRef = useRef<T>(
+    (_getInstance(args.sdkKey) as T | null) ?? factory(args),
+  );
 
-  const client = useMemo(() => {
-    if (clientRef.current) {
-      return clientRef.current;
+  useEffect(() => {
+    // already initializing or initialized
+    if (clientRef.current.loadingStatus !== 'Uninitialized') {
+      setIsLoading(false);
+      return;
     }
 
-    const inst = factory(args);
-
-    clientRef.current = inst;
-
-    inst
+    clientRef.current
       .initializeAsync()
       .catch(Log.error)
       .finally(() => setIsLoading(false));
-
-    return inst;
   }, []);
 
-  return { client, isLoading };
+  return {
+    client: clientRef.current,
+    isLoading,
+  };
 }
