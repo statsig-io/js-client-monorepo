@@ -18,6 +18,10 @@ export function useStatsigInternalClientFactoryAsync<T extends StatsigClient>(
 
   const client = useMemo(() => {
     if (clientRef.current) {
+      Promise.resolve(clientRef.current)
+        .catch(Log.error)
+        .finally(() => setIsLoading(false));
+
       return clientRef.current;
     }
 
