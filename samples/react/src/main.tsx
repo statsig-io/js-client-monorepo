@@ -3,7 +3,7 @@ import '@fontsource/roboto/400.css';
 import '@fontsource/roboto/500.css';
 import '@fontsource/roboto/700.css';
 import { Box } from '@mui/material';
-import { ReactNode, lazy } from 'react';
+import { ReactNode, StrictMode, lazy } from 'react';
 import * as ReactDOM from 'react-dom/client';
 import {
   RouteObject,
@@ -89,4 +89,8 @@ function App() {
   );
 }
 
-root.render(<App />);
+root.render(
+  <StrictMode>
+    <App />
+  </StrictMode>,
+);
