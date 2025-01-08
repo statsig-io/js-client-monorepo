@@ -28,6 +28,9 @@ import { _isUnloading } from './VisibilityObserving';
 const DEFAULT_TIMEOUT_MS = 10_000;
 const BACKOFF_BASE_MS = 500;
 const BACKOFF_MAX_MS = 30_000;
+const RATE_LIMIT_WINDOW_MS = 1000;
+const RATE_LIMIT_MAX_REQ_COUNT = 50;
+const LEAK_RATE = RATE_LIMIT_MAX_REQ_COUNT / RATE_LIMIT_WINDOW_MS;
 
 const RETRYABLE_CODES = new Set([408, 500, 502, 503, 504, 522, 524, 599]);
 
@@ -70,11 +73,17 @@ type NetworkResponse = {
   code: number;
 };
 
+type LeakyBucketEntry = {
+  count: number;
+  lastRequestTime: number;
+};
+
 export class NetworkCore {
   private readonly _timeout: number = DEFAULT_TIMEOUT_MS;
   private readonly _netConfig: NetworkConfigCommon = {};
   private readonly _options: AnyStatsigOptions = {};
   private readonly _fallbackResolver: NetworkFallbackResolver;
+  private _leakyBucket: Record<string, LeakyBucketEntry> = {};
 
   private _errorBoundary: ErrorBoundary | null = null;
 
@@ -156,8 +165,16 @@ export class NetworkCore {
     }
 
     const { method, body, retries, attempt } = args;
-    const currentAttempt = attempt ?? 1;
+    const endpoint = args.urlConfig.endpoint;
 
+    if (this._isRateLimited(endpoint)) {
+      Log.warn(
+        `Request to ${endpoint} was blocked because you are making requests too frequently.`,
+      );
+      return null;
+    }
+
+    const currentAttempt = attempt ?? 1;
     const abortController =
       typeof AbortController !== 'undefined' ? new AbortController() : null;
 
@@ -183,6 +200,12 @@ export class NetworkCore {
       };
 
       _tryMarkInitStart(args, currentAttempt);
+
+      const bucket = this._leakyBucket[endpoint];
+      if (bucket) {
+        bucket.lastRequestTime = Date.now();
+        this._leakyBucket[endpoint] = bucket;
+      }
 
       const func = this._netConfig.networkOverrideFunc ?? fetch;
       response = await func(populatedUrl, config);
@@ -252,6 +275,27 @@ export class NetworkCore {
         attempt: currentAttempt + 1,
       });
     }
+  }
+
+  private _isRateLimited(endpoint: string): boolean {
+    const now = Date.now();
+    const bucket = this._leakyBucket[endpoint] ?? {
+      count: 0,
+      lastRequestTime: now,
+    };
+
+    const elapsed = now - bucket.lastRequestTime;
+    const leakedRequests = Math.floor(elapsed * LEAK_RATE);
+    bucket.count = Math.max(0, bucket.count - leakedRequests);
+
+    if (bucket.count >= RATE_LIMIT_MAX_REQ_COUNT) {
+      return true;
+    }
+
+    bucket.count += 1;
+    bucket.lastRequestTime = now;
+    this._leakyBucket[endpoint] = bucket;
+    return false;
   }
 
   private async _getPopulatedURL(args: RequestArgsInternal): Promise<string> {

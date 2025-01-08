@@ -8,9 +8,13 @@ import { UrlConfiguration } from '../UrlConfiguration';
 
 const urlActual = URL;
 const urlSpy = jest.fn();
+const sdkKey = 'a-key';
+
+Object.defineProperty(global, 'performance', {
+  writable: true,
+});
 
 describe('Network Core', () => {
-  const sdkKey = 'a-key';
   const data = { foo: 'bar' };
   const urlConfig = new UrlConfiguration(
     Endpoint._initialize,
@@ -97,6 +101,68 @@ describe('Network Core', () => {
 
     it('does not make any retry requests', () => {
       expect(fetchMock).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('Rate Limiting', () => {
+    beforeEach(async () => {
+      fetchMock.mockClear();
+      fetchMock.mockResponse(JSON.stringify({ result: '12345' }));
+      (network as any)._leakyBucket = {};
+      emitter.mockClear();
+    });
+
+    afterEach(() => {
+      (network as any)._leakyBucket = {};
+      jest.useRealTimers();
+    });
+
+    it('blocks requests that exceeds the limit and reset after time window', async () => {
+      const requests = Array(40)
+        .fill(null)
+        .map(() => network.post({ sdkKey, urlConfig, data: {} }));
+      await Promise.allSettled(requests);
+      expect(fetchMock).toHaveBeenCalledTimes(40);
+    });
+
+    it('blocks requests that exceeds the limit and reset after time window', async () => {
+      jest.useFakeTimers({ legacyFakeTimers: false });
+
+      const requests = Array(60)
+        .fill(null)
+        .map(() => network.post({ sdkKey, urlConfig, data: {} }));
+      await Promise.allSettled(requests);
+      expect(fetchMock).toHaveBeenCalledTimes(50);
+      fetchMock.mockClear();
+
+      jest.advanceTimersByTime(1000);
+
+      const newRequests = Array(10)
+        .fill(null)
+        .map(() => network.post({ sdkKey, urlConfig, data: {} }));
+      await Promise.allSettled(newRequests);
+      expect(fetchMock).toHaveBeenCalledTimes(10);
+    });
+
+    it('maintains rate limit under constant load', async () => {
+      const results: Array<Promise<any>> = [];
+      const requestRate = 60;
+      const durationInSeconds = 3;
+
+      for (let second = 0; second < durationInSeconds; second++) {
+        const secondResults: Array<Promise<any>> = [];
+        for (let i = 0; i < requestRate; i++) {
+          const result = network.post({ sdkKey, urlConfig, data: {} });
+          secondResults.push(result);
+        }
+        results.push(...secondResults);
+
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+      }
+
+      await Promise.all(results);
+      expect(fetchMock.mock.calls.length).toBeGreaterThan(140);
+      expect(fetchMock.mock.calls.length).toBeLessThanOrEqual(150);
     });
   });
 

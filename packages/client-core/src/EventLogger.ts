@@ -21,12 +21,12 @@ import {
   _subscribeToVisiblityChanged,
 } from './VisibilityObserving';
 
-const DEFAULT_QUEUE_SIZE = 50;
+const DEFAULT_QUEUE_SIZE = 100;
 const DEFAULT_FLUSH_INTERVAL_MS = 10_000;
 
 const MAX_DEDUPER_KEYS = 1000;
-const DEDUPER_WINDOW_DURATION_MS = 60_000;
-const MAX_FAILED_LOGS = 500;
+const DEDUPER_WINDOW_DURATION_MS = 600_000;
+const MAX_FAILED_LOGS = 1000;
 
 const QUICK_FLUSH_WINDOW_MS = 200;
 const EVENT_LOGGER_MAP: Record<string, EventLogger | undefined> = {};
