@@ -255,6 +255,7 @@ export default class StatsigClient
    * @param {FeatureGateEvaluationOptions} [options] - Optional. Additional options to customize the method call.
    * @returns {boolean} - The boolean value representing the gate's current evaluation results for the user.
    */
+
   checkGate(name: string, options?: FeatureGateEvaluationOptions): boolean {
     return this.getFeatureGate(name, options).value;
   }
@@ -266,7 +267,9 @@ export default class StatsigClient
    * @param {FeatureGateEvaluationOptions} [options] - Optional. Additional options to customize the method call.
    * @returns {FeatureGate} - The {@link FeatureGate} object representing the gate's current evaluation results for the user.
    */
-  getFeatureGate(
+  getFeatureGate = this._memoize(this._getFeatureGateImpl.bind(this));
+
+  private _getFeatureGateImpl(
     name: string,
     options?: FeatureGateEvaluationOptions,
   ): FeatureGate {
@@ -298,7 +301,9 @@ export default class StatsigClient
    * @param {DynamicConfigEvaluationOptions} [options] - Optional. Additional options to customize the method call.
    * @returns {DynamicConfig} - The {@link DynamicConfig} object representing the dynamic configs's current evaluation results for the user.
    */
-  getDynamicConfig(
+  getDynamicConfig = this._memoize(this._getDynamicConfigImpl.bind(this));
+
+  private _getDynamicConfigImpl(
     name: string,
     options?: DynamicConfigEvaluationOptions,
   ): DynamicConfig {
@@ -329,7 +334,9 @@ export default class StatsigClient
    * @param {ExperimentEvaluationOptions} [options] - Optional. Additional options to customize the method call.
    * @returns {Experiment} - The {@link Experiment} object representing the experiments's current evaluation results for the user.
    */
-  getExperiment(
+  getExperiment = this._memoize(this._getExperimentImpl.bind(this));
+
+  private _getExperimentImpl(
     name: string,
     options?: ExperimentEvaluationOptions,
   ): Experiment {
@@ -360,7 +367,9 @@ export default class StatsigClient
    * @param {LayerEvaluationOptions} [options] - Optional. Additional options to customize the method call.
    * @returns {Layer} - The {@link Layer} object representing the layers's current evaluation results for the user.
    */
-  getLayer(name: string, options?: LayerEvaluationOptions): Layer {
+  getLayer = this._memoize(this._getLayerImpl.bind(this));
+
+  private _getLayerImpl(name: string, options?: LayerEvaluationOptions): Layer {
     const { result: evaluation, details } = this._store.getLayer(name);
     const layer = _makeLayer(name, details, evaluation);
     const overridden = this.overrideAdapter?.getLayerOverride?.(
@@ -386,7 +395,9 @@ export default class StatsigClient
     return result;
   }
 
-  getParameterStore(
+  getParameterStore = this._memoize(this._getParameterStoreImpl.bind(this));
+
+  private _getParameterStoreImpl(
     name: string,
     options?: ParameterStoreEvaluationOptions,
   ): ParameterStore {

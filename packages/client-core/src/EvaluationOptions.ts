@@ -1,4 +1,6 @@
 export type EvaluationOptionsCommon = {
+  // When adding new options, add or exclude it from the memoization key in StatsigClientBase.ts
+
   /**
    * Prevents an exposure log being created for this check.
    *
@@ -9,13 +11,17 @@ export type EvaluationOptionsCommon = {
 
 export type FeatureGateEvaluationOptions = EvaluationOptionsCommon & {
   // Feature Gate specific options
+  // When adding new options, add or exclude it from the memoization key in StatsigClientBase.ts
 };
 
 export type DynamicConfigEvaluationOptions = EvaluationOptionsCommon & {
   // Dynamic Config specific options
+  // When adding new options, add or exclude it from the memoization key in StatsigClientBase.ts
 };
 
 export type ExperimentEvaluationOptions = EvaluationOptionsCommon & {
+  // When adding new options, add or exclude it from the memoization key in StatsigClientBase.ts
+
   /**
    * Provide a map of values to be used across checks
    *
@@ -27,8 +33,10 @@ export type ExperimentEvaluationOptions = EvaluationOptionsCommon & {
 
 export type LayerEvaluationOptions = EvaluationOptionsCommon & {
   // Layer specific options
+  // When adding new options, add or exclude it from the memoization key in StatsigClientBase.ts
 };
 
 export type ParameterStoreEvaluationOptions = EvaluationOptionsCommon & {
   // Parameter Store specific options
+  // When adding new options, add or exclude it from the memoization key in StatsigClientBase.ts
 };

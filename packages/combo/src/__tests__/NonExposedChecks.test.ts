@@ -13,13 +13,13 @@ describe('Non Exposed Checks', () => {
         const client = new StatsigClient('client-key', { userID: 'a-user' });
         client.initializeSync();
 
-        // 2 checks
+        // 2 checks, 2nd one memoized
         client.checkGate('a_gate', { disableExposureLog: true });
         client.checkGate('a_gate', { disableExposureLog: true });
         await client.flush();
 
         // reset then 1 check
-        client.checkGate('a_gate', { disableExposureLog: true });
+        client.checkGate('b_gate', { disableExposureLog: true });
         await client.flush();
 
         // 1 check with exposure
@@ -40,7 +40,7 @@ describe('Non Exposed Checks', () => {
         await client.flush();
 
         // reset then 1 check
-        client.checkGate('a_gate', user, { disableExposureLog: true });
+        client.checkGate('b_gate', user, { disableExposureLog: true });
         await client.flush();
 
         // 1 check with exposure
@@ -52,6 +52,7 @@ describe('Non Exposed Checks', () => {
     beforeAll(async () => {
       __STATSIG__ = {} as StatsigGlobal;
       fetchMock.enableMocks();
+      fetchMock.mockClear();
       await action();
     });
 
@@ -62,7 +63,8 @@ describe('Non Exposed Checks', () => {
 
       const event = body.events[0];
       expect(event.eventName).toBe('statsig::non_exposed_checks');
-      expect(event.metadata).toEqual({ checks: { a_gate: 2 } });
+      const expectedChecks = _title === 'StatsigClient' ? 1 : 2;
+      expect(event.metadata).toEqual({ checks: { a_gate: expectedChecks } });
       expect(event.statsigMetadata).toEqual(anyObject());
       expect(event.time).toEqual(anyNumber());
     });
@@ -74,7 +76,7 @@ describe('Non Exposed Checks', () => {
 
       const event = body.events[0];
       expect(event.eventName).toBe('statsig::non_exposed_checks');
-      expect(event.metadata).toEqual({ checks: { a_gate: 1 } });
+      expect(event.metadata).toEqual({ checks: { b_gate: 1 } });
       expect(event.statsigMetadata).toEqual(anyObject());
       expect(event.time).toEqual(anyNumber());
     });

@@ -2,7 +2,14 @@ import './$_StatsigGlobal';
 import { _getStatsigGlobal } from './$_StatsigGlobal';
 import { StatsigClientInterface } from './ClientInterfaces';
 import { ErrorBoundary } from './ErrorBoundary';
-import { EvaluationOptionsCommon } from './EvaluationOptions';
+import {
+  DynamicConfigEvaluationOptions,
+  EvaluationOptionsCommon,
+  ExperimentEvaluationOptions,
+  FeatureGateEvaluationOptions,
+  LayerEvaluationOptions,
+  ParameterStoreEvaluationOptions,
+} from './EvaluationOptions';
 import { EventLogger } from './EventLogger';
 import { Log } from './Log';
 import { NetworkCore } from './NetworkCore';
@@ -37,6 +44,43 @@ type InternalStatsigClientEventCallback = object & {
   __isInternal: true;
 };
 
+type AnyEvaluationOptions =
+  | FeatureGateEvaluationOptions
+  | DynamicConfigEvaluationOptions
+  | ExperimentEvaluationOptions
+  | LayerEvaluationOptions
+  | ParameterStoreEvaluationOptions;
+
+const EXIST_KEYS = new Set<string>([
+  // Add keys that should be memoized based only on their existence, not their value
+]);
+
+const DO_NOT_MEMO_KEYS = new Set<string>([
+  // Add keys that if exist, should not be memoized
+  'userPersistedValues',
+]);
+
+function getCacheKey(
+  name: string,
+  options?: AnyEvaluationOptions,
+): string | undefined {
+  if (!options) {
+    return undefined;
+  }
+  let cacheKey = `${name}`;
+  for (const key of Object.keys(options)) {
+    if (DO_NOT_MEMO_KEYS.has(key)) {
+      return undefined;
+    }
+    if (EXIST_KEYS.has(key)) {
+      cacheKey += `${key}=true`;
+    } else {
+      cacheKey += `${key}=${options[key as keyof AnyEvaluationOptions]}`;
+    }
+  }
+  return cacheKey;
+}
+
 export type StatsigClientEmitEventFunc = (event: AnyStatsigClientEvent) => void;
 
 export type StatsigContext = {
@@ -60,6 +104,7 @@ export abstract class StatsigClientBase<
   protected readonly _errorBoundary: ErrorBoundary;
   protected readonly _logger: EventLogger;
   protected _initializePromise: Promise<void> | null = null;
+  protected _memoCache: Record<string, unknown>;
 
   private _listeners = {} as EventListenersMap;
 
@@ -79,6 +124,7 @@ export abstract class StatsigClientBase<
 
     this._sdkKey = sdkKey;
     this._options = options ?? {};
+    this._memoCache = {};
     this.overrideAdapter = options?.overrideAdapter ?? null;
     this._logger = new EventLogger(sdkKey, emitter, network, options);
 
@@ -212,6 +258,7 @@ export abstract class StatsigClientBase<
     values: DataAdapterResult | null,
   ): void {
     this.loadingStatus = newStatus;
+    this._memoCache = {};
     this.$emt({ name: 'values_updated', status: newStatus, values });
   }
 
@@ -226,6 +273,23 @@ export abstract class StatsigClientBase<
     }
 
     this._logger.enqueue(exposure);
+  }
+
+  protected _memoize<T, O extends AnyEvaluationOptions>(
+    fn: (name: string, options?: O) => T,
+  ): (name: string, options?: O) => T {
+    return (name: string, options?: O) => {
+      const cacheKey = getCacheKey(name, options);
+      if (!cacheKey) {
+        return fn(name, options);
+      }
+
+      if (!(cacheKey in this._memoCache)) {
+        this._memoCache[cacheKey] = fn(name, options);
+      }
+
+      return this._memoCache[cacheKey] as T;
+    };
   }
 
   protected abstract _primeReadyRipcord(): void;
