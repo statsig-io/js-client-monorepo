@@ -70,7 +70,7 @@ test.describe('AutoCapture - PageViews', () => {
     events = [];
 
     await page.goBack();
-    expect(await page.locator('a').getAttribute('href')).toContain(
+    expect(await page.locator('#sub-page-link').getAttribute('href')).toContain(
       '/session-replay-example/sub-page',
     );
     await waitForNextLogEventRequest(page);

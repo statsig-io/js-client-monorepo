@@ -77,11 +77,27 @@ function Content() {
           Sub Page
         </a>
       </div>
+
+      <div style={{ color: 'blue', textDecoration: 'underline' }}>
+        <a id="leave-link" href="https://statsig.com">
+          Leave via Link
+        </a>
+      </div>
+
       <button
+        style={{ display: 'block' }}
         id="leave-button"
         onClick={() => window.location.replace('https://statsig.com')}
       >
-        Leave
+        Leave (Location Replace)
+      </button>
+      <br />
+      <button
+        style={{ display: 'block' }}
+        id="leave-button-via-open"
+        onClick={() => window.open('https://statsig.com', '_self')}
+      >
+        Leave (Window Open)
       </button>
     </div>
   );
