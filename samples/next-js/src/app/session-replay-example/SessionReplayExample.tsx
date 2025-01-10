@@ -72,7 +72,15 @@ function Content() {
         Click Me
       </button>
       <p className="do-not-record">Secret: 123-12-1234</p>
-      <button onClick={() => window.location.replace('https://statsig.com')}>
+      <div style={{ color: 'blue', textDecoration: 'underline' }}>
+        <a id="sub-page-link" href="/session-replay-example/sub-page">
+          Sub Page
+        </a>
+      </div>
+      <button
+        id="leave-button"
+        onClick={() => window.location.replace('https://statsig.com')}
+      >
         Leave
       </button>
     </div>

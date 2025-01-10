@@ -57,6 +57,7 @@ export class AutoCapture {
   private _disabledEvents: Record<string, boolean> = {};
   private _previousLoggedPageViewUrl: URL | null = null;
   private _eventFilterFunc?: (event: AutoCaptureEvent) => boolean;
+  private _hasLoggedPageViewEnd = false;
 
   constructor(
     private _client: PrecomputedEvaluationsInterface,
@@ -100,7 +101,8 @@ export class AutoCapture {
     _registerEventHandler(doc, 'click', eventHandler);
     _registerEventHandler(doc, 'submit', eventHandler);
     _registerEventHandler(win, 'error', eventHandler);
-    _registerEventHandler(win, 'beforeunload', () => this._pageUnloadHandler());
+    _registerEventHandler(win, 'pagehide', () => this._tryLogPageViewEnd());
+    _registerEventHandler(win, 'beforeunload', () => this._tryLogPageViewEnd());
     _registerEventHandler(win, 'scroll', () => this._scrollEventHandler());
   }
 
@@ -207,6 +209,7 @@ export class AutoCapture {
     }
 
     this._previousLoggedPageViewUrl = url;
+    this._hasLoggedPageViewEnd = false;
 
     const payload = _gatherPageViewPayload(url);
 
@@ -218,6 +221,23 @@ export class AutoCapture {
         flushImmediately: true,
         addNewSessionMetadata: true,
       },
+    );
+  }
+
+  private _tryLogPageViewEnd() {
+    if (this._hasLoggedPageViewEnd) {
+      return;
+    }
+    this._hasLoggedPageViewEnd = true;
+
+    this._enqueueAutoCapture(
+      AutoCaptureEventName.PAGE_VIEW_END,
+      _getSanitizedPageUrl(),
+      {
+        scrollDepth: this._deepestScroll,
+        pageViewLength: Date.now() - this._startTime,
+      },
+      { flushImmediately: true },
     );
   }
 
@@ -275,18 +295,6 @@ export class AutoCapture {
         metadata,
       );
     }, 1);
-  }
-
-  private _pageUnloadHandler() {
-    this._enqueueAutoCapture(
-      AutoCaptureEventName.PAGE_VIEW_END,
-      _getSanitizedPageUrl(),
-      {
-        scrollDepth: this._deepestScroll,
-        pageViewLength: Date.now() - this._startTime,
-      },
-      { flushImmediately: true },
-    );
   }
 
   private _enqueueAutoCapture(
