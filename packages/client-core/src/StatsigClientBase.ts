@@ -3,15 +3,12 @@ import { _getStatsigGlobal } from './$_StatsigGlobal';
 import { StatsigClientInterface } from './ClientInterfaces';
 import { ErrorBoundary } from './ErrorBoundary';
 import {
-  DynamicConfigEvaluationOptions,
+  AnyEvaluationOptions,
   EvaluationOptionsCommon,
-  ExperimentEvaluationOptions,
-  FeatureGateEvaluationOptions,
-  LayerEvaluationOptions,
-  ParameterStoreEvaluationOptions,
 } from './EvaluationOptions';
 import { EventLogger } from './EventLogger';
 import { Log } from './Log';
+import { createMemoKey } from './MemoKey';
 import { NetworkCore } from './NetworkCore';
 import { OverrideAdapter } from './OverrideAdapter';
 import { _isServerEnv } from './SafeJs';
@@ -43,43 +40,6 @@ type EventListenersMap = {
 type InternalStatsigClientEventCallback = object & {
   __isInternal: true;
 };
-
-type AnyEvaluationOptions =
-  | FeatureGateEvaluationOptions
-  | DynamicConfigEvaluationOptions
-  | ExperimentEvaluationOptions
-  | LayerEvaluationOptions
-  | ParameterStoreEvaluationOptions;
-
-const EXIST_KEYS = new Set<string>([
-  // Add keys that should be memoized based only on their existence, not their value
-]);
-
-const DO_NOT_MEMO_KEYS = new Set<string>([
-  // Add keys that if exist, should not be memoized
-  'userPersistedValues',
-]);
-
-function getCacheKey(
-  name: string,
-  options?: AnyEvaluationOptions,
-): string | undefined {
-  if (!options) {
-    return undefined;
-  }
-  let cacheKey = `${name}`;
-  for (const key of Object.keys(options)) {
-    if (DO_NOT_MEMO_KEYS.has(key)) {
-      return undefined;
-    }
-    if (EXIST_KEYS.has(key)) {
-      cacheKey += `${key}=true`;
-    } else {
-      cacheKey += `${key}=${options[key as keyof AnyEvaluationOptions]}`;
-    }
-  }
-  return cacheKey;
-}
 
 export type StatsigClientEmitEventFunc = (event: AnyStatsigClientEvent) => void;
 
@@ -279,16 +239,16 @@ export abstract class StatsigClientBase<
     fn: (name: string, options?: O) => T,
   ): (name: string, options?: O) => T {
     return (name: string, options?: O) => {
-      const cacheKey = getCacheKey(name, options);
-      if (!cacheKey) {
+      const memoKey = createMemoKey(name, options);
+      if (!memoKey) {
         return fn(name, options);
       }
 
-      if (!(cacheKey in this._memoCache)) {
-        this._memoCache[cacheKey] = fn(name, options);
+      if (!(memoKey in this._memoCache)) {
+        this._memoCache[memoKey] = fn(name, options);
       }
 
-      return this._memoCache[cacheKey] as T;
+      return this._memoCache[memoKey] as T;
     };
   }
 

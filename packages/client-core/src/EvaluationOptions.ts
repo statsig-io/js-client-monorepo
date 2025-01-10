@@ -40,3 +40,10 @@ export type ParameterStoreEvaluationOptions = EvaluationOptionsCommon & {
   // Parameter Store specific options
   // When adding new options, add or exclude it from the memoization key in StatsigClientBase.ts
 };
+
+export type AnyEvaluationOptions =
+  | FeatureGateEvaluationOptions
+  | DynamicConfigEvaluationOptions
+  | ExperimentEvaluationOptions
+  | LayerEvaluationOptions
+  | ParameterStoreEvaluationOptions;

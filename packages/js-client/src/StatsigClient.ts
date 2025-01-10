@@ -267,32 +267,7 @@ export default class StatsigClient
    * @param {FeatureGateEvaluationOptions} [options] - Optional. Additional options to customize the method call.
    * @returns {FeatureGate} - The {@link FeatureGate} object representing the gate's current evaluation results for the user.
    */
-  getFeatureGate = this._memoize(this._getFeatureGateImpl.bind(this));
-
-  private _getFeatureGateImpl(
-    name: string,
-    options?: FeatureGateEvaluationOptions,
-  ): FeatureGate {
-    const { result: evaluation, details } = this._store.getGate(name);
-    const gate = _makeFeatureGate(name, details, evaluation);
-    const overridden = this.overrideAdapter?.getGateOverride?.(
-      gate,
-      this._user,
-      options,
-    );
-
-    const result = overridden ?? gate;
-
-    this._enqueueExposure(
-      name,
-      _createGateExposure(this._user, result),
-      options,
-    );
-
-    this.$emt({ name: 'gate_evaluation', gate: result });
-
-    return result;
-  }
+  readonly getFeatureGate = this._memoize(this._getFeatureGateImpl.bind(this));
 
   /**
    * Retrieves the value of a dynamic config for the current user.
@@ -301,31 +276,9 @@ export default class StatsigClient
    * @param {DynamicConfigEvaluationOptions} [options] - Optional. Additional options to customize the method call.
    * @returns {DynamicConfig} - The {@link DynamicConfig} object representing the dynamic configs's current evaluation results for the user.
    */
-  getDynamicConfig = this._memoize(this._getDynamicConfigImpl.bind(this));
-
-  private _getDynamicConfigImpl(
-    name: string,
-    options?: DynamicConfigEvaluationOptions,
-  ): DynamicConfig {
-    const { result: evaluation, details } = this._store.getConfig(name);
-    const config = _makeDynamicConfig(name, details, evaluation);
-
-    const overridden = this.overrideAdapter?.getDynamicConfigOverride?.(
-      config,
-      this._user,
-      options,
-    );
-
-    const result = overridden ?? config;
-
-    this._enqueueExposure(
-      name,
-      _createConfigExposure(this._user, result),
-      options,
-    );
-    this.$emt({ name: 'dynamic_config_evaluation', dynamicConfig: result });
-    return result;
-  }
+  readonly getDynamicConfig = this._memoize(
+    this._getDynamicConfigImpl.bind(this),
+  );
 
   /**
    * Retrieves the value of a experiment for the current user.
@@ -334,31 +287,7 @@ export default class StatsigClient
    * @param {ExperimentEvaluationOptions} [options] - Optional. Additional options to customize the method call.
    * @returns {Experiment} - The {@link Experiment} object representing the experiments's current evaluation results for the user.
    */
-  getExperiment = this._memoize(this._getExperimentImpl.bind(this));
-
-  private _getExperimentImpl(
-    name: string,
-    options?: ExperimentEvaluationOptions,
-  ): Experiment {
-    const { result: evaluation, details } = this._store.getConfig(name);
-    const experiment = _makeExperiment(name, details, evaluation);
-
-    const overridden = this.overrideAdapter?.getExperimentOverride?.(
-      experiment,
-      this._user,
-      options,
-    );
-
-    const result = overridden ?? experiment;
-
-    this._enqueueExposure(
-      name,
-      _createConfigExposure(this._user, result),
-      options,
-    );
-    this.$emt({ name: 'experiment_evaluation', experiment: result });
-    return result;
-  }
+  readonly getExperiment = this._memoize(this._getExperimentImpl.bind(this));
 
   /**
    * Retrieves the value of a layer for the current user.
@@ -367,50 +296,18 @@ export default class StatsigClient
    * @param {LayerEvaluationOptions} [options] - Optional. Additional options to customize the method call.
    * @returns {Layer} - The {@link Layer} object representing the layers's current evaluation results for the user.
    */
-  getLayer = this._memoize(this._getLayerImpl.bind(this));
+  readonly getLayer = this._memoize(this._getLayerImpl.bind(this));
 
-  private _getLayerImpl(name: string, options?: LayerEvaluationOptions): Layer {
-    const { result: evaluation, details } = this._store.getLayer(name);
-    const layer = _makeLayer(name, details, evaluation);
-    const overridden = this.overrideAdapter?.getLayerOverride?.(
-      layer,
-      this._user,
-      options,
-    );
-
-    const result = _mergeOverride(
-      layer,
-      overridden,
-      overridden?.__value ?? layer.__value,
-      (param: string) => {
-        this._enqueueExposure(
-          name,
-          _createLayerParameterExposure(this._user, result, param),
-          options,
-        );
-      },
-    );
-
-    this.$emt({ name: 'layer_evaluation', layer: result });
-    return result;
-  }
-
-  getParameterStore = this._memoize(this._getParameterStoreImpl.bind(this));
-
-  private _getParameterStoreImpl(
-    name: string,
-    options?: ParameterStoreEvaluationOptions,
-  ): ParameterStore {
-    const { result: configuration, details } = this._store.getParamStore(name);
-    this._logger.incrementNonExposureCount(name);
-
-    return {
-      name,
-      details,
-      __configuration: configuration,
-      get: _makeParamStoreGetter(this, configuration, options),
-    };
-  }
+  /**
+   * Retrieves the value of a parameter store for the current user.
+   *
+   * @param {string} name The name of the parameter store to get.
+   * @param {ParameterStoreEvaluationOptions} [options] - Optional. Additional options to customize the method call.
+   * @returns {ParameterStore} - The {@link ParameterStore} object representing the parameter store's current mappings for the user.
+   */
+  readonly getParameterStore = this._memoize(
+    this._getParameterStoreImpl.bind(this),
+  );
 
   /**
    * Logs an event to the internal logging system. This function allows logging by either passing a fully formed event object or by specifying the event name with optional value and metadata.
@@ -479,5 +376,127 @@ export default class StatsigClient
     if (stableIdOverride) {
       StableID.setOverride(stableIdOverride, this._sdkKey);
     }
+  }
+
+  private _getFeatureGateImpl(
+    name: string,
+    options?: FeatureGateEvaluationOptions,
+  ): FeatureGate {
+    const { result: evaluation, details } = this._store.getGate(name);
+    const gate = _makeFeatureGate(name, details, evaluation);
+    const overridden = this.overrideAdapter?.getGateOverride?.(
+      gate,
+      this._user,
+      options,
+    );
+
+    const result = overridden ?? gate;
+
+    this._enqueueExposure(
+      name,
+      _createGateExposure(this._user, result),
+      options,
+    );
+
+    this.$emt({ name: 'gate_evaluation', gate: result });
+
+    return result;
+  }
+
+  private _getDynamicConfigImpl(
+    name: string,
+    options?: DynamicConfigEvaluationOptions,
+  ): DynamicConfig {
+    const { result: evaluation, details } = this._store.getConfig(name);
+    const config = _makeDynamicConfig(name, details, evaluation);
+
+    const overridden = this.overrideAdapter?.getDynamicConfigOverride?.(
+      config,
+      this._user,
+      options,
+    );
+
+    const result = overridden ?? config;
+
+    this._enqueueExposure(
+      name,
+      _createConfigExposure(this._user, result),
+      options,
+    );
+    this.$emt({ name: 'dynamic_config_evaluation', dynamicConfig: result });
+    return result;
+  }
+
+  private _getExperimentImpl(
+    name: string,
+    options?: ExperimentEvaluationOptions,
+  ): Experiment {
+    const { result: evaluation, details } = this._store.getConfig(name);
+    const experiment = _makeExperiment(name, details, evaluation);
+
+    const overridden = this.overrideAdapter?.getExperimentOverride?.(
+      experiment,
+      this._user,
+      options,
+    );
+
+    const result = overridden ?? experiment;
+
+    this._enqueueExposure(
+      name,
+      _createConfigExposure(this._user, result),
+      options,
+    );
+    this.$emt({ name: 'experiment_evaluation', experiment: result });
+    return result;
+  }
+
+  private _getLayerImpl(name: string, options?: LayerEvaluationOptions): Layer {
+    const { result: evaluation, details } = this._store.getLayer(name);
+    const layer = _makeLayer(name, details, evaluation);
+    const overridden = this.overrideAdapter?.getLayerOverride?.(
+      layer,
+      this._user,
+      options,
+    );
+
+    if (options?.disableExposureLog) {
+      this._logger.incrementNonExposureCount(name);
+    }
+
+    const result = _mergeOverride(
+      layer,
+      overridden,
+      overridden?.__value ?? layer.__value,
+      (param: string) => {
+        if (options?.disableExposureLog) {
+          return;
+        }
+
+        this._enqueueExposure(
+          name,
+          _createLayerParameterExposure(this._user, result, param),
+          options,
+        );
+      },
+    );
+
+    this.$emt({ name: 'layer_evaluation', layer: result });
+    return result;
+  }
+
+  private _getParameterStoreImpl(
+    name: string,
+    options?: ParameterStoreEvaluationOptions,
+  ): ParameterStore {
+    const { result: configuration, details } = this._store.getParamStore(name);
+    this._logger.incrementNonExposureCount(name);
+
+    return {
+      name,
+      details,
+      __configuration: configuration,
+      get: _makeParamStoreGetter(this, configuration, options),
+    };
   }
 }

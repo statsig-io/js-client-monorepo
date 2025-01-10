@@ -64,4 +64,7 @@ export type ParameterStore = Flatten<{
 
 export type AnyConfigBasedStatsigType = DynamicConfig | Experiment | Layer;
 
-export type AnyStatsigType = FeatureGate | AnyConfigBasedStatsigType;
+export type AnyStatsigType =
+  | FeatureGate
+  | AnyConfigBasedStatsigType
+  | ParameterStore;
