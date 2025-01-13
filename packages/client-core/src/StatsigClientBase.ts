@@ -41,6 +41,8 @@ type InternalStatsigClientEventCallback = object & {
   __isInternal: true;
 };
 
+const MAX_MEMO_CACHE_SIZE = 3000;
+
 export type StatsigClientEmitEventFunc = (event: AnyStatsigClientEvent) => void;
 
 export type StatsigContext = {
@@ -245,6 +247,10 @@ export abstract class StatsigClientBase<
       }
 
       if (!(memoKey in this._memoCache)) {
+        if (Object.keys(this._memoCache).length >= MAX_MEMO_CACHE_SIZE) {
+          this._memoCache = {};
+        }
+
         this._memoCache[memoKey] = fn(name, options);
       }
 

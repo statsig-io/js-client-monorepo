@@ -206,7 +206,18 @@
       "$_stopFn": "pi",
       "$_defaultEnvironment": "zn",
       "$_tryEnqueueAutoCaptureEvent": "yi",
-      "$_eventCounter": "mi"
+      "$_eventCounter": "mi",
+      "$_leakyBucket": "Oi",
+      "$_isRateLimited": "Si",
+      "$_memoCache": "ji",
+      "$_memoize": "wi",
+      "$_getFeatureGateImpl": "Ti",
+      "$_getDynamicConfigImpl": "Ii",
+      "$_getExperimentImpl": "ki",
+      "$_getLayerImpl": "Di",
+      "$_getParameterStoreImpl": "Ri",
+      "$_hasLoggedPageViewEnd": "Ei",
+      "$_tryLogPageViewEnd": "Mi"
     }
   }
 }

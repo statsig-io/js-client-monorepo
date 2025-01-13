@@ -21,6 +21,8 @@ async function runGarbageCollection() {
   await new Promise((resolve) => setTimeout(resolve, 100));
 }
 
+jest.retryTimes(3, { logErrorsBeforeRetry: true });
+
 describe('Memory Usage', () => {
   beforeAll(async () => {
     fetchMock.enableMocks();

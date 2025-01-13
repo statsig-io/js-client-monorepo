@@ -174,4 +174,26 @@ describe('Memoization - StatsigClient', () => {
 
     expect(storeSpy).toHaveBeenCalledTimes(2);
   });
+
+  describe('Memo cache is full', () => {
+    beforeEach(() => {
+      for (let i = 0; i < 3000; i++) {
+        client.getFeatureGate(`a_gate_${i}`);
+      }
+
+      storeSpy.mock.calls = [];
+    });
+
+    it('returns memoized values when calling a memoized key', () => {
+      client.getFeatureGate('a_gate_0');
+      expect(storeSpy).toHaveBeenCalledTimes(0);
+    });
+
+    it('resets memo cache when size limit is reached', () => {
+      client.getFeatureGate('a_gate_one_too_many_entries');
+      client.getFeatureGate('a_gate_0');
+
+      expect(storeSpy).toHaveBeenCalledTimes(2);
+    });
+  });
 });

@@ -100,8 +100,10 @@ export class EventLogger {
     if (!this._shouldLogEvent(event)) {
       return;
     }
+
     this._normalizeAndAppendEvent(event);
     this._quickFlushIfNeeded();
+
     if (this._queue.length > this._maxQueueSize) {
       EventLogger._safeFlushAndForget(this._sdkKey);
     }
