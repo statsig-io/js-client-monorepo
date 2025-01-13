@@ -101,7 +101,7 @@ export default class StatsigClient
     );
 
     this._store = new EvaluationStore(sdkKey);
-    this._user = _normalizeUser(user, options);
+    this._user = this._configureUser(user, options);
 
     const plugins = options?.plugins ?? [];
     for (const plugin of plugins) {
@@ -370,12 +370,19 @@ export default class StatsigClient
     this._logger.reset();
     this._store.reset();
 
-    this._user = _normalizeUser(user, this._options);
+    this._user = this._configureUser(user, this._options);
+  }
 
-    const stableIdOverride = this._user.customIDs?.stableID;
+  private _configureUser(
+    originalUser: StatsigUser,
+    options: StatsigOptions | null,
+  ): StatsigUserInternal {
+    const user = _normalizeUser(originalUser, options);
+    const stableIdOverride = user.customIDs?.stableID;
     if (stableIdOverride) {
       StableID.setOverride(stableIdOverride, this._sdkKey);
     }
+    return user;
   }
 
   private _getFeatureGateImpl(
