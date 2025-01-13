@@ -1,11 +1,11 @@
 {
   "name": "@statsig/react-native-bindings",
-  "version": "3.8.3",
+  "version": "3.9.0",
   "dependencies": {
-    "@statsig/client-core": "3.8.3",
-    "@statsig/js-client": "3.8.3",
-    "@statsig/react-bindings": "3.8.3",
-    "@statsig/react-native-core": "3.8.3"
+    "@statsig/client-core": "3.9.0",
+    "@statsig/js-client": "3.9.0",
+    "@statsig/react-bindings": "3.9.0",
+    "@statsig/react-native-core": "3.9.0"
   },
   "peerDependencies": {
     "react": "^16.6.3 || ^17.0.0 || ^18.0.0 || ^19.0.0",
