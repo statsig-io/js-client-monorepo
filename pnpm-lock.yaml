@@ -1,5 +1,9 @@
 lockfileVersion: '6.0'
 
+settings:
+  autoInstallPeers: false
+  excludeLinksFromLockfile: false
+
 overrides:
   braces: '>=3.0.3'
   express@<4.19.2: '>=4.19.2'
@@ -451,145 +455,145 @@ importers:
   packages/combo:
     dependencies:
       '@statsig/client-core':
-        specifier: 3.9.0
+        specifier: 3.9.1
         version: link:../client-core
       '@statsig/js-client':
-        specifier: 3.9.0
+        specifier: 3.9.1
         version: link:../js-client
       '@statsig/js-local-overrides':
-        specifier: 3.9.0
+        specifier: 3.9.1
         version: link:../js-local-overrides
       '@statsig/js-on-device-eval-client':
-        specifier: 3.9.0
+        specifier: 3.9.1
         version: link:../js-on-device-eval-client
       '@statsig/js-user-persisted-storage':
-        specifier: 3.9.0
+        specifier: 3.9.1
         version: link:../js-user-persisted-storage
       '@statsig/react-bindings':
-        specifier: 3.9.0
+        specifier: 3.9.1
         version: link:../react-bindings
       '@statsig/session-replay':
-        specifier: 3.9.0
+        specifier: 3.9.1
         version: link:../session-replay
       '@statsig/web-analytics':
-        specifier: 3.9.0
+        specifier: 3.9.1
         version: link:../web-analytics
 
   packages/expo-bindings:
     dependencies:
       '@statsig/client-core':
-        specifier: 3.9.0
+        specifier: 3.9.1
         version: link:../client-core
       '@statsig/js-client':
-        specifier: 3.9.0
+        specifier: 3.9.1
         version: link:../js-client
       '@statsig/react-bindings':
-        specifier: 3.9.0
+        specifier: 3.9.1
         version: link:../react-bindings
       '@statsig/react-native-core':
-        specifier: 3.9.0
+        specifier: 3.9.1
         version: link:../react-native-core
 
   packages/expo-bindings-on-device-eval:
     dependencies:
       '@statsig/client-core':
-        specifier: 3.9.0
+        specifier: 3.9.1
         version: link:../client-core
       '@statsig/js-on-device-eval-client':
-        specifier: 3.9.0
+        specifier: 3.9.1
         version: link:../js-on-device-eval-client
       '@statsig/react-bindings-on-device-eval':
-        specifier: 3.9.0
+        specifier: 3.9.1
         version: link:../react-bindings-on-device-eval
       '@statsig/react-native-core':
-        specifier: 3.9.0
+        specifier: 3.9.1
         version: link:../react-native-core
 
   packages/js-client:
     dependencies:
       '@statsig/client-core':
-        specifier: 3.9.0
+        specifier: 3.9.1
         version: link:../client-core
 
   packages/js-local-overrides:
     dependencies:
       '@statsig/client-core':
-        specifier: 3.9.0
+        specifier: 3.9.1
         version: link:../client-core
 
   packages/js-on-device-eval-client:
     dependencies:
       '@statsig/client-core':
-        specifier: 3.9.0
+        specifier: 3.9.1
         version: link:../client-core
       '@statsig/sha256':
-        specifier: 3.9.0
+        specifier: 3.9.1
         version: link:../sha256
 
   packages/js-user-persisted-storage:
     dependencies:
       '@statsig/client-core':
-        specifier: 3.9.0
+        specifier: 3.9.1
         version: link:../client-core
 
   packages/react-bindings:
     dependencies:
       '@statsig/client-core':
-        specifier: 3.9.0
+        specifier: 3.9.1
         version: link:../client-core
       '@statsig/js-client':
-        specifier: 3.9.0
+        specifier: 3.9.1
         version: link:../js-client
 
   packages/react-bindings-on-device-eval:
     dependencies:
       '@statsig/client-core':
-        specifier: 3.9.0
+        specifier: 3.9.1
         version: link:../client-core
       '@statsig/js-on-device-eval-client':
-        specifier: 3.9.0
+        specifier: 3.9.1
         version: link:../js-on-device-eval-client
 
   packages/react-native-bindings:
     dependencies:
       '@statsig/client-core':
-        specifier: 3.9.0
+        specifier: 3.9.1
         version: link:../client-core
       '@statsig/js-client':
-        specifier: 3.9.0
+        specifier: 3.9.1
         version: link:../js-client
       '@statsig/react-bindings':
-        specifier: 3.9.0
+        specifier: 3.9.1
         version: link:../react-bindings
       '@statsig/react-native-core':
-        specifier: 3.9.0
+        specifier: 3.9.1
         version: link:../react-native-core
 
   packages/react-native-bindings-on-device-eval:
     dependencies:
       '@statsig/client-core':
-        specifier: 3.9.0
+        specifier: 3.9.1
         version: link:../client-core
       '@statsig/js-on-device-eval-client':
-        specifier: 3.9.0
+        specifier: 3.9.1
         version: link:../js-on-device-eval-client
       '@statsig/react-bindings-on-device-eval':
-        specifier: 3.9.0
+        specifier: 3.9.1
         version: link:../react-bindings-on-device-eval
       '@statsig/react-native-core':
-        specifier: 3.9.0
+        specifier: 3.9.1
         version: link:../react-native-core
 
   packages/react-native-core:
     dependencies:
       '@statsig/client-core':
-        specifier: 3.9.0
+        specifier: 3.9.1
         version: link:../client-core
 
   packages/session-replay:
     dependencies:
       '@statsig/client-core':
-        specifier: 3.9.0
+        specifier: 3.9.1
         version: link:../client-core
       rrweb:
         specifier: 2.0.0-alpha.14
@@ -616,10 +620,10 @@ importers:
   packages/web-analytics:
     dependencies:
       '@statsig/client-core':
-        specifier: 3.9.0
+        specifier: 3.9.1
         version: link:../client-core
       '@statsig/js-client':
-        specifier: 3.9.0
+        specifier: 3.9.1
         version: link:../js-client
 
 packages:
@@ -6087,6 +6091,7 @@ packages:
       - '@angular-devkit/build-angular'
       - '@angular-devkit/core'
       - '@angular-devkit/schematics'
+      - '@babel/traverse'
       - '@parcel/css'
       - '@rspack/core'
       - '@schematics/angular'
@@ -6123,6 +6128,7 @@ packages:
     dependencies:
       '@nx/cypress': 19.3.0(@swc-node/register@1.9.2)(@swc/core@1.5.29)(@types/node@18.19.18)(cypress@13.7.0)(eslint@8.48.0)(nx@19.3.0)(typescript@5.3.3)
     transitivePeerDependencies:
+      - '@babel/traverse'
       - '@swc-node/register'
       - '@swc/core'
       - '@swc/wasm'
@@ -6150,6 +6156,7 @@ packages:
     dependencies:
       '@nx/eslint-plugin': 19.3.0(@swc-node/register@1.9.2)(@swc/core@1.5.29)(@types/node@18.19.18)(@typescript-eslint/parser@6.21.0)(eslint-config-prettier@9.1.0)(eslint@8.48.0)(nx@19.3.0)(typescript@5.3.3)
     transitivePeerDependencies:
+      - '@babel/traverse'
       - '@swc-node/register'
       - '@swc/core'
       - '@swc/wasm'
@@ -6169,6 +6176,7 @@ packages:
     dependencies:
       '@nx/expo': 19.3.0(@swc-node/register@1.9.2)(@swc/core@1.5.29)(@types/node@18.19.18)(encoding@0.1.13)(eslint@8.48.0)(nx@19.3.0)(ts-node@10.9.2)(typescript@5.3.3)(uglify-js@3.17.4)
     transitivePeerDependencies:
+      - '@babel/traverse'
       - '@parcel/css'
       - '@rspack/core'
       - '@swc-node/register'
@@ -6208,6 +6216,7 @@ packages:
     dependencies:
       '@nx/jest': 19.3.0(@swc-node/register@1.9.2)(@swc/core@1.5.29)(@types/node@18.19.18)(nx@19.3.0)(ts-node@10.9.2)(typescript@5.3.3)
     transitivePeerDependencies:
+      - '@babel/traverse'
       - '@swc-node/register'
       - '@swc/core'
       - '@swc/wasm'
@@ -6227,6 +6236,7 @@ packages:
     dependencies:
       '@nx/js': 19.3.0(@swc-node/register@1.9.2)(@swc/core@1.5.29)(@types/node@18.19.18)(nx@19.3.0)(typescript@5.3.3)
     transitivePeerDependencies:
+      - '@babel/traverse'
       - '@swc-node/register'
       - '@swc/core'
       - '@swc/wasm'
@@ -6243,6 +6253,7 @@ packages:
     dependencies:
       '@nx/js': 19.3.0(@swc-node/register@1.9.2)(@swc/core@1.5.29)(@types/node@18.19.18)(nx@19.3.0)(typescript@5.4.5)
     transitivePeerDependencies:
+      - '@babel/traverse'
       - '@swc-node/register'
       - '@swc/core'
       - '@swc/wasm'
@@ -6260,6 +6271,7 @@ packages:
       '@nx/next': 19.3.0(@babel/core@7.23.9)(@swc-node/register@1.9.2)(@swc/core@1.5.29)(@types/node@18.19.18)(eslint@8.48.0)(next@14.2.10)(nx@19.3.0)(typescript@5.3.3)(uglify-js@3.17.4)
     transitivePeerDependencies:
       - '@babel/core'
+      - '@babel/traverse'
       - '@parcel/css'
       - '@rspack/core'
       - '@swc-node/register'
@@ -6296,6 +6308,7 @@ packages:
     dependencies:
       '@nx/react-native': 19.3.0(@swc-node/register@1.9.2)(@swc/core@1.5.29)(@types/node@18.19.18)(encoding@0.1.13)(eslint@8.48.0)(nx@19.3.0)(ts-node@10.9.2)(typescript@5.3.3)
     transitivePeerDependencies:
+      - '@babel/traverse'
       - '@swc-node/register'
       - '@swc/core'
       - '@swc/wasm'
@@ -6321,6 +6334,7 @@ packages:
     dependencies:
       '@nx/react': 19.3.0(@swc-node/register@1.9.2)(@swc/core@1.5.29)(@types/node@18.19.18)(eslint@8.48.0)(nx@19.3.0)(typescript@5.3.3)
     transitivePeerDependencies:
+      - '@babel/traverse'
       - '@swc-node/register'
       - '@swc/core'
       - '@swc/wasm'
@@ -6341,6 +6355,7 @@ packages:
       '@nx/rollup': 19.3.0(@babel/core@7.23.9)(@swc-node/register@1.9.2)(@swc/core@1.5.29)(@types/node@18.19.18)(nx@19.3.0)(ts-node@10.9.2)(typescript@5.3.3)
     transitivePeerDependencies:
       - '@babel/core'
+      - '@babel/traverse'
       - '@swc-node/register'
       - '@swc/core'
       - '@swc/wasm'
@@ -6359,6 +6374,7 @@ packages:
     dependencies:
       '@nx/storybook': 19.3.0(@swc-node/register@1.9.2)(@swc/core@1.5.29)(@types/node@18.19.18)(cypress@13.7.0)(eslint@8.48.0)(nx@19.3.0)(typescript@5.3.3)
     transitivePeerDependencies:
+      - '@babel/traverse'
       - '@swc-node/register'
       - '@swc/core'
       - '@swc/wasm'
@@ -6390,6 +6406,7 @@ packages:
     dependencies:
       '@nx/web': 19.3.0(@swc-node/register@1.9.2)(@swc/core@1.5.29)(@types/node@18.19.18)(nx@19.3.0)(typescript@5.3.3)
     transitivePeerDependencies:
+      - '@babel/traverse'
       - '@swc-node/register'
       - '@swc/core'
       - '@swc/wasm'
@@ -6406,6 +6423,7 @@ packages:
     dependencies:
       '@nx/webpack': 19.3.0(@swc-node/register@1.9.2)(@swc/core@1.5.29)(@types/node@18.19.18)(nx@19.3.0)(typescript@5.3.3)(uglify-js@3.17.4)
     transitivePeerDependencies:
+      - '@babel/traverse'
       - '@parcel/css'
       - '@rspack/core'
       - '@swc-node/register'
@@ -6481,6 +6499,7 @@ packages:
       webpack: 5.91.0(@swc/core@1.5.29)(uglify-js@3.17.4)
       webpack-merge: 5.10.0
     transitivePeerDependencies:
+      - '@babel/traverse'
       - '@parcel/css'
       - '@rspack/core'
       - '@swc-node/register'
@@ -6526,6 +6545,7 @@ packages:
       detect-port: 1.5.1
       tslib: 2.6.2
     transitivePeerDependencies:
+      - '@babel/traverse'
       - '@swc-node/register'
       - '@swc/core'
       - '@swc/wasm'
@@ -6578,6 +6598,7 @@ packages:
       semver: 7.6.0
       tslib: 2.6.2
     transitivePeerDependencies:
+      - '@babel/traverse'
       - '@swc-node/register'
       - '@swc/core'
       - '@swc/wasm'
@@ -6607,6 +6628,7 @@ packages:
       tslib: 2.6.2
       typescript: 5.4.5
     transitivePeerDependencies:
+      - '@babel/traverse'
       - '@swc-node/register'
       - '@swc/core'
       - '@swc/wasm'
@@ -6637,6 +6659,7 @@ packages:
       tsconfig-paths: 4.2.0
       tslib: 2.6.2
     transitivePeerDependencies:
+      - '@babel/traverse'
       - '@parcel/css'
       - '@rspack/core'
       - '@swc-node/register'
@@ -6690,6 +6713,7 @@ packages:
       tslib: 2.6.2
       yargs-parser: 21.1.1
     transitivePeerDependencies:
+      - '@babel/traverse'
       - '@swc-node/register'
       - '@swc/core'
       - '@swc/wasm'
@@ -6724,7 +6748,7 @@ packages:
       '@nx/workspace': 19.3.0(@swc-node/register@1.9.2)(@swc/core@1.5.29)
       babel-plugin-const-enum: 1.2.0(@babel/core@7.24.0)
       babel-plugin-macros: 2.8.0
-      babel-plugin-transform-typescript-metadata: 0.3.2
+      babel-plugin-transform-typescript-metadata: 0.3.2(@babel/core@7.24.0)
       chalk: 4.1.2
       columnify: 1.6.0
       detect-port: 1.5.1
@@ -6742,6 +6766,7 @@ packages:
       tsconfig-paths: 4.2.0
       tslib: 2.6.2
     transitivePeerDependencies:
+      - '@babel/traverse'
       - '@swc-node/register'
       - '@swc/core'
       - '@swc/wasm'
@@ -6772,7 +6797,7 @@ packages:
       '@nx/workspace': 19.3.0(@swc-node/register@1.9.2)(@swc/core@1.5.29)
       babel-plugin-const-enum: 1.2.0(@babel/core@7.24.0)
       babel-plugin-macros: 2.8.0
-      babel-plugin-transform-typescript-metadata: 0.3.2
+      babel-plugin-transform-typescript-metadata: 0.3.2(@babel/core@7.24.0)
       chalk: 4.1.2
       columnify: 1.6.0
       detect-port: 1.5.1
@@ -6790,6 +6815,7 @@ packages:
       tsconfig-paths: 4.2.0
       tslib: 2.6.2
     transitivePeerDependencies:
+      - '@babel/traverse'
       - '@swc-node/register'
       - '@swc/core'
       - '@swc/wasm'
@@ -6805,6 +6831,7 @@ packages:
     dependencies:
       '@nx/eslint': 19.3.0(@swc-node/register@1.9.2)(@swc/core@1.5.29)(@types/node@18.19.18)(eslint@8.48.0)(nx@19.3.0)
     transitivePeerDependencies:
+      - '@babel/traverse'
       - '@swc-node/register'
       - '@swc/core'
       - '@swc/wasm'
@@ -6843,6 +6870,7 @@ packages:
       webpack-merge: 5.10.0
     transitivePeerDependencies:
       - '@babel/core'
+      - '@babel/traverse'
       - '@parcel/css'
       - '@rspack/core'
       - '@swc-node/register'
@@ -6979,6 +7007,7 @@ packages:
       minimatch: 9.0.3
       tslib: 2.6.2
     transitivePeerDependencies:
+      - '@babel/traverse'
       - '@swc-node/register'
       - '@swc/core'
       - '@swc/wasm'
@@ -7014,6 +7043,7 @@ packages:
       tsconfig-paths: 4.2.0
       tslib: 2.6.2
     transitivePeerDependencies:
+      - '@babel/traverse'
       - '@swc-node/register'
       - '@swc/core'
       - '@swc/wasm'
@@ -7049,6 +7079,7 @@ packages:
       minimatch: 9.0.3
       tslib: 2.6.2
     transitivePeerDependencies:
+      - '@babel/traverse'
       - '@swc-node/register'
       - '@swc/core'
       - '@swc/wasm'
@@ -7085,6 +7116,7 @@ packages:
       tslib: 2.6.2
     transitivePeerDependencies:
       - '@babel/core'
+      - '@babel/traverse'
       - '@swc-node/register'
       - '@swc/core'
       - '@swc/wasm'
@@ -7110,6 +7142,7 @@ packages:
       semver: 7.6.0
       tslib: 2.6.2
     transitivePeerDependencies:
+      - '@babel/traverse'
       - '@swc-node/register'
       - '@swc/core'
       - '@swc/wasm'
@@ -7135,6 +7168,7 @@ packages:
       http-server: 14.1.1
       tslib: 2.6.2
     transitivePeerDependencies:
+      - '@babel/traverse'
       - '@swc-node/register'
       - '@swc/core'
       - '@swc/wasm'
@@ -7187,6 +7221,7 @@ packages:
       webpack-node-externals: 3.0.0
       webpack-subresource-integrity: 5.1.0(webpack@5.91.0)
     transitivePeerDependencies:
+      - '@babel/traverse'
       - '@parcel/css'
       - '@rspack/core'
       - '@swc-node/register'
@@ -10540,9 +10575,16 @@ packages:
     transitivePeerDependencies:
       - '@babel/core'
 
-  /babel-plugin-transform-typescript-metadata@0.3.2:
+  /babel-plugin-transform-typescript-metadata@0.3.2(@babel/core@7.24.0):
     resolution: {integrity: sha512-mWEvCQTgXQf48yDqgN7CH50waTyYBeP2Lpqx4nNWab9sxEpdXVeKgfj1qYI2/TgUPQtNFZ85i3PemRtnXVYYJg==}
+    peerDependencies:
+      '@babel/core': ^7
+      '@babel/traverse': ^7
+    peerDependenciesMeta:
+      '@babel/traverse':
+        optional: true
     dependencies:
+      '@babel/core': 7.24.0
       '@babel/helper-plugin-utils': 7.24.7
     dev: true
 
@@ -23081,7 +23123,3 @@ packages:
 
   /zone.js@0.14.6:
     resolution: {integrity: sha512-vyRNFqofdaHVdWAy7v3Bzmn84a1JHWSjpuTZROT/uYn8I3p2cmo7Ro9twFmYRQDPhiYOV7QLk0hhY4JJQVqS6Q==}
-
-settings:
-  autoInstallPeers: false
-  excludeLinksFromLockfile: false
