@@ -23,13 +23,14 @@ import {
   Layer,
   ParameterStore,
 } from './StatsigTypes';
+import { StatsigUpdateDetails } from './StatsigUpdateDetails';
 import { StatsigUser } from './StatsigUser';
 import { Flatten } from './TypingUtils';
 
 export interface StatsigClientCommonInterface
   extends StatsigClientEventEmitterInterface {
-  initializeSync(): void;
-  initializeAsync(): Promise<void>;
+  initializeSync(): StatsigUpdateDetails;
+  initializeAsync(): Promise<StatsigUpdateDetails>;
   shutdown(): Promise<void>;
   flush(): Promise<void>;
   updateRuntimeOptions(options: StatsigRuntimeMutableOptions): void;
@@ -98,8 +99,8 @@ export interface PrecomputedEvaluationsInterface
   readonly dataAdapter: EvaluationsDataAdapter;
 
   getContext(): PrecomputedEvaluationsContext;
-  updateUserSync(user: StatsigUser): void;
-  updateUserAsync(user: StatsigUser): Promise<void>;
+  updateUserSync(user: StatsigUser): StatsigUpdateDetails;
+  updateUserAsync(user: StatsigUser): Promise<StatsigUpdateDetails>;
   checkGate(name: string, options?: FeatureGateEvaluationOptions): boolean;
   getFeatureGate(
     name: string,

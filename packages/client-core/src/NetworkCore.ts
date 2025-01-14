@@ -79,13 +79,15 @@ type LeakyBucketEntry = {
 };
 
 export class NetworkCore {
+  protected _errorBoundary: ErrorBoundary | null = null;
+
   private readonly _timeout: number = DEFAULT_TIMEOUT_MS;
   private readonly _netConfig: NetworkConfigCommon = {};
   private readonly _options: AnyStatsigOptions = {};
   private readonly _fallbackResolver: NetworkFallbackResolver;
-  private _leakyBucket: Record<string, LeakyBucketEntry> = {};
 
-  private _errorBoundary: ErrorBoundary | null = null;
+  private _leakyBucket: Record<string, LeakyBucketEntry> = {};
+  private _lastUsedInitUrl: string | null = null;
 
   constructor(
     options: AnyStatsigOptions | null,
@@ -117,6 +119,12 @@ export class NetworkCore {
       typeof navigator !== 'undefined' &&
       typeof navigator.sendBeacon === 'function'
     );
+  }
+
+  getLastUsedInitUrlAndReset(): string | null {
+    const tempUrl = this._lastUsedInitUrl;
+    this._lastUsedInitUrl = null;
+    return tempUrl;
   }
 
   async beacon(args: BeaconRequestArgs): Promise<boolean> {
@@ -259,11 +267,9 @@ export class NetworkCore {
           tag: ErrorTag.NetworkError,
           requestArgs: args,
         });
-        Log.error(
-          `A networking error occured during ${method} request to ${populatedUrl}.`,
-          errorMessage,
-          error,
-        );
+        const formattedErrorMsg = `A networking error occurred during ${method} request to ${populatedUrl}.`;
+        Log.error(formattedErrorMsg, errorMessage, error);
+        this._errorBoundary?.attachErrorIfNoneExists(formattedErrorMsg);
         return null;
       }
 
@@ -300,6 +306,13 @@ export class NetworkCore {
 
   private async _getPopulatedURL(args: RequestArgsInternal): Promise<string> {
     const url = args.fallbackUrl ?? args.urlConfig.getUrl();
+
+    if (
+      args.urlConfig.endpoint === Endpoint._initialize ||
+      args.urlConfig.endpoint === Endpoint._download_config_specs
+    ) {
+      this._lastUsedInitUrl = url;
+    }
 
     const params: Record<string, string> = {
       [NetworkParam.SdkKey]: args.sdkKey,

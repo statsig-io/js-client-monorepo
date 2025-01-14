@@ -35,6 +35,10 @@ export default class SpecStore {
     return this._rawValues ? _parseResponse(this._rawValues) : null;
   }
 
+  getSource(): DataSource {
+    return this._source;
+  }
+
   getDefaultEnvironment(): string | null {
     return this._defaultEnvironment;
   }

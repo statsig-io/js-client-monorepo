@@ -20,6 +20,7 @@ import {
   StatsigClientBase,
   StatsigEvent,
   StatsigSession,
+  StatsigUpdateDetails,
   StatsigUser,
   StatsigUserInternal,
   Storage,
@@ -33,6 +34,7 @@ import {
   _makeFeatureGate,
   _makeLayer,
   _normalizeUser,
+  createUpdateDetails,
 } from '@statsig/client-core';
 
 import Evaluator from './Evaluator';
@@ -56,6 +58,7 @@ export default class StatsigOnDeviceEvalClient
 {
   private _store: SpecStore;
   private _evaluator: Evaluator;
+  private _network: Network;
 
   static instance(sdkKey?: string): StatsigOnDeviceEvalClient {
     const instance = _getStatsigGlobal().instance(sdkKey);
@@ -82,20 +85,29 @@ export default class StatsigOnDeviceEvalClient
       options,
     );
 
+    this._network = network;
     this._store = new SpecStore();
     this._evaluator = new Evaluator(this._store);
   }
 
-  initializeSync(options?: SyncUpdateOptions): void {
+  initializeSync(options?: SyncUpdateOptions): StatsigUpdateDetails {
     if (this.loadingStatus !== 'Uninitialized') {
-      return;
+      return {
+        success: true,
+        duration: 0,
+        source: this._store.getSource(),
+        sourceUrl: null,
+        error: null,
+      };
     }
 
     this._logger.start();
-    this.updateSync(options);
+    return this.updateSync(options);
   }
 
-  async initializeAsync(options?: AsyncUpdateOptions): Promise<void> {
+  async initializeAsync(
+    options?: AsyncUpdateOptions,
+  ): Promise<StatsigUpdateDetails> {
     if (this._initializePromise) {
       return this._initializePromise;
     }
@@ -104,7 +116,8 @@ export default class StatsigOnDeviceEvalClient
     return this._initializePromise;
   }
 
-  updateSync(options?: SyncUpdateOptions): void {
+  updateSync(options?: SyncUpdateOptions): StatsigUpdateDetails {
+    const startTime = performance.now();
     this._store.reset();
 
     const result = this.dataAdapter.getDataSync();
@@ -116,9 +129,20 @@ export default class StatsigOnDeviceEvalClient
     if (!options?.disableBackgroundCacheRefresh) {
       this._runPostUpdate(result);
     }
+
+    return createUpdateDetails(
+      true,
+      this._store.getSource(),
+      performance.now() - startTime,
+      this._errorBoundary.getLastSeenErrorAndReset(),
+      this._network.getLastUsedInitUrlAndReset(),
+    );
   }
 
-  async updateAsync(options?: AsyncUpdateOptions): Promise<void> {
+  async updateAsync(
+    options?: AsyncUpdateOptions,
+  ): Promise<StatsigUpdateDetails> {
+    const startTime = performance.now();
     this._store.reset();
 
     this._setStatus('Loading', null);
@@ -131,6 +155,13 @@ export default class StatsigOnDeviceEvalClient
 
     this._store.finalize();
     this._setStatus('Ready', result);
+    return createUpdateDetails(
+      true,
+      this._store.getSource(),
+      performance.now() - startTime,
+      this._errorBoundary.getLastSeenErrorAndReset(),
+      this._network.getLastUsedInitUrlAndReset(),
+    );
   }
 
   getContext(): OnDeviceEvaluationsContext {
@@ -282,7 +313,7 @@ export default class StatsigOnDeviceEvalClient
 
   private async _initializeAsyncImpl(
     options?: AsyncUpdateOptions,
-  ): Promise<void> {
+  ): Promise<StatsigUpdateDetails> {
     if (!Storage.isReady()) {
       await Storage.isReadyResolver();
     }

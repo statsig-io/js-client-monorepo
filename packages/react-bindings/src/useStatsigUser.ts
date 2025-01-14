@@ -1,14 +1,14 @@
 import { useCallback, useContext, useMemo } from 'react';
 
-import { StatsigUser } from '@statsig/client-core';
+import { StatsigUpdateDetails, StatsigUser } from '@statsig/client-core';
 
 import StatsigContext from './StatsigContext';
 import { useStatsigClient } from './useStatsigClient';
 
 type UpdaterArg = StatsigUser | ((previous: StatsigUser) => StatsigUser);
 type UpdaterFunc<T> = (updated: UpdaterArg) => T;
-type SyncUpdateFunc = UpdaterFunc<void>;
-type AsyncUpdateFunc = UpdaterFunc<Promise<void>>;
+type SyncUpdateFunc = UpdaterFunc<StatsigUpdateDetails>;
+type AsyncUpdateFunc = UpdaterFunc<Promise<StatsigUpdateDetails>>;
 
 export type UseStatsigUserResult = {
   user: StatsigUser;
@@ -29,12 +29,12 @@ export function useStatsigUser(): UseStatsigUserResult {
 
   return {
     user: memoUser,
-    updateUserSync: useCallback((arg): void => {
+    updateUserSync: useCallback((arg) => {
       if (typeof arg === 'function') {
         arg = arg(memoUser);
       }
 
-      client.updateUserSync(arg);
+      return client.updateUserSync(arg);
     }, deps),
     updateUserAsync: useCallback((arg) => {
       if (typeof arg === 'function') {

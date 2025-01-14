@@ -51,7 +51,7 @@ export type EvaluationDetails = {
   reason: string;
   lcut?: number;
   receivedAt?: number;
-  warnings?: EvaluationWarning[];
+  warnings?: StatsigWarnings[];
   bootstrapMetadata?: BootstrapMetadata;
 };
 
@@ -60,4 +60,8 @@ export type DetailedStoreResult<T extends AnyEvaluation | ParamStoreConfig> = {
   details: EvaluationDetails;
 };
 
-export type EvaluationWarning = 'PartialUserMatch' | 'StableIDMismatch';
+export type StatsigWarnings =
+  | 'PartialUserMatch'
+  | 'StableIDMismatch'
+  | 'MultipleInitializations'
+  | 'NoCachedValues';

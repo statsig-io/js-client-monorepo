@@ -14,6 +14,7 @@ export class ErrorBoundary {
     private _sdkKey: string,
     private _options: AnyStatsigOptions | null,
     private _emitter?: StatsigClientEmitEventFunc,
+    private _lastSeenError?: Error,
   ) {}
 
   wrap(instance: unknown): void {
@@ -40,6 +41,19 @@ export class ErrorBoundary {
     this._onError(tag, error);
   }
 
+  getLastSeenErrorAndReset(): Error | null {
+    const tempError = this._lastSeenError;
+    this._lastSeenError = undefined;
+    return tempError ?? null;
+  }
+
+  attachErrorIfNoneExists(error: unknown): void {
+    if (this._lastSeenError) {
+      return;
+    }
+    this._lastSeenError = _resolveError(error);
+  }
+
   private _capture(tag: string, task: () => unknown): unknown {
     try {
       const res = task();
@@ -62,6 +76,9 @@ export class ErrorBoundary {
         const isError = unwrapped instanceof Error;
         const name = isError ? unwrapped.name : 'No Name';
 
+        const resolvedError = _resolveError(unwrapped);
+
+        this._lastSeenError = resolvedError;
         if (this._seen.has(name)) {
           return;
         }
@@ -116,6 +133,16 @@ export class ErrorBoundary {
     } catch (_error) {
       /* noop */
     }
+  }
+}
+
+function _resolveError(error: unknown): Error {
+  if (error instanceof Error) {
+    return error;
+  } else if (typeof error === 'string') {
+    return new Error(error);
+  } else {
+    return new Error('An unknown error occurred.');
   }
 }
 

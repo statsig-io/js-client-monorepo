@@ -31,6 +31,7 @@ import {
   AnyStatsigOptions,
   StatsigRuntimeMutableOptions,
 } from './StatsigOptionsCommon';
+import { StatsigUpdateDetails } from './StatsigUpdateDetails';
 import { Storage, StorageProvider } from './StorageProvider';
 
 type EventListenersMap = {
@@ -65,7 +66,8 @@ export abstract class StatsigClientBase<
   protected readonly _options: AnyStatsigOptions;
   protected readonly _errorBoundary: ErrorBoundary;
   protected readonly _logger: EventLogger;
-  protected _initializePromise: Promise<void> | null = null;
+
+  protected _initializePromise: Promise<StatsigUpdateDetails> | null = null;
   protected _memoCache: Record<string, unknown>;
 
   private _listeners = {} as EventListenersMap;

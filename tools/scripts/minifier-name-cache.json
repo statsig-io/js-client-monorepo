@@ -217,7 +217,8 @@
       "$_getLayerImpl": "Di",
       "$_getParameterStoreImpl": "Ri",
       "$_hasLoggedPageViewEnd": "Ei",
-      "$_tryLogPageViewEnd": "Mi"
+      "$_tryLogPageViewEnd": "Mi",
+      "$_configureUser": "xi"
     }
   }
 }

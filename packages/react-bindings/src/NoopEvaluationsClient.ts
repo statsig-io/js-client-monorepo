@@ -8,17 +8,32 @@ import {
   ParameterStore,
   PrecomputedEvaluationsInterface,
   SpecsDataAdapter,
+  StatsigUpdateDetails,
   Storage,
   _makeDynamicConfig,
   _makeFeatureGate,
   _makeLayer,
 } from '@statsig/client-core';
 
+const noopInitializeDetails: StatsigUpdateDetails = {
+  success: false,
+  error: Error('NoClient'),
+  duration: 0,
+  source: 'Uninitialized',
+  sourceUrl: null,
+};
+
 const _noop = (): void => {
   // noop
 };
 
+const _noopWithInitializeDetails = (): StatsigUpdateDetails =>
+  noopInitializeDetails;
+
 const _noopAsync = (): Promise<void> => Promise.resolve();
+
+const _noopAsyncWithInitializeDetails = (): Promise<StatsigUpdateDetails> =>
+  Promise.resolve(noopInitializeDetails);
 
 const NOOP_DETAILS = { reason: 'Error:NoClient' };
 
@@ -67,13 +82,13 @@ const context = {
 const _client: PrecomputedEvaluationsInterface & { isNoop: true } = {
   isNoop: true,
   loadingStatus: 'Uninitialized',
-  initializeSync: _noop,
-  initializeAsync: _noopAsync,
+  initializeSync: _noopWithInitializeDetails,
+  initializeAsync: _noopAsyncWithInitializeDetails,
   shutdown: _noopAsync,
   flush: _noopAsync,
   updateRuntimeOptions: _noop,
-  updateUserSync: _noop,
-  updateUserAsync: _noopAsync,
+  updateUserSync: _noopWithInitializeDetails,
+  updateUserAsync: _noopAsyncWithInitializeDetails,
   getContext: () => ({
     ...context,
   }),

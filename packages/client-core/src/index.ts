@@ -43,6 +43,7 @@ export * from './TypingUtils';
 export * from './UrlConfiguration';
 export * from './UUID';
 export * from './VisibilityObserving';
+export * from './StatsigUpdateDetails';
 
 export { EventLogger, Storage, Log, Diagnostics };
 

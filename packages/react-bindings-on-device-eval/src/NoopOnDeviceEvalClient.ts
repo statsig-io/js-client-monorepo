@@ -7,11 +7,20 @@ import {
   Layer,
   OnDeviceEvaluationsInterface,
   SpecsDataAdapter,
+  StatsigUpdateDetails,
   Storage,
   _makeDynamicConfig,
   _makeFeatureGate,
   _makeLayer,
 } from '@statsig/client-core';
+
+const noopInitializeDetails: StatsigUpdateDetails = {
+  success: false,
+  error: Error('NoClient'),
+  duration: 0,
+  source: 'Uninitialized',
+  sourceUrl: null,
+};
 
 const _noop = (): void => {
   // noop
@@ -66,8 +75,8 @@ const context = {
 const _client: OnDeviceEvaluationsInterface & { isNoop: true } = {
   isNoop: true,
   loadingStatus: 'Uninitialized',
-  initializeSync: _noop,
-  initializeAsync: _noopAsync,
+  initializeSync: () => noopInitializeDetails,
+  initializeAsync: () => Promise.resolve(noopInitializeDetails),
   shutdown: _noopAsync,
   flush: _noopAsync,
   updateRuntimeOptions: _noop,

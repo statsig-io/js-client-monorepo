@@ -22,9 +22,11 @@ import {
   StatsigClientBase,
   StatsigEvent,
   StatsigSession,
+  StatsigUpdateDetails,
   StatsigUser,
   StatsigUserInternal,
   Storage,
+  UPDATE_DETAIL_ERROR_MESSAGES,
   _createConfigExposure,
   _createGateExposure,
   _createLayerParameterExposure,
@@ -36,6 +38,7 @@ import {
   _makeLayer,
   _mergeOverride,
   _normalizeUser,
+  createUpdateDetails,
 } from '@statsig/client-core';
 
 import EvaluationStore from './EvaluationStore';
@@ -53,6 +56,7 @@ export default class StatsigClient
 {
   private _store: EvaluationStore;
   private _user: StatsigUserInternal;
+  private _network: Network;
 
   /**
    * Retrieves an instance of the StatsigClient based on the provided SDK key.
@@ -101,6 +105,7 @@ export default class StatsigClient
     );
 
     this._store = new EvaluationStore(sdkKey);
+    this._network = network;
     this._user = this._configureUser(user, options);
 
     const plugins = options?.plugins ?? [];
@@ -116,13 +121,20 @@ export default class StatsigClient
    *
    * @see {@link initializeAsync} for the asynchronous version of this method.
    */
-  initializeSync(options?: SyncUpdateOptions): void {
+  initializeSync(options?: SyncUpdateOptions): StatsigUpdateDetails {
     if (this.loadingStatus !== 'Uninitialized') {
-      return;
+      return createUpdateDetails(
+        true,
+        this._store.getSource(),
+        -1,
+        null,
+        null,
+        ['MultipleInitializations', ...(this._store.getWarnings() ?? [])],
+      );
     }
 
     this._logger.start();
-    this.updateUserSync(this._user, options);
+    return this.updateUserSync(this._user, options);
   }
 
   /**
@@ -135,7 +147,9 @@ export default class StatsigClient
    * @returns {Promise<void>} A promise that resolves once the client is fully initialized with the latest values from the network or a timeout (if set) is hit.
    * @see {@link initializeSync} for the synchronous version of this method.
    */
-  async initializeAsync(options?: AsyncUpdateOptions): Promise<void> {
+  async initializeAsync(
+    options?: AsyncUpdateOptions,
+  ): Promise<StatsigUpdateDetails> {
     if (this._initializePromise) {
       return this._initializePromise;
     }
@@ -152,10 +166,19 @@ export default class StatsigClient
    * @param {StatsigUser} user - The new StatsigUser for which the client should update its internal state.
    * @see {@link updateUserAsync} for the asynchronous version of this method.
    */
-  updateUserSync(user: StatsigUser, options?: SyncUpdateOptions): void {
+  updateUserSync(
+    user: StatsigUser,
+    options?: SyncUpdateOptions,
+  ): StatsigUpdateDetails {
+    const startTime = performance.now();
+    const warnings = [...(this._store.getWarnings() ?? [])];
     this._resetForUser(user);
 
     const result = this.dataAdapter.getDataSync(this._user);
+    if (result == null) {
+      warnings.push('NoCachedValues');
+    }
+
     this._store.setValues(result, this._user);
 
     this._finalizeUpdate(result);
@@ -165,10 +188,25 @@ export default class StatsigClient
       disable === true ||
       (disable == null && result?.source === 'Bootstrap')
     ) {
-      return;
+      return createUpdateDetails(
+        true,
+        this._store.getSource(),
+        performance.now() - startTime,
+        this._errorBoundary.getLastSeenErrorAndReset(),
+        this._network.getLastUsedInitUrlAndReset(),
+        warnings,
+      );
     }
 
     this._runPostUpdate(result ?? null, this._user);
+    return createUpdateDetails(
+      true,
+      this._store.getSource(),
+      performance.now() - startTime,
+      this._errorBoundary.getLastSeenErrorAndReset(),
+      this._network.getLastUsedInitUrlAndReset(),
+      warnings,
+    );
   }
 
   /**
@@ -185,7 +223,7 @@ export default class StatsigClient
   async updateUserAsync(
     user: StatsigUser,
     options?: AsyncUpdateOptions,
-  ): Promise<void> {
+  ): Promise<StatsigUpdateDetails> {
     this._resetForUser(user);
 
     const initiator = this._user;
@@ -199,7 +237,13 @@ export default class StatsigClient
     result = await this.dataAdapter.getDataAsync(result, initiator, options);
     // ensure the user hasn't changed while we were waiting
     if (initiator !== this._user) {
-      return;
+      return createUpdateDetails(
+        false,
+        this._store.getSource(),
+        -1,
+        new Error('User changed during update'),
+        this._network.getLastUsedInitUrlAndReset(),
+      );
     }
 
     let isUsingNetworkValues = false;
@@ -215,6 +259,9 @@ export default class StatsigClient
     this._finalizeUpdate(result);
 
     if (!isUsingNetworkValues) {
+      this._errorBoundary.attachErrorIfNoneExists(
+        UPDATE_DETAIL_ERROR_MESSAGES.NO_NETWORK_DATA,
+      );
       this.$emt({ name: 'initialization_failure' });
     }
 
@@ -223,11 +270,19 @@ export default class StatsigClient
       isUsingNetworkValues,
       this._store.getCurrentSourceDetails(),
     );
-    Diagnostics._enqueueDiagnosticsEvent(
+    const initDuration = Diagnostics._enqueueDiagnosticsEvent(
       this._user,
       this._logger,
       this._sdkKey,
       this._options,
+    );
+    return createUpdateDetails(
+      isUsingNetworkValues,
+      this._store.getSource(),
+      initDuration,
+      this._errorBoundary.getLastSeenErrorAndReset(),
+      this._network.getLastUsedInitUrlAndReset(),
+      this._store.getWarnings(),
     );
   }
 
@@ -341,7 +396,7 @@ export default class StatsigClient
 
   private async _initializeAsyncImpl(
     options?: AsyncUpdateOptions,
-  ): Promise<void> {
+  ): Promise<StatsigUpdateDetails> {
     if (!Storage.isReady()) {
       await Storage.isReadyResolver();
     }

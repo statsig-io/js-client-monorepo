@@ -6,7 +6,6 @@ import {
   DetailedStoreResult,
   DynamicConfigEvaluation,
   EvaluationDetails,
-  EvaluationWarning,
   GateEvaluation,
   InitializeResponse,
   InitializeResponseWithUpdates,
@@ -14,6 +13,7 @@ import {
   ParamStoreConfig,
   StableID,
   StatsigUser,
+  StatsigWarnings,
   _DJB2,
   _getFullUserHash,
   _typedJsonParse,
@@ -26,7 +26,7 @@ export default class EvaluationStore {
   private _lcut = 0;
   private _receivedAt = 0;
   private _bootstrapMetadata: BootstrapMetadata | null = null;
-  private _warnings: Set<EvaluationWarning> = new Set();
+  private _warnings: Set<StatsigWarnings> = new Set();
 
   constructor(private _sdkKey: string) {}
 
@@ -93,6 +93,13 @@ export default class EvaluationStore {
     return true;
   }
 
+  getWarnings(): StatsigWarnings[] | undefined {
+    if (this._warnings.size === 0) {
+      return undefined;
+    }
+    return Array.from(this._warnings);
+  }
+
   getGate(name: string): DetailedStoreResult<GateEvaluation> {
     return this._getDetailedStoreResult(this._values?.feature_gates, name);
   }
@@ -107,6 +114,10 @@ export default class EvaluationStore {
 
   getParamStore(name: string): DetailedStoreResult<ParamStoreConfig> {
     return this._getDetailedStoreResult(this._values?.param_stores, name);
+  }
+
+  getSource(): DataSource {
+    return this._source;
   }
 
   private _extractBootstrapMetadata(

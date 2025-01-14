@@ -14,6 +14,7 @@ import {
   Log,
   SDKType,
   StatsigEvent,
+  StatsigUpdateDetails,
   StatsigUser,
 } from '@statsig/client-core';
 import { StatsigClient } from '@statsig/js-client';
@@ -119,7 +120,7 @@ export class StatsigService implements OnDestroy {
   updateUserAsync(
     user: StatsigUser,
     options?: DataAdapterAsyncOptions,
-  ): Promise<void> {
+  ): Promise<StatsigUpdateDetails> {
     return this._client.updateUserAsync(user, options);
   }
 

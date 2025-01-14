@@ -130,11 +130,13 @@ export const Diagnostics = {
     logger: EventLogger,
     sdk: string,
     options: StatsigOptionsCommon<NetworkConfigCommon> | null,
-  ): void {
+  ): number {
     const markers = Diagnostics._getMarkers(sdk);
     if (markers == null || markers.length <= 0) {
-      return;
+      return -1;
     }
+    const overallInitDuration =
+      markers[markers.length - 1].timestamp - markers[0].timestamp;
     Diagnostics._clearMarkers(sdk);
     const event = _makeDiagnosticsEvent(user, {
       context: 'initialize',
@@ -142,6 +144,7 @@ export const Diagnostics = {
       statsigOptions: options,
     });
     logger.enqueue(event);
+    return overallInitDuration;
   },
 };
 
