@@ -2,7 +2,7 @@
   "compileOnSave": false,
   "compilerOptions": {
     "baseUrl": ".",
-    "declaration": false,
+    "declaration": true,
     "emitDecoratorMetadata": false,
     "experimentalDecorators": false,
     "forceConsistentCasingInFileNames": true,
