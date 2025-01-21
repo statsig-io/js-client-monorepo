@@ -22,6 +22,7 @@ import {
 } from './Utils';
 import { _gatherPageViewPayload } from './payloadUtils';
 
+const PAGE_INACTIVE_TIMEOUT = 600000;
 const AUTO_EVENT_MAPPING: Record<string, AutoCaptureEventName> = {
   submit: AutoCaptureEventName.FORM_SUBMIT,
   click: AutoCaptureEventName.CLICK,
@@ -58,6 +59,7 @@ export class AutoCapture {
   private _previousLoggedPageViewUrl: URL | null = null;
   private _eventFilterFunc?: (event: AutoCaptureEvent) => boolean;
   private _hasLoggedPageViewEnd = false;
+  private _inactiveTimer: number | null = null;
 
   constructor(
     private _client: PrecomputedEvaluationsInterface,
@@ -94,13 +96,16 @@ export class AutoCapture {
       return;
     }
 
-    const eventHandler = (event: Event) => {
+    const eventHandler = (event: Event, userAction = true) => {
       this._autoLogEvent(event || win.event);
+      if (userAction) {
+        this._bumpInactiveTimer();
+      }
     };
 
-    _registerEventHandler(doc, 'click', eventHandler);
-    _registerEventHandler(doc, 'submit', eventHandler);
-    _registerEventHandler(win, 'error', eventHandler);
+    _registerEventHandler(doc, 'click', (e) => eventHandler(e));
+    _registerEventHandler(doc, 'submit', (e) => eventHandler(e));
+    _registerEventHandler(win, 'error', (e) => eventHandler(e, false));
     _registerEventHandler(win, 'pagehide', () => this._tryLogPageViewEnd());
     _registerEventHandler(win, 'beforeunload', () => this._tryLogPageViewEnd());
     _registerEventHandler(win, 'scroll', () => this._scrollEventHandler());
@@ -148,6 +153,20 @@ export class AutoCapture {
 
     const { value, metadata } = _gatherEventData(target);
     this._enqueueAutoCapture(eventName, value, metadata);
+  }
+
+  private _bumpInactiveTimer() {
+    const win = _getWindowSafe();
+    if (!win) {
+      return;
+    }
+
+    if (this._inactiveTimer) {
+      clearTimeout(this._inactiveTimer);
+    }
+    this._inactiveTimer = win.setTimeout(() => {
+      this._tryLogPageViewEnd(true);
+    }, PAGE_INACTIVE_TIMEOUT);
   }
 
   private _initialize() {
@@ -222,9 +241,10 @@ export class AutoCapture {
         addNewSessionMetadata: true,
       },
     );
+    this._bumpInactiveTimer();
   }
 
-  private _tryLogPageViewEnd() {
+  private _tryLogPageViewEnd(dueToInactivity = false) {
     if (this._hasLoggedPageViewEnd) {
       return;
     }
@@ -236,6 +256,7 @@ export class AutoCapture {
       {
         scrollDepth: this._deepestScroll,
         pageViewLength: Date.now() - this._startTime,
+        dueToInactivity,
       },
       { flushImmediately: true },
     );
@@ -352,6 +373,7 @@ export class AutoCapture {
       this._deepestScroll,
       Math.min(100, Math.round(((scrollY + innerHeight) / scrollHeight) * 100)),
     );
+    this._bumpInactiveTimer();
   }
 
   private _isNewSession(session: StatsigSession) {

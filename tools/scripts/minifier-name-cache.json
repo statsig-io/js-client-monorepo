@@ -218,7 +218,11 @@
       "$_getParameterStoreImpl": "Ri",
       "$_hasLoggedPageViewEnd": "Ei",
       "$_tryLogPageViewEnd": "Mi",
-      "$_configureUser": "xi"
+      "$_configureUser": "xi",
+      "$_lastSeenError": "Ai",
+      "$_lastUsedInitUrl": "Ni",
+      "$_inactiveTimer": "Pi",
+      "$_bumpInactiveTimer": "Ci"
     }
   }
 }
