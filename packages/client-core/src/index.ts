@@ -44,6 +44,7 @@ export * from './UrlConfiguration';
 export * from './UUID';
 export * from './VisibilityObserving';
 export * from './StatsigUpdateDetails';
+export * from './SDKFlags';
 
 export { EventLogger, Storage, Log, Diagnostics };
 

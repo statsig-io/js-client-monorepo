@@ -29,6 +29,7 @@ export type InitializeResponseWithUpdates = SessionReplayFields &
     derived_fields?: Record<string, unknown>;
     user?: StatsigUser;
     sdkInfo?: Record<string, string>;
+    sdk_flags?: Record<string, boolean>;
   };
 
 export type InitializeResponse =

@@ -11,6 +11,7 @@ import {
   InitializeResponseWithUpdates,
   LayerEvaluation,
   ParamStoreConfig,
+  SDKFlags,
   StableID,
   StatsigUser,
   StatsigWarnings,
@@ -90,6 +91,13 @@ export default class EvaluationStore {
     if (result.source && values.user) {
       this._setWarningState(user, values);
     }
+
+    if (values.sdk_flags) {
+      SDKFlags.setFlags(this._sdkKey, values.sdk_flags);
+    } else {
+      SDKFlags.setFlags(this._sdkKey, {});
+    }
+
     return true;
   }
 
