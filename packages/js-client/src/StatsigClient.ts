@@ -13,6 +13,7 @@ import {
   Layer,
   LayerEvaluationOptions,
   Log,
+  MemoPrefix,
   ParameterStore,
   ParameterStoreEvaluationOptions,
   PrecomputedEvaluationsContext,
@@ -322,7 +323,10 @@ export default class StatsigClient
    * @param {FeatureGateEvaluationOptions} [options] - Optional. Additional options to customize the method call.
    * @returns {FeatureGate} - The {@link FeatureGate} object representing the gate's current evaluation results for the user.
    */
-  readonly getFeatureGate = this._memoize(this._getFeatureGateImpl.bind(this));
+  readonly getFeatureGate = this._memoize(
+    MemoPrefix._gate,
+    this._getFeatureGateImpl.bind(this),
+  );
 
   /**
    * Retrieves the value of a dynamic config for the current user.
@@ -332,6 +336,7 @@ export default class StatsigClient
    * @returns {DynamicConfig} - The {@link DynamicConfig} object representing the dynamic configs's current evaluation results for the user.
    */
   readonly getDynamicConfig = this._memoize(
+    MemoPrefix._dynamicConfig,
     this._getDynamicConfigImpl.bind(this),
   );
 
@@ -342,7 +347,10 @@ export default class StatsigClient
    * @param {ExperimentEvaluationOptions} [options] - Optional. Additional options to customize the method call.
    * @returns {Experiment} - The {@link Experiment} object representing the experiments's current evaluation results for the user.
    */
-  readonly getExperiment = this._memoize(this._getExperimentImpl.bind(this));
+  readonly getExperiment = this._memoize(
+    MemoPrefix._experiment,
+    this._getExperimentImpl.bind(this),
+  );
 
   /**
    * Retrieves the value of a layer for the current user.
@@ -351,7 +359,10 @@ export default class StatsigClient
    * @param {LayerEvaluationOptions} [options] - Optional. Additional options to customize the method call.
    * @returns {Layer} - The {@link Layer} object representing the layers's current evaluation results for the user.
    */
-  readonly getLayer = this._memoize(this._getLayerImpl.bind(this));
+  readonly getLayer = this._memoize(
+    MemoPrefix._layer,
+    this._getLayerImpl.bind(this),
+  );
 
   /**
    * Retrieves the value of a parameter store for the current user.
@@ -361,6 +372,7 @@ export default class StatsigClient
    * @returns {ParameterStore} - The {@link ParameterStore} object representing the parameter store's current mappings for the user.
    */
   readonly getParameterStore = this._memoize(
+    MemoPrefix._paramStore,
     this._getParameterStoreImpl.bind(this),
   );
 

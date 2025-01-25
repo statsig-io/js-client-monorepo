@@ -175,6 +175,29 @@ describe('Memoization - StatsigClient', () => {
     expect(storeSpy).toHaveBeenCalledTimes(2);
   });
 
+  it('does not memoize when StatsigOptions.disableEvaluationMemoization is true', async () => {
+    const anotherClient = new StatsigClient(
+      'client-key',
+      {
+        userID: 'initial_user',
+      },
+      {
+        disableEvaluationMemoization: true,
+      },
+    );
+    await anotherClient.initializeAsync();
+
+    const spy = jest.spyOn(
+      (anotherClient as any)._store,
+      '_getDetailedStoreResult',
+    );
+
+    anotherClient.getFeatureGate('a_gate');
+    anotherClient.getFeatureGate('a_gate');
+
+    expect(spy).toHaveBeenCalledTimes(2);
+  });
+
   describe('Memo cache is full', () => {
     beforeEach(() => {
       for (let i = 0; i < 3000; i++) {

@@ -19,6 +19,7 @@ export * from './EvaluationTypes';
 export * from './Hashing';
 export * from './InitializeResponse';
 export * from './Log';
+export * from './MemoKey';
 export * from './NetworkConfig';
 export * from './NetworkCore';
 export * from './OverrideAdapter';
@@ -46,7 +47,7 @@ export * from './VisibilityObserving';
 export * from './StatsigUpdateDetails';
 export * from './SDKFlags';
 
-export { EventLogger, Storage, Log, Diagnostics };
+export { Diagnostics, EventLogger, Log, Storage };
 
 __STATSIG__ = {
   ...(__STATSIG__ ?? {}),

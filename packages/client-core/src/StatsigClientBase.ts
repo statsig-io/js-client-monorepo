@@ -8,7 +8,7 @@ import {
 } from './EvaluationOptions';
 import { EventLogger } from './EventLogger';
 import { Log } from './Log';
-import { createMemoKey } from './MemoKey';
+import { MemoPrefix, createMemoKey } from './MemoKey';
 import { NetworkCore } from './NetworkCore';
 import { OverrideAdapter } from './OverrideAdapter';
 import { _isServerEnv } from './SafeJs';
@@ -240,10 +240,15 @@ export abstract class StatsigClientBase<
   }
 
   protected _memoize<T, O extends AnyEvaluationOptions>(
+    prefix: MemoPrefix,
     fn: (name: string, options?: O) => T,
   ): (name: string, options?: O) => T {
     return (name: string, options?: O) => {
-      const memoKey = createMemoKey(name, options);
+      if (this._options.disableEvaluationMemoization) {
+        return fn(name, options);
+      }
+
+      const memoKey = createMemoKey(prefix, name, options);
       if (!memoKey) {
         return fn(name, options);
       }
@@ -282,6 +287,7 @@ function _assignGlobalInstance(sdkKey: string, client: StatsigClientInterface) {
   if (!statsigGlobal.firstInstance) {
     statsigGlobal.firstInstance = inst;
   }
+
   statsigGlobal.instances = instances;
   __STATSIG__ = statsigGlobal;
 }

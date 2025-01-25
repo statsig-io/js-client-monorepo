@@ -141,6 +141,13 @@ export type StatsigOptionsCommon<NetworkConfig extends NetworkConfigCommon> =
      * default: `window.localStorage` on Web. `@react-native-async-storage/async-storage` on Mobile.
      */
     storageProvider?: StorageProvider;
+
+    /**
+     * Disables all memoization of the core evaluation functions.
+     *
+     * default: `false`
+     */
+    disableEvaluationMemoization?: boolean;
   };
 
 export type AnyStatsigOptions = StatsigOptionsCommon<NetworkConfigCommon>;

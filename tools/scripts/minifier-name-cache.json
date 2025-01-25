@@ -219,10 +219,13 @@
       "$_hasLoggedPageViewEnd": "Ei",
       "$_tryLogPageViewEnd": "Mi",
       "$_configureUser": "xi",
-      "$_lastSeenError": "Ai",
-      "$_lastUsedInitUrl": "Ni",
-      "$_inactiveTimer": "Pi",
-      "$_bumpInactiveTimer": "Ci"
+      "$_lastSeenError": "qn",
+      "$_gate": "Kn",
+      "$_dynamicConfig": "Ln",
+      "$_experiment": "Vn",
+      "$_layer": "$n",
+      "$_paramStore": "Bn",
+      "$_lastUsedInitUrl": "Jn"
     }
   }
 }

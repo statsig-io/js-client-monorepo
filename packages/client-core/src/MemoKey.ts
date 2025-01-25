@@ -1,5 +1,15 @@
 import { AnyEvaluationOptions } from './EvaluationOptions';
 
+export const MemoPrefix = {
+  _gate: 'g',
+  _dynamicConfig: 'c',
+  _experiment: 'e',
+  _layer: 'l',
+  _paramStore: 'p',
+} as const;
+
+export type MemoPrefix = (typeof MemoPrefix)[keyof typeof MemoPrefix];
+
 const EXIST_KEYS = new Set<string>([
   // Add keys that should be memoized based only on their existence, not their value
 ]);
@@ -10,10 +20,11 @@ const DO_NOT_MEMO_KEYS = new Set<string>([
 ]);
 
 export function createMemoKey(
+  prefix: MemoPrefix,
   name: string,
   options?: AnyEvaluationOptions,
 ): string | undefined {
-  let cacheKey = name;
+  let cacheKey = `${prefix}|${name}`;
 
   if (!options) {
     return cacheKey;
@@ -25,9 +36,9 @@ export function createMemoKey(
     }
 
     if (EXIST_KEYS.has(key)) {
-      cacheKey += `${key}=true`;
+      cacheKey += `|${key}=true`;
     } else {
-      cacheKey += `${key}=${options[key as keyof AnyEvaluationOptions]}`;
+      cacheKey += `|${key}=${options[key as keyof AnyEvaluationOptions]}`;
     }
   }
 
