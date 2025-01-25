@@ -225,7 +225,9 @@
       "$_experiment": "Vn",
       "$_layer": "$n",
       "$_paramStore": "Bn",
-      "$_lastUsedInitUrl": "Jn"
+      "$_lastUsedInitUrl": "Jn",
+      "$_inactiveTimer": "Ai",
+      "$_bumpInactiveTimer": "Ni"
     }
   }
 }
