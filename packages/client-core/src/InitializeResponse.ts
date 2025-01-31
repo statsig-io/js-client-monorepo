@@ -30,6 +30,7 @@ export type InitializeResponseWithUpdates = SessionReplayFields &
     user?: StatsigUser;
     sdkInfo?: Record<string, string>;
     sdk_flags?: Record<string, boolean>;
+    full_checksum?: string;
   };
 
 export type InitializeResponse =
