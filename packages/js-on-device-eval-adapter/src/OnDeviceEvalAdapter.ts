@@ -1,6 +1,7 @@
 import {
   DynamicConfig,
   DynamicConfigEvaluationOptions,
+  EvaluationDetails,
   Experiment,
   ExperimentEvaluationOptions,
   FeatureGate,
@@ -8,68 +9,118 @@ import {
   Layer,
   LayerEvaluationOptions,
   OverrideAdapter,
-  SpecsDataAdapter,
-  StatsigUser,
   StatsigUserInternal,
+  _makeDataAdapterResult,
+  _makeDynamicConfig,
+  _makeExperiment,
   _makeFeatureGate,
+  _makeLayer,
 } from '@statsig/client-core';
 import { Evaluator, SpecStore } from '@statsig/on-device-eval-core';
 
-import { StatsigLocalSpecsDataAdapter } from './StatsigLocalSpecsDataAdapter';
+type AnyStatsigType = FeatureGate | DynamicConfig | Experiment | Layer;
+type EvaluationFn<E> = (
+  name: string,
+  user: StatsigUserInternal,
+) => { evaluation: E; details: EvaluationDetails };
 
 export class OnDeviceEvalAdapter implements OverrideAdapter {
-  private _dataAdapter: SpecsDataAdapter;
   private _store: SpecStore;
   private _evaluator: Evaluator;
 
-  constructor() {
-    this._dataAdapter = new StatsigLocalSpecsDataAdapter();
+  constructor(data: string | null) {
     this._store = new SpecStore();
     this._evaluator = new Evaluator(this._store);
+
+    if (data != null) {
+      this.setData(data);
+    }
   }
 
   setData(data: string): void {
-    this._dataAdapter.setData(data);
-    const result = this._dataAdapter.getDataSync();
+    const result = _makeDataAdapterResult('Bootstrap', data, null);
     this._store.setValuesFromDataAdapter(result);
   }
 
-  getGateOverride?(
+  getGateOverride(
     current: FeatureGate,
     user: StatsigUserInternal,
     _options?: FeatureGateEvaluationOptions,
   ): FeatureGate | null {
-    if (current.details.reason.includes('Network')) {
+    return this._evaluate(
+      current,
+      user,
+      this._evaluator.evaluateGate.bind(this._evaluator),
+      _makeFeatureGate,
+    );
+  }
+
+  getDynamicConfigOverride(
+    current: DynamicConfig,
+    user: StatsigUserInternal,
+    _options?: DynamicConfigEvaluationOptions,
+  ): DynamicConfig | null {
+    return this._evaluate(
+      current,
+      user,
+      this._evaluator.evaluateConfig.bind(this._evaluator),
+      _makeDynamicConfig,
+    );
+  }
+
+  getExperimentOverride(
+    current: Experiment,
+    user: StatsigUserInternal,
+    _options?: ExperimentEvaluationOptions,
+  ): Experiment | null {
+    return this._evaluate(
+      current,
+      user,
+      this._evaluator.evaluateConfig.bind(this._evaluator),
+      _makeExperiment,
+    );
+  }
+
+  getLayerOverride(
+    current: Layer,
+    user: StatsigUserInternal,
+    _options?: LayerEvaluationOptions,
+  ): Layer | null {
+    return this._evaluate(
+      current,
+      user,
+      this._evaluator.evaluateLayer.bind(this._evaluator),
+      _makeLayer,
+    );
+  }
+
+  private _evaluate<T extends AnyStatsigType, E>(
+    current: T,
+    user: StatsigUserInternal,
+    evaluateFn: EvaluationFn<E>,
+    makeFn: (name: string, details: EvaluationDetails, evaluation: E) => T,
+  ): T | null {
+    if (!this._shouldTryOnDeviceEval(current.details)) {
       return null;
     }
 
     const name = current.name;
-    const { evaluation, details } = this._evaluator.evaluateGate(name, user);
+    const { evaluation, details } = evaluateFn(name, user);
     details.reason = '[OnDevice]' + details.reason;
-    return _makeFeatureGate(name, details, evaluation);
+
+    return makeFn(name, details, evaluation);
   }
 
-  getDynamicConfigOverride?(
-    _current: DynamicConfig,
-    _user: StatsigUser,
-    _options?: DynamicConfigEvaluationOptions,
-  ): DynamicConfig | null {
-    return null;
-  }
+  private _shouldTryOnDeviceEval(details: EvaluationDetails): boolean {
+    const values = this._store.getValues();
+    if (values == null) {
+      return false;
+    }
 
-  getExperimentOverride?(
-    _current: Experiment,
-    _user: StatsigUser,
-    _options?: ExperimentEvaluationOptions,
-  ): Experiment | null {
-    return null;
-  }
+    if (!details.lcut) {
+      return true;
+    }
 
-  getLayerOverride?(
-    _current: Layer,
-    _user: StatsigUser,
-    _options?: LayerEvaluationOptions,
-  ): Layer | null {
-    return null;
+    return values.time > details.lcut;
   }
 }

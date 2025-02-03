@@ -211,7 +211,7 @@ export abstract class DataAdapterCore {
   }
 }
 
-function _makeDataAdapterResult(
+export function _makeDataAdapterResult(
   source: DataSource,
   data: string,
   stableID: string | null,

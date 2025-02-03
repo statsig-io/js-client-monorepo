@@ -33,7 +33,7 @@ export default function OnDeviceEvalAdapterExample({
   specs: string | null;
 }): React.ReactElement {
   const adapter = React.useMemo(() => {
-    const adapter = new OnDeviceEvalAdapter();
+    const adapter = new OnDeviceEvalAdapter(null);
     if (specs) {
       adapter.setData(specs);
     }

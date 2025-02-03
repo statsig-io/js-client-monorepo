@@ -35,6 +35,9 @@
       "@statsig/js-user-persisted-storage": [
         "packages/js-user-persisted-storage/src/index.ts"
       ],
+      "@statsig/on-device-eval-core": [
+        "packages/on-device-eval-core/src/index.ts"
+      ],
       "@statsig/react-bindings": ["packages/react-bindings/src/index.ts"],
       "@statsig/react-bindings-on-device-eval": [
         "packages/react-bindings-on-device-eval/src/index.ts"
