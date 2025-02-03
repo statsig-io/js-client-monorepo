@@ -66,6 +66,13 @@ export default function Index(): React.ReactElement {
         </li>
         <li>
           <button>
+            <a href="/on-device-eval-adapter-example">
+              On Device Evaluation Adapter
+            </a>
+          </button>
+        </li>
+        <li>
+          <button>
             <a href="/statsig-network-resolver-example">
               Statsig Network Resolver
             </a>

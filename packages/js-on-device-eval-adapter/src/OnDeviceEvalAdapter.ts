@@ -50,25 +50,25 @@ export class OnDeviceEvalAdapter implements OverrideAdapter {
   }
 
   getDynamicConfigOverride?(
-    current: DynamicConfig,
-    user: StatsigUser,
-    options?: DynamicConfigEvaluationOptions,
+    _current: DynamicConfig,
+    _user: StatsigUser,
+    _options?: DynamicConfigEvaluationOptions,
   ): DynamicConfig | null {
     return null;
   }
 
   getExperimentOverride?(
-    current: Experiment,
-    user: StatsigUser,
-    options?: ExperimentEvaluationOptions,
+    _current: Experiment,
+    _user: StatsigUser,
+    _options?: ExperimentEvaluationOptions,
   ): Experiment | null {
     return null;
   }
 
   getLayerOverride?(
-    current: Layer,
-    user: StatsigUser,
-    options?: LayerEvaluationOptions,
+    _current: Layer,
+    _user: StatsigUser,
+    _options?: LayerEvaluationOptions,
   ): Layer | null {
     return null;
   }

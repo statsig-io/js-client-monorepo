@@ -1,7 +1,13 @@
 import Statsig, { LogEventObject, StatsigUser } from 'statsig-node';
 
+let specs: string | null = null;
 const isStatsigReady = Statsig.initialize(
   'secret-IiDuNzovZ5z9x75BEjyZ4Y2evYa94CJ9zNtDViKBVdv',
+  {
+    rulesUpdatedCallback: (rules, _time) => {
+      specs = rules;
+    },
+  },
 );
 
 export async function getStatsigValues(
@@ -20,6 +26,11 @@ export async function getStatsigValues(
   }
 
   return JSON.stringify(values);
+}
+
+export async function getSpecs(): Promise<string | null> {
+  await isStatsigReady;
+  return specs;
 }
 
 export async function logEvents(events: LogEventObject[]): Promise<void> {
