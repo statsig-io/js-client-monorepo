@@ -26,6 +26,9 @@
       "@statsig/js-local-overrides": [
         "packages/js-local-overrides/src/index.ts"
       ],
+      "@statsig/js-on-device-eval-adapter": [
+        "packages/js-on-device-eval-adapter/src/index.ts"
+      ],
       "@statsig/js-on-device-eval-client": [
         "packages/js-on-device-eval-client/src/index.ts"
       ],

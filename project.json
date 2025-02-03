@@ -36,6 +36,14 @@
     "format-write": {
       "command": "prettier --write . && nx format:write",
       "dependsOn": []
+    },
+    "local-registry": {
+      "executor": "@nx/js:verdaccio",
+      "options": {
+        "port": 4873,
+        "config": ".verdaccio/config.yml",
+        "storage": "tmp/local-registry/storage"
+      }
     }
   }
 }

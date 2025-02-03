@@ -1,0 +1,42 @@
+{
+  "name": "js-on-device-eval-adapter",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/js-on-device-eval-adapter/src",
+  "projectType": "library",
+  "release": {
+    "version": {
+      "generatorOptions": {
+        "packageRoot": "dist/{projectRoot}",
+        "currentVersionResolver": "git-tag"
+      }
+    }
+  },
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/js-on-device-eval-adapter",
+        "main": "packages/js-on-device-eval-adapter/src/index.ts",
+        "tsConfig": "packages/js-on-device-eval-adapter/tsconfig.lib.json",
+        "assets": ["packages/js-on-device-eval-adapter/*.md"]
+      }
+    },
+    "nx-release-publish": {
+      "options": {
+        "packageRoot": "dist/{projectRoot}"
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "packages/js-on-device-eval-adapter/jest.config.ts"
+      }
+    }
+  }
+}
