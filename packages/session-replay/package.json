@@ -1,9 +1,9 @@
 {
   "name": "@statsig/session-replay",
-  "version": "3.11.0",
+  "version": "3.11.1",
   "dependencies": {
     "rrweb": "2.0.0-alpha.14",
-    "@statsig/client-core": "3.11.0"
+    "@statsig/client-core": "3.11.1"
   },
   "devDependencies": {
     "@rrweb/types": "2.0.0-alpha.14"
