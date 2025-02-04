@@ -35,7 +35,7 @@ describe('Evaluations Data Adapter', () => {
   });
 
   describe('getDataSync', () => {
-    beforeAll(async () => {
+    beforeEach(async () => {
       fetchMock.mockResponse(InitResponseString);
 
       adapter = new StatsigEvaluationsDataAdapter();
@@ -54,6 +54,17 @@ describe('Evaluations Data Adapter', () => {
 
       expect(result?.source).toBe('Bootstrap');
       expect(result?.data).toBe(InitResponseString);
+    });
+
+    it('handles bad json data', () => {
+      adapter.setData(JSON.stringify(InitResponseString));
+
+      expect(() => {
+        adapter.getDataSync(user);
+      }).not.toThrow();
+
+      const result = adapter.getDataSync(user);
+      expect(result).toBeNull();
     });
 
     it('returns prefetched values', async () => {

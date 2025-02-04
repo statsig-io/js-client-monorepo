@@ -14,13 +14,14 @@ export function _typedJsonParse<T>(
 ): T | null {
   try {
     const result = JSON.parse(data) as unknown;
+
     if (
+      result &&
       typeof result === 'object' &&
       guard in (result as Record<string, unknown>)
     ) {
       return result as T;
     }
-    return result as T;
   } catch {
     // noop
   }
