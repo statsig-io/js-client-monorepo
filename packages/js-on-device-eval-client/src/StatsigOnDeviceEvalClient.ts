@@ -36,10 +36,9 @@ import {
   _normalizeUser,
   createUpdateDetails,
 } from '@statsig/client-core';
+import { Evaluator, SpecStore } from '@statsig/on-device-eval-core';
 
-import Evaluator from './Evaluator';
 import Network from './Network';
-import SpecStore from './SpecStore';
 import { StatsigOptions } from './StatsigOptions';
 import { StatsigSpecsDataAdapter } from './StatsigSpecsDataAdapter';
 

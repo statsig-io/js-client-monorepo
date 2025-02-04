@@ -23,7 +23,7 @@ function _parseResponse(values: string): DownloadConfigSpecsResponse | null {
   );
 }
 
-export default class SpecStore {
+export class SpecStore {
   private _rawValues: string | null = null;
   private _values: DownloadConfigSpecsResponse | null = null;
   private _source: DataSource = 'Uninitialized';

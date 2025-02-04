@@ -522,9 +522,12 @@ importers:
 
   packages/js-on-device-eval-adapter:
     dependencies:
-      tslib:
-        specifier: ^2.3.0
-        version: 2.7.0
+      '@statsig/client-core':
+        specifier: 3.11.1
+        version: link:../client-core
+      '@statsig/on-device-eval-core':
+        specifier: 3.11.1
+        version: link:../on-device-eval-core
 
   packages/js-on-device-eval-client:
     dependencies:
@@ -540,6 +543,15 @@ importers:
       '@statsig/client-core':
         specifier: 3.11.1
         version: link:../client-core
+
+  packages/on-device-eval-core:
+    dependencies:
+      '@statsig/client-core':
+        specifier: 3.11.1
+        version: link:../client-core
+      '@statsig/sha256':
+        specifier: 3.11.1
+        version: link:../sha256
 
   packages/react-bindings:
     dependencies:

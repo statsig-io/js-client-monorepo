@@ -20,7 +20,7 @@ import {
   resultToGateEval,
   resultToLayerEval,
 } from './EvaluationResult';
-import SpecStore, { SpecAndSourceInfo, SpecKind } from './SpecStore';
+import { SpecAndSourceInfo, SpecKind, SpecStore } from './SpecStore';
 
 const CONDITION_SEGMENT_COUNT = 10 * 1000;
 const USER_BUCKET_COUNT = 1000;
@@ -30,7 +30,7 @@ type DetailedEvaluation<T> = {
   details: EvaluationDetails;
 };
 
-export default class Evaluator {
+export class Evaluator {
   constructor(private _store: SpecStore) {}
 
   evaluateGate(
