@@ -14,15 +14,20 @@
   "tags": [],
   "targets": {
     "build": {
+      "command": ":",
+      "dependsOn": ["^build", "build-ts"]
+    },
+    "build-ts": {
       "executor": "@nx/js:tsc",
       "outputs": ["{options.outputPath}"],
       "options": {
         "outputPath": "dist/packages/on-device-eval-core",
         "main": "packages/on-device-eval-core/src/index.ts",
         "tsConfig": "packages/on-device-eval-core/tsconfig.lib.json",
-        "assets": ["packages/on-device-eval-core/*.md"]
+        "assets": ["README.md", "LICENSE"]
       }
     },
+
     "nx-release-publish": {
       "options": {
         "packageRoot": "dist/{projectRoot}"

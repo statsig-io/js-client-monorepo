@@ -1,11 +1,10 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "composite": true,
-    "declaration": true,
     "outDir": "../../dist/out-tsc",
+    "declaration": true,
     "types": ["node"]
   },
-  "include": ["src/**/*.ts", "../on-device-eval-core/src/Evaluator.ts"],
+  "include": ["src/**/*.ts"],
   "exclude": ["jest.config.ts", "src/**/*.spec.ts", "src/**/*.test.ts"]
 }

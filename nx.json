@@ -109,10 +109,5 @@
       "style": "css"
     }
   },
-  "useInferencePlugins": false,
-  "release": {
-    "version": {
-      "preVersionCommand": "pnpm dlx nx run-many -t build"
-    }
-  }
+  "useInferencePlugins": false
 }

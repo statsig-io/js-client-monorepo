@@ -227,7 +227,8 @@
       "$_paramStore": "Bn",
       "$_lastUsedInitUrl": "Jn",
       "$_inactiveTimer": "Ai",
-      "$_bumpInactiveTimer": "Ni"
+      "$_bumpInactiveTimer": "Ni",
+      "$_makeDataAdapterResult": "Wn"
     }
   }
 }

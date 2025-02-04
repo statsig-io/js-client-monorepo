@@ -9,6 +9,7 @@ const DEP_MAP = {
   '@statsig/js-client': '../../dist/packages/js-client',
   '@statsig/js-on-device-eval-client':
     '../../dist/packages/js-on-device-eval-client',
+  '@statsig/on-device-eval-core': '../../dist/packages/on-device-eval-core',
   '@statsig/session-replay': '../../dist/packages/session-replay',
   '@statsig/sha256': '../../dist/packages/sha256',
   '@statsig/web-analytics': '../../dist/packages/web-analytics',
