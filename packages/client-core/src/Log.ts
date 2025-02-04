@@ -25,25 +25,25 @@ export abstract class Log {
   static level: LogLevel = LogLevel.Warn;
 
   static info(...args: unknown[]): void {
-    if (this.level >= LogLevel.Info) {
+    if (Log.level >= LogLevel.Info) {
       console.info(_INFO, ...addTag(args));
     }
   }
 
   static debug(...args: unknown[]): void {
-    if (this.level >= LogLevel.Debug) {
+    if (Log.level >= LogLevel.Debug) {
       console.debug(DEBUG, ...addTag(args));
     }
   }
 
   static warn(...args: unknown[]): void {
-    if (this.level >= LogLevel.Warn) {
+    if (Log.level >= LogLevel.Warn) {
       console.warn(_WARN, ...addTag(args));
     }
   }
 
   static error(...args: unknown[]): void {
-    if (this.level >= LogLevel.Error) {
+    if (Log.level >= LogLevel.Error) {
       console.error(ERROR, ...addTag(args));
     }
   }
