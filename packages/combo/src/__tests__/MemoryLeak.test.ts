@@ -51,9 +51,11 @@ describe('Memory Usage', () => {
         {},
         { logLevel: LogLevel.None },
       );
-      await instance.initializeAsync();
+      await instance.initializeAsync({ timeoutMs: 1 });
       instance.checkGate('gate1');
     }
+
+    await new Promise((resolve) => setTimeout(resolve, 2)); // wait for all the settimeout to resolve
 
     await runGarbageCollection();
 

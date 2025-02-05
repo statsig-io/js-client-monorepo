@@ -20,7 +20,7 @@ import {
 import { _typedJsonParse } from './TypedJsonParse';
 
 const CACHE_LIMIT = 10;
-
+const DEFAULT_TIMEOUT_MS = 3000;
 export abstract class DataAdapterCore {
   protected _options: AnyStatsigOptions | null = null;
 
@@ -82,14 +82,13 @@ export abstract class DataAdapterCore {
 
     const ops = [this._fetchAndPrepFromNetwork(cache, user, options)];
 
-    if (options?.timeoutMs) {
-      ops.push(
-        new Promise((r) => setTimeout(r, options.timeoutMs)).then(() => {
-          Log.debug('Fetching latest value timed out');
-          return null;
-        }),
-      );
-    }
+    const timeoutMs = options?.timeoutMs ?? DEFAULT_TIMEOUT_MS;
+    ops.push(
+      new Promise((r) => setTimeout(r, timeoutMs)).then(() => {
+        Log.debug('Fetching latest value timed out');
+        return null;
+      }),
+    );
 
     return await Promise.race(ops);
   }
