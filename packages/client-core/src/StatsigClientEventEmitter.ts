@@ -28,6 +28,7 @@ type EventNameToEventDataMap = {
   };
   session_expired: object;
   error: ErrorEventData;
+  pre_logs_flushed: { events: Record<string, unknown>[] };
   logs_flushed: { events: Record<string, unknown>[] };
   pre_shutdown: object;
   initialization_failure: object;
@@ -46,6 +47,8 @@ type EventNameToEventDataMap = {
  * `session_expired` - When the current session has expired.
  *
  * `error` - When an unexpected error occurs within the Statsig client.
+ *
+ * `pre_logs_flushed` - Fired just before queued StatsigEvents are flushed to Statsig servers.
  *
  * `logs_flushed` - When queued StatsigEvents are flushed to Statsig servers.
  *

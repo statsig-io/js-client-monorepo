@@ -235,6 +235,11 @@ export class EventLogger {
         this._network.isBeaconSupported() &&
         this._options?.networkConfig?.networkOverrideFunc == null;
 
+      this._emitter({
+        name: 'pre_logs_flushed',
+        events,
+      });
+
       const response = shouldUseBeacon
         ? await this._sendEventsViaBeacon(events)
         : await this._sendEventsViaPost(events);

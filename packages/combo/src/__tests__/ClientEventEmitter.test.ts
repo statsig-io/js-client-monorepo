@@ -1,3 +1,4 @@
+import 'jest-fetch-mock';
 import { InitResponseString } from 'statsig-test-helpers';
 
 import { AnyStatsigClientEvent, Log } from '@statsig/client-core';
@@ -20,6 +21,9 @@ describe('Client Event Emitting', () => {
       wildcardEvents.push(event);
     });
     client.on('gate_evaluation', (event) => gateEvalEvents.push(event));
+
+    fetchMock.enableMocks();
+    fetchMock.mock.calls = [];
   });
 
   it('continues emitting when an error occurs while iterating listeners', () => {
@@ -53,5 +57,25 @@ describe('Client Event Emitting', () => {
     expect(calls).toBe(2);
 
     expect(logSpy).toHaveBeenCalled();
+  });
+
+  it('allows edits to the events before they are flushed', async () => {
+    client.on('pre_logs_flushed', (events) => {
+      events.events.forEach((e: any, i) => {
+        e.metadata = {
+          ...e.metadata,
+          edited: i,
+        };
+      });
+    });
+
+    client.logEvent('event1');
+    client.logEvent('event2');
+    await client.flush();
+    const body = JSON.parse(
+      fetchMock.mock.calls[0]?.[1]?.body?.toString() ?? '{}',
+    );
+    expect(body.events[0].metadata.edited).toBe(0);
+    expect(body.events[1].metadata.edited).toBe(1);
   });
 });
