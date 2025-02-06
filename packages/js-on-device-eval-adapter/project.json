@@ -28,6 +28,11 @@
         "packageRoot": "dist/{projectRoot}"
       }
     },
+    "publish": {
+      "command": "ts-node ./tools/scripts/publish.ts js-on-device-eval-adapter",
+      "dependsOn": ["build"]
+    },
+
     "lint": {
       "executor": "@nx/eslint:lint"
     },

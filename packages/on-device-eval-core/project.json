@@ -27,6 +27,10 @@
         "assets": ["README.md", "LICENSE"]
       }
     },
+    "publish": {
+      "command": "ts-node ./tools/scripts/publish.ts on-device-eval-core",
+      "dependsOn": ["build"]
+    },
 
     "nx-release-publish": {
       "options": {
