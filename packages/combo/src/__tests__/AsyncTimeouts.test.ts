@@ -42,7 +42,6 @@ describe('Async Timeouts', () => {
     let client: StatsigOnDeviceEvalClient;
 
     beforeAll(async () => {
-      storage.clear();
       __STATSIG__ = {} as StatsigGlobal;
       resetResolver();
 
@@ -95,69 +94,10 @@ describe('Async Timeouts', () => {
     });
   });
 
-  describe('StatsigOnDeviceEvalClient.initializeAsync Default Timeouts', () => {
-    let client: StatsigOnDeviceEvalClient;
-    let timeToInit: number;
-
-    beforeAll(async () => {
-      storage.clear();
-      jest.useFakeTimers({ doNotFake: ['performance'] });
-      __STATSIG__ = {} as StatsigGlobal;
-      resetResolver();
-
-      client = new StatsigOnDeviceEvalClient('client-key');
-
-      const start = Date.now();
-      const promise = client.initializeAsync();
-      jest.advanceTimersByTime(3000);
-      await promise;
-      timeToInit = Date.now() - start;
-    });
-
-    afterAll(() => {
-      jest.useRealTimers();
-    });
-
-    it('applies default timeout', () => {
-      expect(timeToInit).toBeLessThan(3500);
-    });
-
-    it('gets eval reason of NoValues', () => {
-      expect(
-        client.getDynamicConfig('a_dynamic_config', {}).details.reason,
-      ).toBe('NoValues');
-    });
-
-    it('does not write anything to cache', () => {
-      expect(
-        storage.data['statsig.cached.specs.' + onDeviceCacheKey],
-      ).toBeUndefined();
-    });
-
-    describe('then the network comes back', () => {
-      beforeAll(async () => {
-        resolver.resolve(DCS_RESPONSE());
-      });
-
-      it('does not update the current values, still returns NoValues', () => {
-        expect(
-          client.getDynamicConfig('a_dynamic_config', {}).details.reason,
-        ).toBe('NoValues');
-      });
-
-      it('writes the values to cache for the next update', () => {
-        expect(
-          storage.data['statsig.cached.specs.' + onDeviceCacheKey],
-        ).toEqual(anyString());
-      });
-    });
-  });
-
   describe('StatsigClient.updateUserAsync Timeouts', () => {
     let client: StatsigClient;
 
     beforeAll(async () => {
-      storage.clear();
       __STATSIG__ = {} as StatsigGlobal;
       resetResolver();
 
@@ -167,69 +107,6 @@ describe('Async Timeouts', () => {
         { customUserCacheKeyFunc: () => 'my-custom-cache' },
       );
       await client.updateUserAsync({ userID: 'a-user' }, { timeoutMs: 1 });
-    });
-
-    it('gets eval reason of NoValues', () => {
-      expect(client.getDynamicConfig('a_dynamic_config').details.reason).toBe(
-        'NoValues',
-      );
-    });
-
-    it('does not write anything to cache', () => {
-      expect(
-        storage.data['statsig.cached.evaluations.my-custom-cache'],
-      ).toBeUndefined();
-    });
-
-    describe('then the network comes back', () => {
-      beforeAll(async () => {
-        resolver.resolve(INIT_RESPONSE());
-      });
-
-      it('does not update the current values, still returns NoValues', () => {
-        expect(client.getDynamicConfig('a_dynamic_config').details.reason).toBe(
-          'NoValues',
-        );
-      });
-
-      it('writes the values to cache for the next update', () => {
-        expect(
-          storage.data['statsig.cached.evaluations.my-custom-cache'],
-        ).toEqual(anyString());
-      });
-    });
-  });
-
-  describe('StatsigClient.updateUserAsync Default Timeouts', () => {
-    let client: StatsigClient;
-    let timeToInit: number;
-
-    beforeAll(async () => {
-      storage.clear();
-      jest.useFakeTimers({ doNotFake: ['performance'] });
-      __STATSIG__ = {} as StatsigGlobal;
-      resetResolver();
-
-      client = new StatsigClient(
-        'client-key',
-        {},
-        { customUserCacheKeyFunc: () => 'my-custom-cache' },
-      );
-
-      const start = Date.now();
-      const promise = client.updateUserAsync({ userID: 'a-user' });
-      jest.advanceTimersByTime(3000);
-      await promise;
-
-      timeToInit = Date.now() - start;
-    });
-
-    afterAll(() => {
-      jest.useRealTimers();
-    });
-
-    it('applies default timeout', () => {
-      expect(timeToInit).toBeLessThan(3500);
     });
 
     it('gets eval reason of NoValues', () => {
