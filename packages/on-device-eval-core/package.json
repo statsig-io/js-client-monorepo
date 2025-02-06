@@ -1,9 +1,9 @@
 {
   "name": "@statsig/on-device-eval-core",
-  "version": "3.11.1",
+  "version": "3.12.0",
   "dependencies": {
-    "@statsig/client-core": "3.11.1",
-    "@statsig/sha256": "3.11.1"
+    "@statsig/client-core": "3.12.0",
+    "@statsig/sha256": "3.12.0"
   },
   "type": "commonjs",
   "main": "./src/index.js",
