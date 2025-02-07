@@ -1138,6 +1138,19 @@
       "entity": "layer"
     }
   ],
+  "param_stores": {
+    "a_param_store": {
+      "targetAppIDs": ["a_param_store"],
+      "parameters": {
+        "dc_string": {
+          "ref_type": "dynamic_config",
+          "param_type": "string",
+          "config_name": "a_dynamic_config",
+          "param_name": "red"
+        }
+      }
+    }
+  },
   "has_updates": true,
   "time": 1729634260223,
   "company_id": "2etz0PtUkhGsJfH0mR6whu",

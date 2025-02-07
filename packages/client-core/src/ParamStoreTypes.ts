@@ -43,7 +43,7 @@ export type ExperimentParam = Param<'experiment', ParamType> & {
   param_name: string;
 };
 
-type AnyParam =
+export type AnyParam =
   | GateParam
   | StaticParam
   | LayerParam

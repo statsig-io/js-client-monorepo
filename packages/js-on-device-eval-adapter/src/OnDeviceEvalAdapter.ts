@@ -9,6 +9,9 @@ import {
   Layer,
   LayerEvaluationOptions,
   OverrideAdapter,
+  ParamStoreConfig,
+  ParameterStore,
+  ParameterStoreEvaluationOptions,
   StatsigUserInternal,
   _makeDataAdapterResult,
   _makeDynamicConfig,
@@ -92,6 +95,21 @@ export class OnDeviceEvalAdapter implements OverrideAdapter {
       this._evaluator.evaluateLayer.bind(this._evaluator),
       _makeLayer,
     );
+  }
+
+  getParamStoreOverride(
+    current: ParameterStore,
+    _options?: ParameterStoreEvaluationOptions,
+  ): { config: ParamStoreConfig; details: EvaluationDetails } | null {
+    if (!this._shouldTryOnDeviceEval(current.details)) {
+      return null;
+    }
+    const { config, details: newDetails } = this._evaluator.getParamStoreConfig(
+      current.name,
+    );
+
+    newDetails.reason = '[OnDevice]' + newDetails.reason;
+    return { config: config ?? {}, details: newDetails };
   }
 
   private _evaluate<T extends AnyStatsigType, E>(

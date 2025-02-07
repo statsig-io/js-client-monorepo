@@ -1,3 +1,4 @@
+import { ParamStoreConfig } from './ParamStoreTypes';
 import { StatsigUser } from './StatsigUser';
 
 export type SpecCondition = {
@@ -38,10 +39,16 @@ export type Spec = {
   version?: number;
 };
 
+export type ParamStore = {
+  targetAppIDs?: string[];
+  parameters: ParamStoreConfig;
+};
+
 export type DownloadConfigSpecsResponse = {
   feature_gates: Spec[];
   dynamic_configs: Spec[];
   layer_configs: Spec[];
+  param_stores?: Record<string, ParamStore>;
   time: number;
   has_updates: boolean;
   sdkInfo?: Record<string, string>;

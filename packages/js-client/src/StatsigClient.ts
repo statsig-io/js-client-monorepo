@@ -565,12 +565,23 @@ export default class StatsigClient
   ): ParameterStore {
     const { result: configuration, details } = this._store.getParamStore(name);
     this._logger.incrementNonExposureCount(name);
-
-    return {
+    const paramStore = {
       name,
-      details,
+      details: details,
       __configuration: configuration,
       get: _makeParamStoreGetter(this, configuration, options),
     };
+    const overridden = this.overrideAdapter?.getParamStoreOverride?.(
+      paramStore,
+      options,
+    );
+
+    if (overridden != null) {
+      paramStore.__configuration = overridden.config;
+      paramStore.details = overridden.details;
+      paramStore.get = _makeParamStoreGetter(this, overridden.config, options);
+    }
+
+    return paramStore;
   }
 }

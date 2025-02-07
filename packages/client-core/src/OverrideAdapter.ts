@@ -3,8 +3,17 @@ import {
   ExperimentEvaluationOptions,
   FeatureGateEvaluationOptions,
   LayerEvaluationOptions,
+  ParameterStoreEvaluationOptions,
 } from './EvaluationOptions';
-import { DynamicConfig, Experiment, FeatureGate, Layer } from './StatsigTypes';
+import { EvaluationDetails } from './EvaluationTypes';
+import { ParamStoreConfig } from './ParamStoreTypes';
+import {
+  DynamicConfig,
+  Experiment,
+  FeatureGate,
+  Layer,
+  ParameterStore,
+} from './StatsigTypes';
 import { StatsigUser } from './StatsigUser';
 
 export type OverrideAdapter = {
@@ -28,4 +37,8 @@ export type OverrideAdapter = {
     user: StatsigUser,
     options?: LayerEvaluationOptions,
   ): Layer | null;
+  getParamStoreOverride?(
+    current: ParameterStore,
+    options?: ParameterStoreEvaluationOptions,
+  ): { config: ParamStoreConfig; details: EvaluationDetails } | null;
 };

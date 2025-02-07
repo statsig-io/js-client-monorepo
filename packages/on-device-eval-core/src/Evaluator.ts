@@ -3,6 +3,7 @@ import {
   EvaluationDetails,
   GateEvaluation,
   LayerEvaluation,
+  ParamStoreConfig,
   SecondaryExposure,
   Spec,
   SpecCondition,
@@ -20,7 +21,12 @@ import {
   resultToGateEval,
   resultToLayerEval,
 } from './EvaluationResult';
-import { SpecAndSourceInfo, SpecKind, SpecStore } from './SpecStore';
+import {
+  ParamStoreAndSourceInfo,
+  SpecAndSourceInfo,
+  SpecKind,
+  SpecStore,
+} from './SpecStore';
 
 const CONDITION_SEGMENT_COUNT = 10 * 1000;
 const USER_BUCKET_COUNT = 1000;
@@ -79,6 +85,21 @@ export class Evaluator {
     return { evaluation, details };
   }
 
+  getParamStoreConfig(name: string): {
+    config: ParamStoreConfig | null;
+    details: EvaluationDetails;
+  } {
+    const paramStoreAndSourceInfo =
+      this._store.getParamStoreAndSourceInfo(name);
+
+    const details = this._getEvaluationDetails(paramStoreAndSourceInfo);
+
+    return {
+      config: paramStoreAndSourceInfo.paramStoreConfig ?? null,
+      details,
+    };
+  }
+
   private _getSpecAndDetails(
     kind: SpecKind,
     name: string,
@@ -89,14 +110,19 @@ export class Evaluator {
     return { details, spec: specAndSourceInfo.spec };
   }
 
-  private _getEvaluationDetails(info: SpecAndSourceInfo): EvaluationDetails {
-    const { source, spec, lcut, receivedAt } = info;
+  private _getEvaluationDetails(
+    info: SpecAndSourceInfo | ParamStoreAndSourceInfo,
+  ): EvaluationDetails {
+    const { source, lcut, receivedAt } = info;
 
     if (source === 'Uninitialized' || source === 'NoValues') {
       return { reason: source };
     }
 
-    const subreason = spec == null ? 'Unrecognized' : 'Recognized';
+    const subreason =
+      ('spec' in info ? info.spec : info.paramStoreConfig) == null
+        ? 'Unrecognized'
+        : 'Recognized';
     const reason = `${source}:${subreason}`;
 
     return { reason, lcut, receivedAt };

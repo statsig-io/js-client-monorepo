@@ -1,6 +1,7 @@
 import { DcsResponseString } from 'statsig-test-helpers';
 
 import {
+  ParameterStore,
   StatsigUserInternal,
   _makeDynamicConfig,
   _makeExperiment,
@@ -34,7 +35,15 @@ describe('OnDeviceEvalAdapter', () => {
       null,
     );
 
+    const emptyParamStore: ParameterStore = {
+      details: { reason: '', lcut: 9999999999999 },
+      __configuration: {},
+      name: 'a_param_store',
+      get: jest.fn(),
+    };
+
     expect(adapter.getGateOverride(gate, user)).toBeNull();
+    expect(adapter.getParamStoreOverride(emptyParamStore)).toBeNull();
   });
 
   it('overrides gate results when current result is older', () => {
@@ -44,6 +53,22 @@ describe('OnDeviceEvalAdapter', () => {
     expect(adapter.getGateOverride(gate, user)?.details.reason).toBe(
       '[OnDevice]Bootstrap:Recognized',
     );
+    const emptyParamStore: ParameterStore = {
+      details: { reason: '', lcut: 111 },
+      __configuration: {},
+      name: 'a_param_store',
+      get: jest.fn(),
+    };
+    const paramStore = adapter.getParamStoreOverride(emptyParamStore);
+    expect(paramStore?.details.reason).toBe('[OnDevice]Bootstrap:Recognized');
+    expect(paramStore?.config).toEqual({
+      dc_string: {
+        ref_type: 'dynamic_config',
+        param_type: 'string',
+        config_name: 'a_dynamic_config',
+        param_name: 'red',
+      },
+    });
   });
 
   it('overrides gate results when current result is empty', () => {
@@ -106,5 +131,29 @@ describe('OnDeviceEvalAdapter', () => {
     expect(adapter.getLayerOverride(layer, user)?.details.reason).toBe(
       '[OnDevice]Bootstrap:Recognized',
     );
+  });
+
+  it('overrides param store results when data set after init', () => {
+    const adapter = new OnDeviceEvalAdapter(null);
+
+    adapter.setData(DcsResponseString);
+
+    const emptyParamStore: ParameterStore = {
+      details: { reason: '' },
+      __configuration: {},
+      name: 'a_param_store',
+      get: jest.fn(),
+    };
+
+    const paramStore = adapter.getParamStoreOverride(emptyParamStore);
+    expect(paramStore?.details.reason).toBe('[OnDevice]Bootstrap:Recognized');
+    expect(paramStore?.config).toEqual({
+      dc_string: {
+        ref_type: 'dynamic_config',
+        param_type: 'string',
+        config_name: 'a_dynamic_config',
+        param_name: 'red',
+      },
+    });
   });
 });

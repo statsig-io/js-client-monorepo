@@ -2,12 +2,20 @@ import {
   DataAdapterResult,
   DataSource,
   DownloadConfigSpecsResponse,
+  ParamStoreConfig,
   Spec,
   _typedJsonParse,
 } from '@statsig/client-core';
 
 export type SpecAndSourceInfo = {
   spec: Spec | null;
+} & SourceInfo;
+
+export type ParamStoreAndSourceInfo = {
+  paramStoreConfig: ParamStoreConfig | null;
+} & SourceInfo;
+
+export type SourceInfo = {
   source: DataSource;
   lcut: number;
   receivedAt: number;
@@ -81,6 +89,17 @@ export class SpecStore {
 
     return {
       spec: specs?.find((spec) => spec.name === name) ?? null,
+      source: this._source,
+      lcut: this._lcut,
+      receivedAt: this._receivedAt,
+    };
+  }
+
+  getParamStoreAndSourceInfo(name: string): ParamStoreAndSourceInfo {
+    const paramStores = this._values?.param_stores;
+
+    return {
+      paramStoreConfig: paramStores?.[name]?.parameters ?? null,
       source: this._source,
       lcut: this._lcut,
       receivedAt: this._receivedAt,
