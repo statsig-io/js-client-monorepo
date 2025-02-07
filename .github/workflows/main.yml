@@ -53,7 +53,7 @@ jobs:
       - uses: ./.github/actions/setup-action
       - run: |
           pnpm run test --testPathIgnorePatterns=MemoryLeak.test.ts
-          pnpm run test --testPathPattern=MemoryLeak.test.ts
+          pnpm exec nx run statsig-combo:test --testPathPattern=MemoryLeak.test.ts
   e2e:
     runs-on: ubuntu-latest
     timeout-minutes: 10
