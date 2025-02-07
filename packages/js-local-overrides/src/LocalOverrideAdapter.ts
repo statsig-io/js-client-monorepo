@@ -5,7 +5,9 @@ import {
   Layer,
   OverrideAdapter,
   StatsigUser,
+  Storage,
   _DJB2,
+  _getStorageKey,
   _makeTypedGet,
 } from '@statsig/client-core';
 
@@ -29,15 +31,46 @@ function _makeEmptyStore(): OverrideStore {
 
 export class LocalOverrideAdapter implements OverrideAdapter {
   private _overrides = _makeEmptyStore();
+  private _sdkKey: string | null;
+
+  constructor(sdkKey?: string) {
+    this._sdkKey = sdkKey ?? null;
+    this._overrides = this._loadOverridesFromStorage();
+  }
+
+  private _getLocalOverridesStorageKey(sdkKey: string): string {
+    return `statsig.local-overrides.${_getStorageKey(sdkKey)}`;
+  }
+
+  private _loadOverridesFromStorage(): OverrideStore {
+    if (this._sdkKey == null) {
+      return _makeEmptyStore();
+    }
+
+    const storageKey = this._getLocalOverridesStorageKey(this._sdkKey);
+    const storedOverrides = Storage.getItem(storageKey);
+    return storedOverrides ? JSON.parse(storedOverrides) : _makeEmptyStore();
+  }
+
+  private _saveOverridesToStorage(): void {
+    if (this._sdkKey == null) {
+      return;
+    }
+
+    const storageKey = this._getLocalOverridesStorageKey(this._sdkKey);
+    Storage.setItem(storageKey, JSON.stringify(this._overrides));
+  }
 
   overrideGate(name: string, value: boolean): void {
     this._overrides.gate[name] = value;
     this._overrides.gate[_DJB2(name)] = value;
+    this._saveOverridesToStorage();
   }
 
   removeGateOverride(name: string): void {
     delete this._overrides.gate[name];
     delete this._overrides.gate[_DJB2(name)];
+    this._saveOverridesToStorage();
   }
 
   getGateOverride(
@@ -61,11 +94,13 @@ export class LocalOverrideAdapter implements OverrideAdapter {
   overrideDynamicConfig(name: string, value: Record<string, unknown>): void {
     this._overrides.dynamicConfig[name] = value;
     this._overrides.dynamicConfig[_DJB2(name)] = value;
+    this._saveOverridesToStorage();
   }
 
   removeDynamicConfigOverride(name: string): void {
     delete this._overrides.dynamicConfig[name];
     delete this._overrides.dynamicConfig[_DJB2(name)];
+    this._saveOverridesToStorage();
   }
 
   getDynamicConfigOverride(
@@ -78,11 +113,13 @@ export class LocalOverrideAdapter implements OverrideAdapter {
   overrideExperiment(name: string, value: Record<string, unknown>): void {
     this._overrides.experiment[name] = value;
     this._overrides.experiment[_DJB2(name)] = value;
+    this._saveOverridesToStorage();
   }
 
   removeExperimentOverride(name: string): void {
     delete this._overrides.experiment[name];
     delete this._overrides.experiment[_DJB2(name)];
+    this._saveOverridesToStorage();
   }
 
   getExperimentOverride(
@@ -95,11 +132,13 @@ export class LocalOverrideAdapter implements OverrideAdapter {
   overrideLayer(name: string, value: Record<string, unknown>): void {
     this._overrides.layer[name] = value;
     this._overrides.layer[_DJB2(name)] = value;
+    this._saveOverridesToStorage();
   }
 
   removeLayerOverride(name: string): void {
     delete this._overrides.layer[name];
     delete this._overrides.layer[_DJB2(name)];
+    this._saveOverridesToStorage();
   }
 
   getAllOverrides(): OverrideStore {
@@ -108,6 +147,7 @@ export class LocalOverrideAdapter implements OverrideAdapter {
 
   removeAllOverrides(): void {
     this._overrides = _makeEmptyStore();
+    this._saveOverridesToStorage();
   }
 
   getLayerOverride(current: Layer, _user: StatsigUser): Layer | null {
