@@ -118,6 +118,7 @@ export default function SessionReplayExample({
       }),
       new StatsigAutoCapturePlugin(),
     ],
+    disableCompression: true,
   });
 
   useEffect(() => {

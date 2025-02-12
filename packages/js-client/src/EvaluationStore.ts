@@ -92,11 +92,7 @@ export default class EvaluationStore {
       this._setWarningState(user, values);
     }
 
-    if (values.sdk_flags) {
-      SDKFlags.setFlags(this._sdkKey, values.sdk_flags);
-    } else {
-      SDKFlags.setFlags(this._sdkKey, {});
-    }
+    SDKFlags.setFlags(this._sdkKey, values.sdk_flags ?? {});
 
     return true;
   }

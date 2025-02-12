@@ -78,6 +78,7 @@ export default function ProxyExample({
       api: 'http://localhost:4200/api/statsig',
     },
     disableStatsigEncoding: true,
+    disableCompression: true,
   });
 
   return (

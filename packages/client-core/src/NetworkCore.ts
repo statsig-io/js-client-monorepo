@@ -13,6 +13,7 @@ import {
   FallbackResolverArgs,
   NetworkFallbackResolver,
 } from './NetworkFallbackResolver';
+import { SDKFlags } from './SDKFlags';
 import { SDKType } from './SDKType';
 import { _getWindowSafe } from './SafeJs';
 import { SessionID } from './SessionID';
@@ -47,12 +48,15 @@ type RequestArgs = {
   >;
 };
 
+type DataFlags = {
+  isStatsigEncodable?: boolean;
+  isCompressable?: boolean;
+};
+
 export type RequestArgsWithData = Flatten<
   RequestArgs & {
     data: Record<string, unknown>;
-    isStatsigEncodable?: boolean;
-    isCompressable?: boolean;
-  }
+  } & DataFlags
 >;
 
 type BeaconRequestArgs = Pick<
@@ -65,7 +69,7 @@ type RequestArgsInternal = Flatten<
     FallbackResolverArgs & {
       method: 'POST' | 'GET';
       body?: BodyInit;
-    }
+    } & DataFlags
 >;
 
 type NetworkResponse = {
@@ -133,25 +137,18 @@ export class NetworkCore {
     }
 
     const argsInternal = this._getInternalRequestArgs('POST', args);
-    const body: BodyInit = await this._getPopulatedBody(
-      argsInternal,
-      args.data,
-    );
+    await this._tryToCompressBody(argsInternal);
+
     const url = await this._getPopulatedURL(argsInternal);
     const nav = navigator;
-    return nav.sendBeacon.bind(nav)(url, body);
+    return nav.sendBeacon.bind(nav)(url, argsInternal.body);
   }
 
   async post(args: RequestArgsWithData): Promise<NetworkResponse | null> {
     const argsInternal = this._getInternalRequestArgs('POST', args);
 
-    argsInternal.body = await this._getPopulatedBody(argsInternal, args.data);
-    if (args.isStatsigEncodable) {
-      argsInternal.body = this._attemptToEncodeString(
-        argsInternal,
-        argsInternal.body,
-      );
-    }
+    this._tryEncodeBody(argsInternal);
+    await this._tryToCompressBody(argsInternal);
 
     return this._sendRequest(argsInternal);
   }
@@ -332,67 +329,99 @@ export class NetworkCore {
     return `${url}${query ? `?${query}` : ''}`;
   }
 
-  private async _getPopulatedBody(
-    args: RequestArgsInternal,
-    data: Record<string, unknown>,
-  ): Promise<string> {
-    const { sdkKey, fallbackUrl } = args;
-    const stableID = StableID.get(sdkKey);
-    const sessionID = SessionID.get(sdkKey);
-    const sdkType = SDKType._get(sdkKey);
-
-    return JSON.stringify({
-      ...data,
-      statsigMetadata: {
-        ...StatsigMetadataProvider.get(),
-        stableID,
-        sessionID,
-        sdkType,
-        fallbackUrl,
-      },
-    });
-  }
-
-  private _attemptToEncodeString(
-    args: RequestArgsInternal,
-    input: string,
-  ): string {
+  private _tryEncodeBody(args: RequestArgsInternal): void {
     const win = _getWindowSafe();
+    const body = args.body;
     if (
+      !args.isStatsigEncodable ||
       this._options.disableStatsigEncoding ||
+      typeof body !== 'string' ||
       _getStatsigGlobalFlag('no-encode') != null ||
       !win?.btoa
     ) {
-      return input;
+      return;
     }
 
     try {
-      const result = win.btoa(input).split('').reverse().join('') ?? input;
+      args.body = win.btoa(body).split('').reverse().join('');
       args.params = {
         ...(args.params ?? {}),
         [NetworkParam.StatsigEncoded]: '1',
       };
-      return result;
-    } catch {
-      Log.warn(`Request encoding failed for ${args.urlConfig.getUrl()}`);
-      return input;
+    } catch (e) {
+      Log.warn(`Request encoding failed for ${args.urlConfig.getUrl()}`, e);
+    }
+  }
+
+  private async _tryToCompressBody(args: RequestArgsInternal): Promise<void> {
+    const body = args.body;
+    if (
+      !args.isCompressable ||
+      this._options.disableCompression ||
+      typeof body !== 'string' ||
+      SDKFlags.get(args.sdkKey, 'enable_log_event_compression') != true ||
+      _getStatsigGlobalFlag('no-compress') != null ||
+      typeof CompressionStream === 'undefined' ||
+      typeof TextEncoder === 'undefined'
+    ) {
+      return;
+    }
+
+    try {
+      const bytes = new TextEncoder().encode(body);
+      const stream = new CompressionStream('gzip');
+      const writer = stream.writable.getWriter();
+
+      writer.write(bytes).catch(Log.error);
+      writer.close().catch(Log.error);
+
+      const reader = stream.readable.getReader();
+      const chunks: Uint8Array[] = [];
+
+      let result: ReadableStreamReadResult<Uint8Array>;
+      // eslint-disable-next-line no-await-in-loop
+      while (!(result = await reader.read()).done) {
+        chunks.push(result.value);
+      }
+
+      const totalLength = chunks.reduce((acc, chunk) => acc + chunk.length, 0);
+      const combined = new Uint8Array(totalLength);
+      let offset = 0;
+      for (const chunk of chunks) {
+        combined.set(chunk, offset);
+        offset += chunk.length;
+      }
+
+      args.body = combined;
+      args.params = {
+        ...(args.params ?? {}),
+        [NetworkParam.IsGzipped]: '1',
+      };
+    } catch (e) {
+      Log.warn(`Request compression failed for ${args.urlConfig.getUrl()}`, e);
     }
   }
 
   private _getInternalRequestArgs(
     method: 'GET' | 'POST',
-    args: RequestArgs,
+    args: RequestArgs | RequestArgsWithData,
   ): RequestArgsInternal {
     const fallbackUrl = this._fallbackResolver.getActiveFallbackUrl(
       args.sdkKey,
       args.urlConfig,
     );
 
-    return {
+    const result = {
       ...args,
       method,
       fallbackUrl,
     };
+
+    if ('data' in args) {
+      _populateRequestBody(result, args.data);
+    }
+
+    return result;
   }
 }
 
@@ -402,6 +431,27 @@ const _ensureValidSdkKey = (args: RequestArgs) => {
     return false;
   }
   return true;
+};
+
+const _populateRequestBody = (
+  args: RequestArgsInternal,
+  data: Record<string, unknown>,
+) => {
+  const { sdkKey, fallbackUrl } = args;
+  const stableID = StableID.get(sdkKey);
+  const sessionID = SessionID.get(sdkKey);
+  const sdkType = SDKType._get(sdkKey);
+
+  args.body = JSON.stringify({
+    ...data,
+    statsigMetadata: {
+      ...StatsigMetadataProvider.get(),
+      stableID,
+      sessionID,
+      sdkType,
+      fallbackUrl,
+    },
+  });
 };
 
 function _getErrorMessage(

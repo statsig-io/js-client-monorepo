@@ -25,6 +25,7 @@ export default function BootstrappedStatsigProvider({
       api: 'http://localhost:4200/statsig-demo/proxy', // Your Next.js server
     },
     disableStatsigEncoding: true,
+    disableCompression: true,
   });
 
   return <StatsigProvider client={client}>{children}</StatsigProvider>;

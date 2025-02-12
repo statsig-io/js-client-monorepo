@@ -228,7 +228,9 @@
       "$_lastUsedInitUrl": "Jn",
       "$_inactiveTimer": "Ai",
       "$_bumpInactiveTimer": "Ni",
-      "$_makeDataAdapterResult": "Wn"
+      "$_makeDataAdapterResult": "Wn",
+      "$_tryToCompressBody": "Ci",
+      "$_tryEncodeBody": "Pi"
     }
   }
 }

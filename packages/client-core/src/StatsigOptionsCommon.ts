@@ -16,6 +16,13 @@ export type StatsigRuntimeMutableOptions = {
    * Note: caching will not work if storage is disabled
    */
   disableStorage?: boolean;
+
+  /**
+   * Whether or not Statsig should compress JSON bodies for network requests where possible.
+   *
+   * default: `false`
+   */
+  disableCompression?: boolean;
 };
 
 export type NetworkConfigCommon = {
