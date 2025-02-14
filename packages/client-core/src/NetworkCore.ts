@@ -359,7 +359,7 @@ export class NetworkCore {
       !args.isCompressable ||
       this._options.disableCompression ||
       typeof body !== 'string' ||
-      SDKFlags.get(args.sdkKey, 'enable_log_event_compression') != true ||
+      SDKFlags.get(args.sdkKey, 'enable_log_event_compression') !== true ||
       _getStatsigGlobalFlag('no-compress') != null ||
       typeof CompressionStream === 'undefined' ||
       typeof TextEncoder === 'undefined'

@@ -45,6 +45,13 @@ jobs:
         with:
           path: './dist/samples/web-minified'
 
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: 'js-client-monorepo-packages-dist'
+          if-no-files-found: error
+          path: ./dist/packages
+
   test:
     runs-on: ubuntu-latest
     timeout-minutes: 10
