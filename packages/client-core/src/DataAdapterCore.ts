@@ -110,6 +110,7 @@ export abstract class DataAdapterCore {
     current: string | null,
     user?: StatsigUser,
     options?: DataAdapterAsyncOptions,
+    isCacheValidFor204?: boolean,
   ): Promise<string | null>;
 
   protected abstract _getCacheKey(user?: StatsigUserInternal): string;
@@ -124,12 +125,17 @@ export abstract class DataAdapterCore {
     user: StatsigUserInternal | undefined,
     options: DataAdapterAsyncOptions | undefined,
   ): Promise<DataAdapterResult | null> {
-    let cachedData: string | null = null;
-    if (cachedResult && this._isCachedResultValidFor204(cachedResult, user)) {
-      cachedData = cachedResult.data;
-    }
+    const cachedData: string | null = cachedResult?.data ?? null;
+    const isCacheValidFor204 =
+      cachedResult != null &&
+      this._isCachedResultValidFor204(cachedResult, user);
 
-    const latest = await this._fetchFromNetwork(cachedData, user, options);
+    const latest = await this._fetchFromNetwork(
+      cachedData,
+      user,
+      options,
+      isCacheValidFor204,
+    );
     if (!latest) {
       Log.debug('No response returned for latest value');
       return null;

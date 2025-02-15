@@ -76,12 +76,14 @@ export class StatsigEvaluationsDataAdapter
     current: string | null,
     user?: StatsigUser,
     options?: DataAdapterAsyncOptions,
+    isCacheValidFor204?: boolean,
   ): Promise<string | null> {
     const result = await this._network?.fetchEvaluations(
       this._getSdkKey(),
       current,
       options?.priority,
       user,
+      isCacheValidFor204,
     );
     return result ?? null;
   }

@@ -44,6 +44,7 @@ export default class StatsigNetwork extends NetworkCore {
     current: string | null,
     priority?: NetworkPriority,
     user?: StatsigUser,
+    isCacheValidFor204?: boolean,
   ): Promise<string | null> {
     const cache = current
       ? _typedJsonParse<InitializeResponse>(
@@ -63,9 +64,11 @@ export default class StatsigNetwork extends NetworkCore {
     if (cache?.has_updates) {
       data = {
         ...data,
-        sinceTime: cache.time,
+        sinceTime: isCacheValidFor204 ? cache.time : 0,
         previousDerivedFields:
-          'derived_fields' in cache ? cache.derived_fields : {},
+          'derived_fields' in cache && isCacheValidFor204
+            ? cache.derived_fields
+            : {},
         deltasResponseRequested: true,
         full_checksum: cache.full_checksum,
       };
