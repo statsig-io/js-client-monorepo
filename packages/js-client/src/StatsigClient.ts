@@ -37,6 +37,7 @@ import {
   _makeExperiment,
   _makeFeatureGate,
   _makeLayer,
+  _mapExposures,
   _mergeOverride,
   _normalizeUser,
   createUpdateDetails,
@@ -468,7 +469,7 @@ export default class StatsigClient
 
     this._enqueueExposure(
       name,
-      _createGateExposure(this._user, result),
+      _createGateExposure(this._user, result, this._store.getExposureMapping()),
       options,
     );
 
@@ -494,7 +495,11 @@ export default class StatsigClient
 
     this._enqueueExposure(
       name,
-      _createConfigExposure(this._user, result),
+      _createConfigExposure(
+        this._user,
+        result,
+        this._store.getExposureMapping(),
+      ),
       options,
     );
     this.$emt({ name: 'dynamic_config_evaluation', dynamicConfig: result });
@@ -507,7 +512,12 @@ export default class StatsigClient
   ): Experiment {
     const { result: evaluation, details } = this._store.getConfig(name);
     const experiment = _makeExperiment(name, details, evaluation);
-
+    if (experiment.__evaluation != null) {
+      experiment.__evaluation.secondary_exposures = _mapExposures(
+        experiment.__evaluation?.secondary_exposures ?? [],
+        this._store.getExposureMapping(),
+      );
+    }
     const overridden = this.overrideAdapter?.getExperimentOverride?.(
       experiment,
       this._user,
@@ -518,7 +528,11 @@ export default class StatsigClient
 
     this._enqueueExposure(
       name,
-      _createConfigExposure(this._user, result),
+      _createConfigExposure(
+        this._user,
+        result,
+        this._store.getExposureMapping(),
+      ),
       options,
     );
     this.$emt({ name: 'experiment_evaluation', experiment: result });
@@ -549,7 +563,12 @@ export default class StatsigClient
 
         this._enqueueExposure(
           name,
-          _createLayerParameterExposure(this._user, result, param),
+          _createLayerParameterExposure(
+            this._user,
+            result,
+            param,
+            this._store.getExposureMapping(),
+          ),
           options,
         );
       },

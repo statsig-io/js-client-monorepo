@@ -58,6 +58,7 @@ export const _isExposureEvent = ({
 export const _createGateExposure = (
   user: StatsigUserInternal,
   gate: FeatureGate,
+  exposureMapping?: Record<string, SecondaryExposure>,
 ): StatsigEventInternal => {
   const metadata: Record<string, string> = {
     gate: gate.name,
@@ -72,13 +73,31 @@ export const _createGateExposure = (
     user,
     gate.details,
     metadata,
-    gate.__evaluation?.secondary_exposures ?? [],
+    _mapExposures(
+      gate.__evaluation?.secondary_exposures ?? [],
+      exposureMapping,
+    ),
   );
 };
+
+export function _mapExposures(
+  exposures: SecondaryExposure[] | string[],
+  exposureMapping?: Record<string, SecondaryExposure>,
+): SecondaryExposure[] {
+  return exposures
+    .map((exposure) => {
+      if (typeof exposure === 'string') {
+        return (exposureMapping ?? {})[exposure];
+      }
+      return exposure;
+    })
+    .filter((exposure): exposure is SecondaryExposure => exposure != null);
+}
 
 export const _createConfigExposure = (
   user: StatsigUserInternal,
   config: DynamicConfig,
+  exposureMapping?: Record<string, SecondaryExposure>,
 ): StatsigEventInternal => {
   const metadata: Record<string, string> = {
     config: config.name,
@@ -95,7 +114,10 @@ export const _createConfigExposure = (
     user,
     config.details,
     metadata,
-    config.__evaluation?.secondary_exposures ?? [],
+    _mapExposures(
+      config.__evaluation?.secondary_exposures ?? [],
+      exposureMapping,
+    ),
   );
 };
 
@@ -103,6 +125,7 @@ export const _createLayerParameterExposure = (
   user: StatsigUserInternal,
   layer: Layer,
   parameterName: string,
+  exposureMapping?: Record<string, SecondaryExposure>,
 ): StatsigEventInternal => {
   const evaluation = layer.__evaluation;
   const isExplicit =
@@ -131,7 +154,7 @@ export const _createLayerParameterExposure = (
     user,
     layer.details,
     metadata,
-    secondaryExposures,
+    _mapExposures(secondaryExposures, exposureMapping),
   );
 };
 

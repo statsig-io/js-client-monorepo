@@ -3,6 +3,7 @@ import {
   ExperimentEvaluation,
   ExperimentEvaluationOptions,
   OverrideAdapter,
+  SecondaryExposure,
   StatsigUser,
   _makeExperiment,
 } from '@statsig/client-core';
@@ -121,7 +122,8 @@ export class UserPersistentOverrideAdapter implements OverrideAdapter {
       value: true,
       rule_id: evaluation.rule_id,
       json_value: evaluation.value,
-      secondary_exposures: evaluation.secondary_exposures,
+      secondary_exposures:
+        evaluation.secondary_exposures as SecondaryExposure[],
       group_name: evaluation.group,
       time: experiment.details.lcut ?? 0,
     };

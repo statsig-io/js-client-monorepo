@@ -12,6 +12,7 @@ import {
   LayerEvaluation,
   ParamStoreConfig,
   SDKFlags,
+  SecondaryExposure,
   StableID,
   StatsigUser,
   StatsigWarnings,
@@ -122,6 +123,10 @@ export default class EvaluationStore {
 
   getSource(): DataSource {
     return this._source;
+  }
+
+  getExposureMapping(): Record<string, SecondaryExposure> | undefined {
+    return this._values?.exposures;
   }
 
   private _extractBootstrapMetadata(

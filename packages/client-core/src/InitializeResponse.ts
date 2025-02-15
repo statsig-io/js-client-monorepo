@@ -2,6 +2,7 @@ import {
   DynamicConfigEvaluation,
   GateEvaluation,
   LayerEvaluation,
+  SecondaryExposure,
 } from './EvaluationTypes';
 import { ParamStoreConfig } from './ParamStoreTypes';
 import { StatsigUser } from './StatsigUser';
@@ -31,6 +32,7 @@ export type InitializeResponseWithUpdates = SessionReplayFields &
     sdkInfo?: Record<string, string>;
     sdk_flags?: Record<string, boolean>;
     full_checksum?: string;
+    exposures?: Record<string, SecondaryExposure>;
   };
 
 export type InitializeResponse =

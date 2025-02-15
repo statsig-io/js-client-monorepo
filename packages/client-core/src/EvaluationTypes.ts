@@ -6,7 +6,7 @@ type EvaluationBase<T> = {
   id_type: string;
   name: string;
   rule_id: string;
-  secondary_exposures: SecondaryExposure[];
+  secondary_exposures: SecondaryExposure[] | string[];
   value: T;
   version?: string;
 };
@@ -37,7 +37,7 @@ export type LayerEvaluation = Flatten<
   Omit<ExperimentEvaluation, 'id_type'> & {
     allocated_experiment_name: string;
     explicit_parameters: string[];
-    undelegated_secondary_exposures?: SecondaryExposure[];
+    undelegated_secondary_exposures?: SecondaryExposure[] | string[];
   }
 >;
 
