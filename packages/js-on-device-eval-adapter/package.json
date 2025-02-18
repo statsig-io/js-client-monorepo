@@ -1,9 +1,9 @@
 {
   "name": "@statsig/js-on-device-eval-adapter",
-  "version": "3.12.0",
+  "version": "3.12.1",
   "dependencies": {
-    "@statsig/client-core": "3.12.0",
-    "@statsig/on-device-eval-core": "3.12.0"
+    "@statsig/client-core": "3.12.1",
+    "@statsig/on-device-eval-core": "3.12.1"
   },
   "type": "commonjs",
   "main": "./src/index.js",
