@@ -1,14 +1,15 @@
 'use client';
 
 import React, { useContext, useEffect } from 'react';
-import { StatsigUser } from 'statsig-node';
 
 import { LogLevel } from '@statsig/client-core';
 import {
   StatsigContext,
   StatsigProvider,
+  StatsigUser,
   useClientBootstrapInit,
   useFeatureGate,
+  useParameterStore,
 } from '@statsig/react-bindings';
 
 import { DEMO_CLIENT_KEY } from '../../utils/constants';
@@ -17,6 +18,7 @@ import { DEMO_CLIENT_KEY } from '../../utils/constants';
 
 function Content() {
   const { value, details } = useFeatureGate('a_gate');
+  const parameterStore = useParameterStore('a_param_store');
   const { renderVersion } = useContext(StatsigContext);
 
   return (
@@ -24,6 +26,9 @@ function Content() {
       <div>Render Version: {renderVersion}</div>
       <div>
         a_gate: {value ? 'Passing' : 'Failing'} ({details.reason})
+      </div>
+      <div>
+        a_param: {parameterStore.get('a_bool_param') ? 'true' : 'false'}
       </div>
     </div>
   );

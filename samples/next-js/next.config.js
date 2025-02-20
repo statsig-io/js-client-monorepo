@@ -13,6 +13,12 @@ const nextConfig = {
     svgr: false,
   },
   reactStrictMode: true,
+  webpack: (config, { isServer }) => {
+    if (isServer) {
+      config.externals.push('@statsig/statsig-node-core');
+    }
+    return config;
+  },
 };
 
 const plugins = [

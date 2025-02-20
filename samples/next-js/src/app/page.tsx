@@ -12,7 +12,17 @@ export default function Index(): React.ReactElement {
         </li>
         <li>
           <button>
+            <a href="/bootstrap-example-core">Server Side Render Core</a>
+          </button>
+        </li>
+        <li>
+          <button>
             <a href="/proxy-example">Proxied API Calls</a>
+          </button>
+        </li>
+        <li>
+          <button>
+            <a href="/proxy-example-core">Proxied API Calls Core</a>
           </button>
         </li>
         <li>

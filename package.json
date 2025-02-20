@@ -151,6 +151,7 @@
     "@expo/metro-runtime": "~3.2.1",
     "@react-native-async-storage/async-storage": "^1.19.3",
     "@rrweb/types": "2.0.0-alpha.17",
+    "@statsig/statsig-node-core": "0.0.6-beta.2",
     "expo": "~51.0.12",
     "expo-application": "5.*",
     "expo-device": "6.*",
