@@ -20,10 +20,14 @@ describe('Cache Eviction', () => {
     fetchMock.mockResponse(InitResponseString);
 
     adapter = new StatsigEvaluationsDataAdapter();
-    adapter.attach('client-key', {
-      customUserCacheKeyFunc: (_sdkKey: string, user: StatsigUser) =>
-        user.userID ?? '',
-    });
+    adapter.attach(
+      'client-key',
+      {
+        customUserCacheKeyFunc: (_sdkKey: string, user: StatsigUser) =>
+          user.userID ?? '',
+      },
+      null,
+    );
 
     for (let i = 0; i < 20; i++) {
       // eslint-disable-next-line no-await-in-loop

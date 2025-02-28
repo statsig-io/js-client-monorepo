@@ -28,7 +28,7 @@ describe('Plugin Stable ID Override Tests', () => {
     runStatsigAutoCapture(client);
     await client.initializeAsync();
 
-    const request = fetchMock.mock.calls[1];
+    const request = fetchMock.mock.calls[0];
     const body = JSON.parse(String(request[1]?.body ?? '')) as any;
     expect(body.events).toHaveLength(1);
 
@@ -44,7 +44,7 @@ describe('Plugin Stable ID Override Tests', () => {
     });
     await client.initializeAsync();
 
-    const request = fetchMock.mock.calls[1];
+    const request = fetchMock.mock.calls[0];
     const body = JSON.parse(String(request[1]?.body ?? '')) as any;
     expect(body.events).toHaveLength(1);
 

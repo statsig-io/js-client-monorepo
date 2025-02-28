@@ -39,7 +39,7 @@ describe('Evaluations Data Adapter', () => {
       fetchMock.mockResponse(InitResponseString);
 
       adapter = new StatsigEvaluationsDataAdapter();
-      adapter.attach(sdkKey, null);
+      adapter.attach(sdkKey, null, null);
     });
 
     it('returns null when nothing is found', () => {
@@ -85,7 +85,7 @@ describe('Evaluations Data Adapter', () => {
       fetchMock.mockResponse(InitResponseString);
 
       adapter = new StatsigEvaluationsDataAdapter();
-      adapter.attach(sdkKey, null);
+      adapter.attach(sdkKey, null, null);
       result = await adapter.getDataAsync(null, user);
     });
 
@@ -102,7 +102,7 @@ describe('Evaluations Data Adapter', () => {
 
     it('is cached for later sessions', () => {
       const nextAdapter = new StatsigEvaluationsDataAdapter();
-      nextAdapter.attach(sdkKey, null);
+      nextAdapter.attach(sdkKey, null, null);
 
       const syncResult = nextAdapter.getDataSync(user);
       expect(syncResult?.source).toBe('Cache');

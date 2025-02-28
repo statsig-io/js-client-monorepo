@@ -6,6 +6,7 @@ import {
   EvaluationsDataAdapter,
   InitializeResponse,
   Log,
+  NetworkCore,
   StatsigUser,
   StatsigUserInternal,
   _getFullUserHash,
@@ -28,9 +29,17 @@ export class StatsigEvaluationsDataAdapter
     super('EvaluationsDataAdapter', 'evaluations');
   }
 
-  override attach(sdkKey: string, options: StatsigOptions | null): void {
-    super.attach(sdkKey, options);
-    this._network = new Network(options ?? {});
+  override attach(
+    sdkKey: string,
+    options: StatsigOptions | null,
+    network: NetworkCore | null,
+  ): void {
+    super.attach(sdkKey, options, network);
+    if (network !== null && network instanceof Network) {
+      this._network = network;
+    } else {
+      this._network = new Network(options ?? {});
+    }
   }
 
   getDataAsync(

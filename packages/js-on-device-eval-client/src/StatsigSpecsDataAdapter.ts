@@ -3,6 +3,7 @@ import {
   DataAdapterCachePrefix,
   DataAdapterCore,
   DataAdapterResult,
+  NetworkCore,
   SpecsDataAdapter,
   StatsigUser,
   _getStorageKey,
@@ -21,9 +22,17 @@ export class StatsigSpecsDataAdapter
     super('SpecsDataAdapter', 'specs');
   }
 
-  override attach(sdkKey: string, options: StatsigOptions | null): void {
-    super.attach(sdkKey, options);
-    this._network = new Network(options ?? {});
+  override attach(
+    sdkKey: string,
+    options: StatsigOptions | null,
+    network: NetworkCore | null,
+  ): void {
+    super.attach(sdkKey, options, network);
+    if (network !== null && network instanceof Network) {
+      this._network = network;
+    } else {
+      this._network = new Network(options ?? {});
+    }
   }
 
   getDataAsync(

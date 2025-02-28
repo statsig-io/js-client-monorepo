@@ -99,7 +99,7 @@ export abstract class StatsigClientBase<
     network.setErrorBoundary(this._errorBoundary);
 
     this.dataAdapter = adapter;
-    this.dataAdapter.attach(sdkKey, options);
+    this.dataAdapter.attach(sdkKey, options, network);
     this.storageProvider = Storage;
 
     this._primeReadyRipcord();

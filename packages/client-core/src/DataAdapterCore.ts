@@ -1,4 +1,5 @@
 import { Log } from './Log';
+import { NetworkCore } from './NetworkCore';
 import { StableID } from './StableID';
 import {
   DataAdapterAsyncOptions,
@@ -36,7 +37,11 @@ export abstract class DataAdapterCore {
     this._inMemoryCache = new InMemoryCache();
   }
 
-  attach(sdkKey: string, options: AnyStatsigOptions | null): void {
+  attach(
+    sdkKey: string,
+    options: AnyStatsigOptions | null,
+    _network: NetworkCore | null,
+  ): void {
     this._sdkKey = sdkKey;
     this._options = options;
   }

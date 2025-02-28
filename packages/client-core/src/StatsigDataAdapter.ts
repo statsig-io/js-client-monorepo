@@ -1,4 +1,5 @@
 import { NetworkPriority } from './NetworkConfig';
+import { NetworkCore } from './NetworkCore';
 import type {
   AnyStatsigOptions,
   NetworkConfigCommon,
@@ -73,7 +74,11 @@ type DataAdapterCommon = {
    * @param {string} sdkKey The SDK key being used by the Statsig client.
    * @param {StatsigOptionsCommon | null} options The StatsigOptions being used by the Statsig client.
    */
-  readonly attach: (sdkKey: string, options: AnyStatsigOptions | null) => void;
+  readonly attach: (
+    sdkKey: string,
+    options: AnyStatsigOptions | null,
+    network: NetworkCore,
+  ) => void;
 };
 
 export type EvaluationsDataAdapter = DataAdapterCommon & {
