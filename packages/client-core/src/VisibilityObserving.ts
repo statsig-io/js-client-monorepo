@@ -52,3 +52,8 @@ _addDocumentEventListenerSafe('visibilitychange', () => {
     document.visibilityState === 'visible' ? FOREGROUND : BACKGROUND,
   );
 });
+
+_addDocumentEventListenerSafe('pagehide', () => {
+  isUnloading = true;
+  _notifyVisibilityChanged(BACKGROUND);
+});
