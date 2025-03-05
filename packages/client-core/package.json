@@ -1,6 +1,7 @@
 {
   "name": "@statsig/client-core",
   "version": "3.12.2",
+  "license": "ISC",
   "dependencies": {},
   "type": "commonjs",
   "main": "./src/index.js",
