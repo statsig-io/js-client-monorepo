@@ -1,9 +1,9 @@
 {
   "name": "@statsig/react-bindings-on-device-eval",
-  "version": "3.12.2",
+  "version": "3.13.0",
   "dependencies": {
-    "@statsig/client-core": "3.12.2",
-    "@statsig/js-on-device-eval-client": "3.12.2"
+    "@statsig/client-core": "3.13.0",
+    "@statsig/js-on-device-eval-client": "3.13.0"
   },
   "peerDependencies": {
     "react": "^16.6.3 || ^17.0.0 || ^18.0.0 || ^19.0.0"
