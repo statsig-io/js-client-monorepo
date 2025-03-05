@@ -97,12 +97,13 @@ export class ErrorBoundary {
         const sdkType = SDKType._get(this._sdkKey);
         const statsigMetadata = StatsigMetadataProvider.get();
         const info = isError ? unwrapped.stack : _getDescription(unwrapped);
-        const body = JSON.stringify({
+        const body = {
           tag,
           exception: name,
           info,
+          statsigOptions: _getStatsigOptionLoggingCopy(this._options),
           ...{ ...statsigMetadata, sdkType },
-        });
+        };
 
         const func = this._options?.networkConfig?.networkOverrideFunc ?? fetch;
         await func(EXCEPTION_ENDPOINT, {
@@ -113,7 +114,7 @@ export class ErrorBoundary {
             'STATSIG-SDK-VERSION': String(statsigMetadata.sdkVersion),
             'Content-Type': 'application/json',
           },
-          body,
+          body: JSON.stringify(body),
         });
 
         this._emitter?.({
@@ -168,4 +169,45 @@ function _getAllInstanceMethodNames(
   }
 
   return Array.from(names);
+}
+
+function _getStatsigOptionLoggingCopy(
+  options: AnyStatsigOptions | null,
+): Record<string, unknown> {
+  if (!options) {
+    return {};
+  }
+
+  const loggingCopy: Record<string, unknown> = {};
+
+  Object.entries(options).forEach(([option, value]) => {
+    const valueType = typeof value;
+    switch (valueType) {
+      case 'number':
+      case 'bigint':
+      case 'boolean':
+        loggingCopy[String(option)] = value;
+        break;
+      case 'string':
+        if ((value as string).length < 50) {
+          loggingCopy[String(option)] = value;
+        } else {
+          loggingCopy[String(option)] = 'set';
+        }
+        break;
+      case 'object':
+        if (option === 'environment') {
+          loggingCopy['environment'] = value;
+        } else if (option === 'networkConfig') {
+          loggingCopy['networkConfig'] = value;
+        } else {
+          loggingCopy[String(option)] = value != null ? 'set' : 'unset';
+        }
+        break;
+      default:
+      // Ignore other fields
+    }
+  });
+
+  return loggingCopy;
 }
