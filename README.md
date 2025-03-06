@@ -46,4 +46,4 @@ Framework Specific Bindings
 
 ## Community
 
-If you need any assitance or just have a question, feel free to reach out to us on [Slack](https://statsig.com/community?ref=gh_jsm).
+If you need any assistance or just have a question, feel free to reach out to us on [Slack](https://statsig.com/community?ref=gh_jsm).
