@@ -23,6 +23,7 @@ type EvaluationsFetchArgs = {
 
 export default class StatsigNetwork extends NetworkCore {
   private _initializeUrlConfig: UrlConfiguration;
+  private _option: StatsigOptions | null;
 
   constructor(
     options: StatsigOptions | null,
@@ -31,6 +32,7 @@ export default class StatsigNetwork extends NetworkCore {
     super(options, emitter);
 
     const config = options?.networkConfig;
+    this._option = options;
     this._initializeUrlConfig = new UrlConfiguration(
       Endpoint._initialize,
       config?.initializeUrl,
@@ -56,15 +58,19 @@ export default class StatsigNetwork extends NetworkCore {
 
     let data: EvaluationsFetchArgs = {
       user,
-      hash: 'djb2',
+      hash: this._option?.networkConfig?.initializeHashAlgorithm ?? 'djb2',
       deltasResponseRequested: false,
       full_checksum: null,
     };
 
     if (cache?.has_updates) {
+      const hasHashChanged =
+        cache?.hash_used !==
+        (this._option?.networkConfig?.initializeHashAlgorithm ?? 'djb2');
+
       data = {
         ...data,
-        sinceTime: isCacheValidFor204 ? cache.time : 0,
+        sinceTime: isCacheValidFor204 && !hasHashChanged ? cache.time : 0,
         previousDerivedFields:
           'derived_fields' in cache && isCacheValidFor204
             ? cache.derived_fields

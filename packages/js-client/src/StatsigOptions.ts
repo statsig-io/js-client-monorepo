@@ -22,6 +22,13 @@ type UrlOverrideOptions = Flatten<
      * A list of URLs to try if the primary initializeUrl fails.
      */
     initializeFallbackUrls?: string[];
+
+    /**
+     * The hashing algorithm applied to the initialization response.
+     *
+     * default: `djb2`
+     */
+    initializeHashAlgorithm?: 'djb2' | 'sha256' | 'none';
   }
 >;
 
