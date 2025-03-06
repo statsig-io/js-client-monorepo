@@ -24,8 +24,7 @@ const BODY = {
   isCompressable: true,
 };
 
-// describe('Log Event Compression', () => {
-describe('this_test', () => {
+describe('Log Event Compression', () => {
   const setCompressionFlag = (flag: boolean) => {
     SDKFlags.setFlags(SDK_KEY, {
       enable_log_event_compression: flag,
