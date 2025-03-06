@@ -24,7 +24,8 @@ const BODY = {
   isCompressable: true,
 };
 
-describe('Log Event Compression', () => {
+// describe('Log Event Compression', () => {
+describe('this_test', () => {
   const setCompressionFlag = (flag: boolean) => {
     SDKFlags.setFlags(SDK_KEY, {
       enable_log_event_compression: flag,
@@ -43,7 +44,18 @@ describe('Log Event Compression', () => {
     network = new NetworkCore({});
   });
 
-  it('should compress the body if the flag is enabled', async () => {
+  it('should compress the body by default even if the flag is false', async () => {
+    setCompressionFlag(false);
+    BODY.isCompressable = true;
+
+    await network.post(BODY);
+    const [url, options] = fetchMock.mock.calls[0];
+
+    expect(url).toContain('gz=1');
+    expect(options?.body?.constructor.name).toBe('Uint8Array');
+  });
+
+  it('should compress the body by default when flag is on', async () => {
     setCompressionFlag(true);
     BODY.isCompressable = true;
 
@@ -54,15 +66,90 @@ describe('Log Event Compression', () => {
     expect(options?.body?.constructor.name).toBe('Uint8Array');
   });
 
-  it('should not compress the body if the flag is disabled', async () => {
+  it('should not compress the body if custom url is used and the flag is disabled', async () => {
     setCompressionFlag(false);
-    BODY.isCompressable = true;
+    const BODY = {
+      sdkKey: SDK_KEY,
+      data: {
+        values: [1, 2, 3],
+      },
+      urlConfig: new UrlConfiguration(
+        Endpoint._rgstr,
+        'proxy-used.com',
+        null,
+        null,
+      ),
+      isCompressable: true,
+    };
 
     await network.post(BODY);
     const [url, options] = fetchMock.mock.calls[0];
 
     expect(url).not.toContain('gz=1');
     expect(options?.body?.constructor.name).toBe('String');
+  });
+
+  it('should not compress the body if fallback url is used and the flag is disabled', async () => {
+    setCompressionFlag(false);
+    const BODY = {
+      sdkKey: SDK_KEY,
+      data: {
+        values: [1, 2, 3],
+      },
+      urlConfig: new UrlConfiguration(Endpoint._rgstr, null, null, [
+        'fallback.com',
+      ]),
+      isCompressable: true,
+    };
+
+    await network.post(BODY);
+    const [url, options] = fetchMock.mock.calls[0];
+
+    expect(url).not.toContain('gz=1');
+    expect(options?.body?.constructor.name).toBe('String');
+  });
+
+  it('should compress the body if custom url is used and the flag is enabled', async () => {
+    setCompressionFlag(true);
+    const BODY = {
+      sdkKey: SDK_KEY,
+      data: {
+        values: [1, 2, 3],
+      },
+      urlConfig: new UrlConfiguration(
+        Endpoint._rgstr,
+        'proxy-used.com',
+        null,
+        null,
+      ),
+      isCompressable: true,
+    };
+
+    await network.post(BODY);
+    const [url, options] = fetchMock.mock.calls[0];
+
+    expect(url).toContain('gz=1');
+    expect(options?.body?.constructor.name).toBe('Uint8Array');
+  });
+
+  it('should compress the body if fallback url is used and the flag is enabled', async () => {
+    setCompressionFlag(true);
+    const BODY = {
+      sdkKey: SDK_KEY,
+      data: {
+        values: [1, 2, 3],
+      },
+      urlConfig: new UrlConfiguration(Endpoint._rgstr, null, null, [
+        'fallback.com',
+      ]),
+      isCompressable: true,
+    };
+
+    await network.post(BODY);
+    const [url, options] = fetchMock.mock.calls[0];
+
+    expect(url).toContain('gz=1');
+    expect(options?.body?.constructor.name).toBe('Uint8Array');
   });
 
   it('should not compress the body if the body is not compressable', async () => {

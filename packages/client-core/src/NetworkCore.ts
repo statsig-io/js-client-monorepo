@@ -355,15 +355,7 @@ export class NetworkCore {
 
   private async _tryToCompressBody(args: RequestArgsInternal): Promise<void> {
     const body = args.body;
-    if (
-      !args.isCompressable ||
-      this._options.disableCompression ||
-      typeof body !== 'string' ||
-      SDKFlags.get(args.sdkKey, 'enable_log_event_compression') !== true ||
-      _getStatsigGlobalFlag('no-compress') != null ||
-      typeof CompressionStream === 'undefined' ||
-      typeof TextEncoder === 'undefined'
-    ) {
+    if (typeof body !== 'string' || !_allowCompression(args, this._options)) {
       return;
     }
 
@@ -453,6 +445,32 @@ const _populateRequestBody = (
     },
   });
 };
+
+function _allowCompression(
+  args: RequestArgsInternal,
+  options: AnyStatsigOptions,
+): boolean {
+  if (!args.isCompressable) {
+    return false;
+  }
+  if (options.disableCompression) {
+    return false;
+  }
+  if (
+    (args.urlConfig.customUrl != null || args.urlConfig.fallbackUrls != null) &&
+    SDKFlags.get(args.sdkKey, 'enable_log_event_compression') !== true
+  ) {
+    return false;
+  }
+  if (
+    _getStatsigGlobalFlag('no-compress') != null ||
+    typeof CompressionStream === 'undefined' ||
+    typeof TextEncoder === 'undefined'
+  ) {
+    return false;
+  }
+  return true;
+}
 
 function _getErrorMessage(
   controller: AbortController | null,
