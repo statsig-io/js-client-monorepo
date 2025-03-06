@@ -20,6 +20,8 @@ const DEFAULT_INIT_URL_CONFIG = new UrlConfiguration(
   null,
 );
 
+const DEFAULT_CHECKSUM = DEFAULT_INIT_URL_CONFIG.getChecksum();
+
 Object.defineProperty(global, 'performance', {
   writable: true,
 });
@@ -43,6 +45,7 @@ describe('NetworkFallbackResolver', () => {
     it('wipes fallback info when expired', () => {
       mockStorage.data[STORAGE_KEY] = JSON.stringify({
         initialize: {
+          urlConfigChecksum: DEFAULT_CHECKSUM,
           url: 'fallback.example.com',
           previous: [],
           expiryTime: Date.now() - 10000,
@@ -61,6 +64,7 @@ describe('NetworkFallbackResolver', () => {
     it('bumps expiry time when url is successfully used', () => {
       mockStorage.data[STORAGE_KEY] = JSON.stringify({
         initialize: {
+          urlConfigChecksum: DEFAULT_CHECKSUM,
           url: 'fallback.example.com',
           previous: [],
           expiryTime: Date.now() + 999,
@@ -73,6 +77,76 @@ describe('NetworkFallbackResolver', () => {
       const cache = JSON.parse(mockStorage.data[STORAGE_KEY])['initialize'];
       expect(cache.url).toEqual(anyString());
       expect(cache.expiryTime).toBeGreaterThan(Date.now() + SIX_DAYS);
+    });
+  });
+
+  describe('when url config changes', () => {
+    it('wipes fallback info when custom url changed', () => {
+      const urlConfig = new UrlConfiguration(
+        Endpoint._initialize,
+        'https://new.example.com',
+        null,
+        null,
+      );
+
+      mockStorage.data[STORAGE_KEY] = JSON.stringify({
+        initialize: {
+          urlConfigChecksum: urlConfig.getChecksum(),
+          url: 'fallback.example.com',
+          previous: [],
+          expiryTime: Date.now() - 10000,
+        },
+      });
+
+      const result = resolver.getActiveFallbackUrl(SDK_KEY, urlConfig);
+
+      expect(result).toBeNull();
+      expect(mockStorage.data[STORAGE_KEY]).toBeUndefined();
+    });
+
+    it('wipes fallback info when fallback urls changed', () => {
+      const changedConfig = new UrlConfiguration(
+        Endpoint._initialize,
+        null,
+        null,
+        ['fallback.example.com', 'fallback3.example.com'],
+      );
+
+      mockStorage.data[STORAGE_KEY] = JSON.stringify({
+        initialize: {
+          urlConfigChecksum: DEFAULT_CHECKSUM,
+          url: 'fallback.example.com',
+          previous: [],
+          expiryTime: Date.now() + 999,
+        },
+      });
+
+      const result = resolver.getActiveFallbackUrl(SDK_KEY, changedConfig);
+
+      expect(result).toBeNull();
+      expect(mockStorage.data[STORAGE_KEY]).toBeUndefined();
+    });
+
+    it('does not throw when no original url info in cache ', () => {
+      mockStorage.data[STORAGE_KEY] = JSON.stringify({
+        initialize: {
+          url: 'fallback.example.com',
+          previous: [],
+          expiryTime: Date.now() + 999,
+        },
+      });
+
+      const changedConfig = new UrlConfiguration(
+        Endpoint._initialize,
+        null,
+        null,
+        ['fallback.example.com', 'fallback3.example.com'],
+      );
+
+      const result = resolver.getActiveFallbackUrl(SDK_KEY, changedConfig);
+
+      expect(result).toBeNull();
+      expect(mockStorage.data[STORAGE_KEY]).toBeUndefined();
     });
   });
 

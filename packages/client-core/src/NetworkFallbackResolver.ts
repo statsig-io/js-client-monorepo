@@ -12,6 +12,7 @@ export type FallbackResolverArgs = {
 };
 
 type FallbackInfoEntry = {
+  urlConfigChecksum: string;
   url: string | null;
   previous: string[];
   expiryTime: number;
@@ -57,6 +58,10 @@ export class NetworkFallbackResolver {
     sdkKey: string,
     urlConfig: UrlConfiguration,
   ): string | null {
+    if (urlConfig.customUrl != null && urlConfig.fallbackUrls != null) {
+      return null;
+    }
+
     let info = this._fallbackInfo;
     if (info == null) {
       info = _readFallbackInfoFromCache(sdkKey) ?? {};
@@ -64,7 +69,11 @@ export class NetworkFallbackResolver {
     }
 
     const entry = info[urlConfig.endpoint];
-    if (!entry || Date.now() > (entry.expiryTime ?? 0)) {
+    if (
+      !entry ||
+      Date.now() > (entry.expiryTime ?? 0) ||
+      urlConfig.getChecksum() !== entry.urlConfigChecksum
+    ) {
       delete info[urlConfig.endpoint];
 
       this._fallbackInfo = info;
@@ -74,15 +83,6 @@ export class NetworkFallbackResolver {
 
     if (entry.url) {
       return entry.url;
-    }
-
-    return null;
-  }
-
-  public getFallbackFromProvided(url: string): string | null {
-    const path = _extractPathFromUrl(url);
-    if (path) {
-      return url.replace(path, '');
     }
 
     return null;
@@ -114,7 +114,7 @@ export class NetworkFallbackResolver {
         return false;
       }
 
-      this._updateFallbackInfoWithNewUrl(sdkKey, urlConfig.endpoint, newUrl);
+      this._updateFallbackInfoWithNewUrl(sdkKey, urlConfig, newUrl);
 
       return true;
     } catch (error) {
@@ -125,14 +125,16 @@ export class NetworkFallbackResolver {
 
   private _updateFallbackInfoWithNewUrl(
     sdkKey: string,
-    endpoint: Endpoint,
+    urlConfig: UrlConfiguration,
     newUrl: string,
   ): void {
     const newFallbackInfo: FallbackInfoEntry = {
+      urlConfigChecksum: urlConfig.getChecksum(),
       url: newUrl,
       expiryTime: Date.now() + DEFAULT_TTL_MS,
       previous: [],
     };
+    const endpoint = urlConfig.endpoint;
 
     const previousInfo = this._fallbackInfo?.[endpoint];
     if (previousInfo) {

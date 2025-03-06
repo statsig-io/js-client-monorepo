@@ -230,7 +230,8 @@
       "$_bumpInactiveTimer": "Ni",
       "$_makeDataAdapterResult": "Wn",
       "$_tryToCompressBody": "Ci",
-      "$_tryEncodeBody": "Pi"
+      "$_tryEncodeBody": "Pi",
+      "$_mapExposures": "Ui"
     }
   }
 }

@@ -99,23 +99,23 @@ describe('Url Fallbacks Via StatsigOptions', () => {
     });
 
     it('returns fallback URL when a custom URL is requested', () => {
+      const urlConfig = new UrlConfiguration(
+        Endpoint._initialize,
+        'https://my-custom-proxy.com/v1/initialize',
+        null,
+        null,
+      );
+
       mockStorage.data[STORAGE_KEY] = JSON.stringify({
         initialize: {
+          urlConfigChecksum: urlConfig.getChecksum(),
           url: 'https://fallback.example.com/v1/initialize',
           previous: [],
           expiryTime: Date.now() + 3600000,
         },
       });
 
-      const result = resolver.getActiveFallbackUrl(
-        SDK_KEY,
-        new UrlConfiguration(
-          Endpoint._initialize,
-          'https://my-custom-proxy.com/v1/initialize',
-          null,
-          null,
-        ),
-      );
+      const result = resolver.getActiveFallbackUrl(SDK_KEY, urlConfig);
       expect(result).toBe('https://fallback.example.com/v1/initialize');
     });
   });

@@ -16,6 +16,8 @@ const DEFAULT_INIT_URL_CONFIG = new UrlConfiguration(
   null,
 );
 
+const DEFAULT_CHECKSUM = DEFAULT_INIT_URL_CONFIG.getChecksum();
+
 Object.defineProperty(global, 'performance', {
   writable: true,
 });
@@ -59,6 +61,7 @@ describe('Url Fallbacks Via DNS Lookup', () => {
       beforeEach(() => {
         mockStorage.data[STORAGE_KEY] = JSON.stringify({
           initialize: {
+            urlConfigChecksum: DEFAULT_CHECKSUM,
             url: 'https://fallback.example.com/v1/initialize',
             previous: [],
             expiryTime: Date.now() + 3600000,

@@ -1,3 +1,4 @@
+import { _DJB2 } from './Hashing';
 import { Endpoint, NetworkDefault } from './NetworkConfig';
 
 export type EndpointDnsKey = 'i' | 'e' | 'd';
@@ -44,5 +45,10 @@ export class UrlConfiguration {
 
   getUrl(): string {
     return this.customUrl ?? this.defaultUrl;
+  }
+
+  getChecksum(): string {
+    const fallbacks = (this.fallbackUrls ?? []).sort().join(',');
+    return _DJB2(this.customUrl + fallbacks);
   }
 }
