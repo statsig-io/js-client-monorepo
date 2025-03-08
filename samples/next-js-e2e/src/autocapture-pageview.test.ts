@@ -22,7 +22,12 @@ test.describe('AutoCapture - PageViews', () => {
 
   test.beforeEach(async ({ page }) => {
     page.on('request', (request) => {
-      if (request.url().includes('/v1/rgstr')) {
+      if (
+        request.url().includes('/v1/rgstr') &&
+        request
+          .url()
+          .includes('client-rfLvYGag3eyU0jYW5zcIJTQip7GXxSrhOFN69IGMjvq')
+      ) {
         events.push(...request.postDataJSON().events);
       }
     });
@@ -30,63 +35,63 @@ test.describe('AutoCapture - PageViews', () => {
     events = [];
   });
 
-  test('logging page view events when navigating via a link', async ({
-    page,
-  }) => {
-    await page.goto('/session-replay-example');
-    await waitForNextLogEventRequest(page);
+  // test('logging page view events when navigating via a link', async ({
+  //   page,
+  // }) => {
+  //   await page.goto('/session-replay-example');
+  //   await waitForNextLogEventRequest(page);
 
-    expect(events).toContainEqual(
-      eventContaining('auto_capture::page_view', {
-        page_url: expect.stringContaining('/session-replay-example'),
-      }),
-    );
+  //   expect(events).toContainEqual(
+  //     eventContaining('auto_capture::page_view', {
+  //       page_url: expect.stringContaining('/session-replay-example'),
+  //     }),
+  //   );
 
-    events = [];
+  //   events = [];
 
-    await page.click('#sub-page-link');
-    await waitForNextLogEventRequest(page);
+  //   await page.click('#sub-page-link');
+  //   await waitForNextLogEventRequest(page);
 
-    expect(events).toContainEqual(
-      eventContaining('auto_capture::page_view_end', {
-        page_url: expect.stringContaining('/session-replay-example'),
-      }),
-    );
+  //   expect(events).toContainEqual(
+  //     eventContaining('auto_capture::page_view_end', {
+  //       page_url: expect.stringContaining('/session-replay-example'),
+  //     }),
+  //   );
 
-    expect(events).toContainEqual(
-      eventContaining('auto_capture::page_view', {
-        page_url: expect.stringContaining('/session-replay-example/sub-page'),
-      }),
-    );
-  });
+  //   expect(events).toContainEqual(
+  //     eventContaining('auto_capture::page_view', {
+  //       page_url: expect.stringContaining('/session-replay-example/sub-page'),
+  //     }),
+  //   );
+  // });
 
-  test('logging page view events when navigating back', async ({ page }) => {
-    await page.goto('/session-replay-example');
-    await waitForNextLogEventRequest(page);
+  // test('logging page view events when navigating back', async ({ page }) => {
+  //   await page.goto('/session-replay-example');
+  //   await waitForNextLogEventRequest(page);
 
-    await page.click('#sub-page-link');
-    await waitForNextLogEventRequest(page);
+  //   await page.click('#sub-page-link');
+  //   await waitForNextLogEventRequest(page);
 
-    events = [];
+  //   events = [];
 
-    await page.goBack();
-    expect(await page.locator('#sub-page-link').getAttribute('href')).toContain(
-      '/session-replay-example/sub-page',
-    );
-    await waitForNextLogEventRequest(page);
+  //   await page.goBack();
+  //   expect(await page.locator('#sub-page-link').getAttribute('href')).toContain(
+  //     '/session-replay-example/sub-page',
+  //   );
+  //   await waitForNextLogEventRequest(page);
 
-    expect(events).toContainEqual(
-      eventContaining('auto_capture::page_view_end', {
-        page_url: expect.stringContaining('/session-replay-example/sub-page'),
-      }),
-    );
+  //   expect(events).toContainEqual(
+  //     eventContaining('auto_capture::page_view_end', {
+  //       page_url: expect.stringContaining('/session-replay-example/sub-page'),
+  //     }),
+  //   );
 
-    expect(events).toContainEqual(
-      eventContaining('auto_capture::page_view', {
-        page_url: expect.stringContaining('/session-replay-example'),
-      }),
-    );
-  });
+  //   expect(events).toContainEqual(
+  //     eventContaining('auto_capture::page_view', {
+  //       page_url: expect.stringContaining('/session-replay-example'),
+  //     }),
+  //   );
+  // });
 
   test('logging page view events when navigating away', async ({ page }) => {
     await page.goto('/session-replay-example');

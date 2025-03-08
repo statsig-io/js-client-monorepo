@@ -47,7 +47,7 @@ describe('Url Overriding', () => {
       await client.flush();
 
       // /rgstr (sendBeacon)
-      window.dispatchEvent(new Event('beforeunload'));
+      window.dispatchEvent(new Event('pagehide'));
       client.logEvent({ eventName: 'my-event' }, user);
       await client.shutdown();
     };
@@ -114,7 +114,7 @@ describe('Url Overriding', () => {
       await client.flush();
 
       // /rgstr (sendBeacon)
-      window.dispatchEvent(new Event('beforeunload'));
+      window.dispatchEvent(new Event('pagehide'));
       client.logEvent({ eventName: 'my-event' });
       await client.shutdown();
     };

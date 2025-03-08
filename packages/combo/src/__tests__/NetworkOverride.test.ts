@@ -28,7 +28,7 @@ describe('Network Override', () => {
       },
     );
 
-    window.dispatchEvent(new Event('beforeunload'));
+    window.dispatchEvent(new Event('pagehide'));
 
     // /v1/initialize
     await client.initializeAsync();

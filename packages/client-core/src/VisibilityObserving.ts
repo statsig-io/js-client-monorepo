@@ -1,6 +1,7 @@
 import {
   _addDocumentEventListenerSafe,
   _addWindowEventListenerSafe,
+  _getUnloadEvent,
 } from './SafeJs';
 
 const FOREGROUND = 'foreground';
@@ -42,18 +43,13 @@ _addWindowEventListenerSafe('focus', () => {
 
 _addWindowEventListenerSafe('blur', () => _notifyVisibilityChanged(BACKGROUND));
 
-_addWindowEventListenerSafe('beforeunload', () => {
-  isUnloading = true;
-  _notifyVisibilityChanged(BACKGROUND);
-});
-
 _addDocumentEventListenerSafe('visibilitychange', () => {
   _notifyVisibilityChanged(
     document.visibilityState === 'visible' ? FOREGROUND : BACKGROUND,
   );
 });
 
-_addDocumentEventListenerSafe('pagehide', () => {
+_addWindowEventListenerSafe(_getUnloadEvent(), () => {
   isUnloading = true;
   _notifyVisibilityChanged(BACKGROUND);
 });

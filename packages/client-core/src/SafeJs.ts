@@ -51,3 +51,12 @@ export const _getCurrentPageUrlSafe = (): string | undefined => {
     return;
   }
 };
+
+export const _getUnloadEvent = (): string => {
+  const win = _getWindowSafe();
+  if (!win) {
+    return 'beforeunload';
+  }
+  const eventType = 'onpagehide' in win ? 'pagehide' : 'beforeunload';
+  return eventType;
+};

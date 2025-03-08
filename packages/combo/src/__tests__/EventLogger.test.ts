@@ -70,21 +70,6 @@ describe('Event Logger', () => {
     ]);
   });
 
-  it('flushes when unloading', async () => {
-    const client = new StatsigClient('my-key', {}, { loggingIntervalMs: 1 });
-    client.initializeSync();
-
-    client.logEvent('one');
-
-    window.dispatchEvent(new Event('beforeunload'));
-    await timeout(1);
-
-    expect(getLogEventCalls()[0]).toEqual([
-      anyStringContaining('/v1/rgstr'),
-      anyObject(),
-    ]);
-  });
-
   it('flushes when pagehide', async () => {
     const client = new StatsigClient('my-key', {}, { loggingIntervalMs: 1 });
     client.initializeSync();
