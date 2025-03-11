@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from 'react';
+import { useMemo, useState } from 'react';
 
 import { Log, StatsigUser, _getInstance } from '@statsig/client-core';
 import { StatsigClient, StatsigOptions } from '@statsig/js-client';
@@ -13,30 +13,23 @@ export function useStatsigInternalClientFactoryAsync<T extends StatsigClient>(
   factory: (args: FactoryArgs) => T,
   args: FactoryArgs,
 ): { isLoading: boolean; client: T } {
-  const [isLoading, setIsLoading] = useState(true);
-  const clientRef = useRef<T | null>(_getInstance(args.sdkKey) as T | null);
+  const client = useMemo(
+    () => (_getInstance(args.sdkKey) as T | undefined) ?? factory(args),
+    [],
+  );
 
-  const client = useMemo(() => {
-    if (clientRef.current) {
-      // Repeat calls to initializeAsync return the same promise
-      clientRef.current
+  const [isLoading, setIsLoading] = useState(client.loadingStatus !== 'Ready');
+
+  useMemo(() => {
+    if (client.loadingStatus !== 'Ready') {
+      // Repeat calls to initializeAsync return the same promise.
+      // But if the client is already loaded, we don't want the promise
+      // resolution to trigger an extra render on `setIsLoading(false)`
+      client
         .initializeAsync()
         .catch(Log.error)
         .finally(() => setIsLoading(false));
-
-      return clientRef.current;
     }
-
-    const inst = factory(args);
-
-    clientRef.current = inst;
-
-    inst
-      .initializeAsync()
-      .catch(Log.error)
-      .finally(() => setIsLoading(false));
-
-    return inst;
   }, []);
 
   return { client, isLoading };
