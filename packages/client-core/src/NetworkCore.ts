@@ -46,6 +46,7 @@ type RequestArgs = {
     string,
     string
   >;
+  credentials?: RequestCredentials;
 };
 
 type DataFlags = {

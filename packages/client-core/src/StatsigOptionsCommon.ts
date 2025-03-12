@@ -23,6 +23,11 @@ export type StatsigRuntimeMutableOptions = {
    * default: `false`
    */
   disableCompression?: boolean;
+
+  /**
+   * Opt in cookie usage.
+   */
+  enableCookies?: boolean;
 };
 
 export type NetworkConfigCommon = {

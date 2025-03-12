@@ -290,6 +290,7 @@ export class EventLogger {
       params: {
         [NetworkParam.EventCount]: String(events.length),
       },
+      credentials: 'same-origin',
     };
   }
 

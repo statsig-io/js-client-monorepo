@@ -13,6 +13,7 @@ import { NetworkCore } from './NetworkCore';
 import { OverrideAdapter } from './OverrideAdapter';
 import { _isServerEnv } from './SafeJs';
 import { StatsigSession } from './SessionID';
+import { StableID } from './StableID';
 import {
   AnyStatsigClientEvent,
   AnyStatsigClientEventListener,
@@ -85,6 +86,8 @@ export abstract class StatsigClientBase<
     options?.initialSessionID &&
       StatsigSession.overrideInitialSessionID(options.initialSessionID, sdkKey);
     options?.storageProvider && Storage._setProvider(options.storageProvider);
+    options?.enableCookies &&
+      this.updateRuntimeOptions({ enableCookies: options.enableCookies });
 
     this._sdkKey = sdkKey;
     this._options = options ?? {};
@@ -121,6 +124,11 @@ export abstract class StatsigClientBase<
     if (options.disableStorage != null) {
       this._options.disableStorage = options.disableStorage;
       Storage._setDisabled(options.disableStorage);
+    }
+
+    if (options.enableCookies != null) {
+      this._options.enableCookies = options.enableCookies;
+      StableID._setCookiesEnabled(this._sdkKey, options.enableCookies);
     }
   }
 
