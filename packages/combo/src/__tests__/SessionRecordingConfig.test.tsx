@@ -55,6 +55,8 @@ describe('Session Recording RRWeb Config', () => {
       </StatsigProvider>,
     );
 
+    await new Promise((r) => setTimeout(r, 1));
+
     // trigger flush
     _notifyVisibilityChanged('background');
     _notifyVisibilityChanged('foreground');

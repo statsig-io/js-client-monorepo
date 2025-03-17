@@ -72,7 +72,7 @@ export class SessionReplay {
   private _replayer: SessionReplayClient;
   private _sessionData: ReplaySessionData | null = null;
   private _events: ReplayEvent[] = [];
-  private _currentSessionID: Promise<string>;
+  private _currentSessionID: string;
   private _errorBoundary: ErrorBoundary;
 
   constructor(
@@ -137,6 +137,14 @@ export class SessionReplay {
   }
 
   private _onRecordingEvent(event: ReplayEvent, data: ReplaySessionData) {
+    // The session has expired so we should stop recording
+    if (this._currentSessionID !== this._getSessionIdFromClient()) {
+      this._replayer.stop();
+      StatsigMetadataProvider.add({ isRecordingSession: 'false' });
+      this._logRecording('session_expired');
+      return;
+    }
+
     this._sessionData = data;
 
     const eventApproxSize = _fastApproxSizeOf(
@@ -207,14 +215,7 @@ export class SessionReplay {
     }
 
     endReason = _isUnloading() ? 'is_leaving_page' : endReason;
-
-    this._currentSessionID
-      .then((sessionID) =>
-        this._logRecordingWithSessionID(sessionID, endReason),
-      )
-      .catch((err) => {
-        this._errorBoundary.logError('SR::flush', err);
-      });
+    this._logRecordingWithSessionID(this._currentSessionID, endReason);
   }
 
   private _logRecordingWithSessionID(sessionID: string, endReason?: EndReason) {
@@ -263,7 +264,7 @@ export class SessionReplay {
     this._logRecording();
   }
 
-  private async _getSessionIdFromClient() {
+  private _getSessionIdFromClient() {
     return this._client.getContext().session.data.sessionID;
   }
 }
