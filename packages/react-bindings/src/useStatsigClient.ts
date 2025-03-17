@@ -12,6 +12,7 @@ type HositedFuncs = Pick<
   | 'getDynamicConfig'
   | 'getExperiment'
   | 'getLayer'
+  | 'getParameterStore'
   | 'logEvent'
 >;
 
@@ -62,6 +63,13 @@ export function useStatsigClient(): Output {
     return client.getLayer(name, options);
   }, deps);
 
+  const getParameterStore: HositedFuncs['getParameterStore'] = useCallback(
+    (name, options) => {
+      return client.getParameterStore(name, options);
+    },
+    deps,
+  );
+
   const logEvent: HositedFuncs['logEvent'] = useCallback(
     (eventName, value?: string | number, metadata?: Record<string, string>) => {
       if (typeof eventName === 'string') {
@@ -80,6 +88,7 @@ export function useStatsigClient(): Output {
       getDynamicConfig,
       getExperiment,
       getLayer,
+      getParameterStore,
       logEvent,
     };
   }, [
@@ -89,6 +98,7 @@ export function useStatsigClient(): Output {
     getDynamicConfig,
     getExperiment,
     getLayer,
+    getParameterStore,
     logEvent,
   ]);
 }
