@@ -2,7 +2,12 @@
   "private": true,
   "name": "statsig",
   "version": "3.14.1",
-  "license": "MIT",
+  "license": "ISC",
+  "homepage": "https://github.com/statsig-io/js-client-monorepo",
+  "repository": {
+    "type": "git",
+    "url": "github:statsig-io/js-client-monorepo"
+  },
   "scripts": {
     "preinstall": "npx only-allow pnpm",
     "lint": "nx run-many --parallel=5 --target=lint",
