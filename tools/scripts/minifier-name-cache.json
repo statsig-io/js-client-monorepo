@@ -231,7 +231,9 @@
       "$_makeDataAdapterResult": "Wn",
       "$_tryToCompressBody": "Ci",
       "$_tryEncodeBody": "Pi",
-      "$_mapExposures": "Ui"
+      "$_mapExposures": "Ui",
+      "$_getUnloadEvent": "Hn",
+      "$_setCookiesEnabled": "Xn"
     }
   }
 }
