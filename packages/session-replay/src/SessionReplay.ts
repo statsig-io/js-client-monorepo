@@ -114,7 +114,7 @@ export class SessionReplay {
     const { sdkKey } = this._client.getContext();
 
     _subscribeToVisiblityChanged((vis) => {
-      const inst = __STATSIG__?.srInstances?.[sdkKey];
+      const inst = _getStatsigGlobal()?.srInstances?.[sdkKey];
       if (inst instanceof SessionReplay) {
         inst._onVisibilityChanged(vis);
       }

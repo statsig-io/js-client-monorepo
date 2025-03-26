@@ -1,4 +1,4 @@
-import { StatsigGlobal } from '@statsig/client-core';
+import { StatsigGlobal, _getStatsigGlobal } from '@statsig/client-core';
 
 import {
   AutoCapture,
@@ -11,11 +11,10 @@ export { AutoCaptureEventName } from './AutoCaptureEvent';
 
 export { AutoCapture, runStatsigAutoCapture, StatsigAutoCapturePlugin };
 
-__STATSIG__ = {
-  ...(__STATSIG__ ?? {}),
+const __STATSIG__: StatsigGlobal = Object.assign(_getStatsigGlobal() ?? {}, {
   AutoCapture,
   runStatsigAutoCapture,
   StatsigAutoCapturePlugin,
-} as StatsigGlobal;
+});
 
 export default __STATSIG__;

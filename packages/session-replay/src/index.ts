@@ -1,4 +1,4 @@
-import { StatsigGlobal } from '@statsig/client-core';
+import { _getStatsigGlobal } from '@statsig/client-core';
 
 import {
   SessionReplay,
@@ -19,10 +19,9 @@ export {
   StatsigSessionReplayPlugin,
 };
 
-__STATSIG__ = {
-  ...(__STATSIG__ ?? {}),
+Object.assign(_getStatsigGlobal() ?? {}, {
   SessionReplayClient,
   SessionReplay,
   runStatsigSessionReplay,
   StatsigSessionReplayPlugin,
-} as StatsigGlobal;
+});

@@ -1,3 +1,4 @@
+import { _getStatsigGlobal } from './$_StatsigGlobal';
 import { _getStorageKey } from './CacheKey';
 import { Log } from './Log';
 import { _getObjectFromStorage, _setObjectInStorage } from './StorageProvider';
@@ -104,7 +105,7 @@ function _createSessionTimeout(
   duration: number,
 ): SessionTimeoutID {
   return setTimeout(() => {
-    const client = __STATSIG__?.instance(sdkKey);
+    const client = _getStatsigGlobal()?.instance(sdkKey);
     if (client) {
       client.$emt({ name: 'session_expired' });
     }

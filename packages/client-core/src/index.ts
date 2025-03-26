@@ -1,6 +1,6 @@
 /** Statsig Global should go first */
 import './$_StatsigGlobal';
-import { StatsigGlobal } from './$_StatsigGlobal';
+import { _getStatsigGlobal } from './$_StatsigGlobal';
 import { Diagnostics } from './Diagnostics';
 import { EventLogger } from './EventLogger';
 import { Log } from './Log';
@@ -49,8 +49,4 @@ export * from './SDKFlags';
 
 export { Diagnostics, EventLogger, Log, Storage };
 
-__STATSIG__ = {
-  ...(__STATSIG__ ?? {}),
-  Log,
-  SDK_VERSION,
-} as StatsigGlobal;
+Object.assign(_getStatsigGlobal() ?? {}, { Log, SDK_VERSION });

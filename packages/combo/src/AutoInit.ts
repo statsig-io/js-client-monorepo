@@ -2,6 +2,7 @@ import {
   Log,
   _getCurrentPageUrlSafe,
   _getDocumentSafe,
+  _getStatsigGlobal,
   _getWindowSafe,
 } from '@statsig/client-core';
 import { StatsigClient, StatsigOptions } from '@statsig/js-client';
@@ -77,7 +78,7 @@ export abstract class AutoInit {
         };
       }
 
-      const current: unknown = __STATSIG__?.instances?.[sdkKey];
+      const current: unknown = _getStatsigGlobal()?.instances?.[sdkKey];
       let client: StatsigClient | null = null;
       if (current instanceof StatsigClient) {
         client = current;
