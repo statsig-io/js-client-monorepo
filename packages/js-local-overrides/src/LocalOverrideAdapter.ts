@@ -3,12 +3,14 @@ import {
   Experiment,
   FeatureGate,
   Layer,
+  Log,
   OverrideAdapter,
   StatsigUser,
   Storage,
   _DJB2,
   _getStorageKey,
   _makeTypedGet,
+  _typedJsonParse,
 } from '@statsig/client-core';
 
 const LOCAL_OVERRIDE_REASON = 'LocalOverride:Recognized';
@@ -29,31 +31,75 @@ function _makeEmptyStore(): OverrideStore {
   };
 }
 
+function _mergeOverrides(
+  currentValues: OverrideStore,
+  newValues: OverrideStore,
+): OverrideStore {
+  return {
+    gate: Object.assign({}, currentValues.gate, newValues.gate),
+    dynamicConfig: Object.assign(
+      {},
+      currentValues.dynamicConfig,
+      newValues.dynamicConfig,
+    ),
+    experiment: Object.assign(
+      {},
+      currentValues.experiment,
+      newValues.experiment,
+    ),
+    layer: Object.assign({}, currentValues.layer, newValues.layer),
+  };
+}
+
 export class LocalOverrideAdapter implements OverrideAdapter {
   private _overrides = _makeEmptyStore();
   private _sdkKey: string | null;
 
   constructor(sdkKey?: string) {
     this._sdkKey = sdkKey ?? null;
-    this._overrides = this._loadOverridesFromStorage();
   }
 
   private _getLocalOverridesStorageKey(sdkKey: string): string {
     return `statsig.local-overrides.${_getStorageKey(sdkKey)}`;
   }
 
-  private _loadOverridesFromStorage(): OverrideStore {
+  async loadFromStorage(): Promise<void> {
     if (this._sdkKey == null) {
-      return _makeEmptyStore();
+      return;
+    }
+
+    if (!Storage.isReady()) {
+      await Storage.isReadyResolver();
     }
 
     const storageKey = this._getLocalOverridesStorageKey(this._sdkKey);
     const storedOverrides = Storage.getItem(storageKey);
-    return storedOverrides ? JSON.parse(storedOverrides) : _makeEmptyStore();
+    const overrides = storedOverrides
+      ? _typedJsonParse<OverrideStore>(
+          storedOverrides,
+          'gate',
+          'LocalOverrideAdapter overrides',
+        )
+      : null;
+
+    const hasInMemoryOverrides = this._hasInMemoryOverrides();
+
+    if (overrides) {
+      // Merge overrides in memory with stored overrides.
+      // WARN: This is a union of overrides. Trying to remove an override
+      // before storage is ready won't remove the override in storage.
+      this._overrides = hasInMemoryOverrides
+        ? _mergeOverrides(overrides, this._overrides)
+        : overrides;
+    }
+
+    if (hasInMemoryOverrides) {
+      this._saveOverridesToStorage();
+    }
   }
 
   private _saveOverridesToStorage(): void {
-    if (this._sdkKey == null) {
+    if (this._sdkKey == null || !Storage.isReady()) {
       return;
     }
 
@@ -67,7 +113,14 @@ export class LocalOverrideAdapter implements OverrideAdapter {
     this._saveOverridesToStorage();
   }
 
+  private _warnIfStorageNotReady(): void {
+    if (!Storage.isReady()) {
+      Log.warn('Storage is not ready. Override removal may not persist.');
+    }
+  }
+
   removeGateOverride(name: string): void {
+    this._warnIfStorageNotReady();
     delete this._overrides.gate[name];
     delete this._overrides.gate[_DJB2(name)];
     this._saveOverridesToStorage();
@@ -98,6 +151,7 @@ export class LocalOverrideAdapter implements OverrideAdapter {
   }
 
   removeDynamicConfigOverride(name: string): void {
+    this._warnIfStorageNotReady();
     delete this._overrides.dynamicConfig[name];
     delete this._overrides.dynamicConfig[_DJB2(name)];
     this._saveOverridesToStorage();
@@ -117,6 +171,7 @@ export class LocalOverrideAdapter implements OverrideAdapter {
   }
 
   removeExperimentOverride(name: string): void {
+    this._warnIfStorageNotReady();
     delete this._overrides.experiment[name];
     delete this._overrides.experiment[_DJB2(name)];
     this._saveOverridesToStorage();
@@ -136,6 +191,7 @@ export class LocalOverrideAdapter implements OverrideAdapter {
   }
 
   removeLayerOverride(name: string): void {
+    this._warnIfStorageNotReady();
     delete this._overrides.layer[name];
     delete this._overrides.layer[_DJB2(name)];
     this._saveOverridesToStorage();
@@ -146,6 +202,7 @@ export class LocalOverrideAdapter implements OverrideAdapter {
   }
 
   removeAllOverrides(): void {
+    this._warnIfStorageNotReady();
     this._overrides = _makeEmptyStore();
     this._saveOverridesToStorage();
   }
@@ -181,5 +238,14 @@ export class LocalOverrideAdapter implements OverrideAdapter {
       get: _makeTypedGet(current.name, overridden),
       details: { ...current.details, reason: LOCAL_OVERRIDE_REASON },
     };
+  }
+
+  private _hasInMemoryOverrides() {
+    return (
+      Object.keys(this._overrides.gate).length > 0 ||
+      Object.keys(this._overrides.dynamicConfig).length > 0 ||
+      Object.keys(this._overrides.experiment).length > 0 ||
+      Object.keys(this._overrides.layer).length > 0
+    );
   }
 }

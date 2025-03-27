@@ -41,4 +41,6 @@ export type OverrideAdapter = {
     current: ParameterStore,
     options?: ParameterStoreEvaluationOptions,
   ): { config: ParamStoreConfig; details: EvaluationDetails } | null;
+
+  loadFromStorage?(): void | Promise<void>;
 };

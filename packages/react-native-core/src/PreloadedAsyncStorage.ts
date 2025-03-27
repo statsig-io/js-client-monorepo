@@ -8,6 +8,7 @@ const NOT_READY_ERROR =
 export function _createPreloadedAsyncStorage(): StorageProvider {
   const inMemoryStore: Record<string, string> = {};
   let isResolved = false;
+  let readyPromise: Promise<void> | null = null;
 
   const enforceIsResolved = () => {
     if (!isResolved) {
@@ -24,10 +25,14 @@ export function _createPreloadedAsyncStorage(): StorageProvider {
 
     isReady: () => isResolved,
 
-    isReadyResolver: () =>
-      _prefetchFromAsyncStorage(inMemoryStore).finally(() => {
-        isResolved = true;
-      }),
+    isReadyResolver: () => {
+      if (!readyPromise) {
+        readyPromise = _prefetchFromAsyncStorage(inMemoryStore).finally(() => {
+          isResolved = true;
+        });
+      }
+      return readyPromise;
+    },
 
     getItem: function (key: string): string | null {
       if (!enforceIsResolved()) {

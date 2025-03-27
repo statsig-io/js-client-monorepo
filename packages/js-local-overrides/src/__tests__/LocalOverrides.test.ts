@@ -1,5 +1,7 @@
 import {
+  Storage,
   _DJB2,
+  _getStorageKey,
   _makeDynamicConfig,
   _makeExperiment,
   _makeFeatureGate,
@@ -7,6 +9,7 @@ import {
 } from '@statsig/client-core';
 
 import { LocalOverrideAdapter } from '../LocalOverrideAdapter';
+import { MockStorageProvider } from './MockStorageProvider';
 
 describe('Local Overrides', () => {
   const user = { userID: 'a-user' };
@@ -17,8 +20,9 @@ describe('Local Overrides', () => {
 
   let provider: LocalOverrideAdapter;
 
-  beforeAll(() => {
+  beforeAll(async () => {
     provider = new LocalOverrideAdapter();
+    await provider.loadFromStorage();
   });
 
   it('returns overidden gates', () => {
@@ -161,5 +165,69 @@ describe('Local Overrides', () => {
       layer_b: { b: 2 },
       [_DJB2('layer_b')]: { b: 2 },
     });
+  });
+});
+
+describe('Local Overrides with Async Storage', () => {
+  const SDK_KEY = 'test-sdk-key';
+  const user = { userID: 'a-user' };
+  const gate = _makeFeatureGate('a_gate', { reason: '' }, null);
+
+  it('handles storage that is provided immediately', async () => {
+    const mockStorage = new MockStorageProvider(true);
+    Storage._setProvider(mockStorage);
+    mockStorage.setItem = jest.fn(mockStorage.setItem);
+    // Create adapter and provide storage
+    const adapter = new LocalOverrideAdapter(SDK_KEY);
+    await adapter.loadFromStorage();
+
+    // Override a gate
+    adapter.overrideGate('a_gate', true);
+
+    // Verify the override was saved to storage
+    const storageKey = `statsig.local-overrides.${_getStorageKey(SDK_KEY)}`;
+    expect(mockStorage.setItem).toHaveBeenCalledWith(
+      storageKey,
+      expect.any(String),
+    );
+
+    // Verify the override works
+    const result = adapter.getGateOverride(gate, user);
+    expect(result?.value).toBe(true);
+  });
+
+  it('handles storage that becomes ready later', async () => {
+    // Storage starts as not ready
+    const mockStorage = new MockStorageProvider(false);
+    Storage._setProvider(mockStorage);
+    mockStorage.setItem = jest.fn(mockStorage.setItem);
+
+    // Create adapter
+    const adapter = new LocalOverrideAdapter(SDK_KEY);
+
+    // Override a gate before storage is ready
+    adapter.overrideGate('a_gate', true);
+
+    // Storage is not ready yet, so the override should be saved in memory
+    expect(mockStorage.setItem).not.toHaveBeenCalled();
+
+    // Make storage ready and provide it
+    mockStorage.setReady(true);
+    await adapter.loadFromStorage();
+
+    // Verify override was persisted to storage
+    const storageKey = `statsig.local-overrides.${_getStorageKey(SDK_KEY)}`;
+    expect(mockStorage.setItem).toHaveBeenCalledWith(
+      storageKey,
+      expect.any(String),
+    );
+
+    // Create a new adapter to verify persistence
+    const newAdapter = new LocalOverrideAdapter(SDK_KEY);
+    await newAdapter.loadFromStorage();
+
+    // Verify the override was loaded from storage
+    const result = newAdapter.getGateOverride(gate, user);
+    expect(result?.value).toBe(true);
   });
 });

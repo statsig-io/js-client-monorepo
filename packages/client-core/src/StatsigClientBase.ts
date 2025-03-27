@@ -105,6 +105,10 @@ export abstract class StatsigClientBase<
     this.dataAdapter.attach(sdkKey, options, network);
     this.storageProvider = Storage;
 
+    this.overrideAdapter
+      ?.loadFromStorage?.()
+      ?.catch((e) => this._errorBoundary.logError('OA::loadFromStorage', e));
+
     this._primeReadyRipcord();
 
     _assignGlobalInstance(sdkKey, this as unknown as StatsigClientInterface);
