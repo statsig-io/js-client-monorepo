@@ -102,7 +102,6 @@ export class SessionReplay {
       this._replayer.stop();
       StatsigMetadataProvider.add({ isRecordingSession: 'false' });
       this._logRecording('session_expired');
-      this._currentSessionID = this._getSessionIdFromClient();
     });
 
     this._subscribeToVisibilityChanged();
@@ -206,7 +205,7 @@ export class SessionReplay {
     if (this._events.length === 0 || this._sessionData == null) {
       return;
     }
-    this._bumpSessionIdleTimerAndLogRecording();
+    this._logRecording();
   }
 
   private _logRecording(endReason?: EndReason) {
@@ -260,7 +259,7 @@ export class SessionReplay {
   }
 
   private _bumpSessionIdleTimerAndLogRecording() {
-    this._currentSessionID = this._getSessionIdFromClient();
+    this._getSessionIdFromClient();
     this._logRecording();
   }
 
