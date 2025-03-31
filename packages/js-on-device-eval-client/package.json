@@ -1,6 +1,6 @@
 {
   "name": "@statsig/js-on-device-eval-client",
-  "version": "3.15.1",
+  "version": "3.15.2",
   "license": "ISC",
   "homepage": "https://github.com/statsig-io/js-client-monorepo",
   "repository": {
@@ -9,8 +9,8 @@
     "directory": "packages/js-on-device-eval-client"
   },
   "dependencies": {
-    "@statsig/client-core": "3.15.1",
-    "@statsig/on-device-eval-core": "3.15.1"
+    "@statsig/client-core": "3.15.2",
+    "@statsig/on-device-eval-core": "3.15.2"
   },
   "jsdelivr": "./build/statsig-js-on-device-eval-client.min.js",
   "type": "commonjs",
