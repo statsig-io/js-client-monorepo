@@ -1,4 +1,5 @@
 import { AutoCapture } from '@statsig/web-analytics';
+import __STATSIG__ from '@statsig/web-analytics';
 
 import { AutoInit } from './AutoInit';
 

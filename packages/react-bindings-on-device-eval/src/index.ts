@@ -1,4 +1,4 @@
-import { StatsigGlobal } from '@statsig/client-core';
+import { _getStatsigGlobal } from '@statsig/client-core';
 
 import StatsigContext from './StatsigContext';
 import {
@@ -32,8 +32,7 @@ export {
   useStatsigOnDeviceEvalClient,
 };
 
-__STATSIG__ = {
-  ...(__STATSIG__ ?? {}),
+Object.assign(_getStatsigGlobal(), {
   StatsigContext,
   StatsigProviderOnDeviceEval,
   useOnDeviceClientAsyncInit,
@@ -44,4 +43,4 @@ __STATSIG__ = {
   useGateValue,
   useLayer,
   useStatsigOnDeviceEvalClient,
-} as StatsigGlobal;
+});

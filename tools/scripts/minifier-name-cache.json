@@ -233,7 +233,8 @@
       "$_tryEncodeBody": "Pi",
       "$_mapExposures": "Ui",
       "$_getUnloadEvent": "Hn",
-      "$_setCookiesEnabled": "Xn"
+      "$_setCookiesEnabled": "Xn",
+      "$_option": "Fi"
     }
   }
 }

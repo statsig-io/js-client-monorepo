@@ -1,4 +1,4 @@
-import { StatsigGlobal } from '@statsig/client-core';
+import { StatsigGlobal, _getStatsigGlobal } from '@statsig/client-core';
 
 import StatsigOnDeviceEvalClient from './StatsigOnDeviceEvalClient';
 import type { StatsigOptions } from './StatsigOptions';
@@ -13,10 +13,9 @@ export type {
   StatsigUser,
 } from '@statsig/client-core';
 
-__STATSIG__ = {
-  ...(__STATSIG__ ?? {}),
+const __STATSIG__: StatsigGlobal = Object.assign(_getStatsigGlobal(), {
   StatsigSpecsDataAdapter,
   StatsigOnDeviceEvalClient,
-} as StatsigGlobal;
+});
 
 export default __STATSIG__;

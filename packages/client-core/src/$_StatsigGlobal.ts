@@ -25,7 +25,12 @@ declare global {
 }
 
 export const _getStatsigGlobal = (): StatsigGlobal => {
-  return __STATSIG__ ? __STATSIG__ : statsigGlobal;
+  // Avoid ReferenceError, which is happening with Cloudflare pages
+  try {
+    return typeof __STATSIG__ !== 'undefined' ? __STATSIG__ : statsigGlobal;
+  } catch (e: unknown) {
+    return statsigGlobal;
+  }
 };
 
 export const _getStatsigGlobalFlag = (flag: string): unknown => {

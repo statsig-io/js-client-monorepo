@@ -1,4 +1,4 @@
-import { StatsigGlobal } from '@statsig/client-core';
+import { _getStatsigGlobal } from '@statsig/client-core';
 
 import StatsigContext from './StatsigContext';
 import { StatsigProvider, StatsigProviderProps } from './StatsigProvider';
@@ -36,8 +36,7 @@ export {
   useStatsigUser,
 };
 
-__STATSIG__ = {
-  ...(__STATSIG__ ?? {}),
+Object.assign(_getStatsigGlobal(), {
   StatsigContext,
   StatsigProvider,
   useClientAsyncInit,
@@ -52,4 +51,4 @@ __STATSIG__ = {
   useStatsigInternalClientFactoryAsync,
   useStatsigInternalClientFactoryBootstrap,
   useStatsigUser,
-} as StatsigGlobal;
+});

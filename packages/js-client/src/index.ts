@@ -1,4 +1,4 @@
-import { StatsigGlobal } from '@statsig/client-core';
+import { StatsigGlobal, _getStatsigGlobal } from '@statsig/client-core';
 
 import StatsigClient from './StatsigClient';
 import type { StatsigOptions } from './StatsigOptions';
@@ -17,9 +17,8 @@ export type { StatsigOptions };
 
 export { StatsigClient };
 
-__STATSIG__ = {
-  ...(__STATSIG__ ?? {}),
+const __STATSIG__: StatsigGlobal = Object.assign(_getStatsigGlobal(), {
   StatsigClient,
-} as StatsigGlobal;
+});
 
-export default __STATSIG__ as StatsigGlobal;
+export default __STATSIG__;
