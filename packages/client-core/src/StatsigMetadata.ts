@@ -1,13 +1,13 @@
 export const SDK_VERSION = '3.15.2';
 
 export type StatsigMetadata = {
-  readonly [key: string]: string | undefined;
+  readonly [key: string]: string | undefined | null;
   readonly appVersion?: string;
   readonly deviceModel?: string;
   readonly deviceModelName?: string;
   readonly locale?: string;
   readonly sdkVersion: string;
-  readonly stableID?: string;
+  readonly stableID?: string | null;
   readonly systemName?: string;
   readonly systemVersion?: string;
 };

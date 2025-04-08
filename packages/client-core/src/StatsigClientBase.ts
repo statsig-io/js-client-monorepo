@@ -88,6 +88,7 @@ export abstract class StatsigClientBase<
     options?.storageProvider && Storage._setProvider(options.storageProvider);
     options?.enableCookies &&
       this.updateRuntimeOptions({ enableCookies: options.enableCookies });
+    options?.disableStableID && StableID._setDisabled(sdkKey, true);
 
     this._sdkKey = sdkKey;
     this._options = options ?? {};

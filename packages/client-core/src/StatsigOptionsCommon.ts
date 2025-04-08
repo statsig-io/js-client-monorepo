@@ -87,6 +87,13 @@ export type StatsigOptionsCommon<NetworkConfig extends NetworkConfigCommon> =
     disableCompression?: boolean;
 
     /**
+     * When true, the SDK will not generate a stableID for the user. Useful when bootstrapping from a server without a StableID.
+     *
+     * default: `false`
+     */
+    disableStableID?: boolean;
+
+    /**
      * Whether or not Statsig should use raw JSON for network requests where possible.
      *
      * default: `false`

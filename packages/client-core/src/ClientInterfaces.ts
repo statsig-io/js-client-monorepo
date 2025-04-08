@@ -41,7 +41,7 @@ export type CommonContext = {
   options: AnyStatsigOptions;
   errorBoundary: ErrorBoundary;
   session: StatsigSession;
-  stableID: string;
+  stableID: string | null;
 };
 
 export type OnDeviceEvaluationsContext = CommonContext & {

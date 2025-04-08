@@ -169,7 +169,10 @@ export default class EvaluationStore {
     values: InitializeResponse,
   ): void {
     const stableID = StableID.get(this._sdkKey);
-    if (user.customIDs?.stableID !== stableID) {
+    if (
+      user.customIDs?.stableID !== stableID && // don't throw if they're both undefined
+      (user.customIDs?.stableID || stableID)
+    ) {
       this._warnings.add('StableIDMismatch');
       return;
     }

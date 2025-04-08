@@ -6,11 +6,16 @@ import { getUUID } from './UUID';
 
 const PROMISE_MAP: Record<string, string> = {};
 const COOKIE_ENABLED_MAP: Record<string, boolean> = {};
+const DISABLED_MAP: Record<string, boolean> = {};
 
 export const StableID = {
   cookiesEnabled: false,
   randomID: Math.random().toString(36),
-  get: (sdkKey: string): string => {
+  get: (sdkKey: string): string | null => {
+    if (DISABLED_MAP[sdkKey]) {
+      return null;
+    }
+
     if (PROMISE_MAP[sdkKey] != null) {
       return PROMISE_MAP[sdkKey];
     }
@@ -43,6 +48,10 @@ export const StableID = {
 
   _setCookiesEnabled: (sdkKey: string, cookiesEnabled: boolean): void => {
     COOKIE_ENABLED_MAP[sdkKey] = cookiesEnabled;
+  },
+
+  _setDisabled: (sdkKey: string, disabled: boolean): void => {
+    DISABLED_MAP[sdkKey] = disabled;
   },
 };
 
