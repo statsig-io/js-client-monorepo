@@ -1,6 +1,6 @@
 {
   "name": "@statsig/expo-bindings",
-  "version": "3.15.2",
+  "version": "3.15.3",
   "license": "ISC",
   "homepage": "https://github.com/statsig-io/js-client-monorepo",
   "repository": {
@@ -9,10 +9,10 @@
     "directory": "packages/expo-bindings"
   },
   "dependencies": {
-    "@statsig/client-core": "3.15.2",
-    "@statsig/js-client": "3.15.2",
-    "@statsig/react-bindings": "3.15.2",
-    "@statsig/react-native-core": "3.15.2"
+    "@statsig/client-core": "3.15.3",
+    "@statsig/js-client": "3.15.3",
+    "@statsig/react-bindings": "3.15.3",
+    "@statsig/react-native-core": "3.15.3"
   },
   "peerDependencies": {
     "react": "^16.6.3 || ^17.0.0 || ^18.0.0 || ^19.0.0",
