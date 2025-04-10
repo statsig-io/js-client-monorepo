@@ -87,7 +87,7 @@ export abstract class StatsigClientBase<
       StatsigSession.overrideInitialSessionID(options.initialSessionID, sdkKey);
     options?.storageProvider && Storage._setProvider(options.storageProvider);
     options?.enableCookies &&
-      this.updateRuntimeOptions({ enableCookies: options.enableCookies });
+      StableID._setCookiesEnabled(sdkKey, options.enableCookies);
     options?.disableStableID && StableID._setDisabled(sdkKey, true);
 
     this._sdkKey = sdkKey;
