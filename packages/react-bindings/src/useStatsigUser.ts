@@ -1,6 +1,10 @@
 import { useCallback, useContext, useMemo } from 'react';
 
-import { StatsigUpdateDetails, StatsigUser } from '@statsig/client-core';
+import {
+  PrecomputedEvaluationsInterface,
+  StatsigUpdateDetails,
+  StatsigUser,
+} from '@statsig/client-core';
 
 import StatsigContext from './StatsigContext';
 import { useStatsigClient } from './useStatsigClient';
@@ -16,32 +20,40 @@ export type UseStatsigUserResult = {
   updateUserAsync: AsyncUpdateFunc;
 };
 
+function getClientUser(client: PrecomputedEvaluationsInterface) {
+  const context = client.getContext();
+  return context.user;
+}
+
 export function useStatsigUser(): UseStatsigUserResult {
   const { client } = useStatsigClient();
   const { renderVersion } = useContext(StatsigContext);
 
-  const deps = [client, renderVersion];
-
   const memoUser = useMemo(() => {
-    const context = client.getContext();
-    return context.user;
-  }, deps);
+    return getClientUser(client);
+  }, [client, renderVersion]);
 
   return {
     user: memoUser,
-    updateUserSync: useCallback((arg) => {
-      if (typeof arg === 'function') {
-        arg = arg(memoUser);
-      }
+    updateUserSync: useCallback(
+      (arg) => {
+        if (typeof arg === 'function') {
+          arg = arg(getClientUser(client));
+        }
 
-      return client.updateUserSync(arg);
-    }, deps),
-    updateUserAsync: useCallback((arg) => {
-      if (typeof arg === 'function') {
-        arg = arg(memoUser);
-      }
+        return client.updateUserSync(arg);
+      },
+      [client],
+    ),
+    updateUserAsync: useCallback(
+      (arg) => {
+        if (typeof arg === 'function') {
+          arg = arg(getClientUser(client));
+        }
 
-      return client.updateUserAsync(arg);
-    }, deps),
+        return client.updateUserAsync(arg);
+      },
+      [client],
+    ),
   };
 }
