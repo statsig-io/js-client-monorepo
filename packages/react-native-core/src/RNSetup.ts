@@ -24,12 +24,10 @@ export function _setupStatsigForReactNative(
     options.storageProvider = _createPreloadedAsyncStorage();
   }
 
-  if (type === 'rn') {
-    _applyReactNativeNetworkFix(options);
-  }
+  _applyNetworkFix(options);
 }
 
-function _applyReactNativeNetworkFix(options: AnyStatsigOptions) {
+function _applyNetworkFix(options: AnyStatsigOptions) {
   if (options.networkConfig?.networkOverrideFunc != null) {
     return;
   }
