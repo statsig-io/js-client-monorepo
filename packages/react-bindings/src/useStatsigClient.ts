@@ -18,10 +18,15 @@ type HositedFuncs = Pick<
 
 type Output = HositedFuncs & {
   client: PrecomputedEvaluationsInterface;
+  isLoading: boolean;
 };
 
 export function useStatsigClient(): Output {
-  const { client: anyClient, renderVersion } = useContext(StatsigContext);
+  const {
+    client: anyClient,
+    renderVersion,
+    isLoading,
+  } = useContext(StatsigContext);
 
   const client = useMemo(() => {
     if (isNoopClient(anyClient)) {
@@ -90,6 +95,7 @@ export function useStatsigClient(): Output {
       getLayer,
       getParameterStore,
       logEvent,
+      isLoading,
     };
   }, [
     client,
@@ -100,5 +106,6 @@ export function useStatsigClient(): Output {
     getLayer,
     getParameterStore,
     logEvent,
+    isLoading,
   ]);
 }

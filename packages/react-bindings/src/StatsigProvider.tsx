@@ -50,16 +50,21 @@ function ConfigBasedStatsigProvider(
     props.user,
     props.options,
   ).client;
+  const [isLoading, setIsLoading] = useState(!_isReady(client));
 
-  useStatsigClientSetup(client, setRenderVersion);
+  useStatsigClientSetup(client, setRenderVersion, setIsLoading);
   const contextValue = useMemo(
-    () => ({ renderVersion, client }),
-    [renderVersion, client],
+    () => ({
+      renderVersion,
+      client,
+      isLoading,
+    }),
+    [renderVersion, client, isLoading],
   );
 
   return (
     <StatsigContext.Provider value={contextValue}>
-      {props.loadingComponent == null || _isReady(client)
+      {props.loadingComponent == null || !contextValue.isLoading
         ? props.children
         : props.loadingComponent}
     </StatsigContext.Provider>
@@ -71,16 +76,21 @@ function ClientBasedStatsigProvider<T extends StatsigClient>(
 ): React.ReactElement {
   const [renderVersion, setRenderVersion] = useState(0);
   const client = props.client;
+  const [isLoading, setIsLoading] = useState(!_isReady(client));
 
-  useStatsigClientSetup(client, setRenderVersion);
+  useStatsigClientSetup(client, setRenderVersion, setIsLoading);
   const contextValue = useMemo(
-    () => ({ renderVersion, client }),
-    [renderVersion, client],
+    () => ({
+      renderVersion,
+      client,
+      isLoading,
+    }),
+    [renderVersion, client, isLoading],
   );
 
   return (
     <StatsigContext.Provider value={contextValue}>
-      {props.loadingComponent == null || _isReady(client)
+      {props.loadingComponent == null || !contextValue.isLoading
         ? props.children
         : props.loadingComponent}
     </StatsigContext.Provider>
@@ -90,10 +100,12 @@ function ClientBasedStatsigProvider<T extends StatsigClient>(
 function useStatsigClientSetup(
   client: StatsigClientInterface,
   setRenderVersion: React.Dispatch<React.SetStateAction<number>>,
+  setIsLoading: React.Dispatch<React.SetStateAction<boolean>>,
 ): void {
   useEffect(() => {
     const onValuesUpdated = () => {
       setRenderVersion((v) => v + 1);
+      setIsLoading(!_isReady(client));
     };
 
     SDKType._setBindingType('react');
