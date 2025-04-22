@@ -19,7 +19,7 @@ export type TypedReturn<T = unknown> =
     T extends string ? string
   : T extends number ? number
   : T extends boolean ? boolean
-  : T extends Array<unknown> ? Array<unknown>
+  : T extends Array<unknown> ? TypedReturn<T[number]>[]
   : T extends object ? object
   : unknown;
 
