@@ -6,4 +6,5 @@ module.exports = {
   ...nxPreset,
   setupFiles: [path.resolve(__dirname, './tools/scripts/jest-setup.js')],
   testTimeout: 10_000,
+  watchman: false,
 };

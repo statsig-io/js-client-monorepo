@@ -59,14 +59,21 @@ try {
 let _main: StorageProvider = _localStorageProvider ?? _inMemoryProvider;
 let _current = _main;
 
-function _inMemoryBreaker<T>(get: () => T) {
+function _inMemoryBreaker<T>(action: () => T) {
   try {
-    return get();
+    return action();
   } catch (error) {
     if (error instanceof Error && error.name === 'SecurityError') {
       Storage._setProvider(_inMemoryProvider);
       return null;
     }
+
+    if (error instanceof Error && error.name === 'QuotaExceededError') {
+      const allKeys = Storage.getAllKeys();
+      const statsigKeys = allKeys.filter((key) => key.startsWith('statsig.'));
+      error.message = `${error.message}. Statsig Keys: ${statsigKeys.length}`;
+    }
+
     throw error;
   }
 }
@@ -78,7 +85,8 @@ export const Storage: StorageProvider & StorageProviderManagment = {
 
   getItem: (key: string) => _inMemoryBreaker(() => _current.getItem(key)),
 
-  setItem: (key: string, value: string) => _current.setItem(key, value),
+  setItem: (key: string, value: string) =>
+    _inMemoryBreaker(() => _current.setItem(key, value)),
   removeItem: (key: string) => _current.removeItem(key),
   getAllKeys: () => _current.getAllKeys(),
 
