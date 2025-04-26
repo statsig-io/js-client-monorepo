@@ -281,8 +281,8 @@ export abstract class StatsigClientBase<
   protected abstract _primeReadyRipcord(): void;
 }
 
-function _assignGlobalInstance(sdkKey: string, client: StatsigClientInterface) {
-  if (_isServerEnv()) {
+function _assignGlobalInstance(sdkKey: string, client: StatsigClientInterface, overrideServerEnv?: boolean) {
+  if (_isServerEnv() && !overrideServerEnv) {
     return;
   }
 
