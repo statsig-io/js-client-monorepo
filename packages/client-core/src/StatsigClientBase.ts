@@ -112,7 +112,7 @@ export abstract class StatsigClientBase<
 
     this._primeReadyRipcord();
 
-    _assignGlobalInstance(sdkKey, this as unknown as StatsigClientInterface);
+    _assignGlobalInstance(sdkKey, this as unknown as StatsigClientInterface, this._options.overrideServerEnv);
   }
 
   /**

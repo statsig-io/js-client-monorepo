@@ -55,10 +55,5 @@ export type StatsigOptions = Flatten<
      * Register various plugins to run along with your StatsigClient (eg SessionReplay or AutoCapture)
      */
     plugins?: StatsigPlugin<StatsigClient>[];
-
-    /**
-     * Overrides the blocking of exposure events if you are working in a Node js project
-     */
-    overrideServerEnv?: boolean
   }
 >;

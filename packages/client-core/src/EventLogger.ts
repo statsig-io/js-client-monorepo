@@ -119,7 +119,8 @@ export class EventLogger {
   }
 
   start(): void {
-    if (_isServerEnv()) {
+    const override = this._options?.overrideServerEnv
+    if (_isServerEnv() && !override) {
       return; // do not run in server environments
     }
 
@@ -182,7 +183,10 @@ export class EventLogger {
   }
 
   private _shouldLogEvent(event: StatsigEventInternal): boolean {
-    if (_isServerEnv()) {
+
+    const override = this._options?.overrideServerEnv;
+
+    if (_isServerEnv() && !override) {
       return false; // do not run in server environments
     }
 

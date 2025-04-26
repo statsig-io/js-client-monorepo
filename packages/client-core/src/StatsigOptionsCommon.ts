@@ -167,6 +167,12 @@ export type StatsigOptionsCommon<NetworkConfig extends NetworkConfigCommon> =
      * default: `false`
      */
     disableEvaluationMemoization?: boolean;
+
+
+    /**
+     * Overrides the blocking of exposure events if you are working in a Node js project
+     */
+    overrideServerEnv?: boolean
   };
 
 export type AnyStatsigOptions = StatsigOptionsCommon<NetworkConfigCommon>;
