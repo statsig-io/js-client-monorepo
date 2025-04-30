@@ -8,13 +8,13 @@ export default async function Sample(): Promise<void> {
 // <snippet>
 // start the client without storage or logging
 const client = new StatsigClient(YOUR_CLIENT_KEY, {}, {
-  disableLogging: true,
+  loggingEnabled: "disabled",
   disableStorage: true
 });
 await client.initializeAsync();
 
 // then, once permissions have been granted
-client.updateRuntimeOptions({disableLogging: false, disableStorage: false})
+client.updateRuntimeOptions({loggingEnabled: "browser-only", disableStorage: false})
 
 // </snippet>
 }

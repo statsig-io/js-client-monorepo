@@ -234,7 +234,8 @@
       "$_mapExposures": "Ui",
       "$_getUnloadEvent": "Hn",
       "$_setCookiesEnabled": "Xn",
-      "$_option": "Fi"
+      "$_option": "Fi",
+      "$_loggingEnabled": "Yn"
     }
   }
 }

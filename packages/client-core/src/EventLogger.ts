@@ -8,6 +8,7 @@ import { StatsigClientEmitEventFunc } from './StatsigClientBase';
 import { StatsigEventInternal, _isExposureEvent } from './StatsigEvent';
 import {
   LogEventCompressionMode,
+  LoggingEnabledOption,
   NetworkConfigCommon,
   StatsigOptionsCommon,
 } from './StatsigOptionsCommon';
@@ -60,7 +61,7 @@ export class EventLogger {
   private _maxQueueSize: number;
   private _hasRunQuickFlush = false;
   private _creationTime = Date.now();
-  private _isLoggingDisabled: boolean;
+  private _loggingEnabled: LoggingEnabledOption;
   private _logEventUrlConfig: UrlConfiguration;
 
   private static _safeFlushAndForget(sdkKey: string) {
@@ -81,7 +82,16 @@ export class EventLogger {
     private _network: NetworkCore,
     private _options: StatsigOptionsCommon<NetworkConfigCommon> | null,
   ) {
-    this._isLoggingDisabled = _options?.disableLogging === true;
+    this._loggingEnabled =
+      _options?.loggingEnabled ??
+      (_options?.disableLogging === true
+        ? LoggingEnabledOption.disabled
+        : LoggingEnabledOption.browserOnly);
+    if (_options?.loggingEnabled && _options.disableLogging !== undefined) {
+      Log.warn(
+        'Detected both loggingEnabled and disableLogging options. loggingEnabled takes precedence - please remove disableLogging.',
+      );
+    }
     this._maxQueueSize = _options?.loggingBufferMaxSize ?? DEFAULT_QUEUE_SIZE;
 
     const config = _options?.networkConfig;
@@ -97,8 +107,8 @@ export class EventLogger {
     this._network.setLogEventCompressionMode(mode);
   }
 
-  setLoggingDisabled(isDisabled: boolean): void {
-    this._isLoggingDisabled = isDisabled;
+  setLoggingEnabled(loggingEnabled: LoggingEnabledOption): void {
+    this._loggingEnabled = loggingEnabled;
   }
 
   enqueue(event: StatsigEventInternal): void {
@@ -124,19 +134,23 @@ export class EventLogger {
   }
 
   start(): void {
-    if (_isServerEnv()) {
-      return; // do not run in server environments
+    const isServerEnv = _isServerEnv();
+
+    if (isServerEnv && this._options?.loggingEnabled !== 'always') {
+      return;
     }
 
     EVENT_LOGGER_MAP[this._sdkKey] = this;
 
-    _subscribeToVisiblityChanged((visibility) => {
-      if (visibility === 'background') {
-        EventLogger._safeFlushAndForget(this._sdkKey);
-      } else if (visibility === 'foreground') {
-        EventLogger._safeRetryFailedLogs(this._sdkKey);
-      }
-    });
+    if (!isServerEnv) {
+      _subscribeToVisiblityChanged((visibility) => {
+        if (visibility === 'background') {
+          EventLogger._safeFlushAndForget(this._sdkKey);
+        } else if (visibility === 'foreground') {
+          EventLogger._safeRetryFailedLogs(this._sdkKey);
+        }
+      });
+    }
 
     this._retryFailedLogs(RetryFailedLogsTrigger.Startup);
     this._startBackgroundFlushInterval();
@@ -187,8 +201,8 @@ export class EventLogger {
   }
 
   private _shouldLogEvent(event: StatsigEventInternal): boolean {
-    if (_isServerEnv()) {
-      return false; // do not run in server environments
+    if (this._options?.loggingEnabled !== 'always' && _isServerEnv()) {
+      return false;
     }
 
     if (!_isExposureEvent(event)) {
@@ -227,7 +241,7 @@ export class EventLogger {
   }
 
   private async _sendEvents(events: EventQueue): Promise<boolean> {
-    if (this._isLoggingDisabled) {
+    if (this._loggingEnabled === 'disabled') {
       this._saveFailedLogsToStorage(events);
       return false;
     }

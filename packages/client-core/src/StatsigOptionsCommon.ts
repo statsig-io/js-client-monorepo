@@ -7,8 +7,19 @@ import { StorageProvider } from './StorageProvider';
 export type StatsigRuntimeMutableOptions = {
   /**
    * Prevents sending any events over the network.
+   * @deprecated Set {@link StatsigRuntimeMutableOptions.loggingEnabled} to "disabled" instead
    */
   disableLogging?: boolean;
+
+  /**
+   * Controls when to enable or disable logging:
+   * - "disabled": Prevents sending any events over the network.
+   * - "browser-only": Only sends events in browser environments.
+   * - "always": Skip browser checks and always logs events
+   *
+   * @default "browser-only"
+   */
+  loggingEnabled?: LoggingEnabledOption;
 
   /**
    * Prevents writing anything to storage.
@@ -179,7 +190,6 @@ export type StatsigEnvironment = {
   tier?: string;
   [key: string]: string | undefined;
 };
-
 export const LogEventCompressionMode = {
   /** Do not compress request bodies */
   Disabled: 'd',
@@ -191,3 +201,12 @@ export const LogEventCompressionMode = {
 
 export type LogEventCompressionMode =
   (typeof LogEventCompressionMode)[keyof typeof LogEventCompressionMode];
+
+export const LoggingEnabledOption = {
+  disabled: 'disabled',
+  browserOnly: 'browser-only',
+  always: 'always',
+} as const;
+
+export type LoggingEnabledOption =
+  (typeof LoggingEnabledOption)[keyof typeof LoggingEnabledOption];

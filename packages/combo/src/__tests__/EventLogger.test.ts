@@ -97,4 +97,50 @@ describe('Event Logger', () => {
 
     expect(getLogEventCalls().length).toEqual(1);
   });
+
+  it('allows logging in server environments when loggingEnabled is "always"', async () => {
+    jest.mock('@statsig/client-core', () => {
+      const actual = jest.requireActual('@statsig/client-core');
+      return {
+        ...actual,
+        _isServerEnv: () => true,
+      };
+    });
+
+    const client = new StatsigClient(
+      'my-key',
+      {},
+      { loggingIntervalMs: 1, loggingEnabled: 'always' },
+    );
+    client.initializeSync();
+
+    client.logEvent('electron-app-event');
+    await timeout(2);
+
+    expect(getLogEventCalls()[0]).toEqual([
+      anyStringContaining('/v1/rgstr'),
+      anyObject(),
+    ]);
+  });
+
+  it("doesn't log in server environments by default", async () => {
+    jest.mock('@statsig/client-core', () => {
+      const actual = jest.requireActual('@statsig/client-core');
+      return {
+        ...actual,
+        _isServerEnv: () => true,
+      };
+    });
+
+    const client = new StatsigClient('my-key', {}, { loggingIntervalMs: 1 });
+    client.initializeSync();
+
+    client.logEvent('electron-app-event');
+    await timeout(2);
+
+    expect(getLogEventCalls()[0]).toEqual([
+      anyStringContaining('/v1/rgstr'),
+      anyObject(),
+    ]);
+  });
 });

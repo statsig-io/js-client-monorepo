@@ -122,9 +122,14 @@ export abstract class StatsigClientBase<
    * @param {StatsigRuntimeMutableOptions} options - The configuration options that dictate the runtime behavior of the SDK.
    */
   updateRuntimeOptions(options: StatsigRuntimeMutableOptions): void {
-    if (options.disableLogging != null) {
+    if (options.loggingEnabled) {
+      this._options.loggingEnabled = options.loggingEnabled;
+      this._logger.setLoggingEnabled(options.loggingEnabled);
+    } else if (options.disableLogging != null) {
       this._options.disableLogging = options.disableLogging;
-      this._logger.setLoggingDisabled(options.disableLogging);
+      this._logger.setLoggingEnabled(
+        options.disableLogging ? 'disabled' : 'browser-only',
+      );
     }
 
     if (options.disableStorage != null) {
