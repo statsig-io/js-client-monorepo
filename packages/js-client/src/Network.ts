@@ -19,6 +19,7 @@ type EvaluationsFetchArgs = {
   sinceTime?: number;
   previousDerivedFields?: Record<string, unknown>;
   full_checksum?: string | null;
+  partialUserMatchSinceTime?: number;
 };
 
 export default class StatsigNetwork extends NetworkCore {
@@ -77,6 +78,7 @@ export default class StatsigNetwork extends NetworkCore {
             : {},
         deltasResponseRequested: true,
         full_checksum: cache.full_checksum,
+        partialUserMatchSinceTime: !hasHashChanged ? cache.time : 0,
       };
     }
 
