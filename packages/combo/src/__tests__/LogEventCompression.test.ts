@@ -4,6 +4,8 @@ import { TextDecoder, TextEncoder } from 'util';
 
 import {
   Endpoint,
+  EventLogger,
+  LogEventCompressionMode,
   NetworkCore,
   SDKFlags,
   UrlConfiguration,
@@ -191,6 +193,145 @@ describe('Log Event Compression', () => {
     const decoded = await decompress(options?.body as any);
     expect(JSON.parse(decoded).values).toEqual(largeData.values);
   });
+
+  type ProxyType = 'api' | 'logEventUrl' | 'none';
+
+  const matrix: Array<{
+    name: string;
+    proxyType: ProxyType;
+    flag: boolean | null;
+    mode: LogEventCompressionMode;
+    expectCompressed: boolean;
+  }> = [
+    {
+      name: 'proxy=api, flag=false, mode=Enabled => no compression',
+      proxyType: 'api',
+      flag: false,
+      mode: LogEventCompressionMode.Enabled,
+      expectCompressed: false,
+    },
+    {
+      name: 'proxy=api, flag=true, mode=Enabled => compression',
+      proxyType: 'api',
+      flag: true,
+      mode: LogEventCompressionMode.Enabled,
+      expectCompressed: true,
+    },
+    {
+      name: 'proxy=logEventUrl, flag=false, mode=Enabled => no compression',
+      proxyType: 'logEventUrl',
+      flag: false,
+      mode: LogEventCompressionMode.Enabled,
+      expectCompressed: false,
+    },
+    {
+      name: 'proxy=logEventUrl, flag=true, mode=Enabled => compression',
+      proxyType: 'logEventUrl',
+      flag: true,
+      mode: LogEventCompressionMode.Enabled,
+      expectCompressed: true,
+    },
+    {
+      name: 'proxy=none, flag=false, mode=Enabled => compression',
+      proxyType: 'none',
+      flag: false,
+      mode: LogEventCompressionMode.Enabled,
+      expectCompressed: true,
+    },
+    {
+      name: 'proxy=none, flag=true, mode=Enabled => compression',
+      proxyType: 'none',
+      flag: true,
+      mode: LogEventCompressionMode.Enabled,
+      expectCompressed: true,
+    },
+    {
+      name: 'proxy=api, flag=n/a, mode=Forced => compression',
+      proxyType: 'api',
+      flag: null,
+      mode: LogEventCompressionMode.Forced,
+      expectCompressed: true,
+    },
+    {
+      name: 'proxy=logEventUrl, flag=n/a, mode=Forced => compression',
+      proxyType: 'logEventUrl',
+      flag: null,
+      mode: LogEventCompressionMode.Forced,
+      expectCompressed: true,
+    },
+    {
+      name: 'proxy=none, flag=n/a, mode=Forced => compression',
+      proxyType: 'none',
+      flag: null,
+      mode: LogEventCompressionMode.Forced,
+      expectCompressed: true,
+    },
+    {
+      name: 'proxy=api, flag=false, mode=Disabled => no compression',
+      proxyType: 'api',
+      flag: false,
+      mode: LogEventCompressionMode.Disabled,
+      expectCompressed: false,
+    },
+    {
+      name: 'proxy=none, flag=true, mode=Disabled => no compression',
+      proxyType: 'none',
+      flag: true,
+      mode: LogEventCompressionMode.Disabled,
+      expectCompressed: false,
+    },
+  ];
+
+  matrix.forEach(({ name, proxyType, flag, mode, expectCompressed }) => {
+    it(name, async () => {
+      fetchMock.mockClear();
+      if (flag !== null) {
+        setCompressionFlag(flag);
+      }
+      const statsigOptions: any = {
+        networkConfig: {},
+      };
+
+      if (proxyType !== 'none') {
+        statsigOptions.networkConfig.api =
+          proxyType === 'api'
+            ? 'https://proxy.test.com'
+            : 'https://events.statsigapi.net/v1/rgstr';
+        statsigOptions.networkConfig.logEventUrl =
+          proxyType === 'logEventUrl' ? 'https://proxy.test.com' : undefined;
+      }
+      const network = new NetworkCore({
+        networkConfig: statsigOptions.networkConfig,
+        logEventCompressionMode: mode,
+      });
+
+      const logger = new EventLogger('client-key', noopEmitEvent, network, {
+        networkConfig: statsigOptions.networkConfig,
+        disableLogging: false,
+      });
+
+      logger.enqueue({
+        eventName: 'test_event',
+        user: { userID: 'user', statsigEnvironment: undefined },
+        time: Date.now(),
+        metadata: {},
+        secondaryExposures: [],
+      });
+
+      await logger.flush();
+
+      const url = fetchMock.mock.calls[0][0]; // First argument of first fetch call
+      const compressed =
+        url instanceof Request
+          ? url.url.includes('gz=1')
+          : url?.includes('gz=1');
+
+      expect(compressed).toBe(expectCompressed);
+      expect(fetchMock.mock.calls[0][1]?.body?.constructor.name).toBe(
+        expectCompressed ? 'Uint8Array' : 'String',
+      );
+    });
+  });
 });
 
 async function decompress(compressed: Uint8Array) {
@@ -213,4 +354,8 @@ async function decompress(compressed: Uint8Array) {
 
   const concatenated = new Uint8Array(chunks);
   return new TextDecoder().decode(concatenated);
+}
+
+function noopEmitEvent(): void {
+  // intentionally empty
 }

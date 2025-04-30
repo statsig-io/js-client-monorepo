@@ -4,6 +4,7 @@ import React, { useContext } from 'react';
 import { StatsigUser } from 'statsig-node';
 
 import {
+  LogEventCompressionMode,
   StatsigContext,
   StatsigProvider,
   useClientBootstrapInit,
@@ -78,7 +79,7 @@ export default function ProxyExample({
       api: 'http://localhost:4200/api/statsig',
     },
     disableStatsigEncoding: true,
-    disableCompression: true,
+    logEventCompressionMode: LogEventCompressionMode.Forced,
   });
 
   return (

@@ -7,6 +7,7 @@ import { _getCurrentPageUrlSafe, _isServerEnv } from './SafeJs';
 import { StatsigClientEmitEventFunc } from './StatsigClientBase';
 import { StatsigEventInternal, _isExposureEvent } from './StatsigEvent';
 import {
+  LogEventCompressionMode,
   NetworkConfigCommon,
   StatsigOptionsCommon,
 } from './StatsigOptionsCommon';
@@ -90,6 +91,10 @@ export class EventLogger {
       config?.api,
       config?.logEventFallbackUrls,
     );
+  }
+
+  setLogEventCompressionMode(mode: LogEventCompressionMode): void {
+    this._network.setLogEventCompressionMode(mode);
   }
 
   setLoggingDisabled(isDisabled: boolean): void {

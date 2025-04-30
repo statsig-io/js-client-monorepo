@@ -2,7 +2,7 @@
 
 import React, { type PropsWithChildren } from 'react';
 
-import { StatsigUser } from '@statsig/js-client';
+import { LogEventCompressionMode, StatsigUser } from '@statsig/js-client';
 import {
   StatsigProvider,
   useClientBootstrapInit,
@@ -25,7 +25,7 @@ export default function BootstrappedStatsigProvider({
       api: 'http://localhost:4200/statsig-demo/proxy', // Your Next.js server
     },
     disableStatsigEncoding: true,
-    disableCompression: true,
+    logEventCompressionMode: LogEventCompressionMode.Disabled,
   });
 
   return <StatsigProvider client={client}>{children}</StatsigProvider>;

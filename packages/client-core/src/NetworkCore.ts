@@ -21,7 +21,11 @@ import { StableID } from './StableID';
 import { StatsigClientEmitEventFunc } from './StatsigClientBase';
 import { ErrorTag } from './StatsigClientEventEmitter';
 import { SDK_VERSION, StatsigMetadataProvider } from './StatsigMetadata';
-import { AnyStatsigOptions, NetworkConfigCommon } from './StatsigOptionsCommon';
+import {
+  AnyStatsigOptions,
+  LogEventCompressionMode,
+  NetworkConfigCommon,
+} from './StatsigOptionsCommon';
 import { Flatten } from './TypingUtils';
 import { UrlConfiguration } from './UrlConfiguration';
 import { _isUnloading } from './VisibilityObserving';
@@ -110,6 +114,12 @@ export class NetworkCore {
       this._timeout = this._netConfig.networkTimeoutMs;
     }
     this._fallbackResolver = new NetworkFallbackResolver(this._options);
+
+    this.setLogEventCompressionMode(this._getLogEventCompressionMode(options));
+  }
+
+  setLogEventCompressionMode(mode: LogEventCompressionMode): void {
+    this._options.logEventCompressionMode = mode;
   }
 
   setErrorBoundary(errorBoundary: ErrorBoundary): void {
@@ -279,6 +289,23 @@ export class NetworkCore {
         attempt: currentAttempt + 1,
       });
     }
+  }
+
+  private _getLogEventCompressionMode(
+    options: AnyStatsigOptions | null,
+  ): LogEventCompressionMode {
+    // Handle backward compatibility for deprecated disableCompression flag
+    let compressionMode = options?.logEventCompressionMode;
+    if (!compressionMode && options?.disableCompression === true) {
+      compressionMode = LogEventCompressionMode.Disabled;
+    }
+
+    // Default to enabled if unset
+    if (!compressionMode) {
+      compressionMode = LogEventCompressionMode.Enabled;
+    }
+
+    return compressionMode;
   }
 
   private _isRateLimited(endpoint: string): boolean {
@@ -454,15 +481,8 @@ function _allowCompression(
   if (!args.isCompressable) {
     return false;
   }
-  if (options.disableCompression) {
-    return false;
-  }
-  if (
-    (args.urlConfig.customUrl != null || args.urlConfig.fallbackUrls != null) &&
-    SDKFlags.get(args.sdkKey, 'enable_log_event_compression') !== true
-  ) {
-    return false;
-  }
+
+  // Never compress if 'no-compress' is set globally or required APIs are unavailable
   if (
     _getStatsigGlobalFlag('no-compress') != null ||
     typeof CompressionStream === 'undefined' ||
@@ -470,7 +490,29 @@ function _allowCompression(
   ) {
     return false;
   }
-  return true;
+
+  const isProxy =
+    args.urlConfig.customUrl != null || args.urlConfig.fallbackUrls != null;
+  const flagEnabled =
+    SDKFlags.get(args.sdkKey, 'enable_log_event_compression') === true;
+
+  switch (options.logEventCompressionMode) {
+    case LogEventCompressionMode.Disabled:
+      return false;
+
+    case LogEventCompressionMode.Enabled:
+      // Only compress through proxy if flag is explicitly on
+      if (isProxy && !flagEnabled) {
+        return false;
+      }
+      return true;
+
+    case LogEventCompressionMode.Forced:
+      return true;
+
+    default:
+      return false;
+  }
 }
 
 function _getErrorMessage(

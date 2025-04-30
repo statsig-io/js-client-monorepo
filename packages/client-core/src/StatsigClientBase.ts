@@ -30,6 +30,7 @@ import {
 import { StatsigEventInternal } from './StatsigEvent';
 import {
   AnyStatsigOptions,
+  LogEventCompressionMode,
   StatsigRuntimeMutableOptions,
 } from './StatsigOptionsCommon';
 import { StatsigUpdateDetails } from './StatsigUpdateDetails';
@@ -134,6 +135,12 @@ export abstract class StatsigClientBase<
     if (options.enableCookies != null) {
       this._options.enableCookies = options.enableCookies;
       StableID._setCookiesEnabled(this._sdkKey, options.enableCookies);
+    }
+
+    if (options.logEventCompressionMode) {
+      this._logger.setLogEventCompressionMode(options.logEventCompressionMode);
+    } else if (options.disableCompression) {
+      this._logger.setLogEventCompressionMode(LogEventCompressionMode.Disabled);
     }
   }
 

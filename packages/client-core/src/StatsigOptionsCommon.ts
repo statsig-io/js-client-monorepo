@@ -18,6 +18,7 @@ export type StatsigRuntimeMutableOptions = {
   disableStorage?: boolean;
 
   /**
+   * @deprecated Use `logEventCompressionMode` instead.
    * Whether or not Statsig should compress JSON bodies for network requests where possible.
    *
    * default: `false`
@@ -28,6 +29,16 @@ export type StatsigRuntimeMutableOptions = {
    * Opt in cookie usage.
    */
   enableCookies?: boolean;
+
+  /**
+   * Controls JSON body compression for network requests.
+   * - `disabled`: Never compress
+   * - `enabled`: Compress unless using a proxy
+   * - `forced`: Always compress, even with a proxy
+   *
+   * default: `enabled`
+   */
+  logEventCompressionMode?: LogEventCompressionMode;
 };
 
 export type NetworkConfigCommon = {
@@ -79,13 +90,6 @@ export type NetworkConfigCommon = {
 /** Options for configuring a Statsig client. */
 export type StatsigOptionsCommon<NetworkConfig extends NetworkConfigCommon> =
   StatsigRuntimeMutableOptions & {
-    /**
-     * Whether or not Statsig should compress JSON bodies for network requests where possible.
-     *
-     * default: `false`
-     */
-    disableCompression?: boolean;
-
     /**
      * When true, the SDK will not generate a stableID for the user. Useful when bootstrapping from a server without a StableID.
      *
@@ -175,3 +179,15 @@ export type StatsigEnvironment = {
   tier?: string;
   [key: string]: string | undefined;
 };
+
+export const LogEventCompressionMode = {
+  /** Do not compress request bodies */
+  Disabled: 'd',
+  /** Compress request bodies unless a network proxy is configured */
+  Enabled: 'e',
+  /** Always compress request bodies, even when a proxy is configured */
+  Forced: 'f',
+} as const;
+
+export type LogEventCompressionMode =
+  (typeof LogEventCompressionMode)[keyof typeof LogEventCompressionMode];
