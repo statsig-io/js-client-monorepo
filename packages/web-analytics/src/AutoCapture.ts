@@ -69,6 +69,11 @@ export class AutoCapture {
     this._disabledEvents = values?.auto_capture_settings?.disabled_events ?? {};
     this._errorBoundary = errorBoundary;
     this._errorBoundary.wrap(this);
+    this._client.$on('values_updated', () => {
+      const values = this._client.getContext().values;
+      this._disabledEvents =
+        values?.auto_capture_settings?.disabled_events ?? this._disabledEvents;
+    });
 
     this._eventFilterFunc = options?.eventFilterFunc;
 

@@ -5,7 +5,7 @@ const BUNDLE_FILE_NAME = 'js-client+session-replay+web-analytics';
 
 module.exports = createStatsigWebpackBundle({
   bundleFile: BUNDLE_FILE_NAME,
-  maxByteSize: 135_000,
+  maxByteSize: 136_000,
   dependencies: [
     '@statsig/client-core',
     '@statsig/js-client',
