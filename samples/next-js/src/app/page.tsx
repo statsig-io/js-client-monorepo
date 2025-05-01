@@ -39,6 +39,13 @@ export default function Index(): React.ReactElement {
         </li>
         <li>
           <button>
+            <a href="/triggered-session-replay-example">
+              Triggered Session Replay
+            </a>
+          </button>
+        </li>
+        <li>
+          <button>
             <a href="/override-adapter-example">Override Adapter</a>
           </button>
         </li>
