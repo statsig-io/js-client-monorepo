@@ -138,10 +138,12 @@ export const _createLayerParameterExposure = (
     secondaryExposures = evaluation.secondary_exposures;
   }
 
+  const parameterRuleIDs = layer.__evaluation?.parameter_rule_ids;
+
   const metadata: Record<string, string> = {
     config: layer.name,
     parameterName,
-    ruleID: layer.ruleID,
+    ruleID: parameterRuleIDs?.[parameterName] ?? layer.ruleID,
     allocatedExperiment,
     isExplicitParameter: String(isExplicit),
   };

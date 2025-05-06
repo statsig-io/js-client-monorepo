@@ -38,6 +38,7 @@ export type LayerEvaluation = Flatten<
     allocated_experiment_name: string;
     explicit_parameters: string[];
     undelegated_secondary_exposures?: SecondaryExposure[] | string[];
+    parameter_rule_ids?: Record<string, string>;
   }
 >;
 
