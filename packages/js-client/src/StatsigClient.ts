@@ -398,6 +398,11 @@ export default class StatsigClient
           }
         : eventOrName;
 
+    this.$emt({
+      name: 'log_event_called',
+      event,
+    });
+
     this._logger.enqueue({ ...event, user: this._user, time: Date.now() });
   }
 

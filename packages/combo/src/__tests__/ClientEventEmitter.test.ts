@@ -78,4 +78,13 @@ describe('Client Event Emitting', () => {
     expect(body.events[0].metadata.edited).toBe(0);
     expect(body.events[1].metadata.edited).toBe(1);
   });
+
+  it('log event listener', () => {
+    let logEventName = '';
+    client.on('log_event_called', (event) => {
+      logEventName = event.event.eventName;
+    });
+    client.logEvent('event1');
+    expect(logEventName).toBe('event1');
+  });
 });

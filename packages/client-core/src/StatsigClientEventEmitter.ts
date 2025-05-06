@@ -1,4 +1,5 @@
 import { DataAdapterResult } from './StatsigDataAdapter';
+import { StatsigEvent } from './StatsigEvent';
 import { DynamicConfig, Experiment, FeatureGate, Layer } from './StatsigTypes';
 import { Flatten } from './TypingUtils';
 
@@ -37,6 +38,7 @@ type EventNameToEventDataMap = {
   dynamic_config_evaluation: { dynamicConfig: DynamicConfig };
   experiment_evaluation: { experiment: Experiment };
   layer_evaluation: { layer: Layer };
+  log_event_called: { event: StatsigEvent };
 };
 
 /**
@@ -63,6 +65,8 @@ type EventNameToEventDataMap = {
  * `experiment_evaluation` - Fired when any experiment is checked from the Statsig client.
  *
  * `layer_evaluation` - Fired when any layer is checked from the Statsig client.
+ *
+ * `log_event_called` - Fired when log event is called.
  */
 export type AnyStatsigClientEvent = Flatten<
   {
