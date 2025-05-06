@@ -4,6 +4,7 @@ import * as rrweb from 'rrweb';
 import { Flatten, _getDocumentSafe } from '@statsig/client-core';
 
 const TIMEOUT_MS = 1000 * 60 * 60 * 4; // 4 hours
+const CHECKOUT_WINDOW_MS = 1000 * 60; // 1 minute
 
 export type ReplayEvent = Flatten<eventWithTime & { eventIndex: number }>;
 
@@ -20,13 +21,17 @@ export class SessionReplayClient {
   private _stopCallback?: () => void;
   private _startTimestamp: null | number = null;
   private _endTimestamp: null | number = null;
-  private _clickCount = 0;
   private _eventCounter = 0;
 
   public record(
-    callback: (latest: ReplayEvent, data: ReplaySessionData) => void,
+    callback: (
+      latest: ReplayEvent,
+      data: ReplaySessionData,
+      isCheckout?: boolean,
+    ) => void,
     config: RRWebConfig,
     stopCallback?: () => void,
+    keepRollingWindow = false,
   ): void {
     if (_getDocumentSafe() == null) {
       return;
@@ -35,7 +40,6 @@ export class SessionReplayClient {
     // Always reset session id and tracking fields for a new recording
     this._startTimestamp = null;
     this._endTimestamp = null;
-    this._clickCount = 0;
     this._eventCounter = 0;
     this._stopCallback = stopCallback;
 
@@ -43,28 +47,37 @@ export class SessionReplayClient {
       return;
     }
 
-    const emit = (event: eventWithTime) => {
-      // Reset start only for the first event
-      this._startTimestamp ??= event.timestamp;
+    const emit = (event: eventWithTime, isCheckOut: boolean | undefined) => {
+      if (keepRollingWindow) {
+        // Reset start at each checkout
+        this._startTimestamp = isCheckOut
+          ? event.timestamp
+          : this._startTimestamp ?? event.timestamp;
+      } else {
+        // Reset start only for the first event
+        this._startTimestamp ??= event.timestamp;
+      }
 
       // Always keep a running end timestamp
       this._endTimestamp = event.timestamp;
 
+      let clickCount = 0;
       // Count clicks only for events representing a click
       if (_isClickEvent(event)) {
-        this._clickCount++;
+        clickCount++;
       }
 
       callback(
         {
           ...event,
-          eventIndex: this._eventCounter++,
+          eventIndex: 0,
         },
         {
           startTime: this._startTimestamp,
           endTime: this._endTimestamp,
-          clickCount: this._clickCount,
+          clickCount,
         },
+        isCheckOut ?? false,
       );
 
       if (this._endTimestamp - this._startTimestamp > TIMEOUT_MS) {
@@ -76,7 +89,7 @@ export class SessionReplayClient {
       }
     };
 
-    this._stopFn = _minifiedAwareRecord(emit, config);
+    this._stopFn = _minifiedAwareRecord(emit, config, keepRollingWindow);
   }
 
   public stop(): void {
@@ -96,11 +109,16 @@ export class SessionReplayClient {
  * This function ensures we handle both "npm" and "<script ..>" install options.
  */
 function _minifiedAwareRecord(
-  emit: (event: eventWithTime) => void,
+  emit: (event: eventWithTime, isCheckOut: boolean | undefined) => void,
   config: RRWebConfig,
+  keepRollingWindow: boolean,
 ): listenerHandler | undefined {
   const record = typeof rrweb === 'function' ? rrweb : rrweb.record;
-  return record({ ...config, emit });
+  if (keepRollingWindow) {
+    return record({ ...config, emit, checkoutEveryNms: CHECKOUT_WINDOW_MS });
+  } else {
+    return record({ ...config, emit });
+  }
 }
 
 function _isClickEvent(event: eventWithTime) {

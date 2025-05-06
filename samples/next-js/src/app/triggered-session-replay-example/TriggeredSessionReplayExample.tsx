@@ -139,6 +139,8 @@ export default function TriggeredSessionReplayExample({
     plugins: [
       new StatsigTriggeredSessionReplayPlugin({
         rrwebConfig: { blockClass: 'do-not-record' },
+        autoStartRecording: false,
+        keepRollingWindow: true,
       }),
       new StatsigAutoCapturePlugin(),
     ],

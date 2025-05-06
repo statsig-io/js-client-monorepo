@@ -1,26 +1,11 @@
 import {
-  Log,
   PrecomputedEvaluationsInterface,
   StatsigMetadataProvider,
   StatsigPlugin,
-  Visibility,
-  _getStatsigGlobal,
-  _isCurrentlyVisible,
-  _subscribeToVisiblityChanged,
 } from '@statsig/client-core';
 
-import { SessionReplayBase } from './SessionReplayBase';
-import {
-  RRWebConfig,
-  ReplayEvent,
-  ReplaySessionData,
-  SessionReplayClient,
-} from './SessionReplayClient';
-import {
-  MAX_INDIVIDUAL_EVENT_BYTES,
-  REPLAY_ENQUEUE_TRIGGER_BYTES,
-} from './SessionReplayUtils';
-import { _fastApproxSizeOf } from './SizeOf';
+import { EndReason, SessionReplayBase } from './SessionReplayBase';
+import { RRWebConfig } from './SessionReplayClient';
 
 type SessionReplayOptions = {
   rrwebConfig?: RRWebConfig;
@@ -47,110 +32,22 @@ export function runStatsigSessionReplay(
 }
 
 export class SessionReplay extends SessionReplayBase {
-  private _replayer: SessionReplayClient;
-  private _wasStopped = false;
-
   constructor(
     client: PrecomputedEvaluationsInterface,
     options?: SessionReplayOptions,
   ) {
     super(client, options);
-
-    this._replayer = new SessionReplayClient();
-    this._client.$on('pre_shutdown', () => this._shutdown());
     this._client.$on('values_updated', () => {
       if (!this._wasStopped) {
         this._attemptToStartRecording(this._options?.forceRecording);
       }
     });
-    this._client.on('session_expired', () => {
-      this._replayer.stop();
-      StatsigMetadataProvider.add({ isRecordingSession: 'false' });
-      this._logRecording('session_expired');
-    });
 
-    this._subscribeToVisibilityChanged();
     this._attemptToStartRecording(this._options?.forceRecording);
   }
 
-  private _subscribeToVisibilityChanged() {
-    // Note: this exists as a separate function to ensure closure scope only contains `sdkKey`
-    const { sdkKey } = this._client.getContext();
-
-    _subscribeToVisiblityChanged((vis) => {
-      const inst = _getStatsigGlobal()?.srInstances?.[sdkKey];
-      if (inst instanceof SessionReplay) {
-        inst._onVisibilityChanged(vis);
-      }
-    });
-  }
-
-  private _onVisibilityChanged(visibility: Visibility): void {
-    if (visibility !== 'background') {
-      return;
-    }
-
-    this._logRecording();
-    this._client.flush().catch((e) => {
-      this._errorBoundary.logError('SR::visibility', e);
-    });
-  }
-
-  public stopRecording(): void {
-    this._wasStopped = true;
-    this._replayer.stop();
-    StatsigMetadataProvider.add({ isRecordingSession: 'false' });
-    if (this._events.length === 0 || this._sessionData == null) {
-      return;
-    }
-    this._logRecording();
-  }
-
-  protected _onRecordingEvent(
-    event: ReplayEvent,
-    data: ReplaySessionData,
-  ): void {
-    // The session has expired so we should stop recording
-    if (this._currentSessionID !== this._getSessionIdFromClient()) {
-      this._replayer.stop();
-      StatsigMetadataProvider.add({ isRecordingSession: 'false' });
-      this._logRecording('session_expired');
-      return;
-    }
-
-    this._sessionData = data;
-
-    const eventApproxSize = _fastApproxSizeOf(
-      event,
-      MAX_INDIVIDUAL_EVENT_BYTES,
-    );
-
-    if (eventApproxSize > MAX_INDIVIDUAL_EVENT_BYTES) {
-      Log.warn(
-        `SessionReplay event is too large (~${eventApproxSize} bytes) and will not be logged`,
-        event,
-      );
-      return;
-    }
-
-    const approxArraySizeBefore = _fastApproxSizeOf(
-      this._events,
-      REPLAY_ENQUEUE_TRIGGER_BYTES,
-    );
-    this._events.push(event);
-
-    if (
-      approxArraySizeBefore + eventApproxSize <
-      REPLAY_ENQUEUE_TRIGGER_BYTES
-    ) {
-      return;
-    }
-
-    if (_isCurrentlyVisible()) {
-      this._bumpSessionIdleTimerAndLogRecording();
-    } else {
-      this._logRecording();
-    }
+  protected override _shutdown(endReason?: EndReason): void {
+    super._shutdownImpl(endReason);
   }
 
   protected _attemptToStartRecording(force = false): void {
@@ -170,16 +67,9 @@ export class SessionReplay extends SessionReplayBase {
     this._replayer.record(
       (e, d) => this._onRecordingEvent(e, d),
       this._options?.rrwebConfig ?? {},
+      () => {
+        this._shutdown();
+      },
     );
-  }
-
-  protected _shutdown(): void {
-    this._replayer.stop();
-    StatsigMetadataProvider.add({ isRecordingSession: 'false' });
-
-    if (this._events.length === 0 || this._sessionData == null) {
-      return;
-    }
-    this._logRecording();
   }
 }

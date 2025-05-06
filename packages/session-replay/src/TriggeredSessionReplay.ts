@@ -1,38 +1,34 @@
 import {
-  Log,
   PrecomputedEvaluationsInterface,
   StatsigMetadataProvider,
   StatsigPlugin,
-  Visibility,
   _getStatsigGlobal,
   _isCurrentlyVisible,
-  _subscribeToVisiblityChanged,
 } from '@statsig/client-core';
 
-import { SessionReplayBase } from './SessionReplayBase';
+import { EndReason, SessionReplayBase } from './SessionReplayBase';
 import {
   RRWebConfig,
   ReplayEvent,
   ReplaySessionData,
 } from './SessionReplayClient';
-import {
-  MAX_INDIVIDUAL_EVENT_BYTES,
-  REPLAY_ENQUEUE_TRIGGER_BYTES,
-} from './SessionReplayUtils';
-import { _fastApproxSizeOf } from './SizeOf';
-import { TriggeredSessionReplayClient } from './TriggeredSessionReplayClient';
 
 type SessionReplayOptions = {
   rrwebConfig?: RRWebConfig;
   forceRecording?: boolean;
 };
 
+export type TriggeredSessionReplayOptions = {
+  autoStartRecording?: boolean;
+  keepRollingWindow?: boolean;
+} & SessionReplayOptions;
+
 export class StatsigTriggeredSessionReplayPlugin
   implements StatsigPlugin<PrecomputedEvaluationsInterface>
 {
   readonly __plugin = 'triggered-session-replay';
 
-  constructor(private readonly options?: SessionReplayOptions) {}
+  constructor(private readonly options?: TriggeredSessionReplayOptions) {}
 
   bind(client: PrecomputedEvaluationsInterface): void {
     runStatsigSessionReplay(client, this.options);
@@ -61,52 +57,53 @@ export function stopRecording(sdkKey: string): void {
 }
 
 export class TriggeredSessionReplay extends SessionReplayBase {
-  private _replayer: TriggeredSessionReplayClient;
-  private _currentEventIndex = 0;
-
   private _runningEventData: {
     events: { event: ReplayEvent; data: ReplaySessionData }[];
   }[] = [];
   private _isActiveRecording = false;
-  private _wasStopped = false;
 
   constructor(
     client: PrecomputedEvaluationsInterface,
-    options?: SessionReplayOptions,
+    options?: TriggeredSessionReplayOptions,
   ) {
     super(client, options);
-
-    this._replayer = new TriggeredSessionReplayClient();
-    this._client.$on('pre_shutdown', () => this._shutdown());
     this._client.$on('values_updated', () => {
       if (!this._wasStopped) {
-        this._attemptToStartRecording(this._options?.forceRecording);
+        if (options?.autoStartRecording) {
+          this._attemptToStartRecording(this._options?.forceRecording);
+        } else if (options?.keepRollingWindow) {
+          this._attemptToStartRollingWindow();
+        }
       }
     });
-    this._client.on('session_expired', () => {
-      this._replayer.stop();
-      StatsigMetadataProvider.add({ isRecordingSession: 'false' });
-      this._logRecording('session_expired');
-    });
 
-    this._subscribeToVisibilityChanged();
-    this._attemptToStartRecording(this._options?.forceRecording);
-  }
-
-  protected _subscribeToVisibilityChanged(): void {
-    // Note: this exists as a separate function to ensure closure scope only contains `sdkKey`
-    const { sdkKey } = this._client.getContext();
-
-    _subscribeToVisiblityChanged((vis) => {
-      const inst = _getStatsigGlobal()?.srInstances?.[sdkKey];
-      if (inst instanceof TriggeredSessionReplay) {
-        inst._onVisibilityChanged(vis);
-      }
-    });
+    if (options?.autoStartRecording) {
+      this._attemptToStartRecording(this._options?.forceRecording);
+    } else if (options?.keepRollingWindow) {
+      this._attemptToStartRollingWindow();
+    }
   }
 
   public startRecording(): void {
     this._wasStopped = false;
+    this._attemptToStartRecording(this._options?.forceRecording);
+  }
+
+  public override forceStartRecording(): void {
+    super.forceStartRecording();
+  }
+
+  public override stopRecording(): void {
+    this._isActiveRecording = false;
+    this._runningEventData = [];
+    super.stopRecording();
+  }
+
+  private _handleStartActiveRecording(): void {
+    this._isActiveRecording = true;
+    if (this._runningEventData.length === 0) {
+      return;
+    }
     const currentEvents = this._runningEventData.map((e) => e.events).flat();
     for (let i = 0; i < currentEvents.length; i++) {
       currentEvents[i].event.eventIndex = i;
@@ -122,48 +119,28 @@ export class TriggeredSessionReplay extends SessionReplayBase {
     }
     this._events = currentEvents.map((e) => e.event);
     this._currentEventIndex = currentEvents.length;
-    this._isActiveRecording = true;
     if (_isCurrentlyVisible()) {
       this._bumpSessionIdleTimerAndLogRecording();
     } else {
       this._logRecording();
     }
-    this._attemptToStartRecording(this._options?.forceRecording);
   }
 
-  public stopRecording(): void {
-    this._wasStopped = true;
-    this._replayer.stop();
-    StatsigMetadataProvider.add({ isRecordingSession: 'false' });
+  protected override _shutdown(endReason?: EndReason): void {
     this._isActiveRecording = false;
-    if (this._events.length === 0 || this._sessionData == null) {
-      return;
-    }
-    this._logRecording();
+    this._runningEventData = [];
+    super._shutdownImpl(endReason);
   }
 
-  protected _onVisibilityChanged(visibility: Visibility): void {
-    if (visibility !== 'background') {
-      return;
-    }
-
-    this._logRecording();
-    this._client.flush().catch((e) => {
-      this._errorBoundary.logError('SR::visibility', e);
-    });
-  }
-
-  protected _onRecordingEvent(
+  protected override _onRecordingEvent(
     event: ReplayEvent,
     data: ReplaySessionData,
-    isCheckOut: boolean,
+    isCheckOut?: boolean,
   ): void {
     if (!this._isActiveRecording) {
-      // The session has expired so we should stop recording
+      // The session has expired so we should clear the current data
       if (this._currentSessionID !== this._getSessionIdFromClient()) {
-        this._replayer.stop();
-        StatsigMetadataProvider.add({ isRecordingSession: 'false' });
-        this._runningEventData = [];
+        this._shutdown('session_expired');
         return;
       }
 
@@ -185,58 +162,29 @@ export class TriggeredSessionReplay extends SessionReplayBase {
       return;
     }
 
-    // The session has expired so we should stop recording
-    if (this._currentSessionID !== this._getSessionIdFromClient()) {
-      this._replayer.stop();
-      StatsigMetadataProvider.add({ isRecordingSession: 'false' });
-      this._logRecording('session_expired');
+    super._onRecordingEvent(event, data);
+  }
+
+  protected _attemptToStartRollingWindow(): void {
+    const values = this._client.getContext().values;
+
+    if (values?.can_record_session !== true) {
+      this._shutdown();
       return;
     }
 
-    event.eventIndex = this._currentEventIndex++;
-
-    // Update the session data
-    this._sessionData.clickCount += data.clickCount;
-    this._sessionData.startTime = Math.min(
-      this._sessionData.startTime,
-      data.startTime,
-    );
-    this._sessionData.endTime = Math.max(
-      this._sessionData.endTime,
-      data.endTime,
-    );
-
-    const eventApproxSize = _fastApproxSizeOf(
-      event,
-      MAX_INDIVIDUAL_EVENT_BYTES,
-    );
-
-    if (eventApproxSize > MAX_INDIVIDUAL_EVENT_BYTES) {
-      Log.warn(
-        `SessionReplay event is too large (~${eventApproxSize} bytes) and will not be logged`,
-        event,
-      );
+    if (this._replayer.isRecording()) {
       return;
     }
 
-    const approxArraySizeBefore = _fastApproxSizeOf(
-      this._events,
-      REPLAY_ENQUEUE_TRIGGER_BYTES,
+    this._replayer.record(
+      (e, d, isCheckOut) => this._onRecordingEvent(e, d, isCheckOut),
+      this._options?.rrwebConfig ?? {},
+      () => {
+        this._shutdown();
+      },
+      true,
     );
-    this._events.push(event);
-
-    if (
-      approxArraySizeBefore + eventApproxSize <
-      REPLAY_ENQUEUE_TRIGGER_BYTES
-    ) {
-      return;
-    }
-
-    if (_isCurrentlyVisible()) {
-      this._bumpSessionIdleTimerAndLogRecording();
-    } else {
-      this._logRecording();
-    }
   }
 
   protected _attemptToStartRecording(force = false): void {
@@ -247,25 +195,20 @@ export class TriggeredSessionReplay extends SessionReplayBase {
       return;
     }
 
+    this._handleStartActiveRecording();
+    this._wasStopped = false;
+    StatsigMetadataProvider.add({ isRecordingSession: 'true' });
+
     if (this._replayer.isRecording()) {
       return;
     }
 
-    this._wasStopped = false;
-    StatsigMetadataProvider.add({ isRecordingSession: 'true' });
     this._replayer.record(
       (e, d, isCheckOut) => this._onRecordingEvent(e, d, isCheckOut),
       this._options?.rrwebConfig ?? {},
+      () => {
+        this._shutdown();
+      },
     );
-  }
-
-  protected _shutdown(): void {
-    this._replayer.stop();
-    StatsigMetadataProvider.add({ isRecordingSession: 'false' });
-
-    if (this._events.length === 0 || this._sessionData == null) {
-      return;
-    }
-    this._logRecording();
   }
 }
