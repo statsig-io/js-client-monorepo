@@ -58,15 +58,15 @@ function _getMappedDynamicConfigValue<T>(
   fallback: T,
   options: ParameterStoreEvaluationOptions | undefined,
 ): T {
-  const config = client.getDynamicConfig(param.config_name, NO_EXPOSURE_OPT);
+  const config = client.getDynamicConfig(
+    param.config_name,
+    _shouldLogExposure(options) ? undefined : NO_EXPOSURE_OPT,
+  );
   const value = config.get(param.param_name);
   if (_shouldReturnFallback(value, fallback)) {
     return fallback;
   }
 
-  if (_shouldLogExposure(options)) {
-    client.getDynamicConfig(param.config_name);
-  }
   return value as T;
 }
 
@@ -78,15 +78,11 @@ function _getMappedExperimentValue<T>(
 ): T {
   const experiment = client.getExperiment(
     param.experiment_name,
-    NO_EXPOSURE_OPT,
+    _shouldLogExposure(options) ? undefined : NO_EXPOSURE_OPT,
   );
   const value = experiment.get(param.param_name);
   if (_shouldReturnFallback(value, fallback)) {
     return fallback;
-  }
-
-  if (_shouldLogExposure(options)) {
-    client.getExperiment(param.experiment_name);
   }
 
   return value as T;
@@ -98,14 +94,13 @@ function _getMappedLayerValue<T>(
   fallback: T,
   options: ParameterStoreEvaluationOptions | undefined,
 ): T {
-  const layer = client.getLayer(param.layer_name, NO_EXPOSURE_OPT);
+  const layer = client.getLayer(
+    param.layer_name,
+    _shouldLogExposure(options) ? undefined : NO_EXPOSURE_OPT,
+  );
   const value = layer.get(param.param_name);
   if (_shouldReturnFallback(value, fallback)) {
     return fallback;
-  }
-
-  if (_shouldLogExposure(options)) {
-    client.getLayer(param.layer_name).get(param.param_name);
   }
 
   return value as T;
