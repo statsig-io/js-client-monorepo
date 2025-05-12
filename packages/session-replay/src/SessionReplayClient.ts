@@ -4,7 +4,7 @@ import * as rrweb from 'rrweb';
 import { Flatten, _getDocumentSafe } from '@statsig/client-core';
 
 const TIMEOUT_MS = 1000 * 60 * 60 * 4; // 4 hours
-const CHECKOUT_WINDOW_MS = 1000 * 60; // 1 minute
+const CHECKOUT_WINDOW_MS = 1000 * 30; // 30 seconds
 
 export type ReplayEvent = Flatten<eventWithTime & { eventIndex: number }>;
 
@@ -21,7 +21,6 @@ export class SessionReplayClient {
   private _stopCallback?: () => void;
   private _startTimestamp: null | number = null;
   private _endTimestamp: null | number = null;
-  private _eventCounter = 0;
 
   public record(
     callback: (
@@ -40,7 +39,6 @@ export class SessionReplayClient {
     // Always reset session id and tracking fields for a new recording
     this._startTimestamp = null;
     this._endTimestamp = null;
-    this._eventCounter = 0;
     this._stopCallback = stopCallback;
 
     if (this._stopFn) {

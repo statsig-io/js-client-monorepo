@@ -58,6 +58,11 @@ export class SessionReplay extends SessionReplayBase {
       return;
     }
 
+    if (values?.passes_session_recording_targeting === false) {
+      this._shutdown();
+      return;
+    }
+
     if (this._replayer.isRecording()) {
       return;
     }

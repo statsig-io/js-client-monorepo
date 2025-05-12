@@ -23,6 +23,10 @@ export async function getStatsigValues(
   if (options.forceSessionReplay === true && values) {
     values['can_record_session'] = true;
     values['session_recording_rate'] = 1;
+    values['passes_session_recording_targeting'] = true;
+    values['session_recording_event_triggers'] = {
+      clicked_button_a: {},
+    };
   }
 
   return JSON.stringify(values);

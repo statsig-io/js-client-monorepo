@@ -2,6 +2,7 @@ import {
   PrecomputedEvaluationsInterface,
   StatsigMetadataProvider,
   StatsigPlugin,
+  _DJB2,
   _getStatsigGlobal,
   _isCurrentlyVisible,
 } from '@statsig/client-core';
@@ -49,6 +50,13 @@ export function startRecording(sdkKey: string): void {
   }
 }
 
+export function forceStartRecording(sdkKey: string): void {
+  const inst = _getStatsigGlobal()?.srInstances?.[sdkKey];
+  if (inst instanceof TriggeredSessionReplay) {
+    inst.forceStartRecording();
+  }
+}
+
 export function stopRecording(sdkKey: string): void {
   const inst = _getStatsigGlobal()?.srInstances?.[sdkKey];
   if (inst instanceof TriggeredSessionReplay) {
@@ -74,6 +82,63 @@ export class TriggeredSessionReplay extends SessionReplayBase {
         } else if (options?.keepRollingWindow) {
           this._attemptToStartRollingWindow();
         }
+      }
+    });
+
+    this._client.$on('log_event_called', (event) => {
+      if (this._wasStopped) {
+        return;
+      }
+      const values = this._client.getContext().values;
+      const passedTargeting = values?.passes_session_recording_targeting;
+      if (
+        passedTargeting === false ||
+        values?.session_recording_event_triggers == null
+      ) {
+        return;
+      }
+      const trigger =
+        values.session_recording_event_triggers[event.event.eventName];
+      if (trigger == null) {
+        return;
+      }
+      const targetValues = trigger.values;
+      if (targetValues == null) {
+        this._attemptToStartRecording(true);
+        return;
+      }
+      if (targetValues.includes(String(event.event.value ?? ''))) {
+        this._attemptToStartRecording(true);
+        return;
+      }
+    });
+
+    this._client.$on('gate_evaluation', (event) => {
+      if (this._wasStopped) {
+        return;
+      }
+      const values = this._client.getContext().values;
+      const passedTargeting = values?.passes_session_recording_targeting;
+      if (
+        passedTargeting === false ||
+        values?.session_recording_exposure_triggers == null
+      ) {
+        return;
+      }
+      const trigger =
+        values.session_recording_exposure_triggers[event.gate.name] ??
+        values.session_recording_exposure_triggers[_DJB2(event.gate.name)];
+      if (trigger == null) {
+        return;
+      }
+      const targetValues = trigger.values;
+      if (targetValues == null) {
+        this._attemptToStartRecording(true);
+        return;
+      }
+      if (targetValues.includes(String(event.gate.value ?? false))) {
+        this._attemptToStartRecording(true);
+        return;
       }
     });
 
@@ -108,10 +173,13 @@ export class TriggeredSessionReplay extends SessionReplayBase {
     for (let i = 0; i < currentEvents.length; i++) {
       currentEvents[i].event.eventIndex = i;
       this._sessionData.clickCount += currentEvents[i].data.clickCount;
-      this._sessionData.startTime = Math.min(
-        this._sessionData.startTime,
-        currentEvents[i].data.startTime,
-      );
+      this._sessionData.startTime =
+        this._sessionData.startTime === -1
+          ? currentEvents[i].data.startTime
+          : Math.min(
+              this._sessionData.startTime,
+              currentEvents[i].data.startTime,
+            );
       this._sessionData.endTime = Math.max(
         this._sessionData.endTime,
         currentEvents[i].data.endTime,
@@ -124,6 +192,8 @@ export class TriggeredSessionReplay extends SessionReplayBase {
     } else {
       this._logRecording();
     }
+    // stop recording and since it will be started again
+    this._replayer.stop();
   }
 
   protected override _shutdown(endReason?: EndReason): void {
@@ -168,7 +238,7 @@ export class TriggeredSessionReplay extends SessionReplayBase {
   protected _attemptToStartRollingWindow(): void {
     const values = this._client.getContext().values;
 
-    if (values?.can_record_session !== true) {
+    if (values?.passes_session_recording_targeting === false) {
       this._shutdown();
       return;
     }
@@ -191,6 +261,11 @@ export class TriggeredSessionReplay extends SessionReplayBase {
     const values = this._client.getContext().values;
 
     if (!force && values?.can_record_session !== true) {
+      this._shutdown();
+      return;
+    }
+
+    if (values?.passes_session_recording_targeting === false) {
       this._shutdown();
       return;
     }

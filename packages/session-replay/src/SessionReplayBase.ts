@@ -36,7 +36,7 @@ export type EndReason = 'is_leaving_page' | 'session_expired';
 
 export abstract class SessionReplayBase {
   protected _sessionData: ReplaySessionData = {
-    startTime: 0,
+    startTime: -1,
     endTime: 0,
     clickCount: 0,
   };
@@ -182,14 +182,26 @@ export abstract class SessionReplayBase {
   protected _shutdownImpl(endReason?: EndReason): void {
     this._replayer.stop();
     StatsigMetadataProvider.add({ isRecordingSession: 'false' });
-    this._currentEventIndex = 0;
 
     if (this._events.length === 0) {
+      // only reset if session expired otherwise we might start recording again
+      if (endReason === 'session_expired') {
+        this._currentEventIndex = 0;
+        this._sessionData = this._makeEmptySessionData();
+      }
       return;
     }
     this._logRecording(endReason);
-    this._sessionData = {
-      startTime: 0,
+    // only reset if session expired otherwise we might start recording again
+    if (endReason === 'session_expired') {
+      this._currentEventIndex = 0;
+      this._sessionData = this._makeEmptySessionData();
+    }
+  }
+
+  private _makeEmptySessionData(): ReplaySessionData {
+    return {
+      startTime: -1,
       endTime: 0,
       clickCount: 0,
     };
@@ -209,10 +221,10 @@ export abstract class SessionReplayBase {
 
     // Update the session data
     this._sessionData.clickCount += data.clickCount;
-    this._sessionData.startTime = Math.min(
-      this._sessionData.startTime,
-      data.startTime,
-    );
+    this._sessionData.startTime =
+      this._sessionData.startTime === -1
+        ? data.startTime
+        : Math.min(this._sessionData.startTime, data.startTime);
     this._sessionData.endTime = Math.max(
       this._sessionData.endTime,
       data.endTime,

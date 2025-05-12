@@ -8,6 +8,7 @@ import {
 import { SessionReplayClient } from './SessionReplayClient';
 import {
   StatsigTriggeredSessionReplayPlugin,
+  forceStartRecording,
   startRecording,
   stopRecording,
 } from './TriggeredSessionReplay';
@@ -25,6 +26,7 @@ export {
   StatsigTriggeredSessionReplayPlugin,
   startRecording,
   stopRecording,
+  forceStartRecording,
 };
 
 Object.assign(_getStatsigGlobal(), {
