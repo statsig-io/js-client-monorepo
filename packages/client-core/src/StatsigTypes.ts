@@ -30,6 +30,7 @@ export type FeatureGate = Flatten<{
   readonly ruleID: string;
   readonly details: EvaluationDetails;
   readonly value: boolean;
+  readonly idType: string | null;
   readonly __evaluation: GateEvaluation | null;
 }>;
 

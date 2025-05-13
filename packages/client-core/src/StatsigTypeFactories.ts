@@ -17,8 +17,6 @@ import {
 } from './StatsigTypes';
 import { _isTypeMatch } from './TypingUtils';
 
-const DEFAULT_RULE = 'default';
-
 function _makeEvaluation<T, U extends AnyEvaluation>(
   name: string,
   details: EvaluationDetails,
@@ -28,7 +26,7 @@ function _makeEvaluation<T, U extends AnyEvaluation>(
   return {
     name,
     details,
-    ruleID: evaluation?.rule_id ?? DEFAULT_RULE,
+    ruleID: evaluation?.rule_id ?? '',
     __evaluation: evaluation,
     value,
   };
@@ -39,7 +37,10 @@ export function _makeFeatureGate(
   details: EvaluationDetails,
   evaluation: GateEvaluation | null,
 ): FeatureGate {
-  return _makeEvaluation(name, details, evaluation, evaluation?.value === true);
+  return {
+    ..._makeEvaluation(name, details, evaluation, evaluation?.value === true),
+    idType: evaluation?.id_type ?? null,
+  };
 }
 
 export function _makeDynamicConfig(

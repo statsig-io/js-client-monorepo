@@ -84,6 +84,7 @@ describe('Client Evaluations Callback', () => {
             ruleID: '2QWhVkWdUEXR6Q3KYgV73O:100.00:4',
             details: expectedDetails,
             value: true,
+            idType: 'userID',
             __evaluation: anyObject(),
           },
         },

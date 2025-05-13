@@ -30,6 +30,7 @@ describe('Triggered Session Replay Gate Trigger', () => {
         details: {
           reason: '',
         },
+        idType: 'userID',
         __evaluation: null,
       };
       emitListener({ name: 'gate_evaluation', gate });
