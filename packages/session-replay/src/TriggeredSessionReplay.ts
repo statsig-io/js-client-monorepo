@@ -75,6 +75,26 @@ export class TriggeredSessionReplay extends SessionReplayBase {
     options?: TriggeredSessionReplayOptions,
   ) {
     super(client, options);
+    this._subscribeToClientEvents(options);
+    if (options?.autoStartRecording) {
+      this._attemptToStartRecording(this._options?.forceRecording);
+    } else if (options?.keepRollingWindow) {
+      this._attemptToStartRollingWindow();
+    }
+  }
+
+  private _subscribeToClientEvents(
+    options?: TriggeredSessionReplayOptions,
+  ): void {
+    this._subscribeToValuesUpdated(options);
+    this._subscribeToLogEventCalled();
+    this._subscribeToGateEvaluation();
+    this._subscribeToExperimentEvaluation();
+  }
+
+  private _subscribeToValuesUpdated(
+    options?: TriggeredSessionReplayOptions,
+  ): void {
     this._client.$on('values_updated', () => {
       if (!this._wasStopped) {
         if (options?.autoStartRecording) {
@@ -84,7 +104,9 @@ export class TriggeredSessionReplay extends SessionReplayBase {
         }
       }
     });
+  }
 
+  private _subscribeToLogEventCalled(): void {
     this._client.$on('log_event_called', (event) => {
       if (this._wasStopped) {
         return;
@@ -112,40 +134,52 @@ export class TriggeredSessionReplay extends SessionReplayBase {
         return;
       }
     });
+  }
 
+  private _subscribeToGateEvaluation(): void {
     this._client.$on('gate_evaluation', (event) => {
-      if (this._wasStopped) {
-        return;
-      }
-      const values = this._client.getContext().values;
-      const passedTargeting = values?.passes_session_recording_targeting;
-      if (
-        passedTargeting === false ||
-        values?.session_recording_exposure_triggers == null
-      ) {
-        return;
-      }
-      const trigger =
-        values.session_recording_exposure_triggers[event.gate.name] ??
-        values.session_recording_exposure_triggers[_DJB2(event.gate.name)];
-      if (trigger == null) {
-        return;
-      }
-      const targetValues = trigger.values;
-      if (targetValues == null) {
-        this._attemptToStartRecording(true);
-        return;
-      }
-      if (targetValues.includes(String(event.gate.value ?? false))) {
-        this._attemptToStartRecording(true);
-        return;
-      }
+      this._tryStartExposureRecording(
+        event.gate.name,
+        String(event.gate.value),
+      );
     });
+  }
 
-    if (options?.autoStartRecording) {
-      this._attemptToStartRecording(this._options?.forceRecording);
-    } else if (options?.keepRollingWindow) {
-      this._attemptToStartRollingWindow();
+  private _subscribeToExperimentEvaluation(): void {
+    this._client.$on('experiment_evaluation', (event) => {
+      this._tryStartExposureRecording(
+        event.experiment.name,
+        event.experiment.groupName ?? '',
+      );
+    });
+  }
+
+  private _tryStartExposureRecording(name: string, value: string): void {
+    if (this._wasStopped) {
+      return;
+    }
+    const values = this._client.getContext().values;
+    const passedTargeting = values?.passes_session_recording_targeting;
+    if (
+      passedTargeting === false ||
+      values?.session_recording_exposure_triggers == null
+    ) {
+      return;
+    }
+    const trigger =
+      values.session_recording_exposure_triggers[name] ??
+      values.session_recording_exposure_triggers[_DJB2(name)];
+    if (trigger == null) {
+      return;
+    }
+    const targetValues = trigger.values;
+    if (targetValues == null) {
+      this._attemptToStartRecording(true);
+      return;
+    }
+    if (targetValues.includes(value)) {
+      this._attemptToStartRecording(true);
+      return;
     }
   }
 
