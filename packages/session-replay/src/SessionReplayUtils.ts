@@ -20,6 +20,7 @@ export type RRWebPayload = {
 const REPLAY_SLICE_BYTES = 1024 * 1024; // 1 MB
 export const REPLAY_ENQUEUE_TRIGGER_BYTES = 1024 * 10; // 10 KB
 export const MAX_INDIVIDUAL_EVENT_BYTES = 1024 * 1024 * 10; // 10 MB
+export const MAX_LOGS = 10000; // 10K logs
 
 export function _makeLoggableRrwebEvent(
   slice: string,

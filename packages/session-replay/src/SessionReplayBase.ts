@@ -20,6 +20,7 @@ import {
 } from './SessionReplayClient';
 import {
   MAX_INDIVIDUAL_EVENT_BYTES,
+  MAX_LOGS,
   REPLAY_ENQUEUE_TRIGGER_BYTES,
   _appendSlicedMetadata,
   _makeLoggableRrwebEvent,
@@ -48,6 +49,7 @@ export abstract class SessionReplayBase {
   protected _replayer: SessionReplayClient;
   protected _wasStopped = false;
   protected _currentEventIndex = 0;
+  protected _totalLogs = 0;
 
   constructor(
     client: PrecomputedEvaluationsInterface,
@@ -156,6 +158,8 @@ export abstract class SessionReplayBase {
         event.metadata[endReason] = 'true';
       }
 
+      this._totalLogs++;
+
       this._client.logEvent(event);
 
       if (slicedID != null) {
@@ -166,6 +170,9 @@ export abstract class SessionReplayBase {
     }
 
     this._events = [];
+    if (this._totalLogs > MAX_LOGS) {
+      this._shutdown();
+    }
   }
 
   protected _bumpSessionIdleTimerAndLogRecording(): void {
@@ -180,8 +187,10 @@ export abstract class SessionReplayBase {
   protected abstract _shutdown(endReason?: EndReason): void;
 
   protected _shutdownImpl(endReason?: EndReason): void {
-    this._replayer.stop();
-    StatsigMetadataProvider.add({ isRecordingSession: 'false' });
+    if (this._replayer.isRecording()) {
+      this._replayer.stop();
+      StatsigMetadataProvider.add({ isRecordingSession: 'false' });
+    }
 
     if (this._events.length === 0) {
       // only reset if session expired otherwise we might start recording again
@@ -214,6 +223,11 @@ export abstract class SessionReplayBase {
     // The session has expired so we should stop recording
     if (this._currentSessionID !== this._getSessionIdFromClient()) {
       this._shutdown('session_expired');
+      return;
+    }
+
+    if (this._totalLogs >= MAX_LOGS) {
+      this._shutdown();
       return;
     }
 

@@ -9,6 +9,7 @@ import { StatsigUser } from './StatsigUser';
 
 type SessionReplayFields = {
   can_record_session?: boolean;
+  recording_blocked?: boolean;
   session_recording_rate?: number;
   passes_session_recording_targeting?: boolean;
   session_recording_event_triggers?: Record<string, SessionReplayTrigger>;
@@ -17,6 +18,7 @@ type SessionReplayFields = {
 
 type SessionReplayTrigger = {
   values?: string[];
+  passes_sampling?: boolean;
 };
 
 type AutoCaptureFields = {

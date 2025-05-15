@@ -13,6 +13,7 @@ import {
   ReplayEvent,
   ReplaySessionData,
 } from './SessionReplayClient';
+import { MAX_LOGS } from './SessionReplayUtils';
 
 type SessionReplayOptions = {
   rrwebConfig?: RRWebConfig;
@@ -124,6 +125,11 @@ export class TriggeredSessionReplay extends SessionReplayBase {
       if (trigger == null) {
         return;
       }
+
+      if (trigger.passes_sampling === false) {
+        return;
+      }
+
       const targetValues = trigger.values;
       if (targetValues == null) {
         this._attemptToStartRecording(true);
@@ -170,6 +176,10 @@ export class TriggeredSessionReplay extends SessionReplayBase {
       values.session_recording_exposure_triggers[name] ??
       values.session_recording_exposure_triggers[_DJB2(name)];
     if (trigger == null) {
+      return;
+    }
+
+    if (trigger.passes_sampling === false) {
       return;
     }
     const targetValues = trigger.values;
@@ -292,7 +302,15 @@ export class TriggeredSessionReplay extends SessionReplayBase {
   }
 
   protected _attemptToStartRecording(force = false): void {
+    if (this._totalLogs >= MAX_LOGS) {
+      return;
+    }
     const values = this._client.getContext().values;
+
+    if (values?.recording_blocked === true) {
+      this._shutdown();
+      return;
+    }
 
     if (!force && values?.can_record_session !== true) {
       this._shutdown();

@@ -53,7 +53,7 @@ describe('Triggered Session Replay No Auto Record', () => {
 
     it('sets isRecordingSession to false', () => {
       const metadata = StatsigMetadataProvider.get() as any;
-      expect(metadata.isRecordingSession).toBe('false');
+      expect(metadata.isRecordingSession).toBe(undefined);
     });
   });
 });

@@ -6,6 +6,7 @@ import {
 
 import { EndReason, SessionReplayBase } from './SessionReplayBase';
 import { RRWebConfig } from './SessionReplayClient';
+import { MAX_LOGS } from './SessionReplayUtils';
 
 type SessionReplayOptions = {
   rrwebConfig?: RRWebConfig;
@@ -51,7 +52,15 @@ export class SessionReplay extends SessionReplayBase {
   }
 
   protected _attemptToStartRecording(force = false): void {
+    if (this._totalLogs >= MAX_LOGS) {
+      return;
+    }
     const values = this._client.getContext().values;
+
+    if (values?.recording_blocked === true) {
+      this._shutdown();
+      return;
+    }
 
     if (!force && values?.can_record_session !== true) {
       this._shutdown();
