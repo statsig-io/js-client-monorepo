@@ -5,12 +5,15 @@ import {
   StatsigSessionReplayPlugin,
   runStatsigSessionReplay,
 } from './SessionReplay';
-import { SessionReplayClient } from './SessionReplayClient';
 import {
-  StatsigTriggeredSessionReplayPlugin,
   forceStartRecording,
   startRecording,
   stopRecording,
+} from './SessionReplayBase';
+import { SessionReplayClient } from './SessionReplayClient';
+import {
+  StatsigTriggeredSessionReplayPlugin,
+  runStatsigTriggeredSessionReplay,
 } from './TriggeredSessionReplay';
 
 export type {
@@ -22,6 +25,7 @@ export {
   SessionReplayClient,
   SessionReplay,
   runStatsigSessionReplay,
+  runStatsigTriggeredSessionReplay,
   StatsigSessionReplayPlugin,
   StatsigTriggeredSessionReplayPlugin,
   startRecording,
@@ -33,5 +37,10 @@ Object.assign(_getStatsigGlobal(), {
   SessionReplayClient,
   SessionReplay,
   runStatsigSessionReplay,
+  runStatsigTriggeredSessionReplay,
   StatsigSessionReplayPlugin,
+  StatsigTriggeredSessionReplayPlugin,
+  startRecording,
+  stopRecording,
+  forceStartRecording,
 });

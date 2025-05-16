@@ -35,6 +35,28 @@ type SessionReplayOptions = {
 
 export type EndReason = 'is_leaving_page' | 'session_expired';
 
+export function stopRecording(sdkKey?: string): void {
+  _getInstanceFromSdkKey(sdkKey)?.stopRecording();
+}
+
+export function startRecording(sdkKey?: string): void {
+  _getInstanceFromSdkKey(sdkKey)?.startRecording();
+}
+
+export function forceStartRecording(sdkKey?: string): void {
+  _getInstanceFromSdkKey(sdkKey)?.forceStartRecording();
+}
+
+function _getInstanceFromSdkKey(
+  sdkKey?: string,
+): SessionReplayBase | null | undefined {
+  const inst =
+    sdkKey == null
+      ? _getStatsigGlobal().firstSRInstance
+      : _getStatsigGlobal()?.srInstances?.[sdkKey];
+  return inst instanceof SessionReplayBase ? inst : null;
+}
+
 export abstract class SessionReplayBase {
   protected _sessionData: ReplaySessionData = {
     startTime: -1,
@@ -72,6 +94,9 @@ export abstract class SessionReplayBase {
         ...statsigGlobal.srInstances,
         [sdkKey]: this,
       };
+      if (!statsigGlobal.firstSRInstance) {
+        statsigGlobal.firstSRInstance = this;
+      }
     }
 
     this._currentSessionID = this._getSessionIdFromClient();
@@ -86,6 +111,11 @@ export abstract class SessionReplayBase {
   public stopRecording(): void {
     this._wasStopped = true;
     this._shutdown();
+  }
+
+  public startRecording(): void {
+    this._wasStopped = false;
+    this._attemptToStartRecording(this._options?.forceRecording);
   }
 
   public isRecording(): boolean {

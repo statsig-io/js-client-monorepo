@@ -79,7 +79,7 @@ function Content() {
         <button
           id="trigger-recording"
           onClick={() => {
-            startRecording(DEMO_CLIENT_KEY);
+            startRecording();
           }}
         >
           Trigger Recording
@@ -89,7 +89,7 @@ function Content() {
         <button
           id="stop-recording"
           onClick={() => {
-            stopRecording(DEMO_CLIENT_KEY);
+            stopRecording();
           }}
         >
           Stop Recording

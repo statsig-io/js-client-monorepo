@@ -3,7 +3,6 @@ import {
   StatsigMetadataProvider,
   StatsigPlugin,
   _DJB2,
-  _getStatsigGlobal,
   _isCurrentlyVisible,
 } from '@statsig/client-core';
 
@@ -33,36 +32,15 @@ export class StatsigTriggeredSessionReplayPlugin
   constructor(private readonly options?: TriggeredSessionReplayOptions) {}
 
   bind(client: PrecomputedEvaluationsInterface): void {
-    runStatsigSessionReplay(client, this.options);
+    runStatsigTriggeredSessionReplay(client, this.options);
   }
 }
 
-export function runStatsigSessionReplay(
+export function runStatsigTriggeredSessionReplay(
   client: PrecomputedEvaluationsInterface,
   options?: SessionReplayOptions,
 ): void {
   new TriggeredSessionReplay(client, options);
-}
-
-export function startRecording(sdkKey: string): void {
-  const inst = _getStatsigGlobal()?.srInstances?.[sdkKey];
-  if (inst instanceof TriggeredSessionReplay) {
-    inst.startRecording();
-  }
-}
-
-export function forceStartRecording(sdkKey: string): void {
-  const inst = _getStatsigGlobal()?.srInstances?.[sdkKey];
-  if (inst instanceof TriggeredSessionReplay) {
-    inst.forceStartRecording();
-  }
-}
-
-export function stopRecording(sdkKey: string): void {
-  const inst = _getStatsigGlobal()?.srInstances?.[sdkKey];
-  if (inst instanceof TriggeredSessionReplay) {
-    inst.stopRecording();
-  }
 }
 
 export class TriggeredSessionReplay extends SessionReplayBase {
@@ -191,11 +169,6 @@ export class TriggeredSessionReplay extends SessionReplayBase {
       this._attemptToStartRecording(true);
       return;
     }
-  }
-
-  public startRecording(): void {
-    this._wasStopped = false;
-    this._attemptToStartRecording(this._options?.forceRecording);
   }
 
   public override forceStartRecording(): void {

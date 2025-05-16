@@ -11,6 +11,7 @@ export type StatsigGlobal = {
   firstInstance?: StatsigClientInterface;
   acInstances?: Record<string, unknown>;
   srInstances?: Record<string, unknown>;
+  firstSRInstance?: unknown;
   instance: (sdkKey?: string) => StatsigClientInterface | undefined;
 };
 
