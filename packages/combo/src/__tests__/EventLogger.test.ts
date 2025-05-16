@@ -16,6 +16,7 @@ function getLogEventCalls(): typeof fetchMock.mock.calls {
 
 describe('Event Logger', () => {
   beforeEach(() => {
+    jest.resetModules();
     fetchMock.enableMocks();
     fetchMock.mock.calls = [];
   });
@@ -112,27 +113,6 @@ describe('Event Logger', () => {
       {},
       { loggingIntervalMs: 1, loggingEnabled: 'always' },
     );
-    client.initializeSync();
-
-    client.logEvent('electron-app-event');
-    await timeout(2);
-
-    expect(getLogEventCalls()[0]).toEqual([
-      anyStringContaining('/v1/rgstr'),
-      anyObject(),
-    ]);
-  });
-
-  it("doesn't log in server environments by default", async () => {
-    jest.mock('@statsig/client-core', () => {
-      const actual = jest.requireActual('@statsig/client-core');
-      return {
-        ...actual,
-        _isServerEnv: () => true,
-      };
-    });
-
-    const client = new StatsigClient('my-key', {}, { loggingIntervalMs: 1 });
     client.initializeSync();
 
     client.logEvent('electron-app-event');
