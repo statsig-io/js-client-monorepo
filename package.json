@@ -162,8 +162,8 @@
     "expo-device": "6.*",
     "expo-splash-screen": "~0.27.5",
     "expo-status-bar": "~1.12.1",
-    "next": "14.2.25",
-    "prismjs": "1.29.0",
+    "next": "14.2.26",
+    "prismjs": "1.30.0",
     "react": "19.0.0",
     "react-dom": "19.0.0",
     "react-native": "0.74.1",
@@ -187,10 +187,14 @@
       "yargs-parser@<=5.0.0": ">=5.0.1",
       "tar": ">=6.2.1",
       "fast-loops": ">=1.1.4",
-      "axios": ">=1.7.4",
+      "axios": ">=1.8.2",
       "body-parser": ">=1.20.3",
       "micromatch": ">=4.0.8",
-      "rollup": ">=4.22.4"
+      "rollup": ">=4.22.4",
+      "image-size": ">=1.2.1",
+      "cross-spawn@>=7.0.0 <7.0.5": ">=7.0.5",
+      "cross-spawn@<6.0.6": ">=6.0.6",
+      "tar-fs": ">=3.0.8"
     }
   },
   "engines": {
