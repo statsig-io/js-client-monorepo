@@ -235,7 +235,8 @@
       "$_getUnloadEvent": "Hn",
       "$_setCookiesEnabled": "Xn",
       "$_option": "Fi",
-      "$_loggingEnabled": "Yn"
+      "$_loggingEnabled": "Yn",
+      "$_getLogEventCompressionMode": "Qn"
     }
   }
 }

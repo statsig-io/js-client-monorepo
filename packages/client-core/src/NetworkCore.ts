@@ -142,15 +142,14 @@ export class NetworkCore {
     return tempUrl;
   }
 
-  async beacon(args: BeaconRequestArgs): Promise<boolean> {
+  beacon(args: BeaconRequestArgs): boolean {
     if (!_ensureValidSdkKey(args)) {
       return false;
     }
 
     const argsInternal = this._getInternalRequestArgs('POST', args);
-    await this._tryToCompressBody(argsInternal);
 
-    const url = await this._getPopulatedURL(argsInternal);
+    const url = this._getPopulatedURL(argsInternal);
     const nav = navigator;
     return nav.sendBeacon.bind(nav)(url, argsInternal.body);
   }
@@ -198,7 +197,7 @@ export class NetworkCore {
       abortController?.abort(`Timeout of ${this._timeout}ms expired.`);
     }, this._timeout);
 
-    const populatedUrl = await this._getPopulatedURL(args);
+    const populatedUrl = this._getPopulatedURL(args);
 
     let response: Response | null = null;
     const keepalive = _isUnloading();
@@ -329,7 +328,7 @@ export class NetworkCore {
     return false;
   }
 
-  private async _getPopulatedURL(args: RequestArgsInternal): Promise<string> {
+  private _getPopulatedURL(args: RequestArgsInternal): string {
     const url = args.fallbackUrl ?? args.urlConfig.getUrl();
 
     if (

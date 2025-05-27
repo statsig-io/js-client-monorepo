@@ -59,7 +59,7 @@ describe('Network Core', () => {
     });
   });
 
-  describe('Beacon Success', () => {
+  describe('Synchronous Beacon Success -- must remain synchronous', () => {
     let bindSpy: jest.Mock;
     let body: unknown;
 
@@ -71,7 +71,7 @@ describe('Network Core', () => {
       bindSpy.mockImplementation(() => navigator.sendBeacon);
       navigator.sendBeacon.bind = bindSpy;
 
-      await network.beacon({ sdkKey, urlConfig, data });
+      network.beacon({ sdkKey, urlConfig, data });
       body = JSON.parse(sendSpy.mock.calls[0]?.[1] ?? '{}');
     });
 

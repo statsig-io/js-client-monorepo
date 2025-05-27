@@ -260,7 +260,7 @@ export class EventLogger {
       });
 
       const response = shouldUseBeacon
-        ? await this._sendEventsViaBeacon(events)
+        ? this._sendEventsViaBeacon(events)
         : await this._sendEventsViaPost(events);
 
       if (response.success) {
@@ -289,11 +289,11 @@ export class EventLogger {
     return { success: code >= 200 && code < 300 };
   }
 
-  private async _sendEventsViaBeacon(
+  private _sendEventsViaBeacon(
     events: StatsigEventInternal[],
-  ): Promise<SendEventsResponse> {
+  ): SendEventsResponse {
     return {
-      success: await this._network.beacon(this._getRequestData(events)),
+      success: this._network.beacon(this._getRequestData(events)),
     };
   }
 
