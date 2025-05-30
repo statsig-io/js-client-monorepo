@@ -55,20 +55,28 @@ function getCampaignParams(url: URL): Record<string, string> {
     'utm_campaign',
     'utm_term',
     'utm_content',
-    'gclid', // Google
-    'gclsrc', // Google
+    'msclkid', // Bing
     'dclid', // DoubleClick
     'fbclid', // Facebook
-    'msclkid', // Bing
-    'mc_eid', // Mailchimp
-    'mc_cid', // Mailchimp
-    'twclid', // Twitter
-    'li_fat_id', // LinkedIn
-    'igshid', // Instagram
+    'gad_source', // Google
+    'gclid', // Google
+    'gclsrc', // Google
+    'wbraid', // Google
     'utm_id', // Hubspot
+    'irclid', // Impact
+    'igshid', // Instagram
+    '_kx', // Klaviyo
+    'li_fat_id', // LinkedIn
+    'mc_cid', // Mailchimp
+    'mc_eid', // Mailchimp
+    'epik', // Pinterest
+    'qclid', // Quora
+    'rdt_cid', // Reddit
+    'sccid', // Snapchat
     'ttc', // TikTok
     'ttclid', // TikTok
     'ttc_id', // TikTok
+    'twclid', // Twitter
   ];
   commonUtms.forEach((p) => {
     const val = urlParams.get(p);
