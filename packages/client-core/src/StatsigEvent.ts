@@ -6,6 +6,7 @@ export type StatsigEvent = {
   eventName: string;
   value?: string | number | null;
   metadata?: { [key: string]: string | undefined } | null;
+  customUser?: StatsigUserInternal | null;
 };
 
 export type BootstrapMetadata = {
