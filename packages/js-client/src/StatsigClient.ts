@@ -383,11 +383,13 @@ export default class StatsigClient
    * @param {StatsigEvent|string} eventOrName - The event object conforming to the StatsigEvent interface, or the name of the event as a string.
    * @param {string|number} value - Optional. The value associated with the event, which can be a string or a number. This parameter is ignored if the first parameter is a StatsigEvent object.
    * @param {Record<string, string>} metadata - Optional. A key-value record containing metadata about the event. This is also ignored if the first parameter is an event object.
+   * @param {StatsigUserInternal} customUser - Optional. A key-value record containing user attributes to be used for the event. This is also ignored if the first parameter is an event object.
    */
   logEvent(
     eventOrName: StatsigEvent | string,
     value?: string | number,
     metadata?: Record<string, string>,
+    customUser?: StatsigUserInternal,
   ): void {
     const event =
       typeof eventOrName === 'string'
@@ -403,7 +405,7 @@ export default class StatsigClient
       event,
     });
 
-    this._logger.enqueue({ ...event, user: this._user, time: Date.now() });
+    this._logger.enqueue({ ...event, user: customUser ?? this._user, time: Date.now() });
   }
 
   protected override _primeReadyRipcord(): void {
