@@ -153,6 +153,22 @@ export function _getSafeNetworkInformation(): NetworkInformation | null {
   return connection;
 }
 
+export function _getSafeTimezone(): string | null {
+  try {
+    return Intl.DateTimeFormat().resolvedOptions().timeZone;
+  } catch (e) {
+    return null;
+  }
+}
+
+export function _getSafeTimezoneOffset(): number | null {
+  try {
+    return new Date().getTimezoneOffset();
+  } catch (e) {
+    return null;
+  }
+}
+
 function _getAnchorNodeInHierarchy(node: Element | null): Element | null {
   if (!node) {
     return null;
