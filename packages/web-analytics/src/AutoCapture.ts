@@ -12,15 +12,15 @@ import {
 
 import { AutoCaptureEvent, AutoCaptureEventName } from './AutoCaptureEvent';
 import {
-  _gatherEventData,
   _getSafeNetworkInformation,
   _getSafeUrl,
   _getSanitizedPageUrl,
   _getTargetNode,
   _registerEventHandler,
   _shouldLogEvent,
-} from './Utils';
-import { _gatherPageViewPayload } from './payloadUtils';
+} from './commonUtils';
+import { _gatherEventData } from './eventUtils';
+import { _gatherAllMetadata } from './metadataUtils';
 
 const PAGE_INACTIVE_TIMEOUT = 600000;
 const AUTO_EVENT_MAPPING: Record<string, AutoCaptureEventName> = {
@@ -157,7 +157,11 @@ export class AutoCapture {
     }
 
     const { value, metadata } = _gatherEventData(target);
-    this._enqueueAutoCapture(eventName, value, metadata);
+    const allMetadata = _gatherAllMetadata(_getSafeUrl());
+    this._enqueueAutoCapture(eventName, value, {
+      ...allMetadata,
+      ...metadata,
+    });
   }
 
   private _bumpInactiveTimer() {
@@ -235,7 +239,7 @@ export class AutoCapture {
     this._previousLoggedPageViewUrl = url;
     this._hasLoggedPageViewEnd = false;
 
-    const payload = _gatherPageViewPayload(url);
+    const payload = _gatherAllMetadata(url);
 
     this._enqueueAutoCapture(
       AutoCaptureEventName.PAGE_VIEW,

@@ -7,59 +7,14 @@ interface NetworkInformation {
   saveData: boolean;
 }
 
-export function _gatherDatasetProperties(el: Element): Record<string, string> {
-  const dataset = {} as Record<string, string>;
-  if (!el) {
-    return dataset;
-  }
-  const attr = (el as HTMLElement)?.dataset;
-  if (!attr) {
-    return dataset;
-  }
-
-  for (const key in attr) {
-    dataset[`data-${key}`] = attr[key] || '';
-  }
-
-  return dataset;
-}
-
-export function _gatherEventData(target: Element): {
-  value: string;
-  metadata: Record<string, string | null>;
-} {
-  const tagName = target.tagName.toLowerCase();
-  const metadata: Record<string, string | null> = {};
-  const value = _getCurrentPageUrlSafe() || '';
-
-  metadata['tagName'] = tagName;
-  if (tagName === 'form') {
-    metadata['action'] = target.getAttribute('action');
-    metadata['method'] = target.getAttribute('method') ?? 'GET';
-    metadata['formName'] = target.getAttribute('name');
-    metadata['formId'] = target.getAttribute('id');
-  }
-
-  if (
-    ['input', 'select', 'textarea'].includes(tagName) &&
-    target.getAttribute('type') !== 'password'
-  ) {
-    metadata['content'] = (target as HTMLInputElement).value;
-    metadata['inputName'] = target.getAttribute('name');
-  }
-
-  const anchor = _getAnchorNodeInHierarchy(target);
-  if (anchor) {
-    metadata['href'] = anchor.getAttribute('href');
-  }
-
-  if (tagName === 'button' || anchor) {
-    metadata['content'] = (target.textContent || '').trim();
-    const dataset = _gatherDatasetProperties(anchor || target);
-    Object.assign(metadata, dataset);
-  }
-
-  return { value, metadata };
+export function _stripEmptyValues<
+  T extends Record<string, string | number | null | undefined>,
+>(obj: T): Partial<Record<keyof T, string | number>> {
+  return Object.fromEntries(
+    Object.entries(obj).filter(
+      ([_, value]) => value != null && value !== '' && value !== undefined,
+    ),
+  ) as Partial<Record<keyof T, string | number>>;
 }
 
 export function _getTargetNode(e: Event): Element | null {
@@ -169,7 +124,9 @@ export function _getSafeTimezoneOffset(): number | null {
   }
 }
 
-function _getAnchorNodeInHierarchy(node: Element | null): Element | null {
+export function _getAnchorNodeInHierarchy(
+  node: Element | null,
+): Element | null {
   if (!node) {
     return null;
   }

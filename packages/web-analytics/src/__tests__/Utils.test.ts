@@ -1,4 +1,4 @@
-import { _getSafeNetworkInformation } from './../Utils';
+import { _getSafeNetworkInformation } from '../commonUtils';
 
 describe('_getSafeNetworkInformation', () => {
   const originalNavigator = window.navigator;
