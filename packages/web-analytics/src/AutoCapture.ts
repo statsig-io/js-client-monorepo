@@ -12,6 +12,7 @@ import {
 
 import { AutoCaptureEvent, AutoCaptureEventName } from './AutoCaptureEvent';
 import { EngagementManager } from './EngagementManager';
+import RageClickManager from './RageClickManager';
 import {
   _getSafeNetworkInformation,
   _getSafeUrl,
@@ -58,6 +59,7 @@ export class AutoCapture {
   private _eventFilterFunc?: (event: AutoCaptureEvent) => boolean;
   private _hasLoggedPageViewEnd = false;
   private _engagementManager: EngagementManager;
+  private _rageClickManager: RageClickManager;
 
   constructor(
     private _client: PrecomputedEvaluationsInterface,
@@ -73,7 +75,7 @@ export class AutoCapture {
         values?.auto_capture_settings?.disabled_events ?? this._disabledEvents;
     });
     this._engagementManager = new EngagementManager();
-
+    this._rageClickManager = new RageClickManager();
     this._eventFilterFunc = options?.eventFilterFunc;
 
     const doc = _getDocumentSafe();
@@ -101,9 +103,22 @@ export class AutoCapture {
     }
 
     const eventHandler = (event: Event, userAction = true) => {
-      this._autoLogEvent(event || win.event);
+      const e = event || _getWindowSafe()?.event;
+      this._autoLogEvent(e);
+
       if (userAction) {
         this._engagementManager.bumpInactiveTimer();
+      }
+
+      if (e.type === 'click' && e instanceof MouseEvent) {
+        const isRageClick = this._rageClickManager.isRageClick(
+          e.clientX,
+          e.clientY,
+          Date.now(),
+        );
+        if (isRageClick) {
+          this._logRageClick(e);
+        }
       }
     };
 
@@ -263,6 +278,17 @@ export class AutoCapture {
         flushImmediately: true,
       },
     );
+  }
+
+  private _logRageClick(e: MouseEvent) {
+    const { value, metadata } = _gatherEventData(e.target as HTMLElement);
+    this._enqueueAutoCapture(AutoCaptureEventName.RAGE_CLICK, value, {
+      x: e.clientX,
+      y: e.clientY,
+      timestamp: Date.now(),
+      ..._gatherAllMetadata(_getSafeUrl()),
+      ...metadata,
+    });
   }
 
   private _logPerformance() {

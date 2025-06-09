@@ -8,6 +8,7 @@ export const AutoCaptureEventName = {
   PERFORMANCE: 'auto_capture::performance',
   FORM_SUBMIT: 'auto_capture::form_submit',
   CLICK: 'auto_capture::click',
+  RAGE_CLICK: 'auto_capture::rage_click',
 } as const;
 
 export type AutoCaptureEventName =
