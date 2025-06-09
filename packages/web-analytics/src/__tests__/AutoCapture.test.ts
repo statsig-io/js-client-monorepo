@@ -29,6 +29,12 @@ function getLastPageViewEvent(
   return getLastEvent(requests, 'auto_capture::page_view');
 }
 
+function getLastPageViewEndEvent(
+  requests: Record<string, any>[],
+): Record<string, any> {
+  return getLastEvent(requests, 'auto_capture::page_view_end');
+}
+
 function getLastSessionStartEvent(
   requests: Record<string, any>[],
 ): Record<string, any> {
@@ -284,5 +290,76 @@ describe('Autocapture Tests', () => {
     expect(metadata['rtt_ms']).toBeUndefined();
     expect(metadata['downlink_kbps']).toBeUndefined();
     expect(metadata['save_data']).toBeUndefined();
+  });
+
+  it('page_view_end has scroll information and page view length', async () => {
+    Object.defineProperty(document.body, 'scrollHeight', {
+      value: 4000,
+      writable: true,
+    });
+
+    Object.defineProperty(window, 'scrollY', {
+      value: 1000,
+      writable: true,
+    });
+
+    window.dispatchEvent(new Event('scroll'));
+
+    const fiveSecondsAgo = Date.now() - 5000;
+    autoCapture['_engagementManager'].setLastPageViewTime(fiveSecondsAgo);
+
+    autoCapture['_tryLogPageViewEnd']();
+    await new Promise((f) => {
+      pageViewResolver = f;
+    });
+
+    const eventData = getLastPageViewEndEvent(requestDataList);
+    expect(eventData['eventName']).toMatch('auto_capture::page_view_end');
+    expect(eventData['metadata']).toMatchObject({
+      sessionID: expect.any(String),
+      page_url: expect.any(String),
+      lastScrollPercentage: 75, // (1000 + 2000) / 4000 * 100 = 75%
+      maxScrollPercentage: 75, // (1000 + 2000) / 4000 * 100 = 75%
+      lastScrollY: 1000,
+      maxScrollY: 1000,
+      pageViewLength: expect.any(Number),
+      dueToInactivity: false,
+    });
+  });
+
+  it('page_view_end due to inactivity has correct flag', async () => {
+    autoCapture['_hasLoggedPageViewEnd'] = false;
+    Object.defineProperty(document.body, 'scrollHeight', {
+      value: 4000,
+      writable: true,
+    });
+
+    Object.defineProperty(window, 'scrollY', {
+      value: 1000,
+      writable: true,
+    });
+
+    window.dispatchEvent(new Event('scroll'));
+
+    const fiveSecondsAgo = Date.now() - 5000;
+    autoCapture['_engagementManager'].setLastPageViewTime(fiveSecondsAgo);
+
+    autoCapture['_tryLogPageViewEnd'](true);
+    await new Promise((f) => {
+      pageViewResolver = f;
+    });
+
+    const eventData = getLastPageViewEndEvent(requestDataList);
+    expect(eventData['eventName']).toMatch('auto_capture::page_view_end');
+    expect(eventData['metadata']).toMatchObject({
+      sessionID: expect.any(String),
+      page_url: expect.any(String),
+      lastScrollPercentage: 75, // (1000 + 2000) / 4000 * 100 = 75%
+      maxScrollPercentage: 75, // (1000 + 2000) / 4000 * 100 = 75%
+      lastScrollY: 1000,
+      maxScrollY: 1000,
+      pageViewLength: expect.any(Number),
+      dueToInactivity: true,
+    });
   });
 });

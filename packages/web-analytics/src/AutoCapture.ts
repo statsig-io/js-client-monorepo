@@ -11,6 +11,7 @@ import {
 } from '@statsig/client-core';
 
 import { AutoCaptureEvent, AutoCaptureEventName } from './AutoCaptureEvent';
+import { EngagementManager } from './EngagementManager';
 import {
   _getSafeNetworkInformation,
   _getSafeUrl,
@@ -22,7 +23,6 @@ import {
 import { _gatherEventData } from './eventUtils';
 import { _gatherAllMetadata } from './metadataUtils';
 
-const PAGE_INACTIVE_TIMEOUT = 600000;
 const AUTO_EVENT_MAPPING: Record<string, AutoCaptureEventName> = {
   submit: AutoCaptureEventName.FORM_SUBMIT,
   click: AutoCaptureEventName.CLICK,
@@ -53,13 +53,11 @@ export function runStatsigAutoCapture(
 
 export class AutoCapture {
   private _errorBoundary: ErrorBoundary;
-  private _startTime = Date.now();
-  private _deepestScroll = 0;
   private _disabledEvents: Record<string, boolean> = {};
   private _previousLoggedPageViewUrl: URL | null = null;
   private _eventFilterFunc?: (event: AutoCaptureEvent) => boolean;
   private _hasLoggedPageViewEnd = false;
-  private _inactiveTimer: number | null = null;
+  private _engagementManager: EngagementManager;
 
   constructor(
     private _client: PrecomputedEvaluationsInterface,
@@ -74,6 +72,7 @@ export class AutoCapture {
       this._disabledEvents =
         values?.auto_capture_settings?.disabled_events ?? this._disabledEvents;
     });
+    this._engagementManager = new EngagementManager();
 
     this._eventFilterFunc = options?.eventFilterFunc;
 
@@ -104,7 +103,7 @@ export class AutoCapture {
     const eventHandler = (event: Event, userAction = true) => {
       this._autoLogEvent(event || win.event);
       if (userAction) {
-        this._bumpInactiveTimer();
+        this._engagementManager.bumpInactiveTimer();
       }
     };
 
@@ -113,7 +112,6 @@ export class AutoCapture {
     _registerEventHandler(win, 'error', (e) => eventHandler(e, false));
     _registerEventHandler(win, 'pagehide', () => this._tryLogPageViewEnd());
     _registerEventHandler(win, 'beforeunload', () => this._tryLogPageViewEnd());
-    _registerEventHandler(win, 'scroll', () => this._scrollEventHandler());
   }
 
   private _addPageViewTracking() {
@@ -164,21 +162,10 @@ export class AutoCapture {
     });
   }
 
-  private _bumpInactiveTimer() {
-    const win = _getWindowSafe();
-    if (!win) {
-      return;
-    }
-
-    if (this._inactiveTimer) {
-      clearTimeout(this._inactiveTimer);
-    }
-    this._inactiveTimer = win.setTimeout(() => {
-      this._tryLogPageViewEnd(true);
-    }, PAGE_INACTIVE_TIMEOUT);
-  }
-
   private _initialize() {
+    this._engagementManager.startInactivityTracking(() =>
+      this._tryLogPageViewEnd(true),
+    );
     this._addEventHandlers();
     this._addPageViewTracking();
     this._logSessionStart();
@@ -236,6 +223,8 @@ export class AutoCapture {
       return;
     }
 
+    this._engagementManager.setLastPageViewTime(Date.now());
+
     this._previousLoggedPageViewUrl = url;
     this._hasLoggedPageViewEnd = false;
 
@@ -250,29 +239,37 @@ export class AutoCapture {
         addNewSessionMetadata: true,
       },
     );
-    this._bumpInactiveTimer();
+    this._engagementManager.bumpInactiveTimer();
   }
 
   private _tryLogPageViewEnd(dueToInactivity = false) {
     if (this._hasLoggedPageViewEnd) {
       return;
     }
+
     this._hasLoggedPageViewEnd = true;
+    const scrollMetrics = this._engagementManager.getScrollMetrics();
+    const pageViewLength = this._engagementManager.getPageViewLength();
 
     this._enqueueAutoCapture(
       AutoCaptureEventName.PAGE_VIEW_END,
       _getSanitizedPageUrl(),
       {
-        scrollDepth: this._deepestScroll,
-        pageViewLength: Date.now() - this._startTime,
+        ...scrollMetrics,
+        pageViewLength,
         dueToInactivity,
       },
-      { flushImmediately: true },
+      {
+        flushImmediately: true,
+      },
     );
   }
 
   private _logPerformance() {
     const win = _getWindowSafe();
+    if (!win || !win.performance) {
+      return;
+    }
 
     if (
       typeof win?.performance === 'undefined' ||
@@ -370,19 +367,6 @@ export class AutoCapture {
     } catch (err) {
       this._errorBoundary.logError('AC::enqueue', err);
     }
-  }
-
-  private _scrollEventHandler() {
-    const scrollHeight = _getDocumentSafe()?.body.scrollHeight ?? 1;
-    const win = _getWindowSafe();
-    const scrollY = win?.scrollY ?? 1;
-    const innerHeight = win?.innerHeight ?? 1;
-
-    this._deepestScroll = Math.max(
-      this._deepestScroll,
-      Math.min(100, Math.round(((scrollY + innerHeight) / scrollHeight) * 100)),
-    );
-    this._bumpInactiveTimer();
   }
 
   private _isNewSession(session: StatsigSession) {
