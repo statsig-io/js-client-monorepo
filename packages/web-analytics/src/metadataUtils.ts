@@ -1,6 +1,7 @@
 import { _getDocumentSafe, _getWindowSafe } from '@statsig/client-core';
 
 import {
+  _getSafeNetworkInformation,
   _getSafeTimezone,
   _getSafeTimezoneOffset,
   _stripEmptyValues,
@@ -30,6 +31,7 @@ export function _gatherCommonMetadata(
     timestamp: Date.now(),
     timezone: _getSafeTimezone(),
     timezone_offset: _getSafeTimezoneOffset(),
+    ..._getNetworkInfo(),
   });
 }
 
@@ -56,6 +58,25 @@ export function _gatherAllMetadata(url: URL): Record<string, string | number> {
       ...queryParams,
     }),
   };
+}
+
+export function _getNetworkInfo(): Record<string, string | number | boolean> {
+  const networkInfo = _getSafeNetworkInformation();
+  const result: Record<string, string | number | boolean> = {};
+  if (networkInfo?.effectiveType !== undefined) {
+    result['effective_connection_type'] = networkInfo.effectiveType;
+  }
+  if (networkInfo?.rtt !== undefined) {
+    result['rtt_ms'] = networkInfo.rtt;
+  }
+  if (networkInfo?.downlink !== undefined) {
+    result['downlink_mbps'] = networkInfo.downlink;
+    result['downlink_kbps'] = networkInfo.downlink * 1000; // deprecated
+  }
+  if (networkInfo?.saveData !== undefined) {
+    result['save_data'] = networkInfo.saveData;
+  }
+  return result;
 }
 
 function getReferrerInfo(safeDoc: Document): {

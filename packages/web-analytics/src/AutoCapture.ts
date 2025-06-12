@@ -14,7 +14,6 @@ import { AutoCaptureEvent, AutoCaptureEventName } from './AutoCaptureEvent';
 import { EngagementManager } from './EngagementManager';
 import RageClickManager from './RageClickManager';
 import {
-  _getSafeNetworkInformation,
   _getSafeUrl,
   _getSanitizedPageUrl,
   _getTargetNode,
@@ -22,7 +21,7 @@ import {
   _shouldLogEvent,
 } from './commonUtils';
 import { _gatherEventData } from './eventUtils';
-import { _gatherAllMetadata } from './metadataUtils';
+import { _gatherAllMetadata, _getNetworkInfo } from './metadataUtils';
 
 const AUTO_EVENT_MAPPING: Record<string, AutoCaptureEventName> = {
   submit: AutoCaptureEventName.FORM_SUBMIT,
@@ -333,19 +332,13 @@ export class AutoCapture {
         metadata['first_contentful_paint_time_ms'] = fpEntries[0].startTime;
       }
 
-      const networkInfo = _getSafeNetworkInformation();
-
-      if (networkInfo) {
-        metadata['effective_connection_type'] = networkInfo.effectiveType;
-        metadata['rtt_ms'] = networkInfo.rtt;
-        metadata['downlink_kbps'] = networkInfo.downlink;
-        metadata['save_data'] = networkInfo.saveData;
-      }
-
       this._enqueueAutoCapture(
         AutoCaptureEventName.PERFORMANCE,
         _getSanitizedPageUrl(),
-        metadata,
+        {
+          ...metadata,
+          ..._getNetworkInfo(),
+        },
       );
     }, 1);
   }

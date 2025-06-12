@@ -270,7 +270,8 @@ describe('Autocapture Tests', () => {
     const metadata = eventData['metadata'];
     expect(metadata['effective_connection_type']).toEqual('4g');
     expect(metadata['rtt_ms']).toEqual(100);
-    expect(metadata['downlink_kbps']).toEqual(10);
+    expect(metadata['downlink_kbps']).toEqual(10000);
+    expect(metadata['downlink_mbps']).toEqual(10);
     expect(metadata['save_data']).toEqual(false);
   });
 
@@ -289,6 +290,7 @@ describe('Autocapture Tests', () => {
     expect(metadata['effective_connection_type']).toBeUndefined();
     expect(metadata['rtt_ms']).toBeUndefined();
     expect(metadata['downlink_kbps']).toBeUndefined();
+    expect(metadata['downlink_mbps']).toBeUndefined();
     expect(metadata['save_data']).toBeUndefined();
   });
 
