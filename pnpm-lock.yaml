@@ -17,7 +17,7 @@ overrides:
   image-size: '>=1.2.1'
   cross-spawn@>=7.0.0 <7.0.5: '>=7.0.5'
   cross-spawn@<6.0.6: '>=6.0.6'
-  tar-fs: '>=3.0.8'
+  tar-fs: '>=3.0.9'
 
 importers:
 
@@ -7558,7 +7558,7 @@ packages:
       progress: 2.0.3
       proxy-agent: 6.4.0
       semver: 7.6.0
-      tar-fs: 3.0.8
+      tar-fs: 3.0.9
       unbzip2-stream: 1.4.3
       yargs: 17.7.2
     transitivePeerDependencies:
@@ -7576,7 +7576,7 @@ packages:
       progress: 2.0.3
       proxy-agent: 6.4.0
       semver: 7.6.0
-      tar-fs: 3.0.8
+      tar-fs: 3.0.9
       unbzip2-stream: 1.4.3
       yargs: 17.7.2
     transitivePeerDependencies:
@@ -21998,8 +21998,8 @@ packages:
     engines: {node: '>=6'}
     dev: true
 
-  /tar-fs@3.0.8:
-    resolution: {integrity: sha512-ZoROL70jptorGAlgAYiLoBLItEKw/fUxg9BSYK/dF/GAGYFJOJJJMvjPAKDJraCXFwadD456FCuvLWgfhMsPwg==}
+  /tar-fs@3.0.9:
+    resolution: {integrity: sha512-XF4w9Xp+ZQgifKakjZYmFdkLoSWd34VGKcsTCwlNWM7QG3ZbaxnTsaBwnjFZqHRf/rROxaR8rXnbtwdvaDI+lA==}
     dependencies:
       pump: 3.0.0
       tar-stream: 3.1.7
