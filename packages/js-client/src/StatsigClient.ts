@@ -173,6 +173,19 @@ export default class StatsigClient
     options?: SyncUpdateOptions,
   ): StatsigUpdateDetails {
     const startTime = performance.now();
+    try {
+      return this._updateUserSyncImpl(user, options, startTime);
+    } catch (e) {
+      const err = e instanceof Error ? e : new Error(String(e));
+      return this._createErrorUpdateDetails(err, startTime);
+    }
+  }
+
+  private _updateUserSyncImpl(
+    user: StatsigUser,
+    options: SyncUpdateOptions | undefined,
+    startTime: number,
+  ): StatsigUpdateDetails {
     const warnings = [...(this._store.getWarnings() ?? [])];
     this._resetForUser(user);
 
@@ -223,6 +236,19 @@ export default class StatsigClient
    * @see {@link updateUserSync} for the synchronous version of this method.
    */
   async updateUserAsync(
+    user: StatsigUser,
+    options?: AsyncUpdateOptions,
+  ): Promise<StatsigUpdateDetails> {
+    const startTime = performance.now();
+    try {
+      return await this._updateUserAsyncImpl(user, options);
+    } catch (e) {
+      const err = e instanceof Error ? e : new Error(String(e));
+      return this._createErrorUpdateDetails(err, startTime);
+    }
+  }
+
+  private async _updateUserAsyncImpl(
     user: StatsigUser,
     options?: AsyncUpdateOptions,
   ): Promise<StatsigUpdateDetails> {
@@ -421,6 +447,20 @@ export default class StatsigClient
 
     this._logger.start();
     return this.updateUserAsync(this._user, options);
+  }
+
+  private _createErrorUpdateDetails(
+    error: Error,
+    startTime: number,
+  ): StatsigUpdateDetails {
+    return createUpdateDetails(
+      false,
+      this._store.getSource(),
+      performance.now() - startTime,
+      error,
+      null,
+      [...(this._store.getWarnings() ?? [])],
+    );
   }
 
   private _finalizeUpdate(values: DataAdapterResult | null) {
