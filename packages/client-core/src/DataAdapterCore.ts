@@ -51,12 +51,12 @@ export abstract class DataAdapterCore {
     const cacheKey = this._getCacheKey(normalized);
     const inMem = this._inMemoryCache.get(cacheKey, normalized);
 
-    if (inMem) {
+    if (inMem && this._getIsCacheValueValid(inMem)) {
       return inMem;
     }
 
     const cache = this._loadFromCache(cacheKey);
-    if (cache) {
+    if (cache && this._getIsCacheValueValid(cache)) {
       this._inMemoryCache.add(cacheKey, cache);
       return this._inMemoryCache.get(cacheKey, normalized);
     }
@@ -71,6 +71,13 @@ export abstract class DataAdapterCore {
     this._inMemoryCache.add(
       cacheKey,
       _makeDataAdapterResult('Bootstrap', data, null, normalized),
+    );
+  }
+
+  protected _getIsCacheValueValid(current: DataAdapterResult): boolean {
+    return (
+      current.stableID == null ||
+      current.stableID === StableID.get(this._getSdkKey())
     );
   }
 

@@ -52,7 +52,13 @@ describe('Racing Updates', () => {
     await client.initializeAsync();
 
     let times = 0;
-    fetchMock.mockImplementation(async (_url, _payload) => {
+    fetchMock.mockImplementation(async (url, _payload) => {
+      if (url && typeof url === 'string' && url.includes('/rgstr')) {
+        return new Response('{}');
+      }
+      if (url instanceof Request && url.url.includes('/rgstr')) {
+        return new Response('{}');
+      }
       if (times++ === 0) {
         return firstReqPromise;
       }

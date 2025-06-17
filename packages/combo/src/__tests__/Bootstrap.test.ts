@@ -115,7 +115,8 @@ describe('Bootstrap', () => {
   });
 
   it('should not hit network', () => {
-    expect(fetchMock).not.toHaveBeenCalled();
+    // flush gets called when updating the user
+    expect(fetchMock).toHaveBeenCalledTimes(1);
   });
 });
 

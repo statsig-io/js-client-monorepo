@@ -130,6 +130,10 @@ export class EventLogger {
   }
 
   reset(): void {
+    // attempt to flush any remaining events
+    this.flush().catch(() => {
+      // noop
+    });
     this._lastExposureTimeMap = {};
   }
 
