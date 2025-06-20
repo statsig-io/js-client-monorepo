@@ -233,6 +233,118 @@ describe('User Persisted Storage', () => {
 
     expect(latest).toEqual({});
   });
+
+  describe('Layer User Persisted Storage', () => {
+    it('saves users in the control group for layers', () => {
+      client.getLayer('a_layer', useInControlGroup, {
+        userPersistedValues: {},
+      });
+
+      expect(storage.values['control-group-user-3:userID']).toMatchObject({
+        a_layer: {
+          group_name: expect.any(String),
+          json_value: expect.any(Object),
+          rule_id: expect.any(String),
+          secondary_exposures: expect.any(Array),
+          time: anyNumber(),
+          value: true,
+        },
+      });
+    });
+
+    it('saves users in the test group for layers', () => {
+      client.getLayer('a_layer', userInTestGroup, {
+        userPersistedValues: {},
+      });
+
+      expect(storage.values['test-group-user-11:userID']).toMatchObject({
+        a_layer: {
+          group_name: expect.any(String),
+          json_value: expect.any(Object),
+          rule_id: expect.any(String),
+          secondary_exposures: expect.any(Array),
+          time: anyNumber(),
+          value: true,
+        },
+      });
+    });
+
+    it('returns as persisted when valid ups is provided for layers', () => {
+      storage.values = {
+        'test-group-user-11:userID': {
+          a_layer: {
+            group_name: 'Test',
+            json_value: { layer_param: 'persisted_value' },
+            rule_id: 'test_rule_id',
+            secondary_exposures: [],
+            time: 1705543730484,
+            value: true,
+          },
+        },
+      };
+
+      const layer = client.getLayer('a_layer', userInTestGroup, {
+        userPersistedValues: adapter.loadUserPersistedValues(
+          userInTestGroup,
+          'userID',
+        ),
+      });
+
+      expect(layer.details.reason).toBe('Persisted');
+      expect(layer.__value).toEqual({ layer_param: 'persisted_value' });
+    });
+
+    it('does not return persisted on call that saves to storage for layers', () => {
+      const layer = client.getLayer('a_layer', userInTestGroup, {
+        userPersistedValues: {},
+      });
+
+      expect(layer.details.reason).toBe('Bootstrap:Recognized');
+    });
+
+    it('deletes entries when the layer experiment is not active', () => {
+      storage.values = {
+        'test-group-user-11:userID': {
+          a_layer: {
+            group_name: 'Test',
+            json_value: { layer_param: 'persisted_value' },
+            rule_id: 'test_rule_id',
+            secondary_exposures: [],
+            time: 1705543730484,
+            value: true,
+          },
+        },
+      };
+
+      client.dataAdapter.setData(DCS_RESPONSE_INACTIVE_EXP);
+      client.updateSync();
+
+      client.getLayer('a_layer', userInTestGroup, {
+        userPersistedValues: {},
+      });
+
+      expect(storage.values['test-group-user-11:userID']).toEqual({});
+    });
+
+    it('deletes entries when ups is no longer set for layers', () => {
+      storage.values = {
+        'test-group-user-11:userID': {
+          a_layer: {
+            group_name: 'Test',
+            json_value: { layer_param: 'persisted_value' },
+            rule_id: 'test_rule_id',
+            secondary_exposures: [],
+            time: 1705543730484,
+            value: true,
+          },
+        },
+      };
+
+      client.getLayer('a_layer', userInTestGroup);
+
+      expect(storage.values['test-group-user-11:userID']).toEqual({});
+    });
+  });
 });
 
 class MockUserPersistentStorage implements UserPersistentStorage {

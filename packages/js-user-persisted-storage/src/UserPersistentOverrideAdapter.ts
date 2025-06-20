@@ -2,10 +2,14 @@ import {
   Experiment,
   ExperimentEvaluation,
   ExperimentEvaluationOptions,
+  Layer,
+  LayerEvaluation,
+  LayerEvaluationOptions,
   OverrideAdapter,
   SecondaryExposure,
   StatsigUser,
   _makeExperiment,
+  _makeLayer,
 } from '@statsig/client-core';
 
 import {
@@ -66,6 +70,38 @@ export class UserPersistentOverrideAdapter implements OverrideAdapter {
     return null;
   }
 
+  getLayerOverride(
+    current: Layer,
+    user: StatsigUser,
+    options?: LayerEvaluationOptions,
+  ): Layer | null {
+    const evaluation = current.__evaluation;
+    if (evaluation == null) {
+      return null;
+    }
+
+    const values = options?.userPersistedValues as UserPersistedValues | null;
+    if (
+      evaluation.is_experiment_active !== true ||
+      values == null ||
+      typeof values !== 'object'
+    ) {
+      this._handleDelete(user, current.name, 'userID');
+      return null;
+    }
+
+    const sticky = values[current.name];
+    if (sticky != null) {
+      return this._makeStickyLayer(evaluation, sticky);
+    }
+
+    if (evaluation.is_user_in_experiment) {
+      this._handleSaveLayer(user, current, evaluation);
+    }
+
+    return null;
+  }
+
   private _makeStickyExperiment(
     evaluation: ExperimentEvaluation,
     sticky: StickyValues,
@@ -99,6 +135,65 @@ export class UserPersistentOverrideAdapter implements OverrideAdapter {
     });
   }
 
+  private _makeStickyLayer(
+    evaluation: LayerEvaluation,
+    sticky: StickyValues,
+  ): Layer {
+    const { name, allocated_experiment_name } = evaluation;
+    const {
+      json_value: value,
+      secondary_exposures,
+      group_name,
+      rule_id,
+      time,
+    } = sticky;
+
+    const details = {
+      reason: 'Persisted',
+      lcut: time,
+    };
+
+    return _makeLayer(name, details, {
+      value,
+      secondary_exposures,
+      group_name: group_name ?? undefined,
+      group: group_name ?? '',
+      rule_id,
+      allocated_experiment_name,
+      explicit_parameters: evaluation.explicit_parameters,
+      undelegated_secondary_exposures:
+        evaluation.undelegated_secondary_exposures,
+      name,
+      is_device_based: evaluation.is_device_based,
+    });
+  }
+
+  private _handleSaveLayer(
+    user: StatsigUser,
+    layer: Layer,
+    evaluation: LayerEvaluation,
+  ) {
+    const key = this._getStorageKey(user, 'userID');
+
+    const values: StickyValues = {
+      value: true,
+      rule_id: evaluation.rule_id,
+      json_value: evaluation.value,
+      secondary_exposures:
+        evaluation.secondary_exposures as SecondaryExposure[],
+      group_name: evaluation.group,
+      time: layer.details.lcut ?? 0,
+      undelegated_secondary_exposures:
+        evaluation.undelegated_secondary_exposures as
+          | SecondaryExposure[]
+          | undefined,
+      config_delegate: evaluation.allocated_experiment_name,
+      explicit_parameters: evaluation.explicit_parameters ?? [],
+    };
+
+    this.storage.save(key, layer.name, JSON.stringify(values));
+  }
+
   private _handleDelete(user: StatsigUser, name: string, idType: string) {
     const key = this._getStorageKey(user, idType);
 
@@ -126,6 +221,9 @@ export class UserPersistentOverrideAdapter implements OverrideAdapter {
         evaluation.secondary_exposures as SecondaryExposure[],
       group_name: evaluation.group,
       time: experiment.details.lcut ?? 0,
+      config_delegate: null,
+      undelegated_secondary_exposures:
+        evaluation.secondary_exposures as SecondaryExposure[],
     };
 
     this.storage.save(key, experiment.name, JSON.stringify(values));

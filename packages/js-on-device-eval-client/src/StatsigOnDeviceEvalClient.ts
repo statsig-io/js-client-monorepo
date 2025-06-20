@@ -277,9 +277,15 @@ export default class StatsigOnDeviceEvalClient
       );
     });
 
-    this.$emt({ name: 'layer_evaluation', layer });
+    const overridden = this.overrideAdapter?.getLayerOverride?.(
+      layer,
+      normalized,
+      options,
+    );
 
-    return layer;
+    const result = overridden ?? layer;
+    this.$emt({ name: 'layer_evaluation', layer: result });
+    return result;
   }
 
   logEvent(
