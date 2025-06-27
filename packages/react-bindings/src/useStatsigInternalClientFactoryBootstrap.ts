@@ -8,6 +8,7 @@ type FactoryArgs = {
   initialUser: StatsigUser;
   initialValues: string;
   statsigOptions: StatsigOptions | null;
+  useLegacyClient?: boolean;
 };
 
 export function useStatsigInternalClientFactoryBootstrap<
@@ -23,7 +24,12 @@ export function useStatsigInternalClientFactoryBootstrap<
     const inst = factory(args);
     clientRef.current = inst;
 
-    inst.dataAdapter.setData(args.initialValues);
+    if (args.useLegacyClient) {
+      inst.dataAdapter.setDataLegacy(args.initialValues, args.initialUser);
+    } else {
+      inst.dataAdapter.setData(args.initialValues);
+    }
+
     inst.initializeSync();
 
     return inst;
