@@ -9,13 +9,13 @@ import { useStatsigInternalClientFactoryBootstrap } from '../useStatsigInternalC
 
 function clientFactory() {
   const client = MockRemoteServerEvalClient.create();
-  
+
   // Add dataAdapter mock with both setData and setDataLegacy methods
   client.dataAdapter = {
     setData: jest.fn(),
     setDataLegacy: jest.fn(),
   };
-  
+
   let resolveinitializeAsync: (() => void) | undefined;
   client.initializeAsync.mockReturnValue(
     new Promise<void>((resolve) => {
@@ -51,7 +51,7 @@ const TestComponent = ({
       initialValues: JSON.stringify({ test: 'data' }),
       statsigOptions: null,
       useLegacyClient,
-    }
+    },
   );
 
   return <div data-testid="client-ready">{client ? 'Ready' : 'Not Ready'}</div>;
@@ -82,7 +82,7 @@ describe('useStatsigInternalClientFactoryBootstrap', () => {
 
   it('calls setData when useLegacyClient is false', () => {
     let capturedClient: any = null;
-    
+
     render(
       <TestComponent
         sdkKey="test-sdk-key-standard"
@@ -90,12 +90,12 @@ describe('useStatsigInternalClientFactoryBootstrap', () => {
         onClientCreated={(client) => {
           capturedClient = client;
         }}
-      />
+      />,
     );
 
     expect(capturedClient).not.toBeNull();
     expect(capturedClient.dataAdapter.setData).toHaveBeenCalledWith(
-      JSON.stringify({ test: 'data' })
+      JSON.stringify({ test: 'data' }),
     );
     expect(capturedClient.dataAdapter.setDataLegacy).not.toHaveBeenCalled();
     expect(capturedClient.initializeSync).toHaveBeenCalled();
@@ -103,19 +103,19 @@ describe('useStatsigInternalClientFactoryBootstrap', () => {
 
   it('calls setData when useLegacyClient is not provided (default behavior)', () => {
     let capturedClient: any = null;
-    
+
     render(
       <TestComponent
         sdkKey="test-sdk-key-default"
         onClientCreated={(client) => {
           capturedClient = client;
         }}
-      />
+      />,
     );
 
     expect(capturedClient).not.toBeNull();
     expect(capturedClient.dataAdapter.setData).toHaveBeenCalledWith(
-      JSON.stringify({ test: 'data' })
+      JSON.stringify({ test: 'data' }),
     );
     expect(capturedClient.dataAdapter.setDataLegacy).not.toHaveBeenCalled();
     expect(capturedClient.initializeSync).toHaveBeenCalled();
@@ -123,7 +123,7 @@ describe('useStatsigInternalClientFactoryBootstrap', () => {
 
   it('calls setDataLegacy when useLegacyClient is true', () => {
     let capturedClient: any = null;
-    
+
     render(
       <TestComponent
         sdkKey="test-sdk-key-legacy"
@@ -131,13 +131,13 @@ describe('useStatsigInternalClientFactoryBootstrap', () => {
         onClientCreated={(client) => {
           capturedClient = client;
         }}
-      />
+      />,
     );
 
     expect(capturedClient).not.toBeNull();
     expect(capturedClient.dataAdapter.setDataLegacy).toHaveBeenCalledWith(
       JSON.stringify({ test: 'data' }),
-      { userID: 'test-user' }
+      { userID: 'test-user' },
     );
     expect(capturedClient.dataAdapter.setData).not.toHaveBeenCalled();
     expect(capturedClient.initializeSync).toHaveBeenCalled();
