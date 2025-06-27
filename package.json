@@ -178,6 +178,7 @@
   },
   "pnpm": {
     "overrides": {
+      "@babel/helpers": ">=7.26.10",
       "braces": ">=3.0.3",
       "express@<4.19.2": ">=4.19.2",
       "follow-redirects@<=1.15.5": ">=1.15.6",
