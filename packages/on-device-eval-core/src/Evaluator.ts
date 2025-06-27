@@ -47,8 +47,9 @@ export class Evaluator {
     if (!spec) {
       return { evaluation: null, details };
     }
-
-    const evaluation = resultToGateEval(spec, this._evaluateSpec(spec, user));
+    const result = this._evaluateSpec(spec, user);
+    const evaluation = resultToGateEval(spec, result);
+    this._handleUnsupportedEvaluation(result, details);
     return { evaluation, details };
   }
 
@@ -61,7 +62,9 @@ export class Evaluator {
       return { evaluation: null, details };
     }
 
-    const evaluation = resultToConfigEval(spec, this._evaluateSpec(spec, user));
+    const result = this._evaluateSpec(spec, user);
+    const evaluation = resultToConfigEval(spec, result);
+    this._handleUnsupportedEvaluation(result, details);
     return { evaluation, details };
   }
 
@@ -81,8 +84,17 @@ export class Evaluator {
       experimentName,
     ).spec;
     const evaluation = resultToLayerEval(spec, experimentSpec, result);
-
+    this._handleUnsupportedEvaluation(result, details);
     return { evaluation, details };
+  }
+
+  private _handleUnsupportedEvaluation(
+    evaluation: EvaluationResult,
+    details: EvaluationDetails,
+  ): void {
+    if (evaluation.unsupported) {
+      details.reason = 'Unsupported';
+    }
   }
 
   getParamStoreConfig(name: string): {

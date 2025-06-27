@@ -35,6 +35,7 @@ import {
   _makeLayer,
   _normalizeUser,
   createUpdateDetails,
+  getUUID,
 } from '@statsig/client-core';
 import { Evaluator, SpecStore } from '@statsig/on-device-eval-core';
 
@@ -58,6 +59,7 @@ export default class StatsigOnDeviceEvalClient
   private _store: SpecStore;
   private _evaluator: Evaluator;
   private _network: Network;
+  private _sdkInstanceID: string;
 
   static instance(sdkKey?: string): StatsigOnDeviceEvalClient {
     const instance = _getStatsigGlobal().instance(sdkKey);
@@ -87,6 +89,7 @@ export default class StatsigOnDeviceEvalClient
     this._network = network;
     this._store = new SpecStore();
     this._evaluator = new Evaluator(this._store);
+    this._sdkInstanceID = getUUID();
   }
 
   initializeSync(options?: SyncUpdateOptions): StatsigUpdateDetails {
@@ -171,6 +174,7 @@ export default class StatsigOnDeviceEvalClient
       errorBoundary: this._errorBoundary,
       session: StatsigSession.get(this._sdkKey),
       stableID: StableID.get(this._sdkKey),
+      sdkInstanceID: this._sdkInstanceID,
     };
   }
 

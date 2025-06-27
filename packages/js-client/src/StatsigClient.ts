@@ -41,6 +41,7 @@ import {
   _mergeOverride,
   _normalizeUser,
   createUpdateDetails,
+  getUUID,
 } from '@statsig/client-core';
 
 import EvaluationStore from './EvaluationStore';
@@ -59,6 +60,7 @@ export default class StatsigClient
   private _store: EvaluationStore;
   private _user: StatsigUserInternal;
   private _network: Network;
+  private _sdkInstanceID: string;
 
   /**
    * Retrieves an instance of the StatsigClient based on the provided SDK key.
@@ -109,6 +111,7 @@ export default class StatsigClient
     this._store = new EvaluationStore(sdkKey);
     this._network = network;
     this._user = this._configureUser(user, options);
+    this._sdkInstanceID = getUUID();
 
     const plugins = options?.plugins ?? [];
     for (const plugin of plugins) {
@@ -328,6 +331,7 @@ export default class StatsigClient
       errorBoundary: this._errorBoundary,
       session: StatsigSession.get(this._sdkKey),
       stableID: StableID.get(this._sdkKey),
+      sdkInstanceID: this._sdkInstanceID,
     };
   }
 

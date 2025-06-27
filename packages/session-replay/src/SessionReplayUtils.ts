@@ -15,6 +15,7 @@ export type RRWebPayload = {
   slice_byte_size?: string;
   is_leaving_page?: string;
   session_expired?: string;
+  sdk_instance_id: string;
 };
 
 const REPLAY_SLICE_BYTES = 1024 * 1024; // 1 MB
@@ -27,6 +28,7 @@ export function _makeLoggableRrwebEvent(
   payload: string,
   sessionID: string,
   data: ReplaySessionData,
+  sdkInstanceID: string,
 ): StatsigEvent & { metadata: RRWebPayload } {
   const metadata: RRWebPayload = {
     session_start_ts: String(data.startTime),
@@ -37,6 +39,7 @@ export function _makeLoggableRrwebEvent(
     rrweb_payload_size: String(payload.length),
 
     session_replay_sdk_version: SDK_VERSION,
+    sdk_instance_id: sdkInstanceID,
   };
 
   return {

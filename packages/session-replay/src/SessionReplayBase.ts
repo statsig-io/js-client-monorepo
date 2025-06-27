@@ -172,7 +172,13 @@ export abstract class SessionReplayBase {
 
     for (let i = 0; i < parts.length; i++) {
       const slice = parts[i];
-      const event = _makeLoggableRrwebEvent(slice, payload, sessionID, data);
+      const event = _makeLoggableRrwebEvent(
+        slice,
+        payload,
+        sessionID,
+        data,
+        this._client.getContext().sdkInstanceID,
+      );
 
       if (slicedID != null) {
         _appendSlicedMetadata(

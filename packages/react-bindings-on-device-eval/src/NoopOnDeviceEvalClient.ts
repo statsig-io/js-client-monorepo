@@ -70,6 +70,7 @@ const context = {
   },
   stableID: '',
   storageProvider: Storage,
+  sdkInstanceID: '',
 };
 
 const _client: OnDeviceEvaluationsInterface & { isNoop: true } = {

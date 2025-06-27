@@ -77,6 +77,7 @@ const context = {
   },
   stableID: '',
   storageProvider: Storage,
+  sdkInstanceID: '',
 };
 
 const _client: PrecomputedEvaluationsInterface & { isNoop: true } = {
