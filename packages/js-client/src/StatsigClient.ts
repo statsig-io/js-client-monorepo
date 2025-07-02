@@ -66,9 +66,10 @@ export default class StatsigClient
    * Retrieves an instance of the StatsigClient based on the provided SDK key.
    *  If no SDK key is provided, the method returns the most recently created instance of the StatsigClient.
    *  The method ensures that each unique SDK key corresponds to a single instance of StatsigClient, effectively implementing a singleton pattern for each key.
+   *  If no instance exists for the given SDK key, a new StatsigClient instance will be created and returned.
    *
    * @param {string} [sdkKey] - Optional. The SDK key used to identify a specific instance of the StatsigClient. If omitted, the method returns the last created instance.
-   * @returns {StatsigClient|undefined} Returns the StatsigClient instance associated with the given SDK key, or undefined if no instance is associated with the key or if no key is provided and no instances exist.
+   * @returns {StatsigClient} Returns the StatsigClient instance associated with the given SDK key, creating a new one if needed.
    */
   static instance(sdkKey?: string): StatsigClient {
     const instance = _getStatsigGlobal().instance(sdkKey);
