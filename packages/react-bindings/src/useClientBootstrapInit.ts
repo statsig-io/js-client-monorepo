@@ -8,6 +8,7 @@ export function useClientBootstrapInit(
   initialUser: StatsigUser,
   initialValues: string,
   statsigOptions: StatsigOptions | null = null,
+  useLegacyFormat?: boolean,
 ): StatsigClient {
   return useStatsigInternalClientFactoryBootstrap(
     (args) =>
@@ -17,6 +18,7 @@ export function useClientBootstrapInit(
       initialUser,
       initialValues,
       statsigOptions,
+      useLegacyFormat,
     },
   );
 }
