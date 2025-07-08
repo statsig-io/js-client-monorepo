@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "statsig-combo",
-  "version": "3.18.1",
+  "version": "3.18.2",
   "license": "ISC",
   "homepage": "https://github.com/statsig-io/js-client-monorepo",
   "repository": {
@@ -10,14 +10,14 @@
     "directory": "packages/combo"
   },
   "dependencies": {
-    "@statsig/client-core": "3.18.1",
-    "@statsig/js-client": "3.18.1",
-    "@statsig/js-local-overrides": "3.18.1",
-    "@statsig/js-on-device-eval-client": "3.18.1",
-    "@statsig/js-user-persisted-storage": "3.18.1",
-    "@statsig/session-replay": "3.18.1",
-    "@statsig/web-analytics": "3.18.1",
-    "@statsig/react-bindings": "3.18.1"
+    "@statsig/client-core": "3.18.2",
+    "@statsig/js-client": "3.18.2",
+    "@statsig/js-local-overrides": "3.18.2",
+    "@statsig/js-on-device-eval-client": "3.18.2",
+    "@statsig/js-user-persisted-storage": "3.18.2",
+    "@statsig/session-replay": "3.18.2",
+    "@statsig/web-analytics": "3.18.2",
+    "@statsig/react-bindings": "3.18.2"
   },
   "type": "commonjs",
   "main": "./src/index.js",

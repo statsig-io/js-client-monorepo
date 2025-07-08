@@ -1,6 +1,6 @@
 {
   "name": "sidecar",
-  "version": "3.18.1",
+  "version": "3.18.2",
   "license": "ISC",
   "homepage": "https://github.com/statsig-io/js-client-monorepo",
   "repository": {
