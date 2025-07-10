@@ -140,6 +140,7 @@ function createStatsigWebpackBundle({
       },
       performance: {
         maxEntrypointSize: maxByteSize,
+        maxAssetSize: maxByteSize,
         hints: 'error',
       },
       optimization: {

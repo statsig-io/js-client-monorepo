@@ -15,9 +15,9 @@
     "@statsig/js-local-overrides": "3.18.2",
     "@statsig/js-on-device-eval-client": "3.18.2",
     "@statsig/js-user-persisted-storage": "3.18.2",
+    "@statsig/react-bindings": "3.18.2",
     "@statsig/session-replay": "3.18.2",
-    "@statsig/web-analytics": "3.18.2",
-    "@statsig/react-bindings": "3.18.2"
+    "@statsig/web-analytics": "3.18.2"
   },
   "type": "commonjs",
   "main": "./src/index.js",
