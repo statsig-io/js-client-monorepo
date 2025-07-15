@@ -135,7 +135,7 @@ export const _createLayerParameterExposure = (
 
   if (isExplicit) {
     allocatedExperiment = evaluation.allocated_experiment_name ?? '';
-    secondaryExposures = evaluation.secondary_exposures;
+    secondaryExposures = evaluation.secondary_exposures ?? [];
   }
 
   const parameterRuleIDs = layer.__evaluation?.parameter_rule_ids;
