@@ -1,3 +1,4 @@
+import { _getStatsigGlobal } from '@statsig/client-core';
 import { StatsigClient } from '@statsig/js-client';
 
 import { runStatsigAutoCapture } from '../AutoCapture';
@@ -10,6 +11,7 @@ describe('AutoCaptureFiltering', () => {
   beforeEach(() => {
     window.history.pushState({}, '', '/');
     client = new StatsigClient('client-key', { userID: 'a-user' });
+    _getStatsigGlobal().acInstances = {};
     spy = jest.fn();
     client.logEvent = spy;
   });

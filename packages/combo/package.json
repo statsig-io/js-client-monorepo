@@ -17,7 +17,8 @@
     "@statsig/js-user-persisted-storage": "3.18.2",
     "@statsig/react-bindings": "3.18.2",
     "@statsig/session-replay": "3.18.2",
-    "@statsig/web-analytics": "3.18.2"
+    "@statsig/web-analytics": "3.18.2",
+    "web-vitals": "5.0.3"
   },
   "type": "commonjs",
   "main": "./src/index.js",

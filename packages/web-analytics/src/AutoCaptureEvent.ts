@@ -9,6 +9,7 @@ export const AutoCaptureEventName = {
   FORM_SUBMIT: 'auto_capture::form_submit',
   CLICK: 'auto_capture::click',
   RAGE_CLICK: 'auto_capture::rage_click',
+  WEB_VITALS: 'auto_capture::web_vitals',
 } as const;
 
 export type AutoCaptureEventName =

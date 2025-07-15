@@ -4,7 +4,12 @@ import React from 'react';
 import { Link, RouterProvider, createBrowserRouter } from 'react-router-dom';
 import { anyObjectContaining } from 'statsig-test-helpers';
 
-import { Log, LogLevel, StatsigClient } from '@statsig/js-client';
+import {
+  Log,
+  LogLevel,
+  StatsigClient,
+  _getStatsigGlobal,
+} from '@statsig/js-client';
 import { runStatsigAutoCapture } from '@statsig/web-analytics';
 
 function SimplePage({ name }: { name: string }) {
@@ -57,6 +62,7 @@ describe('AutoCapture Page Views in React SPA', () => {
     );
 
     loggerSpy = jest.spyOn(client['_logger'], 'enqueue');
+    _getStatsigGlobal().acInstances = {};
 
     runStatsigAutoCapture(client);
     client.initializeSync();

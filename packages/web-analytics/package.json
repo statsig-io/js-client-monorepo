@@ -10,7 +10,8 @@
   },
   "dependencies": {
     "@statsig/client-core": "3.18.2",
-    "@statsig/js-client": "3.18.2"
+    "@statsig/js-client": "3.18.2",
+    "web-vitals": "5.0.3"
   },
   "jsdelivr": "./build/statsig-web-analytics.min.js",
   "type": "commonjs",

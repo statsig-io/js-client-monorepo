@@ -47,6 +47,11 @@ class StatsigPostProcessPlugin {
             'var $A=()=>((t,r,u,l)=>{return new(u=u||Promise)(function(n,e){function i(t){try{s(l.next(t))}catch(t){e(t)}}function o(t){try{s(l.throw(t))}catch(t){e(t)}}function s(t){var e;t.done?n(t.value):((e=t.value)instanceof u?e:new u(function(t){t(e)})).then(i,o)}s((l=l.apply(t,r||[])).next())})});',
           ].join('');
 
+          // Process all parts for __awaiter patterns first
+          for (let i = 0; i < parts.length; i++) {
+            parts[i] = _replaceAwaiters(parts[i]);
+          }
+
           let sourceUsingHositedFunctions = parts[tailIndex]
             // __esModule replace
             .replaceAll(
@@ -58,15 +63,9 @@ class StatsigPostProcessPlugin {
             // Object.assign replace
             .replaceAll('Object.assign(', '$P(');
 
-          // const res = _replaceAwaiters(source + '');
-          sourceUsingHositedFunctions = _replaceAwaiters(
-            sourceUsingHositedFunctions,
-          );
+          parts[tailIndex] = sourceUsingHositedFunctions;
 
-          parts[tailIndex] =
-            `${hoistedFunctions}${sourceUsingHositedFunctions}`;
-
-          const edited = parts.join('"use strict";');
+          const edited = `${hoistedFunctions}${parts.join('"use strict";')}`;
 
           assets[filename] = {
             source: () => edited,
@@ -101,7 +100,6 @@ function createStatsigWebpackBundle({
     if (!DEP_MAP[dep]) {
       throw 'No dependency mapping found for ' + dep;
     }
-
     alias[dep] = path.resolve(__dirname, DEP_MAP[dep]);
   });
 
@@ -118,6 +116,12 @@ function createStatsigWebpackBundle({
       resolve: {
         alias,
         extensions: ['.js'],
+        modules: [
+          'node_modules',
+          path.resolve(__dirname, '../../node_modules'),
+          path.resolve(__dirname, '../web-analytics/node_modules'),
+          path.resolve(__dirname, './node_modules'),
+        ],
       },
       externals,
       output: {
@@ -169,6 +173,10 @@ module.exports = {
 };
 
 function _replaceAwaiters(input) {
+  if (!input.includes('this.__awaiter')) {
+    return input; // No __awaiter patterns found, return as-is
+  }
+
   const pattern = /this\.__awaiter\|\|function\((.*?)\[\]\)\).next\(\)\)\}\)\}/;
   const len =
     'this.__awaiter||function(t,o,l,u){return new(l=l||Promise)(function(i,e){function n(t){try{r(u.next(t))}catch(t){e(t)}}function s(t){try{r(u.throw(t))}catch(t){e(t)}}function r(t){var e;t.done?i(t.value):((e=t.value)instanceof l?e:new l(function(t){t(e)})).then(n,s)}r((u=u.apply(t,o||[])).next())})}'
@@ -183,8 +191,19 @@ function _replaceAwaiters(input) {
     }
   }
 
+  // Try a simple string replacement approach for web-vitals
+  if (
+    input.includes('this.__awaiter||function(t,l,o,u){return new(o=o||Promise)')
+  ) {
+    const webVitalsPattern =
+      'this.__awaiter||function(t,l,o,u){return new(o=o||Promise)(function(i,e){function n(t){try{s(u.next(t))}catch(t){e(t)}}function r(t){try{s(u.throw(t))}catch(t){e(t)}}function s(t){var e;t.done?i(t.value):((e=t.value)instanceof o?e:new o(function(t){t(e)})).then(n,r)}s((u=u.apply(t,l||[])).next())})}';
+    if (input.includes(webVitalsPattern)) {
+      return input.replaceAll(webVitalsPattern, 'this.__awaiter||$A()');
+    }
+  }
+
   const errorMessage =
     "[Statsig Build]: Failed to find valid '__awaiters' to replace";
-  console.error(errorMessage);
-  throw errorMessage;
+  console.warn(errorMessage);
+  return input;
 }

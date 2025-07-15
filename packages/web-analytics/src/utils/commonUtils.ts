@@ -76,6 +76,14 @@ export function _getSafeUrl(): URL {
   return url;
 }
 
+export function _getSafeUrlString(): string {
+  const urlString = _getSafeUrl().toString();
+  if (urlString.startsWith('error:')) {
+    return '';
+  }
+  return urlString;
+}
+
 export function _getSanitizedPageUrl(): string {
   return _getCurrentPageUrlSafe() || '';
 }

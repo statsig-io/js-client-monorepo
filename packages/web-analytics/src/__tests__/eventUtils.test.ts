@@ -1,4 +1,4 @@
-import { _getMetadataFromElement } from '../eventUtils';
+import { _getMetadataFromElement } from '../utils/eventUtils';
 
 describe('_getMetadataFromElement', () => {
   let element: HTMLElement;

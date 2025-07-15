@@ -13,15 +13,16 @@ import {
 import { AutoCaptureEvent, AutoCaptureEventName } from './AutoCaptureEvent';
 import { EngagementManager } from './EngagementManager';
 import RageClickManager from './RageClickManager';
+import { WebVitalsManager } from './WebVitalsManager';
 import {
   _getSafeUrl,
   _getSanitizedPageUrl,
   _getTargetNode,
   _registerEventHandler,
   _shouldLogEvent,
-} from './commonUtils';
-import { _gatherEventData } from './eventUtils';
-import { _gatherAllMetadata, _getNetworkInfo } from './metadataUtils';
+} from './utils/commonUtils';
+import { _gatherEventData } from './utils/eventUtils';
+import { _gatherAllMetadata, _getNetworkInfo } from './utils/metadataUtils';
 
 const AUTO_EVENT_MAPPING: Record<string, AutoCaptureEventName> = {
   submit: AutoCaptureEventName.FORM_SUBMIT,
@@ -48,6 +49,17 @@ export function runStatsigAutoCapture(
   client: PrecomputedEvaluationsInterface,
   options?: AutoCaptureOptions,
 ): AutoCapture {
+  const { sdkKey } = client.getContext();
+
+  if (!_isServerEnv()) {
+    const global = _getStatsigGlobal();
+    const instances = global.acInstances ?? {};
+
+    if (instances[sdkKey]) {
+      return instances[sdkKey] as AutoCapture;
+    }
+  }
+
   return new AutoCapture(client, options);
 }
 
@@ -59,6 +71,7 @@ export class AutoCapture {
   private _hasLoggedPageViewEnd = false;
   private _engagementManager: EngagementManager;
   private _rageClickManager: RageClickManager;
+  private _webVitalsManager: WebVitalsManager;
 
   constructor(
     private _client: PrecomputedEvaluationsInterface,
@@ -75,6 +88,9 @@ export class AutoCapture {
     });
     this._engagementManager = new EngagementManager();
     this._rageClickManager = new RageClickManager();
+    this._webVitalsManager = new WebVitalsManager(
+      this._enqueueAutoCapture.bind(this),
+    );
     this._eventFilterFunc = options?.eventFilterFunc;
 
     const doc = _getDocumentSafe();
@@ -177,6 +193,7 @@ export class AutoCapture {
   }
 
   private _initialize() {
+    this._webVitalsManager.startTracking();
     this._engagementManager.startInactivityTracking(() =>
       this._tryLogPageViewEnd(true),
     );
@@ -379,13 +396,17 @@ export class AutoCapture {
       this._client.logEvent(event);
 
       if (options?.flushImmediately) {
-        this._client.flush().catch((e) => {
-          Log.error(e);
-        });
+        this._flushImmediately();
       }
     } catch (err) {
       this._errorBoundary.logError('AC::enqueue', err);
     }
+  }
+
+  private _flushImmediately(): void {
+    this._client.flush().catch((e) => {
+      Log.error(e);
+    });
   }
 
   private _isNewSession(session: StatsigSession) {
