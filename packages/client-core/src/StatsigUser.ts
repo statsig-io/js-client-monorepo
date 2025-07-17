@@ -26,6 +26,7 @@ export type StatsigUser = {
   appVersion?: string;
   custom?: Record<string, StatsigUserPrimitives>;
   privateAttributes?: Record<string, StatsigUserPrimitives> | null;
+  analyticsOnlyMetadata?: Record<string, string | number | boolean>;
 };
 
 export type StatsigUserInternal = StatsigUser & {

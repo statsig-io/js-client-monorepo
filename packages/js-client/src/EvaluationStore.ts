@@ -178,7 +178,14 @@ export default class EvaluationStore {
     }
     if ('user' in values) {
       const bootstrapUser = values['user'] as StatsigUser;
-      if (_getFullUserHash(user) !== _getFullUserHash(bootstrapUser)) {
+      const userWithoutAnalyticsOnlyMetadata = {
+        ...user,
+        analyticsOnlyMetadata: undefined,
+      };
+      if (
+        _getFullUserHash(userWithoutAnalyticsOnlyMetadata) !==
+        _getFullUserHash(bootstrapUser)
+      ) {
         this._warnings.add('PartialUserMatch');
       }
     }

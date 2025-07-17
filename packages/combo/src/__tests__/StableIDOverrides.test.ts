@@ -62,7 +62,7 @@ describe('Stable ID Overrides', () => {
         statsigMetadata: { stableID: anyUUID() },
       });
 
-      expect(JSON.stringify(body.events)).toContain('customIDs":{}}');
+      expect(JSON.stringify(body.events)).toContain('customIDs":{}');
     });
 
     it('persists generated stable ids to local storage', () => {
@@ -119,7 +119,7 @@ describe('Stable ID Overrides', () => {
       });
 
       expect(JSON.stringify(body.events)).toContain(
-        'customIDs":{"stableID":"custom_stable_id"}}',
+        'customIDs":{"stableID":"custom_stable_id"}',
       );
     });
 

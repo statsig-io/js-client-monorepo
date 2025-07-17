@@ -79,6 +79,31 @@ export function _getNetworkInfo(): Record<string, string | number | boolean> {
   return result;
 }
 
+export function _getPossibleFirstTouchMetadata(
+  url: URL,
+): Record<string, string | number> {
+  const safeDoc = _getDocumentSafe();
+  const safeWnd = _getWindowSafe();
+  if (!safeDoc || !safeWnd) {
+    return {};
+  }
+
+  const referrerInfo = getReferrerInfo(safeDoc);
+  const campaignParams = getCampaignParams(url);
+
+  const combined = _stripEmptyValues({
+    ...referrerInfo,
+    ...campaignParams,
+  });
+
+  const prefixed: Record<string, string | number> = {};
+  for (const [key, value] of Object.entries(combined)) {
+    prefixed[`$s_${key}`] = value;
+  }
+
+  return prefixed;
+}
+
 function getReferrerInfo(safeDoc: Document): {
   referrer: string | null;
   referrer_domain: string | null;

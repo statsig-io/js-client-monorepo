@@ -60,6 +60,7 @@ export default class StatsigClient
   private _store: EvaluationStore;
   private _user: StatsigUserInternal;
   private _network: Network;
+  private _possibleFirstTouchMetadata: Record<string, string | number> = {};
   private _sdkInstanceID: string;
 
   /**
@@ -437,6 +438,24 @@ export default class StatsigClient
     this._logger.enqueue({ ...event, user: this._user, time: Date.now() });
   }
 
+  /**
+   * Updates the user with analytics only metadata. This will override any existing analytics only metadata.
+   *
+   * @param {Record<string, string | number | boolean>} metadata - The metadata to add to the user.
+   */
+
+  updateUserWithAnalyticsOnlyMetadata(
+    metadata: Record<string, string | number | boolean>,
+  ): void {
+    this._user = this._configureUser(
+      {
+        ...this._user,
+        analyticsOnlyMetadata: metadata,
+      },
+      this._options,
+    );
+  }
+
   protected override _primeReadyRipcord(): void {
     this.$on('error', () => {
       this.loadingStatus === 'Loading' && this._finalizeUpdate(null);
@@ -500,6 +519,10 @@ export default class StatsigClient
     if (stableIdOverride) {
       StableID.setOverride(stableIdOverride, this._sdkKey);
     }
+    user.analyticsOnlyMetadata = {
+      ...user.analyticsOnlyMetadata,
+      ...this._possibleFirstTouchMetadata,
+    };
     return user;
   }
 

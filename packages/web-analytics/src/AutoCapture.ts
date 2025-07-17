@@ -4,6 +4,7 @@ import {
   PrecomputedEvaluationsInterface,
   StatsigPlugin,
   StatsigSession,
+  StatsigUser,
   _getDocumentSafe,
   _getStatsigGlobal,
   _getWindowSafe,
@@ -22,7 +23,11 @@ import {
   _shouldLogEvent,
 } from './utils/commonUtils';
 import { _gatherEventData } from './utils/eventUtils';
-import { _gatherAllMetadata, _getNetworkInfo } from './utils/metadataUtils';
+import {
+  _gatherAllMetadata,
+  _getNetworkInfo,
+  _getPossibleFirstTouchMetadata,
+} from './utils/metadataUtils';
 
 const AUTO_EVENT_MAPPING: Record<string, AutoCaptureEventName> = {
   submit: AutoCaptureEventName.FORM_SUBMIT,
@@ -71,6 +76,7 @@ export class AutoCapture {
   private _hasLoggedPageViewEnd = false;
   private _engagementManager: EngagementManager;
   private _rageClickManager: RageClickManager;
+  private _pageViewLogged = false;
   private _webVitalsManager: WebVitalsManager;
 
   constructor(
@@ -260,6 +266,10 @@ export class AutoCapture {
     this._hasLoggedPageViewEnd = false;
 
     const payload = _gatherAllMetadata(url);
+    if (!this._pageViewLogged) {
+      this._updateClientWithPossibleFirstTouchMetadata();
+      this._pageViewLogged = true;
+    }
 
     this._enqueueAutoCapture(
       AutoCaptureEventName.PAGE_VIEW,
@@ -401,6 +411,23 @@ export class AutoCapture {
     } catch (err) {
       this._errorBoundary.logError('AC::enqueue', err);
     }
+  }
+
+  private _updateClientWithPossibleFirstTouchMetadata() {
+    const typedClient = this._client as unknown as {
+      _user: StatsigUser;
+      _possibleFirstTouchMetadata: Record<string, string | number>;
+    };
+
+    typedClient._possibleFirstTouchMetadata =
+      _getPossibleFirstTouchMetadata(_getSafeUrl());
+    typedClient._user = {
+      ...typedClient._user,
+      analyticsOnlyMetadata: {
+        ...typedClient._possibleFirstTouchMetadata,
+        ...typedClient._user.analyticsOnlyMetadata,
+      },
+    };
   }
 
   private _flushImmediately(): void {
