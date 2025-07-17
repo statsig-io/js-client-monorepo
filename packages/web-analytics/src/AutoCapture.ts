@@ -262,10 +262,13 @@ export class AutoCapture {
 
     this._engagementManager.setLastPageViewTime(Date.now());
 
-    this._previousLoggedPageViewUrl = url;
     this._hasLoggedPageViewEnd = false;
 
     const payload = _gatherAllMetadata(url);
+    if (this._previousLoggedPageViewUrl) {
+      payload['last_page_view_url'] = this._previousLoggedPageViewUrl.href;
+    }
+
     if (!this._pageViewLogged) {
       this._updateClientWithPossibleFirstTouchMetadata();
       this._pageViewLogged = true;
@@ -280,6 +283,7 @@ export class AutoCapture {
         addNewSessionMetadata: true,
       },
     );
+    this._previousLoggedPageViewUrl = url;
     this._engagementManager.bumpInactiveTimer();
   }
 
