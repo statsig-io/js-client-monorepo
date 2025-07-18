@@ -4,6 +4,7 @@ import {
   PrecomputedEvaluationsInterface,
   StatsigMetadataProvider,
   Visibility,
+  _fastApproxSizeOf,
   _getStatsigGlobal,
   _isCurrentlyVisible,
   _isServerEnv,
@@ -26,7 +27,6 @@ import {
   _makeLoggableRrwebEvent,
   _slicePayload,
 } from './SessionReplayUtils';
-import { _fastApproxSizeOf } from './SizeOf';
 
 type SessionReplayOptions = {
   rrwebConfig?: RRWebConfig;

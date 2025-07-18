@@ -1,0 +1,38 @@
+{
+  "name": "cli-session-replay-node",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/cli-session-replay-node/src",
+  "projectType": "library",
+  "tags": [],
+  "targets": {
+    "build": {
+      "command": ":",
+      "dependsOn": ["^build", "build-ts"]
+    },
+    "build-ts": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/cli-session-replay-node",
+        "main": "packages/cli-session-replay-node/src/index.ts",
+        "tsConfig": "packages/cli-session-replay-node/tsconfig.lib.json",
+        "assets": ["README.md", "LICENSE"]
+      }
+    },
+    "publish": {
+      "command": "ts-node ./tools/scripts/publish.ts cli-session-replay-node",
+      "dependsOn": ["build"]
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "packages/cli-session-replay-node/jest.config.ts",
+        "passWithNoTests": false
+      }
+    }
+  }
+}

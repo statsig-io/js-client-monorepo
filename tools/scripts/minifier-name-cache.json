@@ -289,7 +289,19 @@
       "$_mirror": "Rs",
       "$_unchangedStyles": "Es",
       "$_machine": "Ms",
-      "$_sdkInstanceID": "js"
+      "$_sdkInstanceID": "js",
+      "$_possibleFirstTouchMetadata": "ar",
+      "$_pageViewLogged": "cr",
+      "$_webVitalsManager": "hr",
+      "$_updateClientWithPossibleFirstTouchMetadata": "dr",
+      "$_flushImmediately": "vr",
+      "$_getPossibleFirstTouchMetadata": "gr",
+      "$_enqueueFn": "_r",
+      "$_isInitialized": "pr",
+      "$_handleMetric": "mr",
+      "$_getSafeUrlString": "br",
+      "$_enqueueWebVitalsAutoCaptureEvent": "yr",
+      "$_handleUnsupportedEvaluation": "Or"
     }
   }
 }

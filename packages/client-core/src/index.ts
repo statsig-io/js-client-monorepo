@@ -27,6 +27,7 @@ export * from './ParamStoreTypes';
 export * from './SafeJs';
 export * from './SDKType';
 export * from './SessionID';
+export * from './SizeOf';
 export * from './StableID';
 export * from './StatsigClientBase';
 export * from './StatsigClientEventEmitter';
