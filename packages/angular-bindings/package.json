@@ -1,6 +1,6 @@
 {
   "name": "@statsig/angular-bindings",
-  "version": "3.18.3",
+  "version": "3.19.0",
   "license": "ISC",
   "homepage": "https://github.com/statsig-io/js-client-monorepo",
   "repository": {
@@ -11,8 +11,8 @@
   "dependencies": {},
   "peerDependencies": {
     "@angular/core": ">=12.0.0",
-    "@statsig/js-client": "3.18.3",
-    "@statsig/client-core": "3.18.3",
+    "@statsig/js-client": "3.19.0",
+    "@statsig/client-core": "3.19.0",
     "rxjs": "^6.0.0 || ^7.0.0"
   },
   "sideEffects": false
