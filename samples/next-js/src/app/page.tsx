@@ -27,6 +27,13 @@ export default function Index(): React.ReactElement {
         </li>
         <li>
           <button>
+            <a href="/persisted-user-storage-example-on-device">
+              User Persistent Storage On Device Eval
+            </a>
+          </button>
+        </li>
+        <li>
+          <button>
             <a href="/persisted-user-storage-example">
               User Persistent Storage
             </a>

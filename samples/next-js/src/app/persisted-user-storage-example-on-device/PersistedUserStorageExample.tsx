@@ -3,36 +3,37 @@
 import React, { useState } from 'react';
 
 import {
+  StickyValues,
   UserPersistedValues,
   UserPersistentOverrideAdapter,
   UserPersistentStorage,
 } from '@statsig/js-user-persisted-storage';
 import {
-  StatsigProvider,
-  useClientAsyncInit,
+  StatsigProviderOnDeviceEval,
   useExperiment,
-} from '@statsig/react-bindings';
+  useOnDeviceClientAsyncInit,
+} from '@statsig/react-bindings-on-device-eval';
 
 import { DEMO_CLIENT_KEY } from '../../utils/constants';
 
 const CONTROL_GROUP_USERID = 'control-group-user-3';
 const TEST_GROUP_USERID = 'test-group-user-11';
 
-class LocalStorageUserPersistedStorage implements UserPersistentStorage {
+class InMemoryUserPersistedStorage implements UserPersistentStorage {
+  inMemoryValues: Record<string, UserPersistedValues> = {};
+
   delete(key: string, experiment: string): void {
-    const data = JSON.parse(localStorage.getItem(key) ?? '{}');
-    delete data[experiment];
-    localStorage.setItem(key, JSON.stringify(data));
+    delete this.inMemoryValues[key][experiment];
   }
 
   load(key: string): UserPersistedValues {
-    return JSON.parse(localStorage.getItem(key) ?? '{}');
+    return this.inMemoryValues[key];
   }
 
   save(key: string, experiment: string, data: string): void {
-    const values = JSON.parse(localStorage.getItem(key) ?? '{}');
-    values[experiment] = JSON.parse(data);
-    localStorage.setItem(key, JSON.stringify(values));
+    const found = this.inMemoryValues[key] ?? {};
+    found[experiment] = JSON.parse(data) as StickyValues;
+    this.inMemoryValues[key] = found;
   }
 
   loadAsync(key: string): Promise<UserPersistedValues> {
@@ -42,7 +43,7 @@ class LocalStorageUserPersistedStorage implements UserPersistentStorage {
 
 function useUserPersistentOverrideAdapter(): UserPersistentOverrideAdapter {
   const [adapter] = useState(() => {
-    const storage = new LocalStorageUserPersistedStorage();
+    const storage = new InMemoryUserPersistedStorage();
     return new UserPersistentOverrideAdapter(storage);
   });
 
@@ -56,7 +57,7 @@ function Content(props: { overrideAdapter: UserPersistentOverrideAdapter }) {
     'userID',
   );
 
-  const experiment = useExperiment('an_experiment', {
+  const experiment = useExperiment('an_experiment', user, {
     userPersistedValues,
   });
 
@@ -99,21 +100,17 @@ function Content(props: { overrideAdapter: UserPersistentOverrideAdapter }) {
 
 export default function PersistedUserStorageExample(): React.ReactElement {
   const overrideAdapter = useUserPersistentOverrideAdapter();
-  const { client, isLoading } = useClientAsyncInit(
-    DEMO_CLIENT_KEY,
-    { userID: CONTROL_GROUP_USERID },
-    {
-      overrideAdapter,
-    },
-  );
+  const { client, isLoading } = useOnDeviceClientAsyncInit(DEMO_CLIENT_KEY, {
+    overrideAdapter,
+  });
 
   if (isLoading) {
     return <div>Loading...</div>;
   }
 
   return (
-    <StatsigProvider client={client}>
+    <StatsigProviderOnDeviceEval client={client}>
       <Content overrideAdapter={overrideAdapter} />
-    </StatsigProvider>
+    </StatsigProviderOnDeviceEval>
   );
 }
