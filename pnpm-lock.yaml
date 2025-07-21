@@ -460,7 +460,7 @@ importers:
   packages/cli-session-replay-node:
     dependencies:
       '@statsig/client-core':
-        specifier: 3.18.3
+        specifier: 3.19.0
         version: link:../client-core
       intercept-stdout:
         specifier: ^0.1.2
