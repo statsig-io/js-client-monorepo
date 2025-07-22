@@ -99,4 +99,20 @@ describe('Parameter Stores', () => {
       expect(events[0].metadata?.['reason']).toEqual('Network:Recognized');
     });
   });
+
+  describe('experiment object param when user is not allocated', () => {
+    let result: object;
+
+    beforeAll(async () => {
+      events = [];
+
+      result = store.get('unrecognized_object_param', {});
+      await client.flush();
+    });
+
+    it('gets the default value when user is not allocated to experiment', async () => {
+      expect(result).toEqual({});
+      expect(result).not.toBeNull();
+    });
+  });
 });

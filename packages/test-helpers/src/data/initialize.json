@@ -261,6 +261,13 @@
         "param_type": "string",
         "config_name": "3495537376",
         "param_name": "red"
+      },
+      "unrecognized_object_param": {
+        "name": "unrecognized_object_param",
+        "ref_type": "experiment",
+        "param_type": "object",
+        "experiment_name": "3921852239",
+        "param_name": "unrecognized_obj"
       }
     }
   }
