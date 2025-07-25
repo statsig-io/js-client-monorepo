@@ -5,7 +5,7 @@ import { useFeatureGate, useLayer } from '@statsig/react-bindings';
 import {
   StatsigServerProps,
   getStatsigServerProps,
-} from '../lib/statsig-backend';
+} from '../lib/statsig-backend-core';
 
 export const getServerSideProps = async (
   context: GetServerSidePropsContext,

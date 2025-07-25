@@ -8,7 +8,7 @@ import {
 } from '@statsig/react-bindings';
 import { StatsigAutoCapturePlugin } from '@statsig/web-analytics';
 
-import { StatsigServerProps } from '../lib/statsig-backend';
+import { StatsigServerProps } from '../lib/statsig-backend-core';
 import './styles.css';
 
 const USE_BOOTSTRAP_INIT = false;
@@ -30,10 +30,10 @@ function BootstrapInitApp({
   Component,
   pageProps,
 }: AppProps<{ statsigProps: StatsigServerProps }>): React.ReactElement {
-  const { user, key, data, host } = pageProps.statsigProps;
+  const { jsonUser, key, data, host } = pageProps.statsigProps;
   const client = useClientBootstrapInit(
     key,
-    user,
+    jsonUser,
     data,
     makeStatsigOptions(host ?? ''),
   );
