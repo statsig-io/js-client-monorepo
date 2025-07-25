@@ -41,6 +41,10 @@ export function _shouldLogEvent(e: Event, el: Element): boolean {
 
   const tagName = el.tagName.toLowerCase();
   const eventType = e.type.toLowerCase();
+  const classList = el.classList;
+  if (classList.contains('statsig-no-capture')) {
+    return false;
+  }
 
   switch (tagName) {
     case 'html':

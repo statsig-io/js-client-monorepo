@@ -1,4 +1,7 @@
-import { _getSafeNetworkInformation } from '../utils/commonUtils';
+import {
+  _getSafeNetworkInformation,
+  _shouldLogEvent,
+} from '../utils/commonUtils';
 
 describe('_getSafeNetworkInformation', () => {
   const originalNavigator = window.navigator;
@@ -86,5 +89,32 @@ describe('_getSafeNetworkInformation', () => {
 
     const result = _getSafeNetworkInformation();
     expect(result).toEqual(mockConnection);
+  });
+});
+
+describe('_shouldLogEvent', () => {
+  it('should return false if the element contains statsig-no-capture class', () => {
+    const button = document.createElement('button');
+    document.body.appendChild(button);
+    button.classList.add('statsig-no-capture');
+    const clickEvent = new MouseEvent('click', {
+      bubbles: true,
+      cancelable: true,
+      view: window,
+    });
+    const result = _shouldLogEvent(clickEvent, button);
+    expect(result).toBe(false);
+  });
+
+  it('should return true if the element is a valid element', () => {
+    const button = document.createElement('button');
+    document.body.appendChild(button);
+    const clickEvent = new MouseEvent('click', {
+      bubbles: true,
+      cancelable: true,
+      view: window,
+    });
+    const result = _shouldLogEvent(clickEvent, button);
+    expect(result).toBe(true);
   });
 });
