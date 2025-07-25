@@ -386,6 +386,18 @@ export default class StatsigClient
   );
 
   /**
+   * Retrieves the list of all Dynamic Configs and Experiments for the current user.
+   *
+   * @returns {string[]} The list of all Dynamic Config and Experiment names for the current user. Note - these will be hashed unless you've disabled hashing.
+   * This is intended to be used for debugging.
+   */
+
+  readonly getConfigList = this._memoize(
+    MemoPrefix._configList,
+    this._getConfigListImpl.bind(this),
+  );
+
+  /**
    * Retrieves the value of a layer for the current user.
    *
    * @param {string} name The name of the layer to get.
@@ -610,6 +622,10 @@ export default class StatsigClient
     );
     this.$emt({ name: 'experiment_evaluation', experiment: result });
     return result;
+  }
+
+  private _getConfigListImpl(): string[] {
+    return this._store.getConfigList();
   }
 
   private _getLayerImpl(name: string, options?: LayerEvaluationOptions): Layer {

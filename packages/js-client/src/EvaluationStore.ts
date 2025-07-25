@@ -113,6 +113,16 @@ export default class EvaluationStore {
     return this._getDetailedStoreResult(this._values?.dynamic_configs, name);
   }
 
+  getConfigList(): string[] {
+    if (!this._values?.dynamic_configs) {
+      return [];
+    }
+
+    return Object.values(this._values.dynamic_configs).map(
+      (config) => config.name,
+    );
+  }
+
   getLayer(name: string): DetailedStoreResult<LayerEvaluation> {
     return this._getDetailedStoreResult(this._values?.layer_configs, name);
   }

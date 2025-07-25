@@ -4,6 +4,7 @@ export const MemoPrefix = {
   _gate: 'g',
   _dynamicConfig: 'c',
   _experiment: 'e',
+  _configList: 'cl',
   _layer: 'l',
   _paramStore: 'p',
 } as const;
