@@ -7,6 +7,17 @@ interface NetworkInformation {
   saveData: boolean;
 }
 
+export const interactiveElements: string[] = [
+  'button',
+  'a',
+  'input',
+  'select',
+  'textarea',
+  'form',
+  'select',
+  'label',
+];
+
 export function _stripEmptyValues<
   T extends Record<string, string | number | null | undefined>,
 >(obj: T): Partial<Record<keyof T, string | number>> {
@@ -156,4 +167,18 @@ export function _getAnchorNodeInHierarchy(
   }
 
   return null;
+}
+
+export function throttle<T extends (...args: unknown[]) => void>(
+  fn: T,
+  limit: number,
+): T {
+  let lastCall = 0;
+  return function (...args: unknown[]) {
+    const now = Date.now();
+    if (now - lastCall >= limit) {
+      lastCall = now;
+      fn(...args);
+    }
+  } as T;
 }

@@ -12,6 +12,7 @@ import {
 } from '@statsig/client-core';
 
 import { AutoCaptureEvent, AutoCaptureEventName } from './AutoCaptureEvent';
+import DeadClickManager from './DeadClickManager';
 import { EngagementManager } from './EngagementManager';
 import RageClickManager from './RageClickManager';
 import { WebVitalsManager } from './WebVitalsManager';
@@ -78,6 +79,7 @@ export class AutoCapture {
   private _rageClickManager: RageClickManager;
   private _pageViewLogged = false;
   private _webVitalsManager: WebVitalsManager;
+  private _deadClickManager: DeadClickManager;
 
   constructor(
     private _client: PrecomputedEvaluationsInterface,
@@ -95,6 +97,9 @@ export class AutoCapture {
     this._engagementManager = new EngagementManager();
     this._rageClickManager = new RageClickManager();
     this._webVitalsManager = new WebVitalsManager(
+      this._enqueueAutoCapture.bind(this),
+    );
+    this._deadClickManager = new DeadClickManager(
       this._enqueueAutoCapture.bind(this),
     );
     this._eventFilterFunc = options?.eventFilterFunc;
@@ -200,6 +205,7 @@ export class AutoCapture {
 
   private _initialize() {
     this._webVitalsManager.startTracking();
+    this._deadClickManager.startTracking();
     this._engagementManager.startInactivityTracking(() =>
       this._tryLogPageViewEnd(true),
     );

@@ -10,6 +10,7 @@ export const AutoCaptureEventName = {
   CLICK: 'auto_capture::click',
   RAGE_CLICK: 'auto_capture::rage_click',
   WEB_VITALS: 'auto_capture::web_vitals',
+  DEAD_CLICK: 'auto_capture::dead_click',
 } as const;
 
 export type AutoCaptureEventName =
