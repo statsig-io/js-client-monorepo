@@ -59,11 +59,11 @@ importers:
         specifier: ^1.19.3
         version: 1.21.0(react-native@0.74.1)
       '@rrweb/record':
-        specifier: 2.0.0-alpha.18
-        version: 2.0.0-alpha.18
+        specifier: 2.0.0-alpha.17
+        version: 2.0.0-alpha.17
       '@rrweb/types':
-        specifier: 2.0.0-alpha.18
-        version: 2.0.0-alpha.18
+        specifier: 2.0.0-alpha.17
+        version: 2.0.0-alpha.17
       '@statsig/statsig-node-core':
         specifier: 0.1.0
         version: 0.1.0(encoding@0.1.13)
@@ -638,18 +638,18 @@ importers:
   packages/session-replay:
     dependencies:
       '@rrweb/record':
-        specifier: 2.0.0-alpha.18
-        version: 2.0.0-alpha.18
+        specifier: 2.0.0-alpha.17
+        version: 2.0.0-alpha.17
       '@statsig/client-core':
         specifier: 3.20.2
         version: link:../client-core
       rrweb:
-        specifier: 2.0.0-alpha.18
-        version: 2.0.0-alpha.18
+        specifier: 2.0.0-alpha.17
+        version: 2.0.0-alpha.17
     devDependencies:
       '@rrweb/types':
-        specifier: 2.0.0-alpha.18
-        version: 2.0.0-alpha.18
+        specifier: 2.0.0-alpha.17
+        version: 2.0.0-alpha.17
 
   packages/sha256:
     devDependencies:
@@ -10611,15 +10611,17 @@ packages:
       fsevents: 2.3.3
     dev: true
 
-  /@rrweb/record@2.0.0-alpha.18:
-    resolution: {integrity: sha512-WbzcybTEqT+cKkOnzYiyaAYvNzAIxTK9f8qNLNOG9lOqWsmi+qu/W7CEdxHmfjlfgXGw/f7bxGZggAWVaizKqg==}
+  /@rrweb/record@2.0.0-alpha.17:
+    resolution: {integrity: sha512-Je+lzjeWMF8/I0IDoXFzkGPKT8j7AkaBup5YcwUHlkp18VhLVze416MvI6915teE27uUA2ScXMXzG0Yiu5VTIw==}
     dependencies:
-      '@rrweb/types': 2.0.0-alpha.18
-      rrweb: 2.0.0-alpha.18
+      '@rrweb/types': 2.0.0-alpha.17
+      rrweb: 2.0.0-alpha.17
     dev: false
 
-  /@rrweb/types@2.0.0-alpha.18:
-    resolution: {integrity: sha512-iMH3amHthJZ9x3gGmBPmdfim7wLGygC2GciIkw2A6SO8giSn8PHYtRT8OKNH4V+k3SZ6RSnYHcTQxBA7pSWZ3Q==}
+  /@rrweb/types@2.0.0-alpha.17:
+    resolution: {integrity: sha512-AfDTVUuCyCaIG0lTSqYtrZqJX39ZEYzs4fYKnexhQ+id+kbZIpIJtaut5cto6dWZbB3SEe4fW0o90Po3LvTmfg==}
+    dependencies:
+      rrweb-snapshot: 2.0.0-alpha.18
 
   /@rrweb/utils@2.0.0-alpha.18:
     resolution: {integrity: sha512-qV8azQYo9RuwW4NGRtOiQfTBdHNL1B0Q//uRLMbCSjbaKqJYd88Js17Bdskj65a0Vgp2dwTLPIZ0gK47dfjfaA==}
@@ -14168,7 +14170,7 @@ packages:
       dom-serializer: 2.0.0
       domhandler: 5.0.3
       htmlparser2: 8.0.2
-      postcss: 8.4.41
+      postcss: 8.5.6
       postcss-media-query-parser: 0.2.3
     dev: true
 
@@ -14267,12 +14269,12 @@ packages:
       webpack:
         optional: true
     dependencies:
-      icss-utils: 5.1.0(postcss@8.4.41)
-      postcss: 8.4.41
-      postcss-modules-extract-imports: 3.1.0(postcss@8.4.41)
-      postcss-modules-local-by-default: 4.2.0(postcss@8.4.41)
-      postcss-modules-scope: 3.2.1(postcss@8.4.41)
-      postcss-modules-values: 4.0.0(postcss@8.4.41)
+      icss-utils: 5.1.0(postcss@8.5.6)
+      postcss: 8.5.6
+      postcss-modules-extract-imports: 3.1.0(postcss@8.5.6)
+      postcss-modules-local-by-default: 4.2.0(postcss@8.5.6)
+      postcss-modules-scope: 3.2.1(postcss@8.5.6)
+      postcss-modules-values: 4.0.0(postcss@8.5.6)
       postcss-value-parser: 4.2.0
       semver: 7.6.3
       webpack: 5.94.0(@swc/core@1.5.29)(esbuild@0.23.0)(uglify-js@3.17.4)
@@ -17474,6 +17476,15 @@ packages:
       postcss: ^8.1.0
     dependencies:
       postcss: 8.4.41
+    dev: true
+
+  /icss-utils@5.1.0(postcss@8.5.6):
+    resolution: {integrity: sha512-soFhflCVWLfRNOPU3iv5Z9VUdT44xFRbzjLsEzSr5AQmgqPMTHdU3PMT1Cf1ssx8fLNJDA1juftYl+PUcv3MqA==}
+    engines: {node: ^10 || ^12 || >= 14}
+    peerDependencies:
+      postcss: ^8.1.0
+    dependencies:
+      postcss: 8.5.6
     dev: true
 
   /identity-obj-proxy@3.0.0:
@@ -21728,13 +21739,13 @@ packages:
       postcss: 8.4.38
     dev: true
 
-  /postcss-modules-extract-imports@3.1.0(postcss@8.4.41):
+  /postcss-modules-extract-imports@3.1.0(postcss@8.5.6):
     resolution: {integrity: sha512-k3kNe0aNFQDAZGbin48pL2VNidTF0w4/eASDsxlyspobzU3wZQLOGj7L9gfRe0Jo9/4uud09DsjFNH7winGv8Q==}
     engines: {node: ^10 || ^12 || >= 14}
     peerDependencies:
       postcss: ^8.1.0
     dependencies:
-      postcss: 8.4.41
+      postcss: 8.5.6
     dev: true
 
   /postcss-modules-local-by-default@4.0.4(postcss@8.4.41):
@@ -21761,14 +21772,14 @@ packages:
       postcss-value-parser: 4.2.0
     dev: true
 
-  /postcss-modules-local-by-default@4.2.0(postcss@8.4.41):
+  /postcss-modules-local-by-default@4.2.0(postcss@8.5.6):
     resolution: {integrity: sha512-5kcJm/zk+GJDSfw+V/42fJ5fhjL5YbFDl8nVdXkJPLLW+Vf9mTD5Xe0wqIaDnLuL2U6cDNpTr+UQ+v2HWIBhzw==}
     engines: {node: ^10 || ^12 || >= 14}
     peerDependencies:
       postcss: ^8.1.0
     dependencies:
-      icss-utils: 5.1.0(postcss@8.4.41)
-      postcss: 8.4.41
+      icss-utils: 5.1.0(postcss@8.5.6)
+      postcss: 8.5.6
       postcss-selector-parser: 7.1.0
       postcss-value-parser: 4.2.0
     dev: true
@@ -21793,13 +21804,13 @@ packages:
       postcss-selector-parser: 7.1.0
     dev: true
 
-  /postcss-modules-scope@3.2.1(postcss@8.4.41):
+  /postcss-modules-scope@3.2.1(postcss@8.5.6):
     resolution: {integrity: sha512-m9jZstCVaqGjTAuny8MdgE88scJnCiQSlSrOWcTQgM2t32UBe+MUmFSO5t7VMSfAf/FJKImAxBav8ooCHJXCJA==}
     engines: {node: ^10 || ^12 || >= 14}
     peerDependencies:
       postcss: ^8.1.0
     dependencies:
-      postcss: 8.4.41
+      postcss: 8.5.6
       postcss-selector-parser: 7.1.0
     dev: true
 
@@ -21821,6 +21832,16 @@ packages:
     dependencies:
       icss-utils: 5.1.0(postcss@8.4.41)
       postcss: 8.4.41
+    dev: true
+
+  /postcss-modules-values@4.0.0(postcss@8.5.6):
+    resolution: {integrity: sha512-RDxHkAiEGI78gS2ofyvCsu7iycRv7oqw5xMWn9iMoR0N/7mf9D50ecQqUo5BZ9Zh2vH4bCUR/ktCqbB9m8vJjQ==}
+    engines: {node: ^10 || ^12 || >= 14}
+    peerDependencies:
+      postcss: ^8.1.0
+    dependencies:
+      icss-utils: 5.1.0(postcss@8.5.6)
+      postcss: 8.5.6
     dev: true
 
   /postcss-modules@4.3.1(postcss@8.4.38):
@@ -22200,7 +22221,6 @@ packages:
       nanoid: 3.3.11
       picocolors: 1.1.1
       source-map-js: 1.2.1
-    dev: true
 
   /prelude-ls@1.2.1:
     resolution: {integrity: sha512-vkcDPrRZo1QZLbn5RLGPpg/WmIQ65qoWWhcGKf/b5eplkkarX0m9z8ppCat4mlOqUsWpyNuYgO3VRyrYHSzX5g==}
@@ -23000,7 +23020,7 @@ packages:
       adjust-sourcemap-loader: 4.0.0
       convert-source-map: 1.9.0
       loader-utils: 2.0.4
-      postcss: 8.4.41
+      postcss: 8.5.6
       source-map: 0.6.1
     dev: true
 
@@ -23265,13 +23285,12 @@ packages:
   /rrweb-snapshot@2.0.0-alpha.18:
     resolution: {integrity: sha512-hBHZL/NfgQX6wO1D9mpwqFu1NJPpim+moIcKhFEjVTZVRUfCln+LOugRc4teVTCISYHN8Cw5e2iNTWCSm+SkoA==}
     dependencies:
-      postcss: 8.4.38
-    dev: false
+      postcss: 8.5.6
 
-  /rrweb@2.0.0-alpha.18:
-    resolution: {integrity: sha512-1mjZcB+LVoGSx1+i9E2ZdAP90fS3MghYVix2wvGlZvrgRuLCbTCCOZMztFCkKpgp7/EeCdYM4nIHJkKX5J1Nmg==}
+  /rrweb@2.0.0-alpha.17:
+    resolution: {integrity: sha512-GQxBkCC4r9XL2bwSdv7iIS49M3cEA8OtObVq0rrQ4GUT4+h7omucGQ4x7m5YN5Vq1oalStBaBlYqF7yRnfG3JA==}
     dependencies:
-      '@rrweb/types': 2.0.0-alpha.18
+      '@rrweb/types': 2.0.0-alpha.17
       '@rrweb/utils': 2.0.0-alpha.18
       '@types/css-font-loading-module': 0.0.7
       '@xstate/fsm': 1.6.5

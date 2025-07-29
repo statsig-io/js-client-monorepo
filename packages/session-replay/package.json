@@ -9,12 +9,12 @@
     "directory": "packages/session-replay"
   },
   "dependencies": {
-    "@rrweb/record": "2.0.0-alpha.18",
-    "@statsig/client-core": "3.20.2",
-    "rrweb": "2.0.0-alpha.18"
+    "@rrweb/record": "2.0.0-alpha.17",
+    "rrweb": "2.0.0-alpha.17",
+    "@statsig/client-core": "3.20.2"
   },
   "devDependencies": {
-    "@rrweb/types": "2.0.0-alpha.18"
+    "@rrweb/types": "2.0.0-alpha.17"
   },
   "type": "commonjs",
   "main": "./src/index.js",
