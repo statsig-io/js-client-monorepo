@@ -1,6 +1,6 @@
-import { _getCurrentPageUrlSafe } from '@statsig/client-core';
+import { _getCurrentPageUrlSafe, _getWindowSafe } from '@statsig/client-core';
 
-import { _getAnchorNodeInHierarchy } from './commonUtils';
+import { _getAnchorNodeInHierarchy, _sanitizeString } from './commonUtils';
 
 const MAX_ATTRIBUTE_LENGTH = 1000;
 const MAX_CLASS_LIST_LENGTH = 100;
@@ -40,6 +40,16 @@ export function _gatherEventData(target: Element): {
   }
 
   return { value, metadata };
+}
+
+export function _gatherCopyEventData(e: Event): Record<string, unknown> {
+  const selectedText = _getWindowSafe()?.getSelection()?.toString();
+  const metadata: Record<string, unknown> = {};
+  metadata['selectedText'] = _sanitizeString(selectedText);
+  const clipType = (e as ClipboardEvent).type || 'clipboard';
+  metadata['clipType'] = clipType;
+
+  return metadata;
 }
 
 function _getFormMetadata(target: Element): Record<string, string | null> {

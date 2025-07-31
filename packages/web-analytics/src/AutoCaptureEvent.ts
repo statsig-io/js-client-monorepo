@@ -11,6 +11,7 @@ export const AutoCaptureEventName = {
   RAGE_CLICK: 'auto_capture::rage_click',
   WEB_VITALS: 'auto_capture::web_vitals',
   DEAD_CLICK: 'auto_capture::dead_click',
+  COPY: 'auto_capture::copy',
 } as const;
 
 export type AutoCaptureEventName =

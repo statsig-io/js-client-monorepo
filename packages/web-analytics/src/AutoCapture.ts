@@ -21,6 +21,7 @@ import {
   _getSanitizedPageUrl,
   _getTargetNode,
   _registerEventHandler,
+  _sanitizeString,
   _shouldLogEvent,
 } from './utils/commonUtils';
 import { _gatherEventData } from './utils/eventUtils';
@@ -33,6 +34,8 @@ import {
 const AUTO_EVENT_MAPPING: Record<string, AutoCaptureEventName> = {
   submit: AutoCaptureEventName.FORM_SUBMIT,
   click: AutoCaptureEventName.CLICK,
+  copy: AutoCaptureEventName.COPY,
+  cut: AutoCaptureEventName.COPY,
 } as const;
 
 export type AutoCaptureOptions = {
@@ -150,6 +153,8 @@ export class AutoCapture {
 
     _registerEventHandler(doc, 'click', (e) => eventHandler(e));
     _registerEventHandler(doc, 'submit', (e) => eventHandler(e));
+    _registerEventHandler(doc, 'copy', (e) => eventHandler(e));
+    _registerEventHandler(doc, 'cut', (e) => eventHandler(e));
     _registerEventHandler(win, 'error', (e) => eventHandler(e, false));
     _registerEventHandler(win, 'pagehide', () => this._tryLogPageViewEnd());
     _registerEventHandler(win, 'beforeunload', () => this._tryLogPageViewEnd());
@@ -186,16 +191,31 @@ export class AutoCapture {
       return;
     }
 
-    if (!_shouldLogEvent(event, target)) {
-      return;
-    }
-
     const eventName = AUTO_EVENT_MAPPING[eventType];
     if (!eventName) {
       return;
     }
 
-    const { value, metadata } = _gatherEventData(target);
+    const isCopyEvent = eventName === AutoCaptureEventName.COPY;
+    if (!_shouldLogEvent(event, target, isCopyEvent)) {
+      return;
+    }
+
+    const metadata: Record<string, unknown> = {};
+
+    if (isCopyEvent) {
+      const selectedText = _getWindowSafe()?.getSelection()?.toString();
+      if (!selectedText) {
+        return;
+      }
+      metadata['selectedText'] = _sanitizeString(selectedText);
+      const clipType = (event as ClipboardEvent).type || 'clipboard';
+      metadata['clipType'] = clipType;
+    }
+
+    const { value, metadata: eventMetadata } = _gatherEventData(target);
+    Object.assign(metadata, eventMetadata);
+
     const allMetadata = _gatherAllMetadata(_getSafeUrl());
     this._enqueueAutoCapture(eventName, value, {
       ...allMetadata,

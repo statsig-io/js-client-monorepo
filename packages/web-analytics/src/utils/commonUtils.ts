@@ -7,6 +7,12 @@ interface NetworkInformation {
   saveData: boolean;
 }
 
+const coreCCPattern = `(4[0-9]{12}(?:[0-9]{3})?)|(5[1-5][0-9]{14})|(6(?:011|5[0-9]{2})[0-9]{12})|(3[47][0-9]{13})|(3(?:0[0-5]|[68][0-9])[0-9]{11})|((?:2131|1800|35[0-9]{3})[0-9]{11})`;
+const CC_REGEX = new RegExp(`^(?:${coreCCPattern})$`);
+
+const coreSSNPattern = `\\d{3}-?\\d{2}-?\\d{4}`;
+const SSN_REGEX = new RegExp(`^(${coreSSNPattern})$`);
+
 export const interactiveElements: string[] = [
   'button',
   'a',
@@ -45,7 +51,11 @@ export function _getTargetNode(e: Event): Element | null {
   return target as Element;
 }
 
-export function _shouldLogEvent(e: Event, el: Element): boolean {
+export function _shouldLogEvent(
+  e: Event,
+  el: Element,
+  isCopyEvent = false,
+): boolean {
   if (!e || !el || el.nodeType !== 1) {
     return false;
   }
@@ -57,15 +67,20 @@ export function _shouldLogEvent(e: Event, el: Element): boolean {
     return false;
   }
 
+  if (isCopyEvent) {
+    // We don't want to force strict event filtering for copy events
+    return true;
+  }
+
   switch (tagName) {
     case 'html':
       return false;
     case 'form':
-      return eventType === 'submit';
+      return ['submit'].indexOf(eventType) >= 0;
     case 'input':
     case 'select':
     case 'textarea':
-      return ['change'].includes(eventType);
+      return ['change', 'click'].indexOf(eventType) >= 0;
     default:
       if (eventType === 'click') {
         if (tagName === 'button') {
@@ -167,6 +182,33 @@ export function _getAnchorNodeInHierarchy(
   }
 
   return null;
+}
+
+export function _sanitizeString(
+  maybeString: string | null | undefined,
+): string | null {
+  if (!maybeString) {
+    return null;
+  }
+  return maybeString
+    .replace(/<[^>]*>/g, '')
+    .trim()
+    .split(/(\s+)/)
+    .filter((s) => _shouldCaptureTextValue(s))
+    .join('')
+    .replace(/[\r\n]/g, ' ')
+    .replace(/[ ]+/g, ' ')
+    .substring(0, 255);
+}
+
+function _shouldCaptureTextValue(text: string): boolean {
+  if (CC_REGEX.test((text || '').replace(/[- ]/g, ''))) {
+    return false;
+  }
+  if (SSN_REGEX.test((text || '').replace(/[- ]/g, ''))) {
+    return false;
+  }
+  return true;
 }
 
 export function throttle<T extends (...args: unknown[]) => void>(

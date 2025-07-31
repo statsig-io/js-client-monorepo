@@ -3,7 +3,7 @@ const WebVitalsConcatPlugin = require('./WebVitalsConcatPlugin');
 
 module.exports = createStatsigWebpackBundle({
   bundleFile: 'js-client+web-analytics',
-  maxByteSize: 90_000,
+  maxByteSize: 95_000,
   dependencies: [
     '@statsig/client-core',
     '@statsig/js-client',
