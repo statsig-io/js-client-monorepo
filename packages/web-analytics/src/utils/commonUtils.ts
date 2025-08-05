@@ -224,3 +224,45 @@ export function throttle<T extends (...args: unknown[]) => void>(
     }
   } as T;
 }
+
+// copy from https://github.com/getsentry/sentry-javascript/blob/b2109071975af8bf0316d3b5b38f519bdaf5dc15/packages/utils/src/object.ts
+export function patch(
+  source: Record<string, unknown>,
+  name: string,
+  replacement: (
+    original: (...args: unknown[]) => void,
+  ) => (...args: unknown[]) => void,
+): () => void {
+  try {
+    if (!source[name])
+      return () => {
+        // noop
+      };
+
+    const original = source[name] as (...args: unknown[]) => void;
+    const wrapped = replacement(original);
+    // Make sure it's a function first, as we need to attach an empty prototype for `defineProperties` to work
+    // otherwise it'll throw "TypeError: Object.defineProperties called on non-object"
+    if (typeof wrapped === 'function') {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      wrapped.prototype = wrapped.prototype || {};
+      Object.defineProperties(wrapped, {
+        __statsig_original__: {
+          enumerable: false,
+          value: original,
+        },
+      });
+    }
+
+    source[name] = wrapped;
+    return () => {
+      source[name] = original;
+    };
+  } catch (err) {
+    return () => {
+      // noop
+    };
+    // This can throw if multiple fill happens on a global object like XMLHttpRequest
+    // Fixes https://github.com/getsentry/sentry-javascript/issues/2043
+  }
+}

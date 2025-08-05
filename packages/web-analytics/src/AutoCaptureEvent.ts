@@ -12,6 +12,8 @@ export const AutoCaptureEventName = {
   WEB_VITALS: 'auto_capture::web_vitals',
   DEAD_CLICK: 'auto_capture::dead_click',
   COPY: 'auto_capture::copy',
+  // log line is a special event name used to populate logs metrics explorer
+  CONSOLE_LOG: 'statsig::log_line',
 } as const;
 
 export type AutoCaptureEventName =

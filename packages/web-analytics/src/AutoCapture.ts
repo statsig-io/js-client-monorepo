@@ -12,6 +12,8 @@ import {
 } from '@statsig/client-core';
 
 import { AutoCaptureEvent, AutoCaptureEventName } from './AutoCaptureEvent';
+import { AutoCaptureOptions } from './AutoCaptureOptions';
+import { ConsoleLogManager } from './ConsoleLogManager';
 import DeadClickManager from './DeadClickManager';
 import { EngagementManager } from './EngagementManager';
 import RageClickManager from './RageClickManager';
@@ -37,10 +39,6 @@ const AUTO_EVENT_MAPPING: Record<string, AutoCaptureEventName> = {
   copy: AutoCaptureEventName.COPY,
   cut: AutoCaptureEventName.COPY,
 } as const;
-
-export type AutoCaptureOptions = {
-  eventFilterFunc?: (event: AutoCaptureEvent) => boolean;
-};
 
 export class StatsigAutoCapturePlugin
   implements StatsigPlugin<PrecomputedEvaluationsInterface>
@@ -83,6 +81,7 @@ export class AutoCapture {
   private _pageViewLogged = false;
   private _webVitalsManager: WebVitalsManager;
   private _deadClickManager: DeadClickManager;
+  private _consoleLogManager: ConsoleLogManager;
 
   constructor(
     private _client: PrecomputedEvaluationsInterface,
@@ -104,6 +103,10 @@ export class AutoCapture {
     );
     this._deadClickManager = new DeadClickManager(
       this._enqueueAutoCapture.bind(this),
+    );
+    this._consoleLogManager = new ConsoleLogManager(
+      this._enqueueAutoCapture.bind(this),
+      options?.consoleLogAutoCaptureSettings ?? { enabled: false },
     );
     this._eventFilterFunc = options?.eventFilterFunc;
 
@@ -226,6 +229,7 @@ export class AutoCapture {
   private _initialize() {
     this._webVitalsManager.startTracking();
     this._deadClickManager.startTracking();
+    this._consoleLogManager.startTracking();
     this._engagementManager.startInactivityTracking(() =>
       this._tryLogPageViewEnd(true),
     );
