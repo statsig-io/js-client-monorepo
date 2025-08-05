@@ -461,7 +461,7 @@ importers:
   packages/cli-session-replay-node:
     dependencies:
       '@statsig/client-core':
-        specifier: 3.20.3
+        specifier: 3.20.4
         version: link:../client-core
       intercept-stdout:
         specifier: ^0.1.2
@@ -479,28 +479,28 @@ importers:
   packages/combo:
     dependencies:
       '@statsig/client-core':
-        specifier: 3.20.3
+        specifier: 3.20.4
         version: link:../client-core
       '@statsig/js-client':
-        specifier: 3.20.3
+        specifier: 3.20.4
         version: link:../js-client
       '@statsig/js-local-overrides':
-        specifier: 3.20.3
+        specifier: 3.20.4
         version: link:../js-local-overrides
       '@statsig/js-on-device-eval-client':
-        specifier: 3.20.3
+        specifier: 3.20.4
         version: link:../js-on-device-eval-client
       '@statsig/js-user-persisted-storage':
-        specifier: 3.20.3
+        specifier: 3.20.4
         version: link:../js-user-persisted-storage
       '@statsig/react-bindings':
-        specifier: 3.20.3
+        specifier: 3.20.4
         version: link:../react-bindings
       '@statsig/session-replay':
-        specifier: 3.20.3
+        specifier: 3.20.4
         version: link:../session-replay
       '@statsig/web-analytics':
-        specifier: 3.20.3
+        specifier: 3.20.4
         version: link:../web-analytics
       web-vitals:
         specifier: 5.0.3
@@ -509,130 +509,130 @@ importers:
   packages/expo-bindings:
     dependencies:
       '@statsig/client-core':
-        specifier: 3.20.3
+        specifier: 3.20.4
         version: link:../client-core
       '@statsig/js-client':
-        specifier: 3.20.3
+        specifier: 3.20.4
         version: link:../js-client
       '@statsig/react-bindings':
-        specifier: 3.20.3
+        specifier: 3.20.4
         version: link:../react-bindings
       '@statsig/react-native-core':
-        specifier: 3.20.3
+        specifier: 3.20.4
         version: link:../react-native-core
 
   packages/expo-bindings-on-device-eval:
     dependencies:
       '@statsig/client-core':
-        specifier: 3.20.3
+        specifier: 3.20.4
         version: link:../client-core
       '@statsig/js-on-device-eval-client':
-        specifier: 3.20.3
+        specifier: 3.20.4
         version: link:../js-on-device-eval-client
       '@statsig/react-bindings-on-device-eval':
-        specifier: 3.20.3
+        specifier: 3.20.4
         version: link:../react-bindings-on-device-eval
       '@statsig/react-native-core':
-        specifier: 3.20.3
+        specifier: 3.20.4
         version: link:../react-native-core
 
   packages/js-client:
     dependencies:
       '@statsig/client-core':
-        specifier: 3.20.3
+        specifier: 3.20.4
         version: link:../client-core
 
   packages/js-local-overrides:
     dependencies:
       '@statsig/client-core':
-        specifier: 3.20.3
+        specifier: 3.20.4
         version: link:../client-core
 
   packages/js-on-device-eval-adapter:
     dependencies:
       '@statsig/client-core':
-        specifier: 3.20.3
+        specifier: 3.20.4
         version: link:../client-core
       '@statsig/on-device-eval-core':
-        specifier: 3.20.3
+        specifier: 3.20.4
         version: link:../on-device-eval-core
 
   packages/js-on-device-eval-client:
     dependencies:
       '@statsig/client-core':
-        specifier: 3.20.3
+        specifier: 3.20.4
         version: link:../client-core
       '@statsig/on-device-eval-core':
-        specifier: 3.20.3
+        specifier: 3.20.4
         version: link:../on-device-eval-core
 
   packages/js-user-persisted-storage:
     dependencies:
       '@statsig/client-core':
-        specifier: 3.20.3
+        specifier: 3.20.4
         version: link:../client-core
 
   packages/on-device-eval-core:
     dependencies:
       '@statsig/client-core':
-        specifier: 3.20.3
+        specifier: 3.20.4
         version: link:../client-core
       '@statsig/sha256':
-        specifier: 3.20.3
+        specifier: 3.20.4
         version: link:../sha256
 
   packages/react-bindings:
     dependencies:
       '@statsig/client-core':
-        specifier: 3.20.3
+        specifier: 3.20.4
         version: link:../client-core
       '@statsig/js-client':
-        specifier: 3.20.3
+        specifier: 3.20.4
         version: link:../js-client
 
   packages/react-bindings-on-device-eval:
     dependencies:
       '@statsig/client-core':
-        specifier: 3.20.3
+        specifier: 3.20.4
         version: link:../client-core
       '@statsig/js-on-device-eval-client':
-        specifier: 3.20.3
+        specifier: 3.20.4
         version: link:../js-on-device-eval-client
 
   packages/react-native-bindings:
     dependencies:
       '@statsig/client-core':
-        specifier: 3.20.3
+        specifier: 3.20.4
         version: link:../client-core
       '@statsig/js-client':
-        specifier: 3.20.3
+        specifier: 3.20.4
         version: link:../js-client
       '@statsig/react-bindings':
-        specifier: 3.20.3
+        specifier: 3.20.4
         version: link:../react-bindings
       '@statsig/react-native-core':
-        specifier: 3.20.3
+        specifier: 3.20.4
         version: link:../react-native-core
 
   packages/react-native-bindings-on-device-eval:
     dependencies:
       '@statsig/client-core':
-        specifier: 3.20.3
+        specifier: 3.20.4
         version: link:../client-core
       '@statsig/js-on-device-eval-client':
-        specifier: 3.20.3
+        specifier: 3.20.4
         version: link:../js-on-device-eval-client
       '@statsig/react-bindings-on-device-eval':
-        specifier: 3.20.3
+        specifier: 3.20.4
         version: link:../react-bindings-on-device-eval
       '@statsig/react-native-core':
-        specifier: 3.20.3
+        specifier: 3.20.4
         version: link:../react-native-core
 
   packages/react-native-core:
     dependencies:
       '@statsig/client-core':
-        specifier: 3.20.3
+        specifier: 3.20.4
         version: link:../client-core
 
   packages/session-replay:
@@ -641,7 +641,7 @@ importers:
         specifier: 2.0.0-alpha.15
         version: 2.0.0-alpha.15
       '@statsig/client-core':
-        specifier: 3.20.3
+        specifier: 3.20.4
         version: link:../client-core
       rrweb:
         specifier: 2.0.0-alpha.16
@@ -668,10 +668,10 @@ importers:
   packages/web-analytics:
     dependencies:
       '@statsig/client-core':
-        specifier: 3.20.3
+        specifier: 3.20.4
         version: link:../client-core
       '@statsig/js-client':
-        specifier: 3.20.3
+        specifier: 3.20.4
         version: link:../js-client
       web-vitals:
         specifier: 5.0.3
