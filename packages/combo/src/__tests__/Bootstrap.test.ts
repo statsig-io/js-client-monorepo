@@ -120,7 +120,7 @@ describe('Bootstrap', () => {
   });
 });
 
-describe('Bad Bootstrap', () => {
+describe('Special cases for Bootstrap', () => {
   it('logs correctly for stableID mismatch', async () => {
     const client = new StatsigClient('client-sdk-key', {
       userID: 'a-user',
@@ -157,5 +157,49 @@ describe('Bad Bootstrap', () => {
     expect(client.getFeatureGate('a_gate').details.warnings).toEqual([
       'PartialUserMatch',
     ]);
+  });
+
+  it('does not log user mismatch if contain private attributes', async () => {
+    const client = new StatsigClient('client-sdk-key', {
+      userID: 'a-user',
+      customIDs: {
+        stableID: 'a-stable-id',
+      },
+      privateAttributes: {
+        privateField: 'private-value',
+      },
+    });
+    client.dataAdapter.setData(
+      JSON.stringify({ ...InitResponseStableID, time: 1 }),
+    );
+    client.initializeSync();
+
+    expect(client.getFeatureGate('a_gate').details.reason).toBe(
+      'Bootstrap:Recognized',
+    );
+
+    expect(client.getFeatureGate('a_gate').details.warnings).toBeUndefined();
+  });
+
+  it('does not log user mismatch if contain analytics only metadata', async () => {
+    const client = new StatsigClient('client-sdk-key', {
+      userID: 'a-user',
+      customIDs: {
+        stableID: 'a-stable-id',
+      },
+      analyticsOnlyMetadata: {
+        analyticsField: 'analytics-value',
+      },
+    });
+    client.dataAdapter.setData(
+      JSON.stringify({ ...InitResponseStableID, time: 1 }),
+    );
+    client.initializeSync();
+
+    expect(client.getFeatureGate('a_gate').details.reason).toBe(
+      'Bootstrap:Recognized',
+    );
+
+    expect(client.getFeatureGate('a_gate').details.warnings).toBeUndefined();
   });
 });

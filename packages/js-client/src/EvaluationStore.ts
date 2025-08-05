@@ -39,6 +39,7 @@ export default class EvaluationStore {
     this._lcut = 0;
     this._receivedAt = 0;
     this._bootstrapMetadata = null;
+    this._warnings.clear();
   }
 
   finalize(): void {
@@ -188,13 +189,13 @@ export default class EvaluationStore {
     }
     if ('user' in values) {
       const bootstrapUser = values['user'] as StatsigUser;
-      const userWithoutAnalyticsOnlyMetadata = {
+      const userForComparison = {
         ...user,
         analyticsOnlyMetadata: undefined,
+        privateAttributes: undefined,
       };
       if (
-        _getFullUserHash(userWithoutAnalyticsOnlyMetadata) !==
-        _getFullUserHash(bootstrapUser)
+        _getFullUserHash(userForComparison) !== _getFullUserHash(bootstrapUser)
       ) {
         this._warnings.add('PartialUserMatch');
       }
