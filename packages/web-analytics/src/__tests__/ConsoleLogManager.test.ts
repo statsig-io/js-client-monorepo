@@ -55,8 +55,9 @@ describe('ConsoleLogManager', () => {
 
       expect(mockEnqueueFn).toHaveBeenCalledWith(
         AutoCaptureEventName.CONSOLE_LOG,
-        expect.any(String),
+        'test message',
         expect.objectContaining({
+          status: 'info',
           log_level: 'log',
           payload: ['test message'],
           timestamp: expect.any(Number),
@@ -69,8 +70,9 @@ describe('ConsoleLogManager', () => {
 
       expect(mockEnqueueFn).toHaveBeenCalledWith(
         AutoCaptureEventName.CONSOLE_LOG,
-        expect.any(String),
+        'info message',
         expect.objectContaining({
+          status: 'info',
           log_level: 'info',
           payload: ['info message'],
         }),
@@ -82,8 +84,9 @@ describe('ConsoleLogManager', () => {
 
       expect(mockEnqueueFn).toHaveBeenCalledWith(
         AutoCaptureEventName.CONSOLE_LOG,
-        expect.any(String),
+        'warning message',
         expect.objectContaining({
+          status: 'warn',
           log_level: 'warn',
           payload: ['warning message'],
         }),
@@ -95,25 +98,19 @@ describe('ConsoleLogManager', () => {
 
       expect(mockEnqueueFn).toHaveBeenCalledWith(
         AutoCaptureEventName.CONSOLE_LOG,
-        expect.any(String),
+        'error message',
         expect.objectContaining({
+          status: 'error',
           log_level: 'error',
           payload: ['error message'],
         }),
       );
     });
 
-    it('should intercept console.debug calls', () => {
+    it('should not intercept console.debug calls by default', () => {
       console.debug('debug message');
 
-      expect(mockEnqueueFn).toHaveBeenCalledWith(
-        AutoCaptureEventName.CONSOLE_LOG,
-        expect.any(String),
-        expect.objectContaining({
-          log_level: 'debug',
-          payload: ['debug message'],
-        }),
-      );
+      expect(mockEnqueueFn).not.toHaveBeenCalled();
     });
 
     it('should handle multiple arguments', () => {
@@ -121,10 +118,40 @@ describe('ConsoleLogManager', () => {
 
       expect(mockEnqueueFn).toHaveBeenCalledWith(
         AutoCaptureEventName.CONSOLE_LOG,
-        expect.any(String),
+        'message 123 {"key":"value"}',
         expect.objectContaining({
           log_level: 'log',
           payload: ['message', '123', '{"key":"value"}'],
+        }),
+      );
+    });
+
+    it('should respect options.logLevel', () => {
+      consoleLogManager = new ConsoleLogManager(mockEnqueueFn, {
+        enabled: true,
+        logLevel: 'debug',
+      });
+      consoleLogManager.startTracking();
+
+      console.debug('debug message');
+
+      expect(mockEnqueueFn).toHaveBeenCalledWith(
+        AutoCaptureEventName.CONSOLE_LOG,
+        'debug message',
+        expect.objectContaining({
+          log_level: 'debug',
+          payload: ['debug message'],
+        }),
+      );
+
+      console.log('log message');
+
+      expect(mockEnqueueFn).toHaveBeenCalledWith(
+        AutoCaptureEventName.CONSOLE_LOG,
+        'log message',
+        expect.objectContaining({
+          log_level: 'log',
+          payload: ['log message'],
         }),
       );
     });
@@ -484,8 +511,8 @@ describe('ConsoleLogManager', () => {
         mockEnqueueFnWithService,
         {
           enabled: true,
-          serviceName: 'test-service',
-          serviceVersion: '1.2.3',
+          service: 'test-service',
+          version: '1.2.3',
         },
       );
       consoleLogManagerWithService.startTracking();
@@ -498,8 +525,8 @@ describe('ConsoleLogManager', () => {
         expect.objectContaining({
           log_level: 'log',
           payload: ['test message'],
-          serviceName: 'test-service',
-          serviceVersion: '1.2.3',
+          service: 'test-service',
+          version: '1.2.3',
         }),
       );
     });
@@ -509,7 +536,7 @@ describe('ConsoleLogManager', () => {
         mockEnqueueFnWithService,
         {
           enabled: true,
-          serviceName: 'test-service',
+          service: 'test-service',
         },
       );
       consoleLogManagerWithService.startTracking();
@@ -522,8 +549,8 @@ describe('ConsoleLogManager', () => {
         expect.objectContaining({
           log_level: 'log',
           payload: ['test message'],
-          serviceName: 'test-service',
-          serviceVersion: '',
+          service: 'test-service',
+          version: '',
         }),
       );
     });
@@ -533,7 +560,7 @@ describe('ConsoleLogManager', () => {
         mockEnqueueFnWithService,
         {
           enabled: true,
-          serviceVersion: '2.0.0',
+          version: '2.0.0',
         },
       );
       consoleLogManagerWithService.startTracking();
@@ -546,8 +573,8 @@ describe('ConsoleLogManager', () => {
         expect.objectContaining({
           log_level: 'log',
           payload: ['test message'],
-          serviceName: '',
-          serviceVersion: '2.0.0',
+          service: '',
+          version: '2.0.0',
         }),
       );
     });

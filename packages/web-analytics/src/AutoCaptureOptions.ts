@@ -1,6 +1,5 @@
-import { LogLevel } from '@statsig/client-core';
-
 import { AutoCaptureEvent } from './AutoCaptureEvent';
+import { ConsoleLogLevel } from './ConsoleLogManager';
 
 export type AutoCaptureOptions = {
   eventFilterFunc?: (event: AutoCaptureEvent) => boolean;
@@ -9,9 +8,9 @@ export type AutoCaptureOptions = {
 
 export type ConsoleLogAutoCaptureSettings = {
   enabled: boolean;
-  logLevel?: LogLevel;
-  serviceName?: string;
-  serviceVersion?: string;
+  logLevel?: ConsoleLogLevel;
+  service?: string;
+  version?: string;
   sampleRate?: number;
   resourceMetadata?: Record<string, string | number | boolean>;
 };

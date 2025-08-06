@@ -3,25 +3,31 @@ import { _getWindowSafe } from '@statsig/client-core';
 
 import { AutoCaptureEventName } from './AutoCaptureEvent';
 import { ConsoleLogAutoCaptureSettings } from './AutoCaptureOptions';
-import { _getSafeUrl, _getSafeUrlString, patch } from './utils/commonUtils';
+import { _getSafeUrl, patch } from './utils/commonUtils';
 import { _gatherAllMetadata } from './utils/metadataUtils';
 
-export type LogLevel = 'log' | 'info' | 'warn' | 'error' | 'debug';
+export type ConsoleLogLevel =
+  | 'log'
+  | 'info'
+  | 'warn'
+  | 'error'
+  | 'debug'
+  | 'trace';
 
-export type ConsoleLogEvent = {
-  eventName: 'statsig::console_log';
-  value: string;
-  metadata: {
-    timestamp: string;
-    log_level: LogLevel;
-    payload: string[];
-    trace: string[];
-  };
+const ConsoleLogPriority: Record<ConsoleLogLevel, number> = {
+  trace: 10,
+  debug: 20,
+  log: 30, // log & info are the same priority
+  info: 30,
+  warn: 40,
+  error: 50,
 };
 
 export class ConsoleLogManager {
   private _restoreFns: (() => void)[] = [];
   private _isTracking = false;
+  private _logLevel: ConsoleLogLevel = 'info';
+  private readonly __source = 'js-auto-capture';
 
   constructor(
     private _enqueueFn: (
@@ -30,7 +36,9 @@ export class ConsoleLogManager {
       metadata: Record<string, unknown>,
     ) => void,
     private _options: ConsoleLogAutoCaptureSettings,
-  ) {}
+  ) {
+    this._logLevel = this._options.logLevel ?? 'info';
+  }
 
   public startTracking(): void {
     if (this._isTracking || !this._options.enabled) return;
@@ -49,8 +57,9 @@ export class ConsoleLogManager {
   }
 
   private _patchConsole(): void {
-    (['log', 'info', 'warn', 'error', 'debug'] as LogLevel[]).forEach(
-      (level) => {
+    (Object.entries(ConsoleLogPriority) as [ConsoleLogLevel, number][]).forEach(
+      ([level, priority]) => {
+        if (priority < ConsoleLogPriority[this._logLevel]) return;
         if (!console[level]) return;
 
         const original = console[level].bind(console);
@@ -86,26 +95,28 @@ export class ConsoleLogManager {
   }
 
   private _enqueueConsoleLog(
-    level: LogLevel,
+    level: ConsoleLogLevel,
     payload: string[],
     trace: string[],
   ): void {
     if (!this._shouldLog()) return;
 
     const metadata: Record<string, unknown> = {
+      status: level === 'log' ? 'info' : level,
       log_level: level,
       payload,
       trace,
       timestamp: Date.now(),
-      serviceName: this._options.serviceName ?? '',
-      serviceVersion: this._options.serviceVersion ?? '',
+      service: this._options.service ?? '',
+      version: this._options.version ?? '',
+      source: this.__source,
       ...(this._options.resourceMetadata ?? {}),
       ..._gatherAllMetadata(_getSafeUrl()),
     };
 
     this._enqueueFn(
       AutoCaptureEventName.CONSOLE_LOG,
-      _getSafeUrlString(),
+      payload.join(' '),
       metadata,
     );
   }
