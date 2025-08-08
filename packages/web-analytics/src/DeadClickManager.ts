@@ -193,6 +193,10 @@ export default class DeadClickManager {
     extraMetadata: Record<string, unknown>,
   ): void {
     const { value, metadata } = _gatherEventData(click.eventTarget);
+    if (!value) {
+      return;
+    }
+
     this._enqueueFn(AutoCaptureEventName.DEAD_CLICK, value, {
       ...metadata,
       ...extraMetadata,

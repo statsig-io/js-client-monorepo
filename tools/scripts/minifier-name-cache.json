@@ -301,7 +301,32 @@
       "$_handleMetric": "mr",
       "$_getSafeUrlString": "br",
       "$_enqueueWebVitalsAutoCaptureEvent": "yr",
-      "$_handleUnsupportedEvaluation": "Or"
+      "$_handleUnsupportedEvaluation": "Or",
+      "$_configList": "Ts",
+      "$_getConfigListImpl": "Ds",
+      "$_deadClickManager": "xs",
+      "$_consoleLogManager": "Ns",
+      "$_sanitizeString": "Ls",
+      "$_restoreFns": "Ps",
+      "$_isTracking": "Us",
+      "$_logLevel": "Fs",
+      "$_patchConsole": "Ks",
+      "$_safeStringify": "zs",
+      "$_getStackTrace": "qs",
+      "$_enqueueConsoleLog": "Vs",
+      "$_shouldLog": "Bs",
+      "$_lastMutationTime": "$s",
+      "$_lastSelectionChangeTime": "Gs",
+      "$_deadClickConfig": "Js",
+      "$_handleClick": "Ws",
+      "$_handleSelectionChange": "Ys",
+      "$_setupMutationObserver": "Hs",
+      "$_clickCheckTimer": "Qs",
+      "$_checkForDeadClick": "Xs",
+      "$_observer": "Zs",
+      "$_updateClickDelayMs": "jr",
+      "$_logDeadClick": "Sr",
+      "$_gatherCopyEventData": "wr"
     }
   }
 }

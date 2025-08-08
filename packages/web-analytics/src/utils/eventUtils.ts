@@ -7,9 +7,13 @@ const MAX_CLASS_LIST_LENGTH = 100;
 const MAX_SELECTOR_DEPTH = 50;
 
 export function _gatherEventData(target: Element): {
-  value: string;
+  value: string | null; // null if the element is sensitive
   metadata: Record<string, unknown>;
 } {
+  if (_isSensitiveElement(target)) {
+    return { value: null, metadata: {} };
+  }
+
   const tagName = target.tagName.toLowerCase();
   const metadata: Record<string, string | null> = {};
   const value = _getCurrentPageUrlSafe() || '';
@@ -23,10 +27,7 @@ export function _gatherEventData(target: Element): {
     Object.assign(metadata, _getFormMetadata(target));
   }
 
-  if (
-    ['input', 'select', 'textarea'].includes(tagName) &&
-    target.getAttribute('type') !== 'password'
-  ) {
+  if (tagName === 'input') {
     Object.assign(metadata, _getInputMetadata(target));
   }
 
@@ -50,6 +51,18 @@ export function _gatherCopyEventData(e: Event): Record<string, unknown> {
   metadata['clipType'] = clipType;
 
   return metadata;
+}
+
+function _isSensitiveElement(target: Element): boolean {
+  return (
+    (target.tagName.toLowerCase() === 'input' &&
+      ['button', 'checkbox', 'submit', 'reset'].includes(
+        target.getAttribute('type') || '',
+      )) ||
+    target.tagName.toLowerCase() === 'textarea' ||
+    target.tagName.toLowerCase() === 'select' ||
+    target.getAttribute('contenteditable') === 'true'
+  );
 }
 
 function _getFormMetadata(target: Element): Record<string, string | null> {

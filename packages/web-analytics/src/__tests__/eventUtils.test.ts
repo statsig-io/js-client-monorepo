@@ -1,4 +1,4 @@
-import { _getMetadataFromElement } from '../utils/eventUtils';
+import { _gatherEventData, _getMetadataFromElement } from '../utils/eventUtils';
 
 describe('_getMetadataFromElement', () => {
   let element: HTMLElement;
@@ -74,6 +74,96 @@ describe('_getMetadataFromElement', () => {
       classList: ['short-class'],
       id: 'short-id',
       selector: '#short-id',
+    });
+  });
+});
+
+describe('Sensitive Element Blocking', () => {
+  let container: HTMLElement;
+
+  beforeEach(() => {
+    container = document.createElement('div');
+    document.body.appendChild(container);
+  });
+
+  afterEach(() => {
+    document.body.removeChild(container);
+  });
+
+  describe('_gatherEventData with sensitive elements', () => {
+    it('blocks input elements with sensitive types', () => {
+      const inputTypes = ['button', 'checkbox', 'submit', 'reset'];
+
+      inputTypes.forEach((type) => {
+        const input = document.createElement('input');
+        input.setAttribute('type', type);
+        container.appendChild(input);
+
+        const result = _gatherEventData(input);
+        expect(result.value).toBeNull();
+        expect(result.metadata).toEqual({});
+      });
+    });
+
+    it('blocks textarea elements', () => {
+      const textarea = document.createElement('textarea');
+      textarea.value = 'sensitive content';
+      container.appendChild(textarea);
+
+      const result = _gatherEventData(textarea);
+      expect(result.value).toBeNull();
+      expect(result.metadata).toEqual({});
+    });
+
+    it('blocks select elements', () => {
+      const select = document.createElement('select');
+      container.appendChild(select);
+
+      const result = _gatherEventData(select);
+      expect(result.value).toBeNull();
+      expect(result.metadata).toEqual({});
+    });
+
+    it('blocks contenteditable elements', () => {
+      const div = document.createElement('div');
+      div.setAttribute('contenteditable', 'true');
+      div.textContent = 'sensitive content';
+      container.appendChild(div);
+
+      const result = _gatherEventData(div);
+      expect(result.value).toBeNull();
+      expect(result.metadata).toEqual({});
+    });
+
+    it('allows non-sensitive input types', () => {
+      const input = document.createElement('input');
+      input.setAttribute('type', 'text');
+      input.value = 'safe content';
+      container.appendChild(input);
+
+      const result = _gatherEventData(input);
+      expect(result.value).not.toBeNull();
+      expect(result.metadata['tagName']).toBe('input');
+      expect(result.metadata['content']).toBe('safe content');
+    });
+
+    it('handles input with null type attribute', () => {
+      const input = document.createElement('input');
+      container.appendChild(input);
+
+      const result = _gatherEventData(input);
+      expect(result.value).not.toBeNull();
+      expect(result.metadata['tagName']).toBe('input');
+    });
+
+    it('handles input with empty type attribute', () => {
+      const input = document.createElement('input');
+      input.setAttribute('type', '');
+      container.appendChild(input);
+
+      const result = _gatherEventData(input);
+      expect(result.value).not.toBeNull();
+      expect(result.metadata['tagName']).toBe('input');
     });
   });
 });

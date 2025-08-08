@@ -342,6 +342,7 @@ export class AutoCapture {
 
   private _logRageClick(e: MouseEvent) {
     const { value, metadata } = _gatherEventData(e.target as HTMLElement);
+
     this._enqueueAutoCapture(AutoCaptureEventName.RAGE_CLICK, value, {
       x: e.clientX,
       y: e.clientY,
@@ -406,10 +407,14 @@ export class AutoCapture {
 
   private _enqueueAutoCapture(
     eventName: AutoCaptureEventName,
-    value: string,
+    value: string | null,
     metadata: Record<string, unknown>,
     options?: { flushImmediately?: boolean; addNewSessionMetadata?: boolean },
   ) {
+    if (!value) {
+      return;
+    }
+
     const subname = eventName.slice('auto_capture::'.length);
     if (this._disabledEvents[eventName] || this._disabledEvents[subname]) {
       return;
