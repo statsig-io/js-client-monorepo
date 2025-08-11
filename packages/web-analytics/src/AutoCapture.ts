@@ -483,4 +483,8 @@ export class AutoCapture {
   private _getSessionFromClient() {
     return this._client.getContext().session;
   }
+
+  public static getAllMetadata(): Record<string, string | number> {
+    return _gatherAllMetadata(_getSafeUrl());
+  }
 }
