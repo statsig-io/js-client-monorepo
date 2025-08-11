@@ -179,6 +179,13 @@ export class AutoCapture {
       },
     });
 
+    window.history.replaceState = new Proxy(window.history.replaceState, {
+      apply: (target, thisArg, [state, unused, url]) => {
+        target.apply(thisArg, [state, unused, url]);
+        this._tryLogPageView();
+      },
+    });
+
     this._tryLogPageView();
   }
 

@@ -1,6 +1,10 @@
-import { _getCurrentPageUrlSafe, _getWindowSafe } from '@statsig/client-core';
+import { _getWindowSafe } from '@statsig/client-core';
 
-import { _getAnchorNodeInHierarchy, _sanitizeString } from './commonUtils';
+import {
+  _getAnchorNodeInHierarchy,
+  _getSanitizedPageUrl,
+  _sanitizeString,
+} from './commonUtils';
 
 const MAX_ATTRIBUTE_LENGTH = 1000;
 const MAX_CLASS_LIST_LENGTH = 100;
@@ -16,7 +20,7 @@ export function _gatherEventData(target: Element): {
 
   const tagName = target.tagName.toLowerCase();
   const metadata: Record<string, string | null> = {};
-  const value = _getCurrentPageUrlSafe() || '';
+  const value = _getSanitizedPageUrl() || '';
 
   metadata['tagName'] = tagName;
 
