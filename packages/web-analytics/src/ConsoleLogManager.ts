@@ -107,10 +107,7 @@ export class ConsoleLogManager {
       payload,
       trace,
       timestamp: Date.now(),
-      service: this._options.service ?? '',
-      version: this._options.version ?? '',
       source: this.__source,
-      ...(this._options.resourceMetadata ?? {}),
       ..._gatherAllMetadata(_getSafeUrl()),
     };
 

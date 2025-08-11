@@ -9,8 +9,5 @@ export type AutoCaptureOptions = {
 export type ConsoleLogAutoCaptureSettings = {
   enabled: boolean;
   logLevel?: ConsoleLogLevel;
-  service?: string;
-  version?: string;
   sampleRate?: number;
-  resourceMetadata?: Record<string, string | number | boolean>;
 };
