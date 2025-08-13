@@ -28,6 +28,7 @@ export function _gatherCommonMetadata(
     screen_height: safeWnd?.screen?.height,
     viewport_width: safeWnd?.innerWidth,
     viewport_height: safeWnd?.innerHeight,
+    viewport: `${safeWnd?.innerWidth}x${safeWnd?.innerHeight}`,
     timestamp: Date.now(),
     timezone: _getSafeTimezone(),
     timezone_offset: _getSafeTimezoneOffset(),
