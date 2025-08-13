@@ -281,7 +281,10 @@ export class AutoCapture {
       this._enqueueAutoCapture(
         AutoCaptureEventName.SESSION_START,
         _getSanitizedPageUrl(),
-        { sessionID: session.data.sessionID },
+        {
+          sessionID: session.data.sessionID,
+          ..._gatherAllMetadata(_getSafeUrl()),
+        },
         { flushImmediately: true },
       );
     } catch (err) {
