@@ -531,10 +531,13 @@ export default class StatsigClient
     if (stableIdOverride) {
       StableID.setOverride(stableIdOverride, this._sdkKey);
     }
-    user.analyticsOnlyMetadata = {
-      ...user.analyticsOnlyMetadata,
-      ...this._possibleFirstTouchMetadata,
-    };
+    // Only attach first touch metadata if it's not empty
+    if (Object.keys(this._possibleFirstTouchMetadata).length > 0) {
+      user.analyticsOnlyMetadata = {
+        ...user.analyticsOnlyMetadata,
+        ...this._possibleFirstTouchMetadata,
+      };
+    }
     return user;
   }
 

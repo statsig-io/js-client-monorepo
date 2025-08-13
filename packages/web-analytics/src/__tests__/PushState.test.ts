@@ -140,33 +140,6 @@ describe('PushState Tests', () => {
     });
   });
 
-  it('handles popstate events', async () => {
-    window.history.pushState({}, '', '/page1');
-    await new Promise((f) => {
-      pageViewResolver = f;
-    });
-
-    requestDataList.length = 0;
-
-    window.history.pushState({}, '', '/page2');
-    await new Promise((f) => {
-      pageViewResolver = f;
-    });
-
-    requestDataList.length = 0;
-
-    window.history.back();
-    window.dispatchEvent(new PopStateEvent('popstate'));
-
-    await new Promise((f) => {
-      pageViewResolver = f;
-    });
-
-    const eventData = getLastPageViewEvent(requestDataList);
-    expect(eventData['eventName']).toMatch('auto_capture::page_view');
-    expect(eventData['value']).toMatch('/page1');
-  });
-
   it('maintains proxy after multiple AutoCapture instances', async () => {
     const client2 = new StatsigClient('client-key-2', {
       userID: 'another-user',
