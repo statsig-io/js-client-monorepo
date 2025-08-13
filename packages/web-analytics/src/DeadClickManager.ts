@@ -1,8 +1,13 @@
 import { _getDocumentSafe, _getWindowSafe } from '@statsig/client-core';
 
 import { AutoCaptureEventName } from './AutoCaptureEvent';
-import { interactiveElements, throttle } from './utils/commonUtils';
+import {
+  _getSafeUrl,
+  interactiveElements,
+  throttle,
+} from './utils/commonUtils';
 import { _gatherEventData } from './utils/eventUtils';
+import { _gatherCommonMetadata } from './utils/metadataUtils';
 
 export const DeadClickConfig = {
   CLICK_CHECK_TIMEOUT: 1000,
@@ -200,6 +205,7 @@ export default class DeadClickManager {
     this._enqueueFn(AutoCaptureEventName.DEAD_CLICK, value, {
       ...metadata,
       ...extraMetadata,
+      ..._gatherCommonMetadata(_getSafeUrl()),
       scrollDelayMs: click.scrollDelayMs,
       selectionChangeDelayMs: click.selectionChangeDelayMs,
       mutationDelayMs: click.mutationDelayMs,
