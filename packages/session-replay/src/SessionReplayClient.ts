@@ -1,6 +1,5 @@
-import { record } from '@rrweb/record';
 import type { eventWithTime, listenerHandler } from '@rrweb/types';
-import type { recordOptions } from 'rrweb';
+import * as rrweb from 'rrweb';
 
 import { Flatten, _getDocumentSafe } from '@statsig/client-core';
 
@@ -9,7 +8,7 @@ const CHECKOUT_WINDOW_MS = 1000 * 30; // 30 seconds
 
 export type ReplayEvent = Flatten<eventWithTime & { eventIndex: number }>;
 
-export type RRWebConfig = Omit<recordOptions<unknown>, 'emit'>;
+export type RRWebConfig = Omit<rrweb.recordOptions<unknown>, 'emit'>;
 
 export type ReplaySessionData = {
   startTime: number;
@@ -112,6 +111,7 @@ function _minifiedAwareRecord(
   config: RRWebConfig,
   keepRollingWindow: boolean,
 ): listenerHandler | undefined {
+  const record = typeof rrweb === 'function' ? rrweb : rrweb.record;
   if (keepRollingWindow) {
     return record({ ...config, emit, checkoutEveryNms: CHECKOUT_WINDOW_MS });
   } else {

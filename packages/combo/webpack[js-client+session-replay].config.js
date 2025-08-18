@@ -1,4 +1,5 @@
 const { createStatsigWebpackBundle } = require('./statsig-webpack-bundler');
+const RRWebConcatPlugin = require('./RRWebConcatPlugin');
 
 const BUNDLE_FILE_NAME = 'js-client+session-replay';
 
@@ -11,5 +12,12 @@ module.exports = createStatsigWebpackBundle({
     '@statsig/session-replay',
   ],
   client: 'js-client',
-  plugins: [],
+  externals: {
+    rrweb: 'rrwebRecord',
+  },
+  plugins: [
+    new RRWebConcatPlugin({
+      bundleFileName: BUNDLE_FILE_NAME,
+    }),
+  ],
 });
