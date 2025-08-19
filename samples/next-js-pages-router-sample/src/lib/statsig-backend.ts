@@ -1,5 +1,5 @@
 import { GetServerSidePropsContext } from 'next';
-import Statsig, { LogEventObject, StatsigUser } from 'statsig-node';
+import Statsig, { StatsigUser } from 'statsig-node';
 
 import { getUUID } from '@statsig/client-core';
 
@@ -63,10 +63,4 @@ export async function getStatsigValues(user: StatsigUser): Promise<string> {
 
   const data = JSON.stringify(values);
   return data;
-}
-
-export async function logEvents(events: LogEventObject[]): Promise<void> {
-  await isStatsigReady;
-
-  events.forEach((event) => Statsig.logEventObject(event));
 }

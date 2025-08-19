@@ -67,19 +67,6 @@ export async function getStatsigValues(user: StatsigUser): Promise<string> {
   return values;
 }
 
-export async function logEvents(events: LogEventObject[]): Promise<void> {
-  await isStatsigReady;
-
-  events.forEach((event) => {
-    statsig.logEvent(
-      event.user,
-      event.eventName,
-      event.value,
-      _nullableStringMap(event.metadata),
-    );
-  });
-}
-
 process.on('SIGTERM', () => {
   statsig
     .shutdown()
@@ -90,28 +77,3 @@ process.on('SIGTERM', () => {
       // Do nothing
     });
 });
-
-function _nullableStringMap(
-  input: Record<string, unknown> | null | undefined,
-): Record<string, string> | null {
-  if (!input) {
-    return null;
-  }
-
-  const result: Record<string, string> = {};
-  if (input) {
-    Object.entries(input).forEach(([key, value]) => {
-      if (typeof value != 'string') {
-        try {
-          result[key] = JSON.stringify(value);
-        } catch (_) {
-          result[key] = String(value);
-        }
-      } else {
-        result[key] = value;
-      }
-    });
-  }
-
-  return result;
-}

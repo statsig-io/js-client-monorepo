@@ -1,11 +1,8 @@
 // pages/api/statsig-proxy/log_event.ts
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { LogEventObject } from 'statsig-node';
 
-import { logEvents } from '../../../lib/statsig-backend';
-
-type LogEventBody = {
-  events: LogEventObject[];
+type ExtendedRequestInit = RequestInit & {
+  duplex?: 'half' | 'full';
 };
 
 export default async function handler(
@@ -17,15 +14,33 @@ export default async function handler(
     return;
   }
 
-  const body: unknown = req.body;
-  if (!body || typeof body !== 'string') {
-    res.status(400).send('Request body is required');
-    return;
+  let logEventUrl = `https://events.statsigapi.net/v1/log_event`;
+  const queryParams = [];
+  for (const [key, value] of Object.entries(req.query)) {
+    queryParams.push(`${key}=${value}`);
   }
 
-  const { events } = JSON.parse(body) as LogEventBody;
+  if (queryParams.length > 0) {
+    logEventUrl += '?' + queryParams.join('&');
+  }
 
-  await logEvents(events);
+  const fetchOptions: ExtendedRequestInit = {
+    method: 'POST',
+    body: req.body as BodyInit,
+    headers: req.headers as HeadersInit,
+    duplex: 'half',
+  };
 
-  res.status(202).send('{"success": true}');
+  try {
+    const response = await fetch(logEventUrl, fetchOptions);
+    if (!response.ok) {
+      res.status(500).send('Failed to log event');
+      return;
+    }
+
+    const body = await response.text();
+    res.status(response.status).send(body);
+  } catch (err) {
+    res.status(500).send('Failed to log event: ' + err);
+  }
 }
