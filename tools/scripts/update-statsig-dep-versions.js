@@ -8,7 +8,7 @@ function sync(subpath) {
 
   let content = fs.readFileSync(filepath).toString();
 
-  const regex = /("@statsig\/[^":]+":\s*")([^"]+)(")/g;
+  const regex = /("@statsig\/(?!statsig-node-core)[^":]+":\s*")([^"]+)(")/g;
 
   content = content.replace(regex, `$1${version}$3`);
 
