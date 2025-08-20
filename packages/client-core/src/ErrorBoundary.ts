@@ -17,7 +17,7 @@ export class ErrorBoundary {
     private _lastSeenError?: Error,
   ) {}
 
-  wrap(instance: unknown): void {
+  wrap(instance: unknown, namePrefix?: string): void {
     try {
       const obj = instance as Record<string, unknown>;
 
@@ -28,7 +28,10 @@ export class ErrorBoundary {
         }
 
         obj[name] = (...args: unknown[]) => {
-          return this._capture(name, () => original.apply(instance, args));
+          return this._capture(
+            namePrefix ? `${namePrefix}:${name}` : name,
+            () => original.apply(instance, args),
+          );
         };
         (obj[name] as { $EB: boolean }).$EB = true;
       });

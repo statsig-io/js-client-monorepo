@@ -7,7 +7,7 @@ import { StatsigOnDeviceEvalClient } from '@statsig/js-on-device-eval-client';
 import { SessionReplay } from '@statsig/session-replay';
 import { AutoCapture } from '@statsig/web-analytics';
 
-const ebCapture = 'return this._capture(name';
+const ebCapture = 'this._capture(namePrefix ? `${namePrefix}:${name}` : name';
 
 const dir = '../../../../packages';
 

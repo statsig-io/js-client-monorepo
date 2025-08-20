@@ -1,4 +1,9 @@
-import { _getDocumentSafe, _getWindowSafe } from '@statsig/client-core';
+import {
+  ErrorBoundary,
+  Log,
+  _getDocumentSafe,
+  _getWindowSafe,
+} from '@statsig/client-core';
 
 import { AutoCaptureEventName } from './AutoCaptureEvent';
 import {
@@ -42,30 +47,36 @@ export default class DeadClickManager {
       value: string,
       metadata: Record<string, unknown>,
     ) => void,
+    private _errorBoundary: ErrorBoundary,
   ) {}
 
   public startTracking(): void {
-    const win = _getWindowSafe();
-    if (!win) {
-      return;
+    try {
+      const win = _getWindowSafe();
+      if (!win) {
+        return;
+      }
+      // `capture: true` - Needed to listen to scroll events on all scrollable elements, not just the window.
+      // docs: https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener#usecapture
+      //
+      // `passive: true` - Indicates the scroll handler won’t call preventDefault(),
+      // allowing the browser to optimize scrolling performance by not blocking it.
+      // docs: https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener#passive
+      win.addEventListener('click', (event) => this._handleClick(event), {
+        capture: true,
+      });
+      win.addEventListener('scroll', () => this._handleScroll(), {
+        capture: true,
+        passive: true,
+      });
+      win.addEventListener('selectionchange', () =>
+        this._handleSelectionChange(),
+      );
+      this._setupMutationObserver();
+    } catch (error) {
+      Log.error('Error starting dead click tracking', error);
+      this._errorBoundary.logError('autoCapture:DeadClickManager', error);
     }
-    // `capture: true` - Needed to listen to scroll events on all scrollable elements, not just the window.
-    // docs: https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener#usecapture
-    //
-    // `passive: true` - Indicates the scroll handler won’t call preventDefault(),
-    // allowing the browser to optimize scrolling performance by not blocking it.
-    // docs: https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener#passive
-    win.addEventListener('click', (event) => this._handleClick(event), {
-      capture: true,
-    });
-    win.addEventListener('scroll', () => this._handleScroll(), {
-      capture: true,
-      passive: true,
-    });
-    win.addEventListener('selectionchange', () =>
-      this._handleSelectionChange(),
-    );
-    this._setupMutationObserver();
   }
 
   private _handleClick(event: Event): void {

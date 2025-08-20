@@ -90,7 +90,7 @@ export class AutoCapture {
     const { sdkKey, errorBoundary, values } = _client.getContext();
     this._disabledEvents = values?.auto_capture_settings?.disabled_events ?? {};
     this._errorBoundary = errorBoundary;
-    this._errorBoundary.wrap(this);
+    this._errorBoundary.wrap(this, 'autoCapture:');
     this._client.$on('values_updated', () => {
       const values = this._client.getContext().values;
       this._disabledEvents =
@@ -100,12 +100,15 @@ export class AutoCapture {
     this._rageClickManager = new RageClickManager();
     this._webVitalsManager = new WebVitalsManager(
       this._enqueueAutoCapture.bind(this),
+      errorBoundary,
     );
     this._deadClickManager = new DeadClickManager(
       this._enqueueAutoCapture.bind(this),
+      errorBoundary,
     );
     this._consoleLogManager = new ConsoleLogManager(
       this._enqueueAutoCapture.bind(this),
+      errorBoundary,
       options?.consoleLogAutoCaptureSettings ?? { enabled: false },
     );
     this._eventFilterFunc = options?.eventFilterFunc;

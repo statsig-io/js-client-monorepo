@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-import { _getWindowSafe } from '@statsig/client-core';
+import { ErrorBoundary, Log, _getWindowSafe } from '@statsig/client-core';
 
 import { AutoCaptureEventName } from './AutoCaptureEvent';
 import { ConsoleLogAutoCaptureSettings } from './AutoCaptureOptions';
@@ -35,18 +35,24 @@ export class ConsoleLogManager {
       value: string,
       metadata: Record<string, unknown>,
     ) => void,
+    private _errorBoundary: ErrorBoundary,
     private _options: ConsoleLogAutoCaptureSettings,
   ) {
     this._logLevel = this._options.logLevel ?? 'info';
   }
 
   public startTracking(): void {
-    if (this._isTracking || !this._options.enabled) return;
-    const win = _getWindowSafe();
-    if (!win) return;
+    try {
+      if (this._isTracking || !this._options.enabled) return;
+      const win = _getWindowSafe();
+      if (!win) return;
 
-    this._isTracking = true;
-    this._patchConsole();
+      this._patchConsole();
+      this._isTracking = true;
+    } catch (error) {
+      Log.error('Error starting console log tracking', error);
+      this._errorBoundary.logError('autoCapture:ConsoleLogManager', error);
+    }
   }
 
   public stopTracking(): void {
@@ -82,6 +88,10 @@ export class ConsoleLogManager {
                 this._enqueueConsoleLog(level, payload, trace);
               } catch (err) {
                 original('console observer error:', err, ...args);
+                this._errorBoundary.logError(
+                  'autoCapture:ConsoleLogManager',
+                  err,
+                );
               } finally {
                 inStack = false;
               }

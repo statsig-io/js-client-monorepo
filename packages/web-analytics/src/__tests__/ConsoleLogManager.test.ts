@@ -1,4 +1,6 @@
 /* eslint-disable no-console */
+import { ErrorBoundary } from '@statsig/client-core';
+
 import { AutoCaptureEventName } from '../AutoCaptureEvent';
 import { ConsoleLogManager } from '../ConsoleLogManager';
 
@@ -6,10 +8,13 @@ describe('ConsoleLogManager', () => {
   let consoleLogManager: ConsoleLogManager;
   let mockEnqueueFn: jest.Mock;
   let originalConsole: Console;
+  const errorBoundary = new ErrorBoundary('sdk-key', {});
 
   beforeEach(() => {
     mockEnqueueFn = jest.fn();
-    consoleLogManager = new ConsoleLogManager(mockEnqueueFn, { enabled: true });
+    consoleLogManager = new ConsoleLogManager(mockEnqueueFn, errorBoundary, {
+      enabled: true,
+    });
     originalConsole = { ...console };
   });
 
@@ -37,9 +42,11 @@ describe('ConsoleLogManager', () => {
     });
 
     it('should not start tracking if disabled', () => {
-      const consoleLogManagerDisabled = new ConsoleLogManager(mockEnqueueFn, {
-        enabled: false,
-      });
+      const consoleLogManagerDisabled = new ConsoleLogManager(
+        mockEnqueueFn,
+        errorBoundary,
+        { enabled: false },
+      );
       consoleLogManagerDisabled.startTracking();
       expect(consoleLogManagerDisabled['_isTracking']).toBe(false);
     });
@@ -127,7 +134,7 @@ describe('ConsoleLogManager', () => {
     });
 
     it('should respect options.logLevel', () => {
-      consoleLogManager = new ConsoleLogManager(mockEnqueueFn, {
+      consoleLogManager = new ConsoleLogManager(mockEnqueueFn, errorBoundary, {
         enabled: true,
         logLevel: 'debug',
       });
@@ -417,6 +424,7 @@ describe('ConsoleLogManager', () => {
     it('should log when sampleRate is 1', () => {
       consoleLogManagerWithSampling = new ConsoleLogManager(
         mockEnqueueFnWithSampling,
+        errorBoundary,
         { enabled: true, sampleRate: 1 },
       );
       consoleLogManagerWithSampling.startTracking();
@@ -436,6 +444,7 @@ describe('ConsoleLogManager', () => {
     it('should apply sampling when sampleRate is 0.5', () => {
       consoleLogManagerWithSampling = new ConsoleLogManager(
         mockEnqueueFnWithSampling,
+        errorBoundary,
         { enabled: true, sampleRate: 0.5 },
       );
       consoleLogManagerWithSampling.startTracking();
@@ -460,6 +469,7 @@ describe('ConsoleLogManager', () => {
     it('should not log when sampleRate is 0.5 and random value is higher', () => {
       consoleLogManagerWithSampling = new ConsoleLogManager(
         mockEnqueueFnWithSampling,
+        errorBoundary,
         { enabled: true, sampleRate: 0.5 },
       );
       consoleLogManagerWithSampling.startTracking();
@@ -477,6 +487,7 @@ describe('ConsoleLogManager', () => {
     it('should log when sampleRate is undefined', () => {
       consoleLogManagerWithSampling = new ConsoleLogManager(
         mockEnqueueFnWithSampling,
+        errorBoundary,
         { enabled: true },
       );
       consoleLogManagerWithSampling.startTracking();

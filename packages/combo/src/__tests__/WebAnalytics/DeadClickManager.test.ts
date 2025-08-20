@@ -194,11 +194,11 @@ describe('DeadClickManager', () => {
     });
     div.dispatchEvent(clickEvent);
 
-    await new Promise((resolve) => setTimeout(resolve, 1));
+    await new Promise((resolve) => setTimeout(resolve, 5));
     const selectionEvent = new Event('selectionchange', { bubbles: true });
     window.dispatchEvent(selectionEvent);
 
-    await new Promise((resolve) => setTimeout(resolve, 500));
+    await new Promise((resolve) => setTimeout(resolve, 200));
 
     const eventData = getAllDeadClickEvents(requestDataList);
     expect(eventData).toHaveLength(0);

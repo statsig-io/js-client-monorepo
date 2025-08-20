@@ -1,6 +1,6 @@
 import { onCLS, onFCP, onLCP, onTTFB } from 'web-vitals';
 
-import { _getWindowSafe } from '@statsig/client-core';
+import { ErrorBoundary, Log, _getWindowSafe } from '@statsig/client-core';
 
 import { AutoCaptureEventName } from './AutoCaptureEvent';
 import { _getSafeUrlString, _getSanitizedPageUrl } from './utils/commonUtils';
@@ -29,6 +29,7 @@ export class WebVitalsManager {
       value: string,
       metadata: Record<string, unknown>,
     ) => void,
+    private _errorBoundary: ErrorBoundary,
   ) {
     this._metricEvent = {
       url: _getSafeUrlString(),
@@ -39,20 +40,26 @@ export class WebVitalsManager {
   }
 
   public startTracking(): void {
-    if (this._isInitialized) {
-      return;
-    }
+    try {
+      if (this._isInitialized) {
+        return;
+      }
 
-    const protocol = _getWindowSafe()?.location?.protocol;
-    if (protocol !== 'https:' && protocol !== 'http:') {
-      return;
-    }
+      const protocol = _getWindowSafe()?.location?.protocol;
+      if (protocol !== 'https:' && protocol !== 'http:') {
+        return;
+      }
 
-    onCLS((metric) => this._handleMetric(metric));
-    onFCP((metric) => this._handleMetric(metric));
-    onLCP((metric) => this._handleMetric(metric));
-    onTTFB((metric) => this._handleMetric(metric));
-    this._isInitialized = true;
+      onCLS((metric) => this._handleMetric(metric));
+      onFCP((metric) => this._handleMetric(metric));
+      onLCP((metric) => this._handleMetric(metric));
+      onTTFB((metric) => this._handleMetric(metric));
+
+      this._isInitialized = true;
+    } catch (error) {
+      Log.error('Error starting web vitals tracking', error);
+      this._errorBoundary.logError('autoCapture:WebVitalsManager', error);
+    }
   }
 
   private _handleMetric(metric: unknown): void {
