@@ -1,8 +1,8 @@
 {
   "name": "@statsig/react-server",
-  "version": "3.22.0",
+  "version": "3.23.0",
   "dependencies": {
-    "@statsig/react-bindings": "3.22.0",
+    "@statsig/react-bindings": "3.23.0",
     "@statsig/statsig-node-core": "^0.7.4"
   },
   "peerDependencies": {
