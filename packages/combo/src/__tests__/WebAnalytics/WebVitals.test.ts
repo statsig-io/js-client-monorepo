@@ -64,22 +64,33 @@ describe('WebVitalsManager', () => {
     }
   }
 
-  function getAllWebVitalsEvents(
+  function getLastWebVitalEvent(
     requests: Record<string, any>[],
-  ): Record<string, any>[] {
-    const events: Record<string, any>[] = [];
-    for (let i = 0; i < requests.length; i++) {
-      const req = requests[i];
+  ): Record<string, any> {
+    for (let ii = requests.length - 1; ii >= 0; ii--) {
+      const req = requests[ii];
       if (req['events']) {
-        for (let j = 0; j < req['events'].length; j++) {
-          const evt = req['events'][j];
+        for (let jj = req['events'].length - 1; jj >= 0; jj--) {
+          const evt = req['events'][jj];
           if (evt.eventName === AutoCaptureEventName.WEB_VITALS) {
-            events.push(evt as Record<string, any>);
+            return evt as Record<string, any>;
           }
         }
       }
     }
-    return events;
+    return {};
+  }
+
+  function triggerWebVitalsEnqueue() {
+    Object.defineProperty(window, 'location', {
+      value: {
+        href: 'https://example.com/new-url',
+        protocol: 'https:',
+      },
+      writable: true,
+    });
+
+    callMetricCallback('CLS', { ...mockMetric, name: 'CLS' });
   }
 
   beforeAll(async () => {
@@ -208,12 +219,13 @@ describe('WebVitalsManager', () => {
       // Try to add metrics
       callMetricCallback('CLS', { ...mockMetric, name: 'CLS' });
       callMetricCallback('FCP', { ...mockMetric, name: 'FCP' });
+      triggerWebVitalsEnqueue();
 
       await new Promise((f) => setTimeout(f, 150));
 
       // Should not send any events
-      const eventData = getAllWebVitalsEvents(requestDataList);
-      expect(eventData).toHaveLength(0);
+      const eventData = getLastWebVitalEvent(requestDataList);
+      expect(eventData).toEqual({});
     });
 
     it('should ignore invalid metric names', async () => {
@@ -223,18 +235,19 @@ describe('WebVitalsManager', () => {
       callMetricCallback('FCP', { ...mockMetric, name: 'FCP' });
       callMetricCallback('LCP', { ...mockMetric, name: 'LCP' });
       callMetricCallback('TTFB', { ...mockMetric, name: 'INVALID' });
+      triggerWebVitalsEnqueue();
 
       await new Promise((f) => {
         webVitalsResolver = f;
       });
 
       // Should not send any events
-      const eventData = getAllWebVitalsEvents(requestDataList);
-      expect(eventData).toHaveLength(3);
-      expect(eventData[0]['eventName']).toBe(AutoCaptureEventName.WEB_VITALS);
-      // Verify only CLS, FCP, LCP events were included
-      const eventNames = eventData.map((evt: any) => evt.metadata.name);
-      expect(eventNames).toEqual(['CLS', 'FCP', 'LCP']);
+      const eventData = getLastWebVitalEvent(requestDataList);
+      expect(eventData).toBeDefined();
+      expect(eventData['metadata'].cls_value).toBe(0.1);
+      expect(eventData['metadata'].fcp_value).toBe(0.1);
+      expect(eventData['metadata'].lcp_value).toBe(0.1);
+      expect(eventData['metadata'].invalid_value).toBeUndefined();
     });
 
     it('should handle invalid URLs gracefully', async () => {
@@ -257,22 +270,23 @@ describe('WebVitalsManager', () => {
       expect(requestDataList.length).toBe(0);
     });
 
-    it('should enqueue metrics as they come in individually', async () => {
+    it('should batch enqueue metrics', async () => {
       runStatsigAutoCapture(client);
 
       callMetricCallback('CLS', { ...mockMetric, name: 'CLS', value: 0.1 });
       callMetricCallback('FCP', { ...mockMetric, name: 'FCP', value: 1200 });
+      triggerWebVitalsEnqueue();
 
       await new Promise((f) => {
         webVitalsResolver = f;
       });
 
-      const eventData = getAllWebVitalsEvents(requestDataList);
-      expect(eventData).toHaveLength(2);
-      expect(eventData[0]['metadata'].name).toBe('CLS');
-      expect(eventData[0]['metadata'].value).toBe(0.1);
-      expect(eventData[1]['metadata'].name).toBe('FCP');
-      expect(eventData[1]['metadata'].value).toBe(1200);
+      const eventData = getLastWebVitalEvent(requestDataList);
+      expect(eventData).toBeDefined();
+      expect(eventData['metadata'].cls_value).toBe(0.1);
+      expect(eventData['metadata'].cls_delta).toBe(0.05);
+      expect(eventData['metadata'].fcp_value).toBe(1200);
+      expect(eventData['metadata'].fcp_delta).toBe(0.05);
     });
 
     it('should handle multiple metrics of the same type', async () => {
@@ -281,39 +295,15 @@ describe('WebVitalsManager', () => {
       // Add two CLS metrics (we send both)
       callMetricCallback('CLS', { ...mockMetric, name: 'CLS', value: 0.05 });
       callMetricCallback('CLS', { ...mockMetric, name: 'CLS', value: 0.15 });
+      triggerWebVitalsEnqueue();
 
       await new Promise((f) => {
         webVitalsResolver = f;
       });
 
-      const eventData = getAllWebVitalsEvents(requestDataList);
-      expect(eventData).toHaveLength(2);
-      expect(eventData[0]['metadata'].name).toBe('CLS');
-      expect(eventData[0]['metadata'].value).toBe(0.05);
-      expect(eventData[1]['metadata'].name).toBe('CLS');
-      expect(eventData[1]['metadata'].value).toBe(0.15);
-    });
-
-    it('should enqueue all four metrics independently', async () => {
-      runStatsigAutoCapture(client);
-
-      // Add all four metrics
-      callMetricCallback('CLS', { ...mockMetric, name: 'CLS', value: 0.1 });
-      callMetricCallback('FCP', { ...mockMetric, name: 'FCP', value: 1200 });
-      callMetricCallback('LCP', { ...mockMetric, name: 'LCP', value: 2500 });
-      callMetricCallback('TTFB', { ...mockMetric, name: 'TTFB', value: 800 });
-
-      await new Promise((f) => {
-        webVitalsResolver = f;
-      });
-      const eventData = getAllWebVitalsEvents(requestDataList);
-      expect(eventData).toHaveLength(4);
-
-      const eventNames = eventData.map((evt: any) => evt.metadata.name);
-      expect(eventNames).toEqual(['CLS', 'FCP', 'LCP', 'TTFB']);
-
-      const eventValues = eventData.map((evt: any) => evt.metadata.value);
-      expect(eventValues).toEqual([0.1, 1200, 2500, 800]);
+      const eventData = getLastWebVitalEvent(requestDataList);
+      expect(eventData).toBeDefined();
+      expect(eventData['metadata'].cls_value).toBe(0.15);
     });
 
     it('should handle metric with more than required properties', async () => {
@@ -329,21 +319,20 @@ describe('WebVitalsManager', () => {
       };
 
       callMetricCallback('CLS', fullMetric);
+      triggerWebVitalsEnqueue();
 
       await new Promise((f) => {
         webVitalsResolver = f;
       });
-      const eventData = getAllWebVitalsEvents(requestDataList);
-      expect(eventData).toHaveLength(1);
+      const eventData = getLastWebVitalEvent(requestDataList);
+      expect(eventData).toBeDefined();
 
-      const event = eventData[0];
-      expect(event['metadata'].name).toBe('CLS');
-      expect(event['metadata'].value).toBe(0.25);
-      expect(event['metadata'].delta).toBe(0.1);
-      expect(event['metadata'].id).toBe('metric-123');
+      expect(eventData['metadata'].cls_value).toBe(0.25);
+      expect(eventData['metadata'].cls_delta).toBe(0.1);
+      expect(eventData['metadata'].cls_id).toBe('metric-123');
     });
 
-    it('should handle metrics with less than required properties', async () => {
+    it('should handle metrics with less than required properties on page change', async () => {
       runStatsigAutoCapture(client);
 
       const metricWithEmptyEntries = {
@@ -353,19 +342,18 @@ describe('WebVitalsManager', () => {
       };
 
       callMetricCallback('FCP', metricWithEmptyEntries);
+      triggerWebVitalsEnqueue();
 
       await new Promise((f) => {
         webVitalsResolver = f;
       });
 
-      const eventData = getAllWebVitalsEvents(requestDataList);
-      expect(eventData).toHaveLength(1);
+      const eventData = getLastWebVitalEvent(requestDataList);
+      expect(eventData).toBeDefined();
 
-      const event = eventData[0];
-      expect(event['metadata'].name).toBe('FCP');
-      expect(event['metadata'].value).toBe(1200);
-      expect(event['metadata'].delta).toBeUndefined();
-      expect(event['metadata'].id).toBe('metric-456');
+      expect(eventData['metadata'].fcp_value).toBe(1200);
+      expect(eventData['metadata'].fcp_delta).toBeUndefined();
+      expect(eventData['metadata'].fcp_id).toBe('metric-456');
     });
   });
 

@@ -3,7 +3,7 @@ import { onCLS, onFCP, onLCP, onTTFB } from 'web-vitals';
 import { _getWindowSafe } from '@statsig/client-core';
 
 import { AutoCaptureEventName } from './AutoCaptureEvent';
-import { _getSafeUrlString } from './utils/commonUtils';
+import { _getSafeUrlString, _getSanitizedPageUrl } from './utils/commonUtils';
 
 const VALID_METRIC_NAMES = ['CLS', 'FCP', 'LCP', 'TTFB'];
 
@@ -16,13 +16,27 @@ type WebVitalsMetric = {
 
 export class WebVitalsManager {
   private _isInitialized = false;
+  private _metricEvent: {
+    url: string;
+    sanitizedUrl: string;
+    metrics: WebVitalsMetric[];
+    firstMetricTimestamp: number | undefined;
+  };
+
   constructor(
     private _enqueueFn: (
       eventName: AutoCaptureEventName,
       value: string,
       metadata: Record<string, unknown>,
     ) => void,
-  ) {}
+  ) {
+    this._metricEvent = {
+      url: _getSafeUrlString(),
+      sanitizedUrl: _getSanitizedPageUrl(),
+      metrics: [],
+      firstMetricTimestamp: undefined,
+    };
+  }
 
   public startTracking(): void {
     if (this._isInitialized) {
@@ -42,11 +56,19 @@ export class WebVitalsManager {
   }
 
   private _handleMetric(metric: unknown): void {
-    if (metric === undefined || (metric as any)?.name === undefined) {
+    if (this._metricEvent.firstMetricTimestamp === undefined) {
+      this._metricEvent.firstMetricTimestamp = Date.now();
+    }
+
+    if (
+      metric === undefined ||
+      (metric as WebVitalsMetric)?.name === undefined
+    ) {
       return;
     }
 
     const currentUrl = _getSafeUrlString();
+
     if (currentUrl === '') {
       // If the URL is not valid, we don't want to track the metric
       return;
@@ -56,25 +78,56 @@ export class WebVitalsManager {
       return;
     }
 
-    this._enqueueWebVitalsAutoCaptureEvent(
-      metric as WebVitalsMetric,
-      currentUrl,
-    );
+    if (currentUrl !== this._metricEvent.url) {
+      this._enqueueWebVitalsAutoCaptureEvent();
+      this._metricEvent.url = currentUrl;
+    }
+
+    const metricData = metric as WebVitalsMetric;
+
+    this._metricEvent.metrics.push({
+      name: metricData.name,
+      value: metricData.value,
+      delta: metricData.delta,
+      id: metricData.id,
+    });
+
+    if (this._metricEvent.metrics.length === VALID_METRIC_NAMES.length) {
+      this._enqueueWebVitalsAutoCaptureEvent();
+    }
   }
 
-  private _enqueueWebVitalsAutoCaptureEvent(
-    metric: WebVitalsMetric,
-    url: string,
-  ): void {
-    if (url === '') {
+  private _enqueueWebVitalsAutoCaptureEvent(): void {
+    if (
+      this._metricEvent.url === '' ||
+      this._metricEvent.metrics.length === 0
+    ) {
       return;
     }
 
-    this._enqueueFn(AutoCaptureEventName.WEB_VITALS, url, {
-      name: metric.name,
-      value: metric.value,
-      delta: metric.delta,
-      id: metric.id,
+    const flattenedMetrics: Record<string, unknown> = {};
+
+    this._metricEvent.metrics.forEach((metric) => {
+      const prefix = metric.name.toLowerCase();
+      flattenedMetrics[`${prefix}_value`] = metric.value;
+      flattenedMetrics[`${prefix}_delta`] = metric.delta;
+      flattenedMetrics[`${prefix}_id`] = metric.id;
     });
+
+    this._enqueueFn(
+      AutoCaptureEventName.WEB_VITALS,
+      this._metricEvent.sanitizedUrl,
+      {
+        ...flattenedMetrics,
+        first_metric_timestamp: this._metricEvent.firstMetricTimestamp,
+      },
+    );
+
+    this._metricEvent = {
+      url: _getSafeUrlString(),
+      sanitizedUrl: _getSanitizedPageUrl(),
+      metrics: [],
+      firstMetricTimestamp: undefined,
+    };
   }
 }
