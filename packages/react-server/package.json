@@ -1,6 +1,13 @@
 {
   "name": "@statsig/react-server",
   "version": "3.24.0",
+  "license": "ISC",
+  "homepage": "https://github.com/statsig-io/js-client-monorepo",
+  "repository": {
+    "type": "git",
+    "url": "github:statsig-io/js-client-monorepo",
+    "directory": "packages/react-server"
+  },
   "dependencies": {
     "@statsig/react-bindings": "3.24.0",
     "@statsig/statsig-node-core": "^0.7.4"
@@ -10,6 +17,5 @@
   },
   "type": "commonjs",
   "main": "./src/index.js",
-  "typings": "./src/index.d.ts",
-  "private": true
+  "typings": "./src/index.d.ts"
 }

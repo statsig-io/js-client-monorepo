@@ -12,11 +12,16 @@
         "outputPath": "dist/packages/react-server",
         "main": "packages/react-server/src/index.ts",
         "tsConfig": "packages/react-server/tsconfig.lib.json",
-        "assets": ["packages/react-server/*.md"]
+        "assets": ["README.md", "LICENSE"]
       }
     },
+    "publish": {
+      "command": "ts-node ./tools/scripts/publish.ts react-server",
+      "dependsOn": ["build"]
+    },
     "lint": {
-      "executor": "@nx/eslint:lint"
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
     },
     "test": {
       "executor": "@nx/jest:jest",

@@ -326,7 +326,8 @@
       "$_observer": "Zs",
       "$_updateClickDelayMs": "jr",
       "$_logDeadClick": "Sr",
-      "$_gatherCopyEventData": "wr"
+      "$_gatherCopyEventData": "wr",
+      "$_metricEvent": "Er"
     }
   }
 }
