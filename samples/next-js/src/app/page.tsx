@@ -12,6 +12,13 @@ export default function Index(): React.ReactElement {
         </li>
         <li>
           <button>
+            <a href="/bootstrap-provider-example">
+              Server Side Render w Bootstrap Provider
+            </a>
+          </button>
+        </li>
+        <li>
+          <button>
             <a href="/bootstrap-example-core">Server Side Render Core</a>
           </button>
         </li>

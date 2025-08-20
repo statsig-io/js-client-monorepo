@@ -1,0 +1,29 @@
+{
+  "name": "react-server",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/react-server/src",
+  "projectType": "library",
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/react-server",
+        "main": "packages/react-server/src/index.ts",
+        "tsConfig": "packages/react-server/tsconfig.lib.json",
+        "assets": ["packages/react-server/*.md"]
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "packages/react-server/jest.config.ts"
+      }
+    }
+  }
+}
