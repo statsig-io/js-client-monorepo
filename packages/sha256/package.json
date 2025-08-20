@@ -1,6 +1,6 @@
 {
   "name": "@statsig/sha256",
-  "version": "3.24.0",
+  "version": "3.24.1",
   "license": "ISC",
   "homepage": "https://github.com/statsig-io/js-client-monorepo",
   "repository": {
