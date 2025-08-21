@@ -3,7 +3,7 @@ import { ErrorBoundary, Log, _getWindowSafe } from '@statsig/client-core';
 
 import { AutoCaptureEventName } from './AutoCaptureEvent';
 import { ConsoleLogAutoCaptureSettings } from './AutoCaptureOptions';
-import { _getSafeUrl, patch } from './utils/commonUtils';
+import { _getSafeUrl, wrapFunctionWithRestore } from './utils/commonUtils';
 import { _gatherAllMetadata } from './utils/metadataUtils';
 
 export type ConsoleLogLevel =
@@ -71,7 +71,7 @@ export class ConsoleLogManager {
         const original = console[level].bind(console);
         let inStack = false;
 
-        const restore = patch(
+        const restore = wrapFunctionWithRestore(
           console as unknown as Record<string, unknown>,
           level,
           (originalFn) => {

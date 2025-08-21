@@ -225,44 +225,40 @@ export function throttle<T extends (...args: unknown[]) => void>(
   } as T;
 }
 
-// copy from https://github.com/getsentry/sentry-javascript/blob/b2109071975af8bf0316d3b5b38f519bdaf5dc15/packages/utils/src/object.ts
-export function patch(
-  source: Record<string, unknown>,
-  name: string,
-  replacement: (
-    original: (...args: unknown[]) => void,
-  ) => (...args: unknown[]) => void,
+export function wrapFunctionWithRestore(
+  targetObject: Record<string, unknown>,
+  functionName: string,
+  wrapperFactory: (
+    original: (...args: unknown[]) => unknown,
+  ) => (...args: unknown[]) => unknown,
 ): () => void {
-  try {
-    if (!source[name])
-      return () => {
-        // noop
-      };
+  const originalFunction = targetObject[functionName];
 
-    const original = source[name] as (...args: unknown[]) => void;
-    const wrapped = replacement(original);
-    // Make sure it's a function first, as we need to attach an empty prototype for `defineProperties` to work
-    // otherwise it'll throw "TypeError: Object.defineProperties called on non-object"
-    if (typeof wrapped === 'function') {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      wrapped.prototype = wrapped.prototype || {};
-      Object.defineProperties(wrapped, {
-        __statsig_original__: {
-          enumerable: false,
-          value: original,
-        },
-      });
-    }
-
-    source[name] = wrapped;
-    return () => {
-      source[name] = original;
-    };
-  } catch (err) {
+  if (typeof originalFunction !== 'function') {
     return () => {
       // noop
     };
-    // This can throw if multiple fill happens on a global object like XMLHttpRequest
-    // Fixes https://github.com/getsentry/sentry-javascript/issues/2043
+  }
+
+  try {
+    const wrappedFunction = wrapperFactory(
+      originalFunction as (...args: unknown[]) => void,
+    );
+
+    Object.defineProperty(wrappedFunction, '__statsig_original__', {
+      enumerable: false,
+      value: originalFunction,
+    });
+
+    targetObject[functionName] = wrappedFunction;
+
+    // Restore function
+    return () => {
+      targetObject[functionName] = originalFunction;
+    };
+  } catch {
+    return () => {
+      // noop
+    };
   }
 }
