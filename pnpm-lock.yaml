@@ -637,9 +637,9 @@ importers:
       '@statsig/react-bindings':
         specifier: 3.24.2
         version: link:../react-bindings
-      '@statsig/statsig-node-core':
-        specifier: ^0.7.4
-        version: 0.7.4
+      statsig-node:
+        specifier: ^6.4.5
+        version: 6.4.5
 
   packages/session-replay:
     dependencies:
@@ -10849,27 +10849,6 @@ packages:
     dev: false
     optional: true
 
-  /@statsig/statsig-node-core@0.7.4:
-    resolution: {integrity: sha512-RTSSSAZ5I1qSwGaVoPGC31pNL6171I8N1rhj+SmGI04R3ZYF2rMuAvNa9eWDicJflamwh/4tFBCDH5JngwDFwA==}
-    engines: {node: '>= 6.14.2 < 7 || >= 8.11.2 < 9 || >= 9.11.0 < 10 || >= 10.0.0'}
-    dependencies:
-      '@octokit/core': 6.1.6
-      https-proxy-agent: 7.0.6
-      node-fetch: 2.7.0
-    optionalDependencies:
-      '@statsig/statsig-node-core-darwin-arm64': 0.7.4
-      '@statsig/statsig-node-core-darwin-x64': 0.7.4
-      '@statsig/statsig-node-core-linux-arm64-gnu': 0.7.4
-      '@statsig/statsig-node-core-linux-arm64-musl': 0.7.4
-      '@statsig/statsig-node-core-linux-x64-gnu': 0.7.4
-      '@statsig/statsig-node-core-linux-x64-musl': 0.7.4
-      '@statsig/statsig-node-core-win32-ia32-msvc': 0.7.4
-      '@statsig/statsig-node-core-win32-x64-msvc': 0.7.4
-    transitivePeerDependencies:
-      - encoding
-      - supports-color
-    dev: false
-
   /@statsig/statsig-node-core@0.7.4(encoding@0.1.13):
     resolution: {integrity: sha512-RTSSSAZ5I1qSwGaVoPGC31pNL6171I8N1rhj+SmGI04R3ZYF2rMuAvNa9eWDicJflamwh/4tFBCDH5JngwDFwA==}
     engines: {node: '>= 6.14.2 < 7 || >= 8.11.2 < 9 || >= 9.11.0 < 10 || >= 10.0.0'}
@@ -17602,7 +17581,6 @@ packages:
 
   /ip3country@5.0.0:
     resolution: {integrity: sha512-lcFLMFU4eO1Z7tIpbVFZkaZ5ltqpeaRx7L9NsAbA9uA7/O/rj3RF8+evE5gDitooaTTIqjdzZrenFO/OOxQ2ew==}
-    dev: true
 
   /ipaddr.js@1.9.1:
     resolution: {integrity: sha512-0KI/607xoxSToH7GjN1FfSbLoU0+btTicjsQSWQlh/hZykN8KpmMf7uYwPW3R+akZ6R/w18ZlXSHBYXiYUPO3g==}
@@ -23971,6 +23949,17 @@ packages:
     engines: {node: '>=6'}
     dependencies:
       type-fest: 0.7.1
+
+  /statsig-node@6.4.5:
+    resolution: {integrity: sha512-zucMEEIoBS+5d9AJ4EhCXT2gsfXQaX7bElmI3jUBUuMZcQLsuX3tQT3diylCxR8cMoV24mV3F5Xp4EVNJEqdvw==}
+    dependencies:
+      ip3country: 5.0.0
+      node-fetch: 2.7.0
+      ua-parser-js: 1.0.37
+      uuid: 8.3.2
+    transitivePeerDependencies:
+      - encoding
+    dev: false
 
   /statsig-node@6.4.5(encoding@0.1.13):
     resolution: {integrity: sha512-zucMEEIoBS+5d9AJ4EhCXT2gsfXQaX7bElmI3jUBUuMZcQLsuX3tQT3diylCxR8cMoV24mV3F5Xp4EVNJEqdvw==}
