@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "statsig-test-helpers",
-  "version": "3.24.2",
+  "version": "3.24.3",
   "license": "ISC",
   "homepage": "https://github.com/statsig-io/js-client-monorepo",
   "repository": {
