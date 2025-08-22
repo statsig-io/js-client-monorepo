@@ -1,6 +1,6 @@
 {
   "name": "@statsig/web-analytics",
-  "version": "3.24.3",
+  "version": "3.24.4",
   "license": "ISC",
   "homepage": "https://github.com/statsig-io/js-client-monorepo",
   "repository": {
@@ -9,8 +9,8 @@
     "directory": "packages/web-analytics"
   },
   "dependencies": {
-    "@statsig/client-core": "3.24.3",
-    "@statsig/js-client": "3.24.3",
+    "@statsig/client-core": "3.24.4",
+    "@statsig/js-client": "3.24.4",
     "web-vitals": "5.0.3"
   },
   "jsdelivr": "./build/statsig-web-analytics.min.js",
