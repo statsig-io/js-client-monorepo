@@ -20,6 +20,9 @@ describe('Triggered Session Replay Event Trigger', () => {
       if (name === 'log_event_called') {
         emitListener = listener;
       }
+      if (name === 'logs_flushed') {
+        listener({ name: 'logs_flushed', events: [] });
+      }
     });
     StatsigMetadataProvider.add({ isRecordingSession: undefined });
     client.logEvent.mockImplementation((eventName, value, metadata) => {

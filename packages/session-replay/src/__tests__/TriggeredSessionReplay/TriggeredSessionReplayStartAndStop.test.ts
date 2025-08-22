@@ -14,6 +14,11 @@ describe('Triggered Session Replay Start and Stop', () => {
   beforeAll(() => {
     client = MockRemoteServerEvalClient.create();
     client.flush.mockResolvedValue();
+    client.$on.mockImplementation((name, listener) => {
+      if (name === 'logs_flushed') {
+        listener({ name: 'logs_flushed', events: [] });
+      }
+    });
     const ctx = {
       errorBoundary: { wrap: jest.fn() },
       values: { session_recording_rate: 1, can_record_session: true },

@@ -225,7 +225,11 @@ export abstract class SessionReplayBase {
   protected _shutdownImpl(endReason?: EndReason): void {
     if (this._replayer.isRecording()) {
       this._replayer.stop();
-      StatsigMetadataProvider.add({ isRecordingSession: 'false' });
+      const handler = () => {
+        StatsigMetadataProvider.add({ isRecordingSession: 'false' });
+        this._client.off('logs_flushed', handler);
+      };
+      this._client.$on('logs_flushed', handler);
     }
 
     if (this._events.length === 0) {

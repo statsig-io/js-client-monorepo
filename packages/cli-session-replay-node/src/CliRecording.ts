@@ -261,7 +261,11 @@ export class CliRecording {
     this._unsubscribe?.();
     this._unsubscribe = undefined;
 
-    StatsigMetadataProvider.add({ isRecordingSession: 'false' });
+    const handler = () => {
+      StatsigMetadataProvider.add({ isRecordingSession: 'false' });
+      this._client.off('logs_flushed', handler);
+    };
+    this._client.$on('logs_flushed', handler);
 
     CliRecording._currentRecording = undefined;
   }

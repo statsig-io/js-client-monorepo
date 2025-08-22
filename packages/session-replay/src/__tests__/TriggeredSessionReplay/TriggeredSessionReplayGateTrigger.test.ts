@@ -20,6 +20,9 @@ describe('Triggered Session Replay Gate Trigger', () => {
       if (name === 'gate_evaluation') {
         emitListener = listener;
       }
+      if (name === 'logs_flushed') {
+        listener({ name: 'logs_flushed', events: [] });
+      }
     });
     StatsigMetadataProvider.add({ isRecordingSession: undefined });
     client.checkGate.mockImplementation((name: string) => {

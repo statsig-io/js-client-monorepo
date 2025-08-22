@@ -21,6 +21,9 @@ describe('Session Replay Force', () => {
       if (name === 'pre_shutdown') {
         shutdownListener = listener;
       }
+      if (name === 'logs_flushed') {
+        listener({ name: 'logs_flushed', events: [] });
+      }
     });
     const ctx = {
       errorBoundary: { wrap: jest.fn() },
