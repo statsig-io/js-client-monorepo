@@ -81,7 +81,7 @@ function _loadFromCookie(sdkKey: string): string | null {
   const cookies = document.cookie.split(';');
   for (const cookie of cookies) {
     const [key, value] = cookie.trim().split('=');
-    if (key === _getCookieName(sdkKey)) {
+    if (key === getCookieName(sdkKey)) {
       return decodeURIComponent(value);
     }
   }
@@ -89,15 +89,15 @@ function _loadFromCookie(sdkKey: string): string | null {
 }
 
 function _persistToCookie(stableID: string, sdkKey: string) {
-  if (!COOKIE_ENABLED_MAP[sdkKey] || !document) {
+  if (!COOKIE_ENABLED_MAP[sdkKey] || _getDocumentSafe() == null) {
     return;
   }
   const expiryDate = new Date();
   expiryDate.setFullYear(expiryDate.getFullYear() + 1);
 
-  document.cookie = `${_getCookieName(sdkKey)}=${encodeURIComponent(stableID)}; expires=${expiryDate.toUTCString()}; path=/`;
+  document.cookie = `${getCookieName(sdkKey)}=${encodeURIComponent(stableID)}; expires=${expiryDate.toUTCString()}; path=/`;
 }
 
-function _getCookieName(sdkKey: string): string {
+export function getCookieName(sdkKey: string): string {
   return `statsig.stable_id.${_getStorageKey(sdkKey)}`;
 }

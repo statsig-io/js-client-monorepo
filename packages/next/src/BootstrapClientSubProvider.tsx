@@ -3,6 +3,7 @@
 import * as React from 'react';
 
 import {
+  StatsigOptions,
   StatsigProvider,
   StatsigUser,
   useClientBootstrapInit,
@@ -13,13 +14,14 @@ export default function BootstrapClientSubProvider({
   values,
   children,
   clientKey,
+  clientOptions,
 }: {
   user: StatsigUser;
   values: string;
   children: React.ReactNode;
   clientKey: string;
+  clientOptions?: StatsigOptions | null;
 }): React.ReactElement {
-  const client = useClientBootstrapInit(clientKey, user, values);
-
+  const client = useClientBootstrapInit(clientKey, user, values, clientOptions);
   return <StatsigProvider client={client}>{children}</StatsigProvider>;
 }

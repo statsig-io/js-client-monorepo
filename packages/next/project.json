@@ -1,7 +1,7 @@
 {
-  "name": "react-server",
+  "name": "next",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "packages/react-server/src",
+  "sourceRoot": "packages/next/src",
   "projectType": "library",
   "tags": [],
   "targets": {
@@ -9,14 +9,14 @@
       "executor": "@nx/js:tsc",
       "outputs": ["{options.outputPath}"],
       "options": {
-        "outputPath": "dist/packages/react-server",
-        "main": "packages/react-server/src/index.ts",
-        "tsConfig": "packages/react-server/tsconfig.lib.json",
+        "outputPath": "dist/packages/next",
+        "main": "packages/next/src/index.ts",
+        "tsConfig": "packages/next/tsconfig.lib.json",
         "assets": ["README.md", "LICENSE"]
       }
     },
     "publish": {
-      "command": "ts-node ./tools/scripts/publish.ts react-server",
+      "command": "ts-node ./tools/scripts/publish.ts next",
       "dependsOn": ["build"]
     },
     "lint": {
@@ -27,7 +27,7 @@
       "executor": "@nx/jest:jest",
       "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
       "options": {
-        "jestConfig": "packages/react-server/jest.config.ts"
+        "jestConfig": "packages/next/jest.config.ts"
       }
     }
   }

@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import { StatsigBootstrapProvider } from '@statsig/react-server';
+import { StatsigBootstrapProvider } from '@statsig/next';
 
 import { DEMO_CLIENT_KEY } from '../../utils/constants';
 import BootstrapExampleContent from '../bootstrap-provider-example/BootstrapExampleContent';
@@ -11,12 +11,6 @@ export default async function Index(): Promise<React.ReactElement> {
     <StatsigBootstrapProvider
       user={{
         userID: 'a-user',
-        customIDs: {
-          stableID: '123',
-        },
-        custom: {
-          custom_field: 'custom_value',
-        },
       }}
       clientKey={DEMO_CLIENT_KEY}
       serverKey={MY_STATSIG_SERVER_KEY}

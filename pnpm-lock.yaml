@@ -569,6 +569,18 @@ importers:
         specifier: 3.24.3
         version: link:../client-core
 
+  packages/next:
+    dependencies:
+      '@statsig/client-core':
+        specifier: 3.24.3
+        version: link:../client-core
+      '@statsig/react-bindings':
+        specifier: 3.24.3
+        version: link:../react-bindings
+      statsig-node:
+        specifier: ^6.4.5
+        version: 6.4.5
+
   packages/on-device-eval-core:
     dependencies:
       '@statsig/client-core':
@@ -631,15 +643,6 @@ importers:
       '@statsig/client-core':
         specifier: 3.24.3
         version: link:../client-core
-
-  packages/react-server:
-    dependencies:
-      '@statsig/react-bindings':
-        specifier: 3.24.3
-        version: link:../react-bindings
-      statsig-node:
-        specifier: ^6.4.5
-        version: 6.4.5
 
   packages/session-replay:
     dependencies:

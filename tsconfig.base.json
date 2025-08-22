@@ -42,7 +42,7 @@
       "@statsig/react-bindings-on-device-eval": [
         "packages/react-bindings-on-device-eval/src/index.ts"
       ],
-      "@statsig/react-server": ["packages/react-server/src/index.ts"],
+      "@statsig/next": ["packages/next/src/index.ts"],
       "@statsig/react-native-bindings": [
         "packages/react-native-bindings/src/index.ts"
       ],

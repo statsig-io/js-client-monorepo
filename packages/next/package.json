@@ -1,18 +1,20 @@
 {
-  "name": "@statsig/react-server",
+  "name": "@statsig/next",
   "version": "3.24.3",
   "license": "ISC",
   "homepage": "https://github.com/statsig-io/js-client-monorepo",
   "repository": {
     "type": "git",
     "url": "github:statsig-io/js-client-monorepo",
-    "directory": "packages/react-server"
+    "directory": "packages/next"
   },
   "dependencies": {
+    "@statsig/client-core": "3.24.3",
     "@statsig/react-bindings": "3.24.3",
     "statsig-node": "^6.4.5"
   },
   "peerDependencies": {
+    "next": "^13.0.0 || ^14.0.0 || ^15.0.0",
     "react": "^18.0.0 || ^19.0.0"
   },
   "type": "commonjs",
