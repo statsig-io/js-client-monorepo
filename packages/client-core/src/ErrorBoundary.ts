@@ -183,7 +183,9 @@ function _getStatsigOptionLoggingCopy(
 
   const loggingCopy: Record<string, unknown> = {};
 
-  Object.entries(options).forEach(([option, value]) => {
+  Object.keys(options).forEach((key) => {
+    const option = key as keyof AnyStatsigOptions;
+    const value = options[option];
     const valueType = typeof value;
     switch (valueType) {
       case 'number':

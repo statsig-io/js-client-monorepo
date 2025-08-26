@@ -16,6 +16,9 @@
 
       window.myStatsigInitCallback = (client) => {
         console.log('Init Callback Fired', client);
+        client.on('*', (event) => {
+          console.log('Event', event);
+        });
       };
     </script>
 

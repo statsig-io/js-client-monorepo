@@ -1,6 +1,9 @@
 const { composePlugins, withNx, withWeb } = require('@nx/webpack');
 const path = require('path');
-const minifier = require('../../tools/scripts/webpack-minifier');
+const {
+  terserWithNameCache,
+  terserWithoutNameCache,
+} = require('../../tools/scripts/webpack-minifier');
 const BundleAnalyzerPlugin =
   require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
@@ -103,6 +106,9 @@ function createStatsigWebpackBundle({
     alias[dep] = path.resolve(__dirname, DEP_MAP[dep]);
   });
 
+  const useAdvancedMinification =
+    bundleFile === 'js-client' || bundleFile === 'js-on-device-eval-client';
+
   return composePlugins(withNx(), withWeb(), () => {
     return {
       stats: {
@@ -152,11 +158,15 @@ function createStatsigWebpackBundle({
         removeAvailableModules: true,
         mergeDuplicateChunks: true,
         minimize: true,
-        minimizer: [minifier],
+        minimizer: useAdvancedMinification
+          ? [terserWithNameCache]
+          : [terserWithoutNameCache],
       },
       plugins: [
         ...(plugins ?? []),
-        new StatsigPostProcessPlugin({ bundleFile }),
+        ...(useAdvancedMinification
+          ? [new StatsigPostProcessPlugin({ bundleFile })]
+          : []),
         new BundleAnalyzerPlugin({
           analyzerMode: 'disabled',
           openAnalyzer: false,
