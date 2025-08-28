@@ -11,16 +11,18 @@ const MAX_CLASS_LIST_LENGTH = 100;
 const MAX_SELECTOR_DEPTH = 50;
 
 export function _gatherEventData(target: Element): {
-  value: string | null; // null if the element is sensitive
+  value: string;
   metadata: Record<string, unknown>;
 } {
+  const value = _getSanitizedPageUrl() || '';
+  const tagName = target.tagName.toLowerCase();
+
+  // If the element is sensitive, we only gather safe attribute fields
   if (_isSensitiveElement(target)) {
-    return { value: null, metadata: {} };
+    return { value, metadata: _getSafeMetadataAttributes(target) };
   }
 
-  const tagName = target.tagName.toLowerCase();
   const metadata: Record<string, string | null> = {};
-  const value = _getSanitizedPageUrl() || '';
 
   metadata['tagName'] = tagName;
 
@@ -124,26 +126,39 @@ function _truncateString(
   return str.length > maxLength ? str.substring(0, maxLength) + '...' : str;
 }
 
+function _getSafeMetadataAttributes(elem: Element): Record<string, unknown> {
+  const metadata: Record<string, unknown> = {};
+  metadata['class'] = _normalizeClassAttribute(
+    _truncateString(elem.getAttribute('class'), MAX_ATTRIBUTE_LENGTH) || '',
+  );
+  metadata['id'] = _truncateString(
+    elem.getAttribute('id'),
+    MAX_ATTRIBUTE_LENGTH,
+  );
+  metadata['ariaLabel'] = _truncateString(
+    elem.getAttribute('aria-label'),
+    MAX_ATTRIBUTE_LENGTH,
+  );
+
+  metadata['name'] = _truncateString(
+    elem.getAttribute('name'),
+    MAX_ATTRIBUTE_LENGTH,
+  );
+
+  return metadata;
+}
+
 export function _getMetadataFromElement(
   target: Element,
 ): Record<string, unknown> {
   const metadata: Record<string, unknown> = {};
 
+  const safeAttributes = _getSafeMetadataAttributes(target);
+  Object.assign(metadata, safeAttributes);
+
   const classList = Array.from(target.classList);
   metadata['classList'] =
     classList.length > 0 ? classList.slice(0, MAX_CLASS_LIST_LENGTH) : null;
-
-  metadata['class'] = _normalizeClassAttribute(
-    _truncateString(target.getAttribute('class'), MAX_ATTRIBUTE_LENGTH) || '',
-  );
-  metadata['id'] = _truncateString(
-    target.getAttribute('id'),
-    MAX_ATTRIBUTE_LENGTH,
-  );
-  metadata['ariaLabel'] = _truncateString(
-    target.getAttribute('aria-label'),
-    MAX_ATTRIBUTE_LENGTH,
-  );
 
   metadata['selector'] = _generateCssSelector(target);
   return metadata;

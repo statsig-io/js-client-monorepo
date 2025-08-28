@@ -83,9 +83,19 @@ export function _shouldLogEvent(
       return ['change', 'click'].indexOf(eventType) >= 0;
     default:
       if (eventType === 'click') {
-        if (tagName === 'button') {
+        const compStyles = window.getComputedStyle(el);
+        if (compStyles && compStyles.getPropertyValue('cursor') === 'pointer') {
           return true;
         }
+
+        if (interactiveElements.includes(tagName)) {
+          return true;
+        }
+
+        if (el.getAttribute('contenteditable') === 'true') {
+          return true;
+        }
+
         const anchor = _getAnchorNodeInHierarchy(el);
         if (anchor) {
           return true;

@@ -15,6 +15,7 @@ describe('_getMetadataFromElement', () => {
       classList: null,
       id: null,
       selector: 'div',
+      name: null,
     });
   });
 
@@ -54,6 +55,7 @@ describe('_getMetadataFromElement', () => {
   it('handles null attributes', () => {
     element.setAttribute('aria-label', '');
     element.setAttribute('id', '');
+    element.setAttribute('name', '');
     const metadata = _getMetadataFromElement(element);
     expect(metadata).toEqual({
       ariaLabel: null,
@@ -61,12 +63,14 @@ describe('_getMetadataFromElement', () => {
       classList: null,
       id: null,
       selector: 'div',
+      name: null,
     });
   });
 
   it('preserves short attributes without truncation', () => {
     element.setAttribute('class', 'short-class');
     element.setAttribute('id', 'short-id');
+    element.setAttribute('name', 'short-name');
     const metadata = _getMetadataFromElement(element);
     expect(metadata).toEqual({
       ariaLabel: null,
@@ -74,6 +78,7 @@ describe('_getMetadataFromElement', () => {
       classList: ['short-class'],
       id: 'short-id',
       selector: '#short-id',
+      name: 'short-name',
     });
   });
 });
@@ -91,48 +96,81 @@ describe('Sensitive Element Blocking', () => {
   });
 
   describe('_gatherEventData with sensitive elements', () => {
-    it('blocks input elements with sensitive types', () => {
+    it('captures correct metadata for input elements with sensitive types', () => {
       const inputTypes = ['button', 'checkbox', 'submit', 'reset'];
 
       inputTypes.forEach((type) => {
         const input = document.createElement('input');
         input.setAttribute('type', type);
+        input.setAttribute('id', 'test-input');
+        input.setAttribute('class', 'test-class');
+        input.setAttribute('aria-label', 'Test Label');
+        input.setAttribute('name', 'test-name');
+        input.setAttribute('value', 'sensitive-value');
         container.appendChild(input);
 
         const result = _gatherEventData(input);
-        expect(result.value).toBeNull();
-        expect(result.metadata).toEqual({});
+        expect(result.value).toBe(window.location.href.split(/[?#]/)[0]);
+        expect(result.metadata).toEqual({
+          class: 'test-class',
+          id: 'test-input',
+          ariaLabel: 'Test Label',
+          name: 'test-name',
+        });
       });
     });
 
-    it('blocks textarea elements', () => {
+    it('captures correct metadata for textarea elements', () => {
       const textarea = document.createElement('textarea');
       textarea.value = 'sensitive content';
+      textarea.setAttribute('id', 'test-textarea');
+      textarea.setAttribute('class', 'textarea-class');
       container.appendChild(textarea);
 
       const result = _gatherEventData(textarea);
-      expect(result.value).toBeNull();
-      expect(result.metadata).toEqual({});
+      expect(result.value).toBe(window.location.href.split(/[?#]/)[0]);
+      expect(result.metadata).toEqual({
+        class: 'textarea-class',
+        id: 'test-textarea',
+        ariaLabel: null,
+        name: null,
+      });
     });
 
-    it('blocks select elements', () => {
+    it('captures correct metadata for select elements', () => {
       const select = document.createElement('select');
+      select.setAttribute('id', 'test-select');
+      select.setAttribute('name', 'test-select-name');
+      select.setAttribute('aria-label', 'Test Label');
+      select.setAttribute('title', 'sensitive title');
       container.appendChild(select);
 
       const result = _gatherEventData(select);
-      expect(result.value).toBeNull();
-      expect(result.metadata).toEqual({});
+      expect(result.value).toBe(window.location.href.split(/[?#]/)[0]);
+      expect(result.metadata).toEqual({
+        class: '',
+        id: 'test-select',
+        ariaLabel: 'Test Label',
+        name: 'test-select-name',
+      });
     });
 
-    it('blocks contenteditable elements', () => {
+    it('captures correct metadata for contenteditable elements', () => {
       const div = document.createElement('div');
       div.setAttribute('contenteditable', 'true');
       div.textContent = 'sensitive content';
+      div.setAttribute('id', 'test-div');
+      div.setAttribute('class', 'editable-div');
       container.appendChild(div);
 
       const result = _gatherEventData(div);
-      expect(result.value).toBeNull();
-      expect(result.metadata).toEqual({});
+      expect(result.value).toBe(window.location.href.split(/[?#]/)[0]);
+      expect(result.metadata).toEqual({
+        class: 'editable-div',
+        id: 'test-div',
+        ariaLabel: null,
+        name: null,
+      });
     });
 
     it('allows non-sensitive input types', () => {
