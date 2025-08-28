@@ -1,6 +1,6 @@
 {
   "name": "@statsig/cli-session-replay-node",
-  "version": "3.24.4",
+  "version": "3.24.5",
   "license": "ISC",
   "homepage": "https://github.com/statsig-io/js-client-monorepo",
   "repository": {
@@ -9,7 +9,7 @@
     "directory": "packages/cli-session-replay-node"
   },
   "dependencies": {
-    "@statsig/client-core": "3.24.4",
+    "@statsig/client-core": "3.24.5",
     "intercept-stdout": "^0.1.2"
   },
   "type": "commonjs",
