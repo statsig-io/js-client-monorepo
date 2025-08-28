@@ -473,13 +473,17 @@ export class AutoCapture {
 
     typedClient._possibleFirstTouchMetadata =
       _getPossibleFirstTouchMetadata(_getSafeUrl());
-    typedClient._user = {
-      ...typedClient._user,
-      analyticsOnlyMetadata: {
-        ...typedClient._possibleFirstTouchMetadata,
-        ...typedClient._user.analyticsOnlyMetadata,
-      },
-    };
+
+    // Only update user if first touch metadata is not empty
+    if (Object.keys(typedClient._possibleFirstTouchMetadata).length > 0) {
+      typedClient._user = {
+        ...typedClient._user,
+        analyticsOnlyMetadata: {
+          ...typedClient._possibleFirstTouchMetadata,
+          ...typedClient._user.analyticsOnlyMetadata,
+        },
+      };
+    }
   }
 
   private _flushImmediately(): void {

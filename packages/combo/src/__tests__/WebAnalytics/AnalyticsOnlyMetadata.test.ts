@@ -4,6 +4,7 @@ import {
   LogEventCompressionMode,
   StatsigClient,
   StatsigUser,
+  _getStatsigGlobal,
 } from '@statsig/js-client';
 import { runStatsigAutoCapture } from '@statsig/web-analytics';
 
@@ -22,11 +23,8 @@ describe('AnalyticsOnlyMetadata', () => {
   };
 
   beforeEach(() => {
-    fetchMock.resetMocks();
-  });
-
-  beforeAll(() => {
-    fetchMock.enableMocks();
+    jest.clearAllMocks();
+    _getStatsigGlobal().acInstances = {};
     Object.defineProperty(window, 'location', {
       value: {
         href: 'http://foo.com/?utm_source=source&utm_medium=medium&utm_campaign=campaign&utm_term=term&utm_content=content',
@@ -35,13 +33,15 @@ describe('AnalyticsOnlyMetadata', () => {
     });
   });
 
-  afterAll(async () => {
-    await client.shutdown();
-
-    fetchMock.mockClear();
+  beforeAll(() => {
+    fetchMock.enableMocks();
   });
 
-  xit('should add analytics only metadata to the user in log event', async () => {
+  afterEach(async () => {
+    await client.shutdown();
+  });
+
+  it('should add analytics only metadata to the user in log event', async () => {
     client = new StatsigClient('client-key', user, {
       logEventCompressionMode: LogEventCompressionMode.Disabled,
     });
@@ -65,7 +65,7 @@ describe('AnalyticsOnlyMetadata', () => {
     expect(customEvent.user.analyticsOnlyMetadata.test).toEqual('test');
   });
 
-  xit('should add first touch metadata to the user in auto capture', async () => {
+  it('should add first touch metadata to the user in auto capture', async () => {
     client = new StatsigClient('client-key', user, {
       logEventCompressionMode: LogEventCompressionMode.Disabled,
     });
@@ -83,9 +83,10 @@ describe('AnalyticsOnlyMetadata', () => {
     });
   });
 
-  xit('saves first touch metadata even if updateUserWithAnalyticsOnlyMetadata is called', async () => {
+  it('saves first touch metadata even if updateUserWithAnalyticsOnlyMetadata is called', async () => {
     client = new StatsigClient('client-key', user, {
       logEventCompressionMode: LogEventCompressionMode.Disabled,
+      disableStatsigEncoding: true,
     });
     runStatsigAutoCapture(client);
     await client.initializeAsync();
@@ -154,5 +155,36 @@ describe('AnalyticsOnlyMetadata', () => {
     expect(customEvent.user?.analyticsOnlyMetadata).toEqual({
       ...firstTouchMetadata,
     });
+  });
+
+  it('should not attach analytics only metadata to the user if no first touch metadata is present', async () => {
+    Object.defineProperty(window, 'location', {
+      value: {
+        href: 'http://foo.com',
+      },
+      writable: true,
+    });
+
+    client = new StatsigClient('client-key', user, {
+      logEventCompressionMode: LogEventCompressionMode.Disabled,
+    });
+    runStatsigAutoCapture(client);
+    await client.initializeAsync();
+
+    client.logEvent('custom_event', 1, {
+      event_metadata: 'metadata',
+    });
+
+    await client.flush();
+
+    const request = fetchMock.mock.calls[fetchMock.mock.calls.length - 1];
+    const body = JSON.parse(String(request[1]?.body ?? '')) as any;
+
+    const customEvent = body.events.find(
+      (event: any) => event.eventName === 'custom_event',
+    );
+    expect(customEvent.eventName).toEqual('custom_event');
+    expect(customEvent.user.userID).toEqual('a-user');
+    expect(customEvent.user.analyticsOnlyMetadata).toBeUndefined();
   });
 });
