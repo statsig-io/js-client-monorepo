@@ -108,6 +108,16 @@ export class EventLogger {
   }
 
   setLoggingEnabled(loggingEnabled: LoggingEnabledOption): void {
+    if (this._loggingEnabled === 'disabled' && loggingEnabled !== 'disabled') {
+      // load any pre consented events into memory
+      const storageKey = this._getStorageKey();
+      const events = _getObjectFromStorage<EventQueue>(storageKey);
+      if (events) {
+        this._queue.push(...events);
+      }
+      Storage.removeItem(storageKey);
+    }
+
     this._loggingEnabled = loggingEnabled;
   }
 

@@ -124,3 +124,51 @@ describe('Event Logger', () => {
     ]);
   });
 });
+
+describe('Event Logger Update Runtime Options', () => {
+  beforeEach(() => {
+    jest.resetModules();
+    fetchMock.enableMocks();
+    fetchMock.mock.calls = [];
+  });
+
+  it('updates loggingEnabled', async () => {
+    const client = new StatsigClient(
+      'my-key',
+      {},
+      { loggingEnabled: 'disabled' },
+    );
+    client.initializeSync();
+    client.logEvent('test-event111');
+    await client.flush();
+    expect(getLogEventCalls()).toHaveLength(0);
+
+    client.updateRuntimeOptions({ loggingEnabled: 'always' });
+    client.logEvent('test-event222');
+
+    await client.flush();
+    expect(getLogEventCalls()).toHaveLength(1);
+  });
+
+  it('loads pre consent events after enabling logging', async () => {
+    const client = new StatsigClient(
+      'my-key',
+      {},
+      { loggingEnabled: 'disabled' },
+    );
+    client.initializeSync();
+    client.logEvent('test-event111');
+    await client.flush();
+    expect(getLogEventCalls()).toHaveLength(0);
+
+    client.updateRuntimeOptions({ loggingEnabled: 'always' });
+    client.logEvent('test-event222');
+
+    await client.flush();
+    const logEventCalls = getLogEventCalls();
+    expect(logEventCalls).toHaveLength(1);
+    const body = JSON.parse(String(logEventCalls[0][1]?.body ?? '')) as any;
+    expect(body.events[0].eventName).toEqual('test-event111');
+    expect(body.events[1].eventName).toEqual('test-event222');
+  });
+});
