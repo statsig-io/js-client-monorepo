@@ -158,6 +158,22 @@ export class EventLogger {
 
     this._retryFailedLogs(RetryFailedLogsTrigger.Startup);
     this._startBackgroundFlushInterval();
+
+    const flushIntervalId = this._flushIntervalId;
+    if (
+      isServerEnv &&
+      flushIntervalId != null &&
+      typeof flushIntervalId === 'object'
+    ) {
+      // `Timeout::unref` is a Node.js API that allows the event loop to exit
+      // regardless of this timer being active.
+      //
+      // Flushing pending events on exit isn't implemented because calling `stop` seems to cause other
+      // hangs.
+      //
+      // The consumer can call `stop` manually to flush pending events.
+      (flushIntervalId as unknown as { unref: () => void }).unref();
+    }
   }
 
   async stop(): Promise<void> {
