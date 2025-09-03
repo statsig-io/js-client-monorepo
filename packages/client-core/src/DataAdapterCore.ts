@@ -21,6 +21,7 @@ import {
 import { _typedJsonParse } from './TypedJsonParse';
 
 const CACHE_LIMIT = 10;
+const MAX_CACHE_WRITE_ATTEMPTS = 8;
 
 export abstract class DataAdapterCore {
   protected _options: AnyStatsigOptions | null = null;
@@ -28,6 +29,7 @@ export abstract class DataAdapterCore {
   private _sdkKey: string | null = null;
   private _inMemoryCache: InMemoryCache;
   private _lastModifiedStoreKey: string;
+  private _cacheLimit: number = CACHE_LIMIT;
 
   protected constructor(
     private _adapterName: string,
@@ -57,7 +59,7 @@ export abstract class DataAdapterCore {
 
     const cache = this._loadFromCache(cacheKey);
     if (cache && this._getIsCacheValueValid(cache)) {
-      this._inMemoryCache.add(cacheKey, cache);
+      this._inMemoryCache.add(cacheKey, cache, this._cacheLimit);
       return this._inMemoryCache.get(cacheKey, normalized);
     }
 
@@ -71,6 +73,7 @@ export abstract class DataAdapterCore {
     this._inMemoryCache.add(
       cacheKey,
       _makeDataAdapterResult('Bootstrap', data, null, normalized),
+      this._cacheLimit,
     );
   }
 
@@ -114,7 +117,11 @@ export abstract class DataAdapterCore {
     const cacheKey = this._getCacheKey(normalized);
     const result = await this._getDataAsyncImpl(null, normalized, options);
     if (result) {
-      this._inMemoryCache.add(cacheKey, { ...result, source: 'Prefetch' });
+      this._inMemoryCache.add(
+        cacheKey,
+        { ...result, source: 'Prefetch' },
+        this._cacheLimit,
+      );
     }
   }
 
@@ -177,7 +184,7 @@ export abstract class DataAdapterCore {
     }
 
     const cacheKey = this._getCacheKey(user);
-    this._inMemoryCache.add(cacheKey, result);
+    this._inMemoryCache.add(cacheKey, result, this._cacheLimit);
     this._writeToCache(cacheKey, result);
 
     return result;
@@ -208,19 +215,40 @@ export abstract class DataAdapterCore {
   }
 
   private _writeToCache(cacheKey: string, result: DataAdapterResult): void {
-    Storage.setItem(cacheKey, JSON.stringify(result));
+    const resultString = JSON.stringify(result);
+
+    for (let i = 0; i < MAX_CACHE_WRITE_ATTEMPTS; i++) {
+      try {
+        Storage.setItem(cacheKey, resultString);
+        break;
+      } catch (error) {
+        if (
+          !(error instanceof Error) ||
+          error.name !== 'QuotaExceededError' ||
+          this._cacheLimit <= 1
+        ) {
+          throw error;
+        }
+        this._cacheLimit = Math.ceil(this._cacheLimit / 2);
+        this._runLocalStorageCacheEviction(cacheKey, this._cacheLimit - 1);
+      }
+    }
+
     this._runLocalStorageCacheEviction(cacheKey);
   }
 
-  private _runLocalStorageCacheEviction(cacheKey: string) {
+  private _runLocalStorageCacheEviction(
+    cacheKey: string,
+    cacheLimit: number = this._cacheLimit,
+  ) {
     const lastModifiedTimeMap =
       _getObjectFromStorage<Record<string, number>>(
         this._lastModifiedStoreKey,
       ) ?? {};
     lastModifiedTimeMap[cacheKey] = Date.now();
 
-    const evictable = _getEvictableKey(lastModifiedTimeMap, CACHE_LIMIT);
-    if (evictable) {
+    const evictableKeys = _getEvictableKeys(lastModifiedTimeMap, cacheLimit);
+    for (const evictable of evictableKeys) {
       delete lastModifiedTimeMap[evictable];
       Storage.removeItem(evictable);
     }
@@ -263,10 +291,10 @@ class InMemoryCache {
     return result;
   }
 
-  add(cacheKey: string, value: DataAdapterResult) {
-    const oldest = _getEvictableKey(this._data, CACHE_LIMIT - 1);
-    if (oldest) {
-      delete this._data[oldest];
+  add(cacheKey: string, value: DataAdapterResult, cacheLimit: number) {
+    const evictableKeys = _getEvictableKeys(this._data, cacheLimit - 1);
+    for (const evictable of evictableKeys) {
+      delete this._data[evictable];
     }
 
     this._data[cacheKey] = value;
@@ -277,22 +305,28 @@ class InMemoryCache {
   }
 }
 
-function _getEvictableKey(
-  data: Record<string, number | { receivedAt: number }>,
+function _getEvictableKeys(
+  data: Record<string, number> | Record<string, { receivedAt: number }>,
   limit: number,
-): string | null {
+): string[] {
   const keys = Object.keys(data);
   if (keys.length <= limit) {
-    return null;
+    return [];
+  }
+  if (limit === 0) {
+    return keys;
   }
 
-  return keys.reduce((prevKey, currKey) => {
-    const prev = data[prevKey];
-    const current = data[currKey];
-    if (typeof prev === 'object' && typeof current === 'object') {
-      return current.receivedAt < prev.receivedAt ? currKey : prevKey;
-    }
+  return keys
+    .sort((keyA, keyB) => {
+      const valueA = data[keyA];
+      const valueB = data[keyB];
 
-    return current < prev ? currKey : prevKey;
-  });
+      if (typeof valueA === 'object' && typeof valueB === 'object') {
+        return valueA.receivedAt - valueB.receivedAt;
+      }
+
+      return (valueA as number) - (valueB as number);
+    })
+    .slice(0, keys.length - limit);
 }

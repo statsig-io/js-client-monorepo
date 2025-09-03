@@ -192,7 +192,8 @@
       "$_evaluateMultiNestedGates": "dn",
       "$_defaultEnvironment": "vn",
       "$_getSpecs": "fn",
-      "$_getOutputs": "_n"
+      "$_getOutputs": "_n",
+      "$_cacheLimit": "gn"
     }
   }
 }

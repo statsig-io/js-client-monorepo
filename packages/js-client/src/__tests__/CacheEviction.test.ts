@@ -90,3 +90,111 @@ describe('Cache Eviction', () => {
     });
   });
 });
+
+describe('Storage Quota Handling', () => {
+  let storageMock: MockLocalStorage;
+  let adapter: StatsigEvaluationsDataAdapter;
+  let originalSetItem: (key: string, value: string) => void;
+
+  beforeEach(() => {
+    storageMock = MockLocalStorage.enabledMockStorage();
+    storageMock.clear();
+
+    fetchMock.enableMocks();
+    fetchMock.mockResponse(InitResponseString);
+
+    adapter = new StatsigEvaluationsDataAdapter();
+    adapter.attach(
+      'client-key',
+      {
+        customUserCacheKeyFunc: (_sdkKey: string, user: StatsigUser) =>
+          user.userID ?? '',
+      },
+      null,
+    );
+
+    // Store original setItem to restore later
+    originalSetItem = storageMock.setItem;
+  });
+
+  afterEach(() => {
+    MockLocalStorage.disableMockStorage();
+  });
+
+  it('evicts old cached keys on QuotaExceededError', async () => {
+    storageMock.setItem = jest.fn((key: string, value: string) => {
+      if (
+        key.startsWith(DataAdapterCachePrefix) &&
+        Object.keys(storageMock.data).filter((k) =>
+          k.startsWith(DataAdapterCachePrefix),
+        ).length > 0
+      ) {
+        const error = new Error('QuotaExceededError');
+        error.name = 'QuotaExceededError';
+        throw error;
+      }
+      originalSetItem.call(storageMock, key, value);
+    });
+
+    await adapter.getDataAsync(null, { userID: `user-a` });
+    const userAKey = 'statsig.cached.evaluations.user-a';
+    expect(storageMock.data[userAKey]).toBeDefined();
+
+    await adapter.getDataAsync(null, { userID: 'new-user' });
+
+    // Check that `user-a` has been evicted
+    expect(storageMock.data[userAKey]).toBeUndefined();
+  });
+
+  it('retries on QuotaExceededError until successful', async () => {
+    let setItemCount = 0;
+    storageMock.setItem = jest.fn((key: string, value: string) => {
+      if (key.startsWith(DataAdapterCachePrefix) && setItemCount <= 2) {
+        setItemCount++;
+        const error = new Error('QuotaExceededError');
+        error.name = 'QuotaExceededError';
+        throw error;
+      }
+      originalSetItem.call(storageMock, key, value);
+    });
+
+    await adapter.getDataAsync(null, { userID: 'new-user' });
+
+    expect(setItemCount).toBeGreaterThan(2);
+  });
+
+  it('retries on QuotaExceededError within a limit', async () => {
+    let setItemCount = 0;
+    storageMock.setItem = jest.fn((key: string, value: string) => {
+      if (key.startsWith(DataAdapterCachePrefix)) {
+        setItemCount++;
+        const error = new Error('QuotaExceededError');
+        error.name = 'QuotaExceededError';
+        throw error;
+      }
+      originalSetItem.call(storageMock, key, value);
+    });
+
+    await expect(
+      adapter.getDataAsync(null, { userID: 'new-user' }),
+    ).rejects.toThrow('QuotaExceededError');
+    expect(setItemCount).toBeLessThan(100);
+  });
+
+  it('rethrows non-QuotaExceededError', async () => {
+    let setItemCount = 0;
+    storageMock.setItem = jest.fn((key: string, value: string) => {
+      if (key.startsWith(DataAdapterCachePrefix)) {
+        setItemCount++;
+        throw new Error('SomeOtherError');
+      }
+      originalSetItem.call(storageMock, key, value);
+    });
+
+    await expect(
+      adapter.getDataAsync(null, { userID: 'new-user' }),
+    ).rejects.toThrow('SomeOtherError');
+
+    expect(setItemCount).toEqual(1);
+  });
+});
