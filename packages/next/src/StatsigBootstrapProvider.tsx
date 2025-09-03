@@ -2,6 +2,7 @@ import { cookies } from 'next/headers';
 import { JSX, ReactNode } from 'react';
 import Statsig, {
   InitializationDetails,
+  StatsigOptions as StatsigNodeOptions,
   StatsigUser as StatsigNodeUser,
 } from 'statsig-node';
 
@@ -22,6 +23,7 @@ export default async function StatsigBootstrapProvider({
   serverKey,
   useCookie = true,
   clientOptions,
+  serverOptions,
 }: {
   user: StatsigUser;
   children: ReactNode;
@@ -29,17 +31,22 @@ export default async function StatsigBootstrapProvider({
   serverKey: string;
   useCookie?: boolean;
   clientOptions?: StatsigOptions | null;
+  serverOptions?: StatsigNodeOptions | null;
 }): Promise<JSX.Element> {
   if (!statsigInitialization[serverKey]) {
-    statsigInitialization[serverKey] = Statsig.initialize(serverKey);
+    statsigInitialization[serverKey] = Statsig.initialize(
+      serverKey,
+      serverOptions ?? undefined,
+    );
   }
   await statsigInitialization[serverKey];
 
   if (!user.customIDs?.stableID && useCookie) {
-    if (cookies().get(getCookieName(clientKey))) {
+    const cookieValue = await cookies().get(getCookieName(clientKey));
+    if (cookieValue) {
       user.customIDs = {
         ...(user.customIDs || {}),
-        stableID: cookies().get(getCookieName(clientKey))?.value,
+        stableID: cookieValue.value,
       };
     } else {
       const stableID = getUUID();
