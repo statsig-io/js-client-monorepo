@@ -175,19 +175,21 @@ export class AutoCapture {
       return;
     }
 
-    _registerEventHandler(win, 'popstate', () => this._tryLogPageView());
+    _registerEventHandler(win, 'popstate', () =>
+      this._tryLogPageView('popstate'),
+    );
 
     window.history.pushState = new Proxy(window.history.pushState, {
       apply: (target, thisArg, [state, unused, url]) => {
         target.apply(thisArg, [state, unused, url]);
-        this._tryLogPageView();
+        this._tryLogPageView('pushstate');
       },
     });
 
     window.history.replaceState = new Proxy(window.history.replaceState, {
       apply: (target, thisArg, [state, unused, url]) => {
         target.apply(thisArg, [state, unused, url]);
-        this._tryLogPageView();
+        this._tryLogPageView('replacestate');
       },
     });
 
@@ -302,11 +304,13 @@ export class AutoCapture {
     }
   }
 
-  private _tryLogPageView() {
+  private _tryLogPageView(
+    navigationType?: 'pushstate' | 'replacestate' | 'popstate',
+  ) {
     const url = _getSafeUrl();
 
     const last = this._previousLoggedPageViewUrl;
-    if (last && url.href === last.href) {
+    if (last && url.pathname === last.pathname) {
       return;
     }
 
@@ -315,6 +319,9 @@ export class AutoCapture {
     this._hasLoggedPageViewEnd = false;
 
     const payload = _gatherAllMetadata(url);
+    if (navigationType) {
+      payload['navigation_type'] = navigationType;
+    }
     if (this._previousLoggedPageViewUrl) {
       payload['last_page_view_url'] = this._previousLoggedPageViewUrl.href;
     }

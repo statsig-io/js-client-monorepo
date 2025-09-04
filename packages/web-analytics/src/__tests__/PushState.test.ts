@@ -161,4 +161,98 @@ describe('PushState Tests', () => {
 
     await client2.shutdown();
   });
+
+  it('does not log pageview for same path with different URL parameters', async () => {
+    requestDataList.length = 0;
+
+    window.history.pushState({}, '', '/search');
+    await new Promise((f) => {
+      pageViewResolver = f;
+    });
+
+    const firstEventData = getLastPageViewEvent(requestDataList);
+    expect(firstEventData['eventName']).toMatch('auto_capture::page_view');
+    expect(firstEventData['value']).toMatch('/search');
+
+    requestDataList.length = 0;
+
+    window.history.pushState({}, '', '/search?q=test&page=1');
+
+    await new Promise((resolve) => setTimeout(resolve, 100));
+
+    const pageViewEvent = getLastPageViewEvent(requestDataList);
+    expect(pageViewEvent).toEqual({});
+  });
+
+  it('does not log pageview for same path with different hash fragments', async () => {
+    requestDataList.length = 0;
+
+    window.history.pushState({}, '', '/page');
+    await new Promise((f) => {
+      pageViewResolver = f;
+    });
+
+    const firstEventData = getLastPageViewEvent(requestDataList);
+    expect(firstEventData['eventName']).toMatch('auto_capture::page_view');
+    expect(firstEventData['value']).toMatch('/page');
+
+    requestDataList.length = 0;
+
+    window.history.pushState({}, '', '/page#section1');
+
+    await new Promise((resolve) => setTimeout(resolve, 100));
+
+    const pageViewEvent = getLastPageViewEvent(requestDataList);
+    expect(pageViewEvent).toEqual({});
+  });
+
+  it('does not log pageview for same path with both query params and hash changes', async () => {
+    requestDataList.length = 0;
+
+    window.history.pushState({}, '', '/dashboard');
+    await new Promise((f) => {
+      pageViewResolver = f;
+    });
+
+    const firstEventData = getLastPageViewEvent(requestDataList);
+    expect(firstEventData['eventName']).toMatch('auto_capture::page_view');
+    expect(firstEventData['value']).toMatch('/dashboard');
+
+    requestDataList.length = 0;
+
+    window.history.pushState(
+      {},
+      '',
+      '/dashboard?tab=settings&view=grid#profile',
+    );
+
+    await new Promise((resolve) => setTimeout(resolve, 100));
+
+    const pageViewEvent = getLastPageViewEvent(requestDataList);
+    expect(pageViewEvent).toEqual({});
+  });
+
+  it('logs pageview when pathname actually changes', async () => {
+    requestDataList.length = 0;
+
+    window.history.pushState({}, '', '/search');
+    await new Promise((f) => {
+      pageViewResolver = f;
+    });
+
+    const firstEventData = getLastPageViewEvent(requestDataList);
+    expect(firstEventData['eventName']).toMatch('auto_capture::page_view');
+    expect(firstEventData['value']).toMatch('/search');
+
+    requestDataList.length = 0;
+
+    window.history.pushState({}, '', '/results');
+    await new Promise((f) => {
+      pageViewResolver = f;
+    });
+
+    const secondEventData = getLastPageViewEvent(requestDataList);
+    expect(secondEventData['eventName']).toMatch('auto_capture::page_view');
+    expect(secondEventData['value']).toMatch('/results');
+  });
 });
