@@ -1,6 +1,6 @@
 {
   "name": "@statsig/react-native-core",
-  "version": "3.24.5",
+  "version": "3.25.0",
   "license": "ISC",
   "homepage": "https://github.com/statsig-io/js-client-monorepo",
   "repository": {
@@ -9,7 +9,7 @@
     "directory": "packages/react-native-core"
   },
   "dependencies": {
-    "@statsig/client-core": "3.24.5"
+    "@statsig/client-core": "3.25.0"
   },
   "peerDependencies": {
     "react-native": "0.*",
