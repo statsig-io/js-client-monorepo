@@ -54,4 +54,7 @@ export type ConsoleLogAutoCaptureSettings = {
    * @default 1.0 - capture all events
    */
   sampleRate?: number;
+  maxKeys?: number; // limit on number of keys in an object
+  maxDepth?: number; // limit on nesting depth
+  maxStringLength?: number; // limit on length of stringified output
 };

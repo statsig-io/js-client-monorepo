@@ -4,6 +4,7 @@ import { ErrorBoundary, Log, _getWindowSafe } from '@statsig/client-core';
 import { AutoCaptureEventName } from './AutoCaptureEvent';
 import { ConsoleLogAutoCaptureSettings } from './AutoCaptureOptions';
 import { _getSafeUrl, wrapFunctionWithRestore } from './utils/commonUtils';
+import { _getStackTrace, _safeStringify } from './utils/consoleLogsUtils';
 import { _gatherAllMetadata } from './utils/metadataUtils';
 
 export type ConsoleLogLevel =
@@ -23,11 +24,18 @@ const ConsoleLogPriority: Record<ConsoleLogLevel, number> = {
   error: 50,
 };
 
+const DEFAULT_MAX_KEYS = 10;
+const DEFAULT_MAX_DEPTH = 10;
+const DEFAULT_MAX_STRING_LENGTH = 500;
+
 export class ConsoleLogManager {
   private _restoreFns: (() => void)[] = [];
   private _isTracking = false;
   private _logLevel: ConsoleLogLevel = 'info';
   private readonly __source = 'js-auto-capture';
+  private readonly _maxKeys: number;
+  private readonly _maxDepth: number;
+  private readonly _maxStringLength: number;
 
   constructor(
     private _enqueueFn: (
@@ -39,6 +47,10 @@ export class ConsoleLogManager {
     private _options: ConsoleLogAutoCaptureSettings,
   ) {
     this._logLevel = this._options.logLevel ?? 'info';
+    this._maxKeys = this._options.maxKeys ?? DEFAULT_MAX_KEYS;
+    this._maxDepth = this._options.maxDepth ?? DEFAULT_MAX_DEPTH;
+    this._maxStringLength =
+      this._options.maxStringLength ?? DEFAULT_MAX_STRING_LENGTH;
   }
 
   public startTracking(): void {
@@ -82,8 +94,15 @@ export class ConsoleLogManager {
               inStack = true;
 
               try {
-                const payload = args.map((a) => this._safeStringify(a));
-                const trace = this._getStackTrace();
+                const payload = args.map((a) =>
+                  _safeStringify(
+                    a,
+                    this._maxKeys,
+                    this._maxDepth,
+                    this._maxStringLength,
+                  ),
+                );
+                const trace = _getStackTrace();
 
                 this._enqueueConsoleLog(level, payload, trace);
               } catch (err) {
@@ -137,25 +156,6 @@ export class ConsoleLogManager {
     ) {
       return true;
     }
-
     return Math.random() < this._options.sampleRate;
-  }
-
-  private _safeStringify(val: unknown): string {
-    try {
-      if (typeof val === 'string') return val;
-      if (typeof val === 'object' && val !== null) return JSON.stringify(val);
-      return String(val);
-    } catch {
-      return '[Unserializable]';
-    }
-  }
-
-  private _getStackTrace(): string[] {
-    try {
-      return new Error().stack?.split('\n').slice(2) ?? [];
-    } catch {
-      return [];
-    }
   }
 }
