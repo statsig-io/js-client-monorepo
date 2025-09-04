@@ -82,12 +82,14 @@ export class AutoCapture {
   private _webVitalsManager: WebVitalsManager;
   private _deadClickManager: DeadClickManager;
   private _consoleLogManager: ConsoleLogManager;
+  private _options?: AutoCaptureOptions;
 
   constructor(
     private _client: PrecomputedEvaluationsInterface,
     options?: AutoCaptureOptions,
   ) {
     const { sdkKey, errorBoundary, values } = _client.getContext();
+    this._options = options;
     this._disabledEvents = values?.auto_capture_settings?.disabled_events ?? {};
     this._errorBoundary = errorBoundary;
     this._errorBoundary.wrap(this, 'autoCapture:');
@@ -221,7 +223,9 @@ export class AutoCapture {
       if (!selectedText) {
         return;
       }
-      metadata['selectedText'] = _sanitizeString(selectedText);
+      if (this._options?.captureCopyText) {
+        metadata['selectedText'] = _sanitizeString(selectedText);
+      }
       const clipType = (event as ClipboardEvent).type || 'clipboard';
       metadata['clipType'] = clipType;
     }

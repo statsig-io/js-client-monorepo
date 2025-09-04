@@ -2,6 +2,7 @@ import { _getWindowSafe } from '@statsig/client-core';
 
 import {
   _getAnchorNodeInHierarchy,
+  _getSafeUrl,
   _getSanitizedPageUrl,
   _sanitizeString,
 } from './commonUtils';
@@ -44,6 +45,10 @@ export function _gatherEventData(target: Element): {
 
   if (tagName === 'button' || anchor) {
     Object.assign(metadata, _getButtonMetadata(anchor || target));
+  }
+
+  if (_isOutboundLink(metadata)) {
+    metadata['isOutbound'] = 'true';
   }
 
   return { value, metadata };
@@ -124,6 +129,24 @@ function _truncateString(
 ): string | null {
   if (!str) return null;
   return str.length > maxLength ? str.substring(0, maxLength) + '...' : str;
+}
+function _isOutboundLink(metadata: Record<string, unknown>): boolean {
+  if (
+    Array.isArray(metadata['classList']) &&
+    metadata['classList']?.includes('statsig-ctr-capture')
+  ) {
+    return true;
+  }
+
+  const href = metadata['href'] as string;
+  if (href) {
+    const currentUrl = _getSafeUrl();
+    const linkUrl = new URL(href);
+
+    return currentUrl.host !== linkUrl.host;
+  }
+
+  return false;
 }
 
 function _getSafeMetadataAttributes(elem: Element): Record<string, unknown> {

@@ -127,7 +127,7 @@ describe('CopyAutocapture', () => {
 
   it('should log copy events when text is copied', async () => {
     setWindowTextSelection('Test text to copy');
-    runStatsigAutoCapture(client);
+    runStatsigAutoCapture(client, { captureCopyText: true });
 
     // Simulate copy event
     const copyEvent = new ClipboardEvent('copy', {
@@ -149,7 +149,7 @@ describe('CopyAutocapture', () => {
 
   it('should log cut events when text is cut', async () => {
     setWindowTextSelection('Test text to cut');
-    runStatsigAutoCapture(client);
+    runStatsigAutoCapture(client, { captureCopyText: true });
 
     // Simulate cut event
     const cutEvent = new ClipboardEvent('cut', {
@@ -171,7 +171,7 @@ describe('CopyAutocapture', () => {
 
   it('should handle copy events with no selected text', async () => {
     setWindowTextSelection('');
-    runStatsigAutoCapture(client);
+    runStatsigAutoCapture(client, { captureCopyText: true });
 
     const copyEvent = new ClipboardEvent('copy', {
       bubbles: true,
@@ -193,7 +193,7 @@ describe('CopyAutocapture', () => {
     document.body.appendChild(testElement);
 
     setWindowTextSelection('Test text');
-    runStatsigAutoCapture(client);
+    runStatsigAutoCapture(client, { captureCopyText: true });
 
     const copyEvent = new ClipboardEvent('copy', {
       bubbles: true,
@@ -217,7 +217,7 @@ describe('CopyAutocapture', () => {
 
   it('should sanitize selected text properly', async () => {
     setWindowTextSelection('Text with <strong>HTML</strong> tags');
-    runStatsigAutoCapture(client);
+    runStatsigAutoCapture(client, { captureCopyText: true });
 
     const copyEvent = new ClipboardEvent('copy', {
       bubbles: true,
@@ -233,5 +233,23 @@ describe('CopyAutocapture', () => {
     expect(copyEventData['metadata']['selectedText']).toBe(
       'Text with HTML tags',
     );
+  });
+
+  it('should not capture selected text if captureCopyText is not set', async () => {
+    setWindowTextSelection('copy text');
+    runStatsigAutoCapture(client);
+
+    const copyEvent = new ClipboardEvent('copy', {
+      bubbles: true,
+      cancelable: true,
+    });
+    testElement.dispatchEvent(copyEvent);
+
+    await new Promise((resolve) => {
+      copyEventResolver = resolve;
+    });
+
+    const copyEventData = getLastCopyEvent(requestDataList);
+    expect(copyEventData['metadata']['selectedText']).toBeUndefined();
   });
 });

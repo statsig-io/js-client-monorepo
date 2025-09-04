@@ -327,3 +327,110 @@ describe('CSS Selector Generation', () => {
     expect(expectedLevels).toBeLessThanOrEqual(50);
   });
 });
+
+describe('Outbound Link Detection', () => {
+  let container: HTMLElement;
+
+  beforeEach(() => {
+    container = document.createElement('div');
+    document.body.appendChild(container);
+  });
+
+  afterEach(() => {
+    document.body.removeChild(container);
+  });
+
+  it('detects outbound links with statsig-ctr-capture class', () => {
+    const button = document.createElement('button');
+    button.className = 'btn statsig-ctr-capture primary';
+    container.appendChild(button);
+
+    const result = _gatherEventData(button);
+    expect(result.metadata['isOutbound']).toBe('true');
+  });
+
+  it('detects outbound links with href attribute to different domain', () => {
+    const anchor = document.createElement('a');
+    anchor.setAttribute('href', 'https://example.com');
+    container.appendChild(anchor);
+
+    const result = _gatherEventData(anchor);
+    expect(result.metadata['isOutbound']).toBe('true');
+    expect(result.metadata['href']).toBe('https://example.com');
+  });
+
+  it('detects outbound links when button is inside anchor with href to different domain', () => {
+    const anchor = document.createElement('a');
+    anchor.setAttribute('href', 'https://example.com');
+    container.appendChild(anchor);
+
+    const button = document.createElement('button');
+    button.textContent = 'Click me';
+    anchor.appendChild(button);
+
+    const result = _gatherEventData(button);
+    expect(result.metadata['isOutbound']).toBe('true');
+    expect(result.metadata['href']).toBe('https://example.com');
+  });
+
+  it('detects outbound links when element has both statsig-ctr-capture class and href to different domain', () => {
+    const anchor = document.createElement('a');
+    anchor.setAttribute('href', 'https://example.com');
+    anchor.className = 'link statsig-ctr-capture';
+    container.appendChild(anchor);
+
+    const result = _gatherEventData(anchor);
+    expect(result.metadata['isOutbound']).toBe('true');
+    expect(result.metadata['href']).toBe('https://example.com');
+  });
+
+  it('does not mark as outbound when element has neither statsig-ctr-capture class nor href', () => {
+    const button = document.createElement('button');
+    button.className = 'btn primary';
+    button.textContent = 'Regular button';
+    container.appendChild(button);
+
+    const result = _gatherEventData(button);
+    expect(result.metadata['isOutbound']).toBeUndefined();
+  });
+
+  it('does not mark as outbound for same-domain links', () => {
+    const anchor = document.createElement('a');
+    anchor.setAttribute('href', window.location.href);
+    container.appendChild(anchor);
+
+    const result = _gatherEventData(anchor);
+    expect(result.metadata['isOutbound']).toBeUndefined();
+    expect(result.metadata['href']).toBe(window.location.href);
+  });
+
+  it('does not mark as outbound for relative links', () => {
+    const anchor = document.createElement('a');
+    anchor.setAttribute('href', window.location.href + '/some-page');
+    container.appendChild(anchor);
+
+    const result = _gatherEventData(anchor);
+    expect(result.metadata['isOutbound']).toBeUndefined();
+    expect(result.metadata['href']).toBe(window.location.href + '/some-page');
+  });
+
+  it('handles anchor with empty href', () => {
+    const anchor = document.createElement('a');
+    anchor.setAttribute('href', '');
+    container.appendChild(anchor);
+
+    const result = _gatherEventData(anchor);
+    expect(result.metadata['isOutbound']).toBeUndefined();
+    expect(result.metadata['href']).toBe('');
+  });
+
+  it('handles anchor with null href', () => {
+    const anchor = document.createElement('a');
+    // No href attribute set
+    container.appendChild(anchor);
+
+    const result = _gatherEventData(anchor);
+    expect(result.metadata['isOutbound']).toBeUndefined();
+    expect(result.metadata['href']).toBeNull();
+  });
+});
