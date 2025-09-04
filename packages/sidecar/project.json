@@ -6,7 +6,19 @@
   "targets": {
     "build": {
       "command": ":",
-      "dependsOn": ["^build", "build-webpack"]
+      "dependsOn": ["^build", "build-webpack", "copy-assets"]
+    },
+    "copy-assets": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "cp packages/sidecar/package.json dist/packages/sidecar/",
+          "cp packages/sidecar/README.md dist/packages/sidecar/ || echo 'No README.md found'",
+          "cp LICENSE dist/packages/sidecar/ || echo 'No LICENSE found'"
+        ],
+        "parallel": false
+      },
+      "dependsOn": ["build-webpack"]
     },
     "build-webpack": {
       "executor": "@nx/webpack:webpack",

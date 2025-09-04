@@ -25,6 +25,5 @@
   },
   "jsdelivr": "./sidecar.min.js",
   "type": "commonjs",
-  "main": "./src/index.js",
-  "typings": "./src/index.d.ts"
+  "main": "./sidecar.min.js"
 }
