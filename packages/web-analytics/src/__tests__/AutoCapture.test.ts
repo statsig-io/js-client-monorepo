@@ -328,4 +328,102 @@ describe('Autocapture Tests', () => {
       dueToInactivity: true,
     });
   });
+
+  it('page_view_end has correct meaningfulEngagementOccurred flag when outbound link was clicked', async () => {
+    autoCapture['_hasLoggedPageViewEnd'] = false;
+
+    // Create an outbound link element
+    const outboundLink = document.createElement('a');
+    outboundLink.setAttribute('href', 'https://example.com');
+    outboundLink.textContent = 'External Link';
+    document.body.appendChild(outboundLink);
+
+    const clickEvent = new MouseEvent('click', {
+      bubbles: true,
+      cancelable: true,
+      clientX: 100,
+      clientY: 100,
+    });
+    outboundLink.dispatchEvent(clickEvent);
+
+    autoCapture['_tryLogPageViewEnd'](false);
+    await new Promise((f) => {
+      pageViewResolver = f;
+    });
+
+    const eventData = getLastPageViewEndEvent(requestDataList);
+    expect(eventData['eventName']).toMatch('auto_capture::page_view_end');
+    expect(eventData['metadata']).toMatchObject({
+      sessionID: expect.any(String),
+      page_url: expect.any(String),
+      meaningfulEngagementOccurred: true,
+    });
+
+    document.body.removeChild(outboundLink);
+  });
+
+  it('page_view_end has correct meaningfulEngagementOccurred flag when statsig-ctr-capture element was clicked', async () => {
+    autoCapture['_hasLoggedPageViewEnd'] = false;
+
+    // Create a button with statsig-ctr-capture class
+    const ctrButton = document.createElement('button');
+    ctrButton.className = 'btn statsig-ctr-capture primary';
+    ctrButton.textContent = 'CTR Button';
+    document.body.appendChild(ctrButton);
+
+    const clickEvent = new MouseEvent('click', {
+      bubbles: true,
+      cancelable: true,
+      clientX: 100,
+      clientY: 100,
+    });
+    ctrButton.dispatchEvent(clickEvent);
+
+    autoCapture['_tryLogPageViewEnd'](false);
+    await new Promise((f) => {
+      pageViewResolver = f;
+    });
+
+    const eventData = getLastPageViewEndEvent(requestDataList);
+    expect(eventData['eventName']).toMatch('auto_capture::page_view_end');
+    expect(eventData['metadata']).toMatchObject({
+      sessionID: expect.any(String),
+      page_url: expect.any(String),
+      meaningfulEngagementOccurred: true,
+    });
+
+    document.body.removeChild(ctrButton);
+  });
+
+  it('page_view_end has correct meaningfulEngagementOccurred flag when no outbound link was clicked', async () => {
+    autoCapture['_hasLoggedPageViewEnd'] = false;
+
+    const internalLink = document.createElement('a');
+    internalLink.setAttribute('href', window.location.href + '/some-page');
+    internalLink.textContent = 'Internal Link';
+    document.body.appendChild(internalLink);
+
+    const clickEvent = new MouseEvent('click', {
+      bubbles: true,
+      cancelable: true,
+      clientX: 100,
+      clientY: 100,
+    });
+    internalLink.dispatchEvent(clickEvent);
+
+    autoCapture['_tryLogPageViewEnd'](false);
+    await new Promise((f) => {
+      pageViewResolver = f;
+    });
+
+    const eventData = getLastPageViewEndEvent(requestDataList);
+    expect(eventData['eventName']).toMatch('auto_capture::page_view_end');
+    expect(eventData['metadata']).toMatchObject({
+      sessionID: expect.any(String),
+      page_url: expect.any(String),
+      meaningfulEngagementOccurred: false,
+    });
+
+    document.body.removeChild(internalLink);
+  });
 });

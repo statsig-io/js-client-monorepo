@@ -231,6 +231,9 @@ export class AutoCapture {
     }
 
     const { value, metadata: eventMetadata } = _gatherEventData(target);
+    if (eventMetadata['isOutbound']) {
+      this._engagementManager.setMeaningfulEngagementOccurred(true);
+    }
     Object.assign(metadata, eventMetadata);
 
     const allMetadata = _gatherAllMetadata(_getSafeUrl());
@@ -340,15 +343,12 @@ export class AutoCapture {
     }
 
     this._hasLoggedPageViewEnd = true;
-    const scrollMetrics = this._engagementManager.getScrollMetrics();
-    const pageViewLength = this._engagementManager.getPageViewLength();
 
     this._enqueueAutoCapture(
       AutoCaptureEventName.PAGE_VIEW_END,
       _getSanitizedPageUrl(),
       {
-        ...scrollMetrics,
-        pageViewLength,
+        ...this._engagementManager.getPageViewEndMetadata(),
         dueToInactivity,
       },
       {

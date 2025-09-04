@@ -10,6 +10,7 @@ export class EngagementManager {
   private _lastPageViewTime = Date.now();
   private _inactiveTimer: number | null = null;
   private _onInactivityCallback: (() => void) | null = null;
+  private _meaningfulEngagementOccurred = false;
 
   constructor() {
     this._initializeScrollTracking();
@@ -92,5 +93,19 @@ export class EngagementManager {
         this._onInactivityCallback();
       }
     }, PAGE_INACTIVE_TIMEOUT);
+  }
+
+  public setMeaningfulEngagementOccurred(occurred: boolean): void {
+    this._meaningfulEngagementOccurred = occurred;
+  }
+
+  public getPageViewEndMetadata(): Record<string, unknown> {
+    const pageviewEndMetadata = {
+      ...this.getScrollMetrics(),
+      pageViewLength: this.getPageViewLength(),
+      meaningfulEngagementOccurred: this._meaningfulEngagementOccurred,
+    };
+    this.setMeaningfulEngagementOccurred(false);
+    return pageviewEndMetadata;
   }
 }
