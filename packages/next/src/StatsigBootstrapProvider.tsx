@@ -42,11 +42,13 @@ export default async function StatsigBootstrapProvider({
   await statsigInitialization[serverKey];
 
   if (!user.customIDs?.stableID && useCookie) {
-    const cookieValue = await cookies().get(getCookieName(clientKey));
-    if (cookieValue) {
+    const cookieStore = await cookies();
+    const cookie = cookieStore.get(getCookieName(clientKey));
+
+    if (cookie) {
       user.customIDs = {
         ...(user.customIDs || {}),
-        stableID: cookieValue.value,
+        stableID: cookie.value,
       };
     } else {
       const stableID = getUUID();
