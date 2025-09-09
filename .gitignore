@@ -133,3 +133,6 @@ npm-debug.*
 web-build/
 cache/
 .angular
+
+#samples min files
+samples/web-minified/src/assets/

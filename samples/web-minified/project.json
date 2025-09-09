@@ -40,7 +40,8 @@
             }
           ]
         }
-      }
+      },
+      "dependsOn": ["include-min-libs"]
     },
     "serve": {
       "executor": "@nx/webpack:dev-server",
