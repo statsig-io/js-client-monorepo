@@ -7,7 +7,7 @@ import { StatsigClient } from '@statsig/js-client';
 import { LocalOverrideAdapter } from '@statsig/js-local-overrides';
 import { runStatsigAutoCapture } from '@statsig/web-analytics';
 
-window['StatsigSidecar'] = window['StatsigSidecar'] || {
+const StatsigSidecar = window['StatsigSidecar'] || {
   _statsigInstance: null,
   _queuedEvents: [],
   _clientInitialized: false,
@@ -524,4 +524,8 @@ if (document.currentScript && document.currentScript.src) {
       e.preventDefault();
     });
   }
-}
+};
+
+window['StatsigSidecar'] = StatsigSidecar;
+
+export default StatsigSidecar;
