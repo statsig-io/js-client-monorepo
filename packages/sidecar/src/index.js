@@ -524,7 +524,7 @@ if (document.currentScript && document.currentScript.src) {
       e.preventDefault();
     });
   }
-};
+}
 
 window['StatsigSidecar'] = StatsigSidecar;
 
