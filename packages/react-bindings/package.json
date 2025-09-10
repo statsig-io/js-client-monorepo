@@ -1,6 +1,6 @@
 {
   "name": "@statsig/react-bindings",
-  "version": "3.25.1",
+  "version": "3.25.2",
   "license": "ISC",
   "homepage": "https://github.com/statsig-io/js-client-monorepo",
   "repository": {
@@ -9,8 +9,8 @@
     "directory": "packages/react-bindings"
   },
   "dependencies": {
-    "@statsig/client-core": "3.25.1",
-    "@statsig/js-client": "3.25.1"
+    "@statsig/client-core": "3.25.2",
+    "@statsig/js-client": "3.25.2"
   },
   "peerDependencies": {
     "react": "^16.6.3 || ^17.0.0 || ^18.0.0 || ^19.0.0"
