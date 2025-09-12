@@ -62,7 +62,7 @@ export type NetworkConfigCommon = {
   /**
    * The URL used to flush queued events via a POST request. Takes precedence over {@link StatsigOptionsCommon.api}.
    *
-   * default: `https://featuregates.org/v1/initialize`
+   * default: `https://prodregistryv2.org/v1/rgstr`
    */
   logEventUrl?: string;
 
