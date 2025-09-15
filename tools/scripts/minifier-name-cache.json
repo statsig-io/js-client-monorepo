@@ -193,7 +193,8 @@
       "$_defaultEnvironment": "vn",
       "$_getSpecs": "fn",
       "$_getOutputs": "_n",
-      "$_cacheLimit": "gn"
+      "$_cacheLimit": "gn",
+      "$_getFailedLogsFromStorage": "pn"
     }
   }
 }

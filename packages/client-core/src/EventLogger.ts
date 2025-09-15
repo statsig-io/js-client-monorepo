@@ -335,9 +335,23 @@ export class EventLogger {
     const storageKey = this._getStorageKey();
 
     try {
-      _setObjectInStorage(storageKey, events);
+      const savedEvents = this._getFailedLogsFromStorage(storageKey);
+      _setObjectInStorage(storageKey, [...savedEvents, ...events]);
     } catch {
       Log.warn('Unable to save failed logs to storage');
+    }
+  }
+
+  private _getFailedLogsFromStorage(storageKey: string) {
+    let savedEvents: EventQueue = [];
+    try {
+      const retrieved = _getObjectFromStorage<EventQueue>(storageKey);
+      if (Array.isArray(retrieved)) {
+        savedEvents = retrieved;
+      }
+      return savedEvents;
+    } catch {
+      return [];
     }
   }
 
