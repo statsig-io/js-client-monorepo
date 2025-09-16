@@ -1,5 +1,9 @@
 lockfileVersion: '6.0'
 
+settings:
+  autoInstallPeers: false
+  excludeLinksFromLockfile: false
+
 overrides:
   '@babel/helpers': '>=7.26.10'
   braces: '>=3.0.3'
@@ -505,6 +509,19 @@ importers:
       web-vitals:
         specifier: 5.0.3
         version: 5.0.3
+
+  packages/edge:
+    dependencies:
+      '@statsig/client-core':
+        specifier: 3.25.3
+        version: link:../client-core
+      '@statsig/js-on-device-eval-client':
+        specifier: 3.25.3
+        version: link:../js-on-device-eval-client
+    devDependencies:
+      ts-node:
+        specifier: ^10.9.1
+        version: 10.9.2
 
   packages/expo-bindings:
     dependencies:
@@ -7599,7 +7616,7 @@ packages:
     resolution: {integrity: sha512-UTYAUj/wviwdsMfzoSJspJxbkH5o1snzwX0//0ENX1u/55kkZZkcTZP6u9bwKGkv+dkk9at4m1Cpt0uY80kcpQ==}
     dependencies:
       '@jridgewell/gen-mapping': 0.3.5
-      '@jridgewell/trace-mapping': 0.3.25
+      '@jridgewell/trace-mapping': 0.3.30
 
   /@jridgewell/sourcemap-codec@1.4.15:
     resolution: {integrity: sha512-eF2rxCRulEKXHTRiDrDy6erMYWqNw4LPdQ8UQA4huuxaQsVeRPFl2oM8oDGxMFhJUWZf9McpLtJasDDZb/Bpeg==}
@@ -8197,6 +8214,7 @@ packages:
       - '@angular-devkit/build-angular'
       - '@angular-devkit/core'
       - '@angular-devkit/schematics'
+      - '@babel/traverse'
       - '@parcel/css'
       - '@rspack/core'
       - '@schematics/angular'
@@ -8233,6 +8251,7 @@ packages:
     dependencies:
       '@nx/cypress': 19.3.0(@swc-node/register@1.9.2)(@swc/core@1.5.29)(@types/node@18.19.18)(cypress@13.7.0)(eslint@8.48.0)(nx@19.3.0)(typescript@5.4.5)
     transitivePeerDependencies:
+      - '@babel/traverse'
       - '@swc-node/register'
       - '@swc/core'
       - '@swc/wasm'
@@ -8260,6 +8279,7 @@ packages:
     dependencies:
       '@nx/eslint-plugin': 19.3.0(@swc-node/register@1.9.2)(@swc/core@1.5.29)(@types/node@18.19.18)(@typescript-eslint/parser@6.21.0)(eslint-config-prettier@9.1.0)(eslint@8.48.0)(nx@19.3.0)(typescript@5.4.5)
     transitivePeerDependencies:
+      - '@babel/traverse'
       - '@swc-node/register'
       - '@swc/core'
       - '@swc/wasm'
@@ -8279,6 +8299,7 @@ packages:
     dependencies:
       '@nx/expo': 19.3.0(@swc-node/register@1.9.2)(@swc/core@1.5.29)(@types/node@18.19.18)(encoding@0.1.13)(eslint@8.48.0)(nx@19.3.0)(ts-node@10.9.2)(typescript@5.4.5)(uglify-js@3.17.4)
     transitivePeerDependencies:
+      - '@babel/traverse'
       - '@parcel/css'
       - '@rspack/core'
       - '@swc-node/register'
@@ -8318,6 +8339,7 @@ packages:
     dependencies:
       '@nx/jest': 19.3.0(@swc-node/register@1.9.2)(@swc/core@1.5.29)(@types/node@18.19.18)(nx@19.3.0)(ts-node@10.9.2)(typescript@5.4.5)
     transitivePeerDependencies:
+      - '@babel/traverse'
       - '@swc-node/register'
       - '@swc/core'
       - '@swc/wasm'
@@ -8337,6 +8359,7 @@ packages:
     dependencies:
       '@nx/js': 19.3.0(@swc-node/register@1.9.2)(@swc/core@1.5.29)(@types/node@18.19.18)(nx@19.3.0)(typescript@5.4.5)
     transitivePeerDependencies:
+      - '@babel/traverse'
       - '@swc-node/register'
       - '@swc/core'
       - '@swc/wasm'
@@ -8354,6 +8377,7 @@ packages:
       '@nx/next': 19.3.0(@babel/core@7.23.9)(@swc-node/register@1.9.2)(@swc/core@1.5.29)(@types/node@18.19.18)(eslint@8.48.0)(next@14.2.26)(nx@19.3.0)(typescript@5.4.5)(uglify-js@3.17.4)
     transitivePeerDependencies:
       - '@babel/core'
+      - '@babel/traverse'
       - '@parcel/css'
       - '@rspack/core'
       - '@swc-node/register'
@@ -8390,6 +8414,7 @@ packages:
     dependencies:
       '@nx/react-native': 19.3.0(@swc-node/register@1.9.2)(@swc/core@1.5.29)(@types/node@18.19.18)(encoding@0.1.13)(eslint@8.48.0)(nx@19.3.0)(ts-node@10.9.2)(typescript@5.4.5)
     transitivePeerDependencies:
+      - '@babel/traverse'
       - '@swc-node/register'
       - '@swc/core'
       - '@swc/wasm'
@@ -8415,6 +8440,7 @@ packages:
     dependencies:
       '@nx/react': 19.3.0(@swc-node/register@1.9.2)(@swc/core@1.5.29)(@types/node@18.19.18)(eslint@8.48.0)(nx@19.3.0)(typescript@5.4.5)
     transitivePeerDependencies:
+      - '@babel/traverse'
       - '@swc-node/register'
       - '@swc/core'
       - '@swc/wasm'
@@ -8435,6 +8461,7 @@ packages:
       '@nx/rollup': 19.3.0(@babel/core@7.23.9)(@swc-node/register@1.9.2)(@swc/core@1.5.29)(@types/node@18.19.18)(nx@19.3.0)(ts-node@10.9.2)(typescript@5.4.5)
     transitivePeerDependencies:
       - '@babel/core'
+      - '@babel/traverse'
       - '@swc-node/register'
       - '@swc/core'
       - '@swc/wasm'
@@ -8453,6 +8480,7 @@ packages:
     dependencies:
       '@nx/storybook': 19.3.0(@swc-node/register@1.9.2)(@swc/core@1.5.29)(@types/node@18.19.18)(cypress@13.7.0)(eslint@8.48.0)(nx@19.3.0)(typescript@5.4.5)
     transitivePeerDependencies:
+      - '@babel/traverse'
       - '@swc-node/register'
       - '@swc/core'
       - '@swc/wasm'
@@ -8484,6 +8512,7 @@ packages:
     dependencies:
       '@nx/web': 19.3.0(@swc-node/register@1.9.2)(@swc/core@1.5.29)(@types/node@18.19.18)(nx@19.3.0)(typescript@5.4.5)
     transitivePeerDependencies:
+      - '@babel/traverse'
       - '@swc-node/register'
       - '@swc/core'
       - '@swc/wasm'
@@ -8500,6 +8529,7 @@ packages:
     dependencies:
       '@nx/webpack': 19.3.0(@swc-node/register@1.9.2)(@swc/core@1.5.29)(@types/node@18.19.18)(nx@19.3.0)(typescript@5.4.5)(uglify-js@3.17.4)
     transitivePeerDependencies:
+      - '@babel/traverse'
       - '@parcel/css'
       - '@rspack/core'
       - '@swc-node/register'
@@ -8575,6 +8605,7 @@ packages:
       webpack: 5.91.0(@swc/core@1.5.29)(uglify-js@3.17.4)
       webpack-merge: 5.10.0
     transitivePeerDependencies:
+      - '@babel/traverse'
       - '@parcel/css'
       - '@rspack/core'
       - '@swc-node/register'
@@ -8620,6 +8651,7 @@ packages:
       detect-port: 1.5.1
       tslib: 2.7.0
     transitivePeerDependencies:
+      - '@babel/traverse'
       - '@swc-node/register'
       - '@swc/core'
       - '@swc/wasm'
@@ -8672,6 +8704,7 @@ packages:
       semver: 7.6.0
       tslib: 2.7.0
     transitivePeerDependencies:
+      - '@babel/traverse'
       - '@swc-node/register'
       - '@swc/core'
       - '@swc/wasm'
@@ -8701,6 +8734,7 @@ packages:
       tslib: 2.7.0
       typescript: 5.4.5
     transitivePeerDependencies:
+      - '@babel/traverse'
       - '@swc-node/register'
       - '@swc/core'
       - '@swc/wasm'
@@ -8731,6 +8765,7 @@ packages:
       tsconfig-paths: 4.2.0
       tslib: 2.7.0
     transitivePeerDependencies:
+      - '@babel/traverse'
       - '@parcel/css'
       - '@rspack/core'
       - '@swc-node/register'
@@ -8784,6 +8819,7 @@ packages:
       tslib: 2.7.0
       yargs-parser: 21.1.1
     transitivePeerDependencies:
+      - '@babel/traverse'
       - '@swc-node/register'
       - '@swc/core'
       - '@swc/wasm'
@@ -8818,7 +8854,7 @@ packages:
       '@nx/workspace': 19.3.0(@swc-node/register@1.9.2)(@swc/core@1.5.29)
       babel-plugin-const-enum: 1.2.0(@babel/core@7.24.0)
       babel-plugin-macros: 2.8.0
-      babel-plugin-transform-typescript-metadata: 0.3.2
+      babel-plugin-transform-typescript-metadata: 0.3.2(@babel/core@7.24.0)
       chalk: 4.1.2
       columnify: 1.6.0
       detect-port: 1.5.1
@@ -8836,6 +8872,7 @@ packages:
       tsconfig-paths: 4.2.0
       tslib: 2.7.0
     transitivePeerDependencies:
+      - '@babel/traverse'
       - '@swc-node/register'
       - '@swc/core'
       - '@swc/wasm'
@@ -8851,6 +8888,7 @@ packages:
     dependencies:
       '@nx/eslint': 19.3.0(@swc-node/register@1.9.2)(@swc/core@1.5.29)(@types/node@18.19.18)(eslint@8.48.0)(nx@19.3.0)
     transitivePeerDependencies:
+      - '@babel/traverse'
       - '@swc-node/register'
       - '@swc/core'
       - '@swc/wasm'
@@ -8889,6 +8927,7 @@ packages:
       webpack-merge: 5.10.0
     transitivePeerDependencies:
       - '@babel/core'
+      - '@babel/traverse'
       - '@parcel/css'
       - '@rspack/core'
       - '@swc-node/register'
@@ -9025,6 +9064,7 @@ packages:
       minimatch: 9.0.3
       tslib: 2.7.0
     transitivePeerDependencies:
+      - '@babel/traverse'
       - '@swc-node/register'
       - '@swc/core'
       - '@swc/wasm'
@@ -9060,6 +9100,7 @@ packages:
       tsconfig-paths: 4.2.0
       tslib: 2.7.0
     transitivePeerDependencies:
+      - '@babel/traverse'
       - '@swc-node/register'
       - '@swc/core'
       - '@swc/wasm'
@@ -9095,6 +9136,7 @@ packages:
       minimatch: 9.0.3
       tslib: 2.7.0
     transitivePeerDependencies:
+      - '@babel/traverse'
       - '@swc-node/register'
       - '@swc/core'
       - '@swc/wasm'
@@ -9131,6 +9173,7 @@ packages:
       tslib: 2.7.0
     transitivePeerDependencies:
       - '@babel/core'
+      - '@babel/traverse'
       - '@swc-node/register'
       - '@swc/core'
       - '@swc/wasm'
@@ -9156,6 +9199,7 @@ packages:
       semver: 7.6.0
       tslib: 2.7.0
     transitivePeerDependencies:
+      - '@babel/traverse'
       - '@swc-node/register'
       - '@swc/core'
       - '@swc/wasm'
@@ -9181,6 +9225,7 @@ packages:
       http-server: 14.1.1
       tslib: 2.7.0
     transitivePeerDependencies:
+      - '@babel/traverse'
       - '@swc-node/register'
       - '@swc/core'
       - '@swc/wasm'
@@ -9233,6 +9278,7 @@ packages:
       webpack-node-externals: 3.0.0
       webpack-subresource-integrity: 5.1.0(webpack@5.91.0)
     transitivePeerDependencies:
+      - '@babel/traverse'
       - '@parcel/css'
       - '@rspack/core'
       - '@swc-node/register'
@@ -13068,9 +13114,16 @@ packages:
     transitivePeerDependencies:
       - '@babel/core'
 
-  /babel-plugin-transform-typescript-metadata@0.3.2:
+  /babel-plugin-transform-typescript-metadata@0.3.2(@babel/core@7.24.0):
     resolution: {integrity: sha512-mWEvCQTgXQf48yDqgN7CH50waTyYBeP2Lpqx4nNWab9sxEpdXVeKgfj1qYI2/TgUPQtNFZ85i3PemRtnXVYYJg==}
+    peerDependencies:
+      '@babel/core': ^7
+      '@babel/traverse': ^7
+    peerDependenciesMeta:
+      '@babel/traverse':
+        optional: true
     dependencies:
+      '@babel/core': 7.24.0
       '@babel/helper-plugin-utils': 7.24.7
     dev: true
 
@@ -25025,6 +25078,35 @@ packages:
       diff: 4.0.2
       make-error: 1.3.6
       typescript: 5.4.5
+      v8-compile-cache-lib: 3.0.1
+      yn: 3.1.1
+    dev: true
+
+  /ts-node@10.9.2:
+    resolution: {integrity: sha512-f0FFpIdcHgn8zcPSbf1dRevwt047YMnaiJM3u2w2RewrB+fob/zePZcrOyQoLMMO7aBIddLcQIEK5dYjkLnGrQ==}
+    hasBin: true
+    peerDependencies:
+      '@swc/core': '>=1.2.50'
+      '@swc/wasm': '>=1.2.50'
+      '@types/node': '*'
+      typescript: '>=2.7'
+    peerDependenciesMeta:
+      '@swc/core':
+        optional: true
+      '@swc/wasm':
+        optional: true
+    dependencies:
+      '@cspotcode/source-map-support': 0.8.1
+      '@tsconfig/node10': 1.0.9
+      '@tsconfig/node12': 1.0.11
+      '@tsconfig/node14': 1.0.3
+      '@tsconfig/node16': 1.0.4
+      acorn: 8.11.3
+      acorn-walk: 8.3.2
+      arg: 4.1.3
+      create-require: 1.1.1
+      diff: 4.0.2
+      make-error: 1.3.6
       v8-compile-cache-lib: 3.0.1
       yn: 3.1.1
     dev: true

@@ -18,6 +18,7 @@
       "@statsig/angular-bindings": ["packages/angular-bindings/src/index.ts"],
       "@statsig/client-core": ["packages/client-core/src/index.ts"],
       "@statsig/client-extensions": ["packages/client-extensions/src/index.ts"],
+      "@statsig/edge": ["packages/edge/src/index.ts"],
       "@statsig/expo-bindings": ["packages/expo-bindings/src/index.ts"],
       "@statsig/expo-bindings-on-device-eval": [
         "packages/expo-bindings-on-device-eval/src/index.ts"
@@ -35,6 +36,7 @@
       "@statsig/js-user-persisted-storage": [
         "packages/js-user-persisted-storage/src/index.ts"
       ],
+      "@statsig/next": ["packages/next/src/index.ts"],
       "@statsig/on-device-eval-core": [
         "packages/on-device-eval-core/src/index.ts"
       ],
@@ -42,7 +44,6 @@
       "@statsig/react-bindings-on-device-eval": [
         "packages/react-bindings-on-device-eval/src/index.ts"
       ],
-      "@statsig/next": ["packages/next/src/index.ts"],
       "@statsig/react-native-bindings": [
         "packages/react-native-bindings/src/index.ts"
       ],

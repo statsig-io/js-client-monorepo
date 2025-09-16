@@ -1,0 +1,38 @@
+// packages/edge/examples/basic-usage.ts
+import { StatsigEdgeClient } from '../../packages/edge/src/StatsigEdgeClient';
+
+async function basicExample() {
+  const client = new StatsigEdgeClient('client-******************', {
+    environment: { tier: 'production' },
+  });
+
+  // Test async initialization
+  await client.initializeAsync();
+  console.log('Async initialization complete');
+
+  // Test gate check
+  const isEnabled = client.checkGate('pass_gate', {
+    userID: '11',
+  });
+  console.log(`Gate check: ${isEnabled}`);
+}
+
+function basicSyncExample() {
+  const client = new StatsigEdgeClient('client-******************', {
+    environment: { tier: 'production' },
+  });
+
+  const specs =
+    '{"dynamic_configs":[{"name":"test_config","type":"dynamic_config","salt":"40002d54-616f-4170-bed7-c2ba199daf12","enabled":true,"defaultValue":{"number":7,"boolean":true},"rules":[],"isDeviceBased":false,"idType":"userID","entity":"dynamic_config","version":4},{"name":"test1","type":"dynamic_config","salt":"d12ab867-4281-4d24-9a12-a28385388127","enabled":true,"defaultValue":{},"rules":[{"name":"prestart","passPercentage":100,"conditions":[{"type":"public","targetValue":null,"operator":null,"field":null,"additionalValues":{},"isDeviceBased":false,"idType":"userID"}],"returnValue":{},"id":"prestart","salt":"","isDeviceBased":false,"idType":"userID"}],"isDeviceBased":false,"idType":"userID","entity":"experiment","version":4,"isActive":false,"hasSharedParams":true,"explicitParameters":[]},{"name":"hi mom","type":"dynamic_config","salt":"f88b40e6-45ab-4b15-a3ff-0a5f504b0ee8","enabled":true,"defaultValue":{},"rules":[{"name":"prestart","passPercentage":100,"conditions":[{"type":"public","targetValue":null,"operator":null,"field":null,"additionalValues":{},"isDeviceBased":false,"idType":"userID"}],"returnValue":{},"id":"prestart","salt":"","isDeviceBased":false,"idType":"userID"}],"isDeviceBased":false,"idType":"userID","entity":"autotune","version":1}],"feature_gates":[{"name":"on_for_statsig_email","type":"feature_gate","salt":"7e7e93be-0324-4600-be08-a8375034efb3","enabled":true,"defaultValue":false,"rules":[{"name":"2Gnh3NhB3nrmjMzVqyzkoP","passPercentage":0,"conditions":[{"type":"pass_gate","targetValue":"test_holdout","operator":"any","field":null,"additionalValues":null,"isDeviceBased":false,"idType":"userID"}],"returnValue":true,"id":"2Gnh3NhB3nrmjMzVqyzkoP","salt":"","isDeviceBased":false,"idType":"userID"},{"name":"2xBMbP9p6HHEUE3UDdU3C7","passPercentage":100,"conditions":[{"type":"user_field","targetValue":["@statsig.com"],"operator":"str_contains_any","field":"email","additionalValues":{},"isDeviceBased":false,"idType":"userID"}],"returnValue":true,"id":"2xBMbP9p6HHEUE3UDdU3C7","salt":"2e58ec17-904b-4a3e-b31c-e32a0df2e29a","isDeviceBased":false,"idType":"userID"}],"isDeviceBased":false,"idType":"userID","entity":"feature_gate","version":4},{"name":"nextjs_app_bg","type":"feature_gate","salt":"2b39cf26-85a3-4744-a185-8eed2af02553","enabled":true,"defaultValue":false,"rules":[{"name":"3kWnNu6TwaO4Dd4kw1jzFg","passPercentage":50,"conditions":[{"type":"public","targetValue":null,"operator":"none","field":null,"additionalValues":null,"isDeviceBased":false,"idType":"userID"}],"returnValue":true,"id":"3kWnNu6TwaO4Dd4kw1jzFg","salt":"05070ed7-3118-49f0-b6a8-60b8c4837179","isDeviceBased":false,"idType":"userID"}],"isDeviceBased":false,"idType":"userID","entity":"feature_gate","version":2},{"name":"always_on_gate","type":"feature_gate","salt":"f550b098-a800-4afd-b68c-2a6a99aa0182","enabled":true,"defaultValue":false,"rules":[{"name":"1YcrJyzoTPPcCpPIdhsPpd","passPercentage":100,"conditions":[{"type":"public","targetValue":null,"operator":null,"field":null,"additionalValues":{},"isDeviceBased":false,"idType":"userID"}],"returnValue":true,"id":"1YcrJyzoTPPcCpPIdhsPpd","salt":"e7396648-1297-4a08-bae5-5f7fa3e87f78","isDeviceBased":false,"idType":"userID"}],"isDeviceBased":false,"idType":"userID","entity":"feature_gate","version":3},{"name":"test_holdout","type":"feature_gate","salt":"bab21a79-2a33-45fc-acfd-49cbd7a4bc2a","enabled":true,"defaultValue":false,"rules":[{"name":"2GxshzLn6Enp9xFz6vQKGD:1.00:1","passPercentage":1,"conditions":[{"type":"public","targetValue":null,"operator":null,"field":null,"additionalValues":null,"isDeviceBased":false,"idType":"userID"}],"returnValue":true,"id":"2GxshzLn6Enp9xFz6vQKGD:1.00:1","salt":"2GxshzLn6Enp9xFz6vQKGD","isDeviceBased":false,"idType":"userID"}],"isDeviceBased":false,"idType":"userID","entity":"holdout","version":5},{"name":"new2","type":"feature_gate","salt":"20495f89-4b38-4442-af5a-353c7ecc3462","enabled":true,"defaultValue":false,"rules":[{"name":"7DRyOD9M91SlFAKxNpDp76","passPercentage":12,"conditions":[{"type":"user_field","targetValue":["123"],"operator":"any","field":"test","additionalValues":{"custom_field":"test"},"isDeviceBased":false,"idType":"userID"}],"returnValue":true,"id":"7DRyOD9M91SlFAKxNpDp76","salt":"f683669c-fe9f-47d5-813e-94e9a6eb1e7e","isDeviceBased":false,"idType":"userID"}],"isDeviceBased":false,"idType":"userID","entity":"feature_gate","version":3},{"name":"newnewnew","type":"feature_gate","salt":"29a9f643-06f4-44b2-a026-3a39bbb6f56d","enabled":true,"defaultValue":false,"rules":[{"name":"6PZiiN6BH3n03CpPJb6iTe","passPercentage":10,"conditions":[{"type":"user_field","targetValue":["123"],"operator":"any","additionalValues":{},"isDeviceBased":false,"idType":"userID"}],"returnValue":true,"id":"6PZiiN6BH3n03CpPJb6iTe","salt":"5437c8f4-f836-42e3-990a-dc00cd554f70","isDeviceBased":false,"idType":"userID"}],"isDeviceBased":false,"idType":"userID","entity":"feature_gate","version":3},{"name":"per_request","type":"feature_gate","salt":"ff0c80ad-5787-4757-b801-6a8d777271eb","enabled":true,"defaultValue":false,"rules":[{"name":"7eExpNREM7BRgHSRCyTirT","passPercentage":50,"conditions":[{"type":"public","targetValue":null,"operator":null,"field":null,"additionalValues":{},"isDeviceBased":false,"idType":"requestID"}],"returnValue":true,"id":"7eExpNREM7BRgHSRCyTirT","salt":"fd8dbd4a-d465-4da7-b393-0849190163ff","isDeviceBased":false,"idType":"requestID"}],"isDeviceBased":false,"idType":"requestID","entity":"feature_gate","version":3}],"layers":{"test":["test1"],"hi_mom":[]},"layer_configs":[{"name":"test","type":"dynamic_config","salt":"8dcbade0-ef15-4ddf-9a57-95f51bcc3022","enabled":true,"defaultValue":{},"rules":[{"name":"experimentAssignment","passPercentage":100,"conditions":[{"type":"public","targetValue":null,"operator":null,"field":null,"additionalValues":{"salt":"8dcbade0-ef15-4ddf-9a57-95f51bcc3022"},"isDeviceBased":false,"idType":"userID"}],"returnValue":{},"id":"experimentAssignment","salt":"","isDeviceBased":false,"idType":"userID","configDelegate":"test1"}],"isDeviceBased":false,"idType":"userID","entity":"layer","version":1},{"name":"hi_mom","type":"dynamic_config","salt":"b9501ee3-c369-4cf5-956e-696c1b4d10df","enabled":true,"defaultValue":{"hi_mom":""},"rules":[],"isDeviceBased":false,"idType":"userID","entity":"layer","version":2}],"has_updates":true,"time":1749771760575,"company_id":"1DNqfXfqRzhoA3AgD0vH2F","response_format":"dcs-v1","id_lists":{},"diagnostics":{"initialize":10000,"dcs":1000,"download_config_specs":1000,"idlist":100,"get_id_list":100,"get_id_list_sources":100,"log":100,"log_event":100,"api_call":100},"sdk_flags":{},"sdk_configs":{"event_queue_size":2000,"event_content_encoding":"gzip","sampling_mode":"none"}}';
+
+  client.initializeSync(specs);
+
+  const isEnabled = client.checkGate('3kWnNu6TwaO4Dd4kw1jzFg', {
+    userID: '13',
+  });
+  console.log(`Sync Gate check: ${isEnabled}`);
+}
+
+// Run with: npx tsx basic-use.ts
+basicExample();
+basicSyncExample();
