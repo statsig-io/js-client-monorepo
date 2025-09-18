@@ -16,6 +16,15 @@
   "main": "./src/index.js",
   "typings": "./src/index.d.ts",
   "devDependencies": {
+    "@vercel/edge-config": "^1.4.0",
     "ts-node": "^10.9.1"
+  },
+  "peerDependencies": {
+    "@vercel/edge-config": "^1.4.0"
+  },
+  "peerDependenciesMeta": {
+    "@vercel/edge-config": {
+      "optional": true
+    }
   }
 }

@@ -63,6 +63,27 @@ export class StatsigEdgeClient {
     }
   }
 
+  async initializeFromVercel(ConfigKey: string): Promise<StatsigUpdateDetails> {
+    // dynamic import is required to bypass package not existing in other cloud provider environments
+    const { getAll } = await import('@vercel/edge-config');
+    const downloaded_specs = await getAll();
+
+    if (downloaded_specs) {
+      const specs = downloaded_specs[ConfigKey];
+      if (!specs) {
+        Log.error('Invalid Config Key');
+        return this._client.initializeAsync();
+      }
+      this._client.dataAdapter.setData(JSON.stringify(specs));
+      return this._client.initializeSync({
+        disableBackgroundCacheRefresh: true,
+      });
+    } else {
+      Log.error('Failed to fetch specs from vercel');
+      return this._client.initializeAsync();
+    }
+  }
+
   checkGate(
     name: string,
     user: StatsigUser,
