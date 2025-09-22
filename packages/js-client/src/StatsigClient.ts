@@ -529,7 +529,15 @@ export default class StatsigClient
     const user = _normalizeUser(originalUser, options);
     const stableIdOverride = user.customIDs?.stableID;
     if (stableIdOverride) {
-      StableID.setOverride(stableIdOverride, this._sdkKey);
+      const readyPromise = this.storageProvider.isReadyResolver?.();
+      if (readyPromise) {
+        readyPromise.then(
+          () => StableID.setOverride(stableIdOverride, this._sdkKey),
+          () => StableID.setOverride(stableIdOverride, this._sdkKey),
+        );
+      } else {
+        StableID.setOverride(stableIdOverride, this._sdkKey);
+      }
     }
     // Only attach first touch metadata if it's not empty
     if (Object.keys(this._possibleFirstTouchMetadata).length > 0) {
