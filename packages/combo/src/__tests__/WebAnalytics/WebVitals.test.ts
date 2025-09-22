@@ -1,5 +1,5 @@
 import fetchMock from 'jest-fetch-mock';
-import { onCLS, onFCP, onLCP, onTTFB } from 'web-vitals';
+import { onCLS, onFCP, onINP, onLCP, onTTFB } from 'web-vitals';
 
 import { StatsigClient, _getStatsigGlobal } from '@statsig/js-client';
 import {
@@ -10,6 +10,7 @@ import {
 jest.mock('web-vitals', () => ({
   onCLS: jest.fn(),
   onFCP: jest.fn(),
+  onINP: jest.fn(),
   onLCP: jest.fn(),
   onTTFB: jest.fn(),
 }));
@@ -30,12 +31,14 @@ describe('WebVitalsManager', () => {
   function getCallbacks() {
     const clsCalls = (onCLS as jest.Mock).mock.calls;
     const fcpCalls = (onFCP as jest.Mock).mock.calls;
+    const inpCalls = (onINP as jest.Mock).mock.calls;
     const lcpCalls = (onLCP as jest.Mock).mock.calls;
     const ttfbCalls = (onTTFB as jest.Mock).mock.calls;
 
     return {
       clsCallback: clsCalls.length > 0 ? clsCalls[0][0] : jest.fn(),
       fcpCallback: fcpCalls.length > 0 ? fcpCalls[0][0] : jest.fn(),
+      inpCallback: inpCalls.length > 0 ? inpCalls[0][0] : jest.fn(),
       lcpCallback: lcpCalls.length > 0 ? lcpCalls[0][0] : jest.fn(),
       ttfbCallback: ttfbCalls.length > 0 ? ttfbCalls[0][0] : jest.fn(),
     };
@@ -43,7 +46,7 @@ describe('WebVitalsManager', () => {
 
   // Helper function to call the appropriate callback for a metric
   function callMetricCallback(metricName: string, metric: any) {
-    const { clsCallback, fcpCallback, lcpCallback, ttfbCallback } =
+    const { clsCallback, fcpCallback, inpCallback, lcpCallback, ttfbCallback } =
       getCallbacks();
 
     switch (metricName) {
@@ -52,6 +55,9 @@ describe('WebVitalsManager', () => {
         break;
       case 'FCP':
         fcpCallback(metric);
+        break;
+      case 'INP':
+        inpCallback(metric);
         break;
       case 'LCP':
         lcpCallback(metric);
@@ -183,6 +189,7 @@ describe('WebVitalsManager', () => {
 
       expect(onCLS).toHaveBeenCalledWith(expect.any(Function));
       expect(onFCP).toHaveBeenCalledWith(expect.any(Function));
+      expect(onINP).toHaveBeenCalledWith(expect.any(Function));
       expect(onLCP).toHaveBeenCalledWith(expect.any(Function));
       expect(onTTFB).toHaveBeenCalledWith(expect.any(Function));
     });
@@ -200,6 +207,7 @@ describe('WebVitalsManager', () => {
 
       expect(onCLS).not.toHaveBeenCalled();
       expect(onFCP).not.toHaveBeenCalled();
+      expect(onINP).not.toHaveBeenCalled();
       expect(onLCP).not.toHaveBeenCalled();
       expect(onTTFB).not.toHaveBeenCalled();
     });
@@ -362,6 +370,7 @@ describe('WebVitalsManager', () => {
 
     (onCLS as jest.Mock).mockClear();
     (onFCP as jest.Mock).mockClear();
+    (onINP as jest.Mock).mockClear();
     (onLCP as jest.Mock).mockClear();
     (onTTFB as jest.Mock).mockClear();
 
@@ -370,6 +379,7 @@ describe('WebVitalsManager', () => {
 
     expect(onCLS).toHaveBeenCalledTimes(1);
     expect(onFCP).toHaveBeenCalledTimes(1);
+    expect(onINP).toHaveBeenCalledTimes(1);
     expect(onLCP).toHaveBeenCalledTimes(1);
     expect(onTTFB).toHaveBeenCalledTimes(1);
   });

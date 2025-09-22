@@ -1,14 +1,14 @@
-import { onCLS, onFCP, onLCP, onTTFB } from 'web-vitals';
+import { onCLS, onFCP, onINP, onLCP, onTTFB } from 'web-vitals';
 
 import { ErrorBoundary, Log, _getWindowSafe } from '@statsig/client-core';
 
 import { AutoCaptureEventName } from './AutoCaptureEvent';
 import { _getSafeUrlString, _getSanitizedPageUrl } from './utils/commonUtils';
 
-const VALID_METRIC_NAMES = ['CLS', 'FCP', 'LCP', 'TTFB'];
+const VALID_METRIC_NAMES = ['CLS', 'FCP', 'INP', 'LCP', 'TTFB'];
 
 type WebVitalsMetric = {
-  name: 'CLS' | 'FCP' | 'LCP' | 'TTFB';
+  name: 'CLS' | 'FCP' | 'INP' | 'LCP' | 'TTFB';
   value: number;
   delta: number;
   id: string;
@@ -52,6 +52,7 @@ export class WebVitalsManager {
 
       onCLS((metric) => this._handleMetric(metric));
       onFCP((metric) => this._handleMetric(metric));
+      onINP((metric) => this._handleMetric(metric));
       onLCP((metric) => this._handleMetric(metric));
       onTTFB((metric) => this._handleMetric(metric));
 
