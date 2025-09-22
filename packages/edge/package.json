@@ -1,5 +1,5 @@
 {
-  "name": "@statsig/edge-client",
+  "name": "@statsig/experimental-edge-client",
   "version": "3.25.3",
   "license": "ISC",
   "homepage": "https://github.com/statsig-io/js-client-monorepo",

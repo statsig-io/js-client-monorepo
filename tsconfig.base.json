@@ -18,7 +18,7 @@
       "@statsig/angular-bindings": ["packages/angular-bindings/src/index.ts"],
       "@statsig/client-core": ["packages/client-core/src/index.ts"],
       "@statsig/client-extensions": ["packages/client-extensions/src/index.ts"],
-      "@statsig/edge": ["packages/edge/src/index.ts"],
+      "@statsig/experimental-edge": ["packages/edge/src/index.ts"],
       "@statsig/expo-bindings": ["packages/expo-bindings/src/index.ts"],
       "@statsig/expo-bindings-on-device-eval": [
         "packages/expo-bindings-on-device-eval/src/index.ts"
