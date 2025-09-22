@@ -1,6 +1,6 @@
 {
   "name": "@statsig/js-local-overrides",
-  "version": "3.25.3",
+  "version": "3.25.4",
   "license": "ISC",
   "homepage": "https://github.com/statsig-io/js-client-monorepo",
   "repository": {
@@ -9,7 +9,7 @@
     "directory": "packages/js-local-overrides"
   },
   "dependencies": {
-    "@statsig/client-core": "3.25.3"
+    "@statsig/client-core": "3.25.4"
   },
   "type": "commonjs",
   "main": "./src/index.js",
