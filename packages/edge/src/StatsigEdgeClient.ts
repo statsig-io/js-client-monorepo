@@ -11,6 +11,13 @@ import {
   StatsigOptions,
 } from '@statsig/js-on-device-eval-client';
 
+//backend property required for fastly api call
+declare global {
+  interface RequestInit {
+    backend?: string;
+  }
+}
+
 export class StatsigEdgeClient {
   private _client: StatsigOnDeviceEvalClient;
 
@@ -80,6 +87,39 @@ export class StatsigEdgeClient {
       });
     } else {
       Log.error('Failed to fetch specs from vercel');
+      return this._client.initializeAsync();
+    }
+  }
+
+  async initializeFromFastly(
+    storeId: string,
+    keyId: string,
+    backend: string,
+    apiToken: string,
+  ): Promise<StatsigUpdateDetails> {
+    try {
+      const url = `https://api.fastly.com/resources/stores/kv/${storeId}/keys/${keyId}`;
+
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'Fastly-Key': apiToken,
+          Accept: 'application/json',
+        },
+        backend: backend || 'fastly_api',
+      });
+
+      const res = await response.json();
+      if (res) {
+        this._client.dataAdapter.setData(JSON.stringify(res));
+        return this._client.initializeSync({
+          disableBackgroundCacheRefresh: true,
+        });
+      }
+      Log.error('Failed to fetch specs from fastly');
+      return this._client.initializeAsync();
+    } catch (error) {
+      Log.error('Failed to fetch specs from fastly:', error);
       return this._client.initializeAsync();
     }
   }
