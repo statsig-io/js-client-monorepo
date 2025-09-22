@@ -140,10 +140,15 @@ function _isOutboundLink(metadata: Record<string, unknown>): boolean {
 
   const href = metadata['href'] as string;
   if (href) {
-    const currentUrl = _getSafeUrl();
-    const linkUrl = new URL(href);
+    try {
+      const currentUrl = _getSafeUrl();
+      const linkUrl = new URL(href);
 
-    return currentUrl.host !== linkUrl.host;
+      return currentUrl.host !== linkUrl.host;
+    } catch {
+      // Invalid URL, treat as non-outbound
+      return false;
+    }
   }
 
   return false;

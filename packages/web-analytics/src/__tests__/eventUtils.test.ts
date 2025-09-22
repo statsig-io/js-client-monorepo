@@ -433,4 +433,24 @@ describe('Outbound Link Detection', () => {
     expect(result.metadata['isOutbound']).toBeUndefined();
     expect(result.metadata['href']).toBeNull();
   });
+
+  it('handles anchor with invalid URL', () => {
+    const anchor = document.createElement('a');
+    anchor.setAttribute('href', 'not-a-valid-url');
+    container.appendChild(anchor);
+
+    const result = _gatherEventData(anchor);
+    expect(result.metadata['isOutbound']).toBeUndefined();
+    expect(result.metadata['href']).toBe('not-a-valid-url');
+  });
+
+  it('handles anchor with malformed URL', () => {
+    const anchor = document.createElement('a');
+    anchor.setAttribute('href', '://invalid-protocol');
+    container.appendChild(anchor);
+
+    const result = _gatherEventData(anchor);
+    expect(result.metadata['isOutbound']).toBeUndefined();
+    expect(result.metadata['href']).toBe('://invalid-protocol');
+  });
 });
