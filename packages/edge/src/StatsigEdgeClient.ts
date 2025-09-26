@@ -124,6 +124,50 @@ export class StatsigEdgeClient {
     }
   }
 
+  async initializeFromCDN(url: string): Promise<StatsigUpdateDetails> {
+    let response: Response;
+    const startTime = performance.now();
+    try {
+      response = await fetch(url);
+    } catch (error) {
+      return {
+        duration: performance.now() - startTime,
+        source: 'Bootstrap',
+        success: false,
+        error: new Error('Failed to retrieve config specs from CDN'),
+        sourceUrl: url,
+      };
+    }
+
+    if (!response.ok) {
+      return {
+        duration: performance.now() - startTime,
+        source: 'Bootstrap',
+        success: false,
+        error: new Error(
+          `Retrieval from storage returned status ${response.status}`,
+        ),
+        sourceUrl: url,
+      };
+    }
+
+    try {
+      const specs = await response.json();
+      this._client.dataAdapter.setData(JSON.stringify(specs));
+      return this._client.initializeSync({
+        disableBackgroundCacheRefresh: true,
+      });
+    } catch (error) {
+      return {
+        duration: performance.now() - startTime,
+        source: 'Bootstrap',
+        success: false,
+        error: new Error('Config specs were not parsed successfully.'),
+        sourceUrl: url,
+      };
+    }
+  }
+
   checkGate(
     name: string,
     user: StatsigUser,
