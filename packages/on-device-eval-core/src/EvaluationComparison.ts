@@ -148,23 +148,15 @@ export default {
     }
 
     try {
-      // Try to parse into date as a string first, if not, try unixtime
-      let dateLeft = new Date(String(left));
-      if (isNaN(dateLeft.getTime())) {
-        dateLeft = new Date(Number(left));
-      }
-
-      let dateRight = new Date(String(right));
-      if (isNaN(dateRight.getTime())) {
-        dateRight = new Date(Number(right));
-      }
-
-      const timeLeft = dateLeft.getTime();
-      const timeRight = dateRight.getTime();
-
-      if (isNaN(timeLeft) || isNaN(timeRight)) {
+      //convert to normalized date
+      const dateLeft = _toNormalizedDate(left);
+      const dateRight = _toNormalizedDate(right);
+      if (dateLeft === null || dateRight === null) {
         return false;
       }
+      //convert to milliseconds
+      const timeLeft = dateLeft.getTime();
+      const timeRight = dateRight.getTime();
 
       switch (operator) {
         case 'before':
@@ -212,4 +204,16 @@ export default {
 function _startOfDay(date: Date): number {
   date.setUTCHours(0, 0, 0, 0);
   return date.getTime();
+}
+
+function _toNormalizedDate(value: unknown): Date | null {
+  // If it's a valid number (including numeric strings)
+  const num = Number(value);
+  if (!isNaN(num)) {
+    return num < 1e10 ? new Date(num * 1000) : new Date(num);
+  }
+
+  // Check if its a date
+  const date = new Date(String(value));
+  return isNaN(date.getTime()) ? null : date;
 }
