@@ -11,13 +11,6 @@ import {
   StatsigOptions,
 } from '@statsig/js-on-device-eval-client';
 
-//backend property required for fastly api call
-declare global {
-  interface RequestInit {
-    backend?: string;
-  }
-}
-
 export class StatsigEdgeClient {
   private _client: StatsigOnDeviceEvalClient;
 
@@ -92,36 +85,78 @@ export class StatsigEdgeClient {
   }
 
   async initializeFromFastly(
+    FastlyStoreType: 'kv' | 'config',
     storeId: string,
     keyId: string,
-    backend: string,
     apiToken: string,
   ): Promise<StatsigUpdateDetails> {
+    const startTime = performance.now();
+    let url: string;
+    if (FastlyStoreType === 'kv') {
+      url = `https://api.fastly.com/resources/stores/kv/${storeId}/keys/${keyId}`;
+    } else if (FastlyStoreType === 'config') {
+      url = `https://api.fastly.com/resources/stores/config/${storeId}/item/${keyId}`;
+    } else {
+      return {
+        duration: performance.now() - startTime,
+        source: 'Bootstrap',
+        success: false,
+        error: new Error('Invalid Fastly store type'),
+        sourceUrl: 'Invalid Fastly store type',
+      };
+    }
     try {
-      const url = `https://api.fastly.com/resources/stores/kv/${storeId}/keys/${keyId}`;
-
-      const response = await fetch(url, {
+      const response = await this._fetchFromFastly(url, {
         method: 'GET',
         headers: {
           'Fastly-Key': apiToken,
           Accept: 'application/json',
         },
-        backend: backend || 'fastly_api',
+        backend: 'fastly_api',
       });
 
       const res = await response.json();
       if (res) {
-        this._client.dataAdapter.setData(JSON.stringify(res));
-        return this._client.initializeSync({
-          disableBackgroundCacheRefresh: true,
-        });
+        let configData;
+        if (FastlyStoreType === 'config') {
+          configData = res.item_value;
+        } else {
+          configData = JSON.stringify(res);
+        }
+        if (configData) {
+          this._client.dataAdapter.setData(configData);
+          return this._client.initializeSync({
+            disableBackgroundCacheRefresh: true,
+          });
+        }
       }
-      Log.error('Failed to fetch specs from fastly');
-      return this._client.initializeAsync();
+      return {
+        duration: performance.now() - startTime,
+        source: 'Bootstrap',
+        success: false,
+        error: new Error('Config specs were not parsed successfully'),
+        sourceUrl: url,
+      };
     } catch (error) {
-      Log.error('Failed to fetch specs from fastly:', error);
-      return this._client.initializeAsync();
+      return {
+        duration: performance.now() - startTime,
+        source: 'Bootstrap',
+        success: false,
+        error: new Error('Failed to retrieve config specs from Fastly'),
+        sourceUrl: url,
+      };
     }
+  }
+
+  private async _fetchFromFastly(
+    url: string,
+    options: RequestInit & { backend?: string },
+  ) {
+    const { backend, ...fetchOptions } = options;
+    return fetch(url, {
+      ...fetchOptions,
+      backend,
+    } as RequestInit);
   }
 
   async initializeFromCDN(url: string): Promise<StatsigUpdateDetails> {
@@ -162,7 +197,7 @@ export class StatsigEdgeClient {
         duration: performance.now() - startTime,
         source: 'Bootstrap',
         success: false,
-        error: new Error('Config specs were not parsed successfully.'),
+        error: new Error('Config specs were not parsed successfully'),
         sourceUrl: url,
       };
     }

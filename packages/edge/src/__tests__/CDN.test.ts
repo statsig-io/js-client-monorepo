@@ -141,7 +141,8 @@ describe('StatsigEdgeClient - initializeFromCDN', () => {
       duration: expect.any(Number),
       source: 'Bootstrap',
       success: false,
-      error: new Error('Config specs were not parsed successfully.'),
+      error: new Error('Config specs were not parsed successfully'),
+
       sourceUrl: 'https://test-cdn.example.com/config.json',
     });
 

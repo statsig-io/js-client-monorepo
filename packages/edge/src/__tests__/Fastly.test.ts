@@ -35,7 +35,7 @@ describe('StatsigEdgeClient - initializeFromFastly', () => {
     mockFetch = global.fetch as jest.MockedFunction<typeof fetch>;
   });
 
-  it('should initialize successfully when data is available', async () => {
+  it('should initialize successfully with KV store when data is available', async () => {
     const mockData = DcsResponse;
     const mockResponse = {
       json: jest.fn().mockResolvedValue(mockData),
@@ -44,9 +44,9 @@ describe('StatsigEdgeClient - initializeFromFastly', () => {
     mockFetch.mockResolvedValue(mockResponse as any);
 
     const result = await client.initializeFromFastly(
+      'kv',
       'test-store',
       'test-key',
-      'test-backend',
       'test-token',
     );
 
@@ -58,7 +58,7 @@ describe('StatsigEdgeClient - initializeFromFastly', () => {
           'Fastly-Key': 'test-token',
           Accept: 'application/json',
         },
-        backend: 'test-backend',
+        backend: 'fastly_api',
       },
     );
     expect(mockResponse.json).toHaveBeenCalledTimes(1);
@@ -78,7 +78,50 @@ describe('StatsigEdgeClient - initializeFromFastly', () => {
     });
   });
 
-  it('should fallback to async initialization when no data is returned', async () => {
+  it('should initialize successfully with config store when data is available', async () => {
+    const mockData = { item_value: JSON.stringify(DcsResponse) };
+    const mockResponse = {
+      json: jest.fn().mockResolvedValue(mockData),
+    };
+
+    mockFetch.mockResolvedValue(mockResponse as any);
+
+    const result = await client.initializeFromFastly(
+      'config',
+      'test-store',
+      'test-key',
+      'test-token',
+    );
+
+    expect(mockFetch).toHaveBeenCalledWith(
+      'https://api.fastly.com/resources/stores/config/test-store/item/test-key',
+      {
+        method: 'GET',
+        headers: {
+          'Fastly-Key': 'test-token',
+          Accept: 'application/json',
+        },
+        backend: 'fastly_api',
+      },
+    );
+    expect(mockResponse.json).toHaveBeenCalledTimes(1);
+
+    const mockClient = (client as any)._client;
+    expect(mockClient.dataAdapter.setData).toHaveBeenCalledWith(
+      JSON.stringify(DcsResponse),
+    );
+    expect(mockClient.initializeSync).toHaveBeenCalledTimes(1);
+    expect(mockClient.initializeSync).toHaveBeenCalledWith({
+      disableBackgroundCacheRefresh: true,
+    });
+    expect(mockClient.initializeAsync).not.toHaveBeenCalled();
+    expect(result).toEqual({
+      success: true,
+      fromCache: true,
+    });
+  });
+
+  it('should return error when no data is returned from KV store', async () => {
     const mockResponse = {
       json: jest.fn().mockResolvedValue(null),
     };
@@ -86,9 +129,9 @@ describe('StatsigEdgeClient - initializeFromFastly', () => {
     mockFetch.mockResolvedValue(mockResponse as any);
 
     const result = await client.initializeFromFastly(
+      'kv',
       'test-store',
       'test-key',
-      'test-backend',
       'test-token',
     );
 
@@ -100,21 +143,25 @@ describe('StatsigEdgeClient - initializeFromFastly', () => {
           'Fastly-Key': 'test-token',
           Accept: 'application/json',
         },
-        backend: 'test-backend',
+        backend: 'fastly_api',
       },
     );
 
     const mockClient = (client as any)._client;
     expect(mockClient.dataAdapter.setData).not.toHaveBeenCalled();
     expect(mockClient.initializeSync).not.toHaveBeenCalled();
-    expect(mockClient.initializeAsync).toHaveBeenCalledTimes(1);
+    expect(mockClient.initializeAsync).not.toHaveBeenCalled();
     expect(result).toEqual({
-      success: true,
-      fromCache: false,
+      duration: expect.any(Number),
+      source: 'Bootstrap',
+      success: false,
+      error: new Error('Config specs were not parsed successfully'),
+      sourceUrl:
+        'https://api.fastly.com/resources/stores/kv/test-store/keys/test-key',
     });
   });
 
-  it('should fallback to async initialization when data is empty', async () => {
+  it('should return error when data is empty from KV store', async () => {
     const mockResponse = {
       json: jest.fn().mockResolvedValue(''),
     };
@@ -122,9 +169,9 @@ describe('StatsigEdgeClient - initializeFromFastly', () => {
     mockFetch.mockResolvedValue(mockResponse as any);
 
     const result = await client.initializeFromFastly(
+      'kv',
       'test-store',
       'test-key',
-      'test-backend',
       'test-token',
     );
 
@@ -136,7 +183,7 @@ describe('StatsigEdgeClient - initializeFromFastly', () => {
           'Fastly-Key': 'test-token',
           Accept: 'application/json',
         },
-        backend: 'test-backend',
+        backend: 'fastly_api',
       },
     );
     expect(mockResponse.json).toHaveBeenCalledTimes(1);
@@ -144,20 +191,24 @@ describe('StatsigEdgeClient - initializeFromFastly', () => {
     const mockClient = (client as any)._client;
     expect(mockClient.dataAdapter.setData).not.toHaveBeenCalled();
     expect(mockClient.initializeSync).not.toHaveBeenCalled();
-    expect(mockClient.initializeAsync).toHaveBeenCalledTimes(1);
+    expect(mockClient.initializeAsync).not.toHaveBeenCalled();
     expect(result).toEqual({
-      success: true,
-      fromCache: false,
+      duration: expect.any(Number),
+      source: 'Bootstrap',
+      success: false,
+      error: new Error('Config specs were not parsed successfully'),
+      sourceUrl:
+        'https://api.fastly.com/resources/stores/kv/test-store/keys/test-key',
     });
   });
 
-  it('should fallback to async initialization when fetch fails', async () => {
+  it('should return error when fetch fails', async () => {
     mockFetch.mockRejectedValue(new Error('Network error'));
 
     const result = await client.initializeFromFastly(
+      'kv',
       'test-store',
       'test-key',
-      'test-backend',
       'test-token',
     );
 
@@ -169,17 +220,39 @@ describe('StatsigEdgeClient - initializeFromFastly', () => {
           'Fastly-Key': 'test-token',
           Accept: 'application/json',
         },
-        backend: 'test-backend',
+        backend: 'fastly_api',
       },
     );
 
     const mockClient = (client as any)._client;
     expect(mockClient.dataAdapter.setData).not.toHaveBeenCalled();
     expect(mockClient.initializeSync).not.toHaveBeenCalled();
-    expect(mockClient.initializeAsync).toHaveBeenCalledTimes(1);
+    expect(mockClient.initializeAsync).not.toHaveBeenCalled();
     expect(result).toEqual({
-      success: true,
-      fromCache: false,
+      duration: expect.any(Number),
+      source: 'Bootstrap',
+      success: false,
+      error: new Error('Failed to retrieve config specs from Fastly'),
+      sourceUrl:
+        'https://api.fastly.com/resources/stores/kv/test-store/keys/test-key',
+    });
+  });
+
+  it('should return error for invalid store type', async () => {
+    const result = await client.initializeFromFastly(
+      'invalid' as any,
+      'test-store',
+      'test-key',
+      'test-token',
+    );
+
+    expect(mockFetch).not.toHaveBeenCalled();
+    expect(result).toEqual({
+      duration: expect.any(Number),
+      source: 'Bootstrap',
+      success: false,
+      error: new Error('Invalid Fastly store type'),
+      sourceUrl: 'Invalid Fastly store type',
     });
   });
 });
