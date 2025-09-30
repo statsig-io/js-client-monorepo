@@ -3,6 +3,7 @@ import {
   DataAdapterSyncOptions,
   FeatureGateEvaluationOptions,
   Log,
+  StatsigEvent,
   StatsigUpdateDetails,
   StatsigUser,
 } from '@statsig/client-core';
@@ -209,5 +210,18 @@ export class StatsigEdgeClient {
     options?: FeatureGateEvaluationOptions,
   ): boolean {
     return this._client.checkGate(name, user, options);
+  }
+
+  logEvent(
+    eventName: StatsigEvent | string,
+    user: StatsigUser,
+    value?: string | number,
+    metadata?: Record<string, string>,
+  ): void {
+    return this._client.logEvent(eventName, user, value, metadata);
+  }
+
+  flush(): Promise<void> {
+    return this._client.flush();
   }
 }
