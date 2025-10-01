@@ -4,35 +4,25 @@ import { StatsigEdgeClient } from '../StatsigEdgeClient';
 
 global.fetch = jest.fn();
 
-jest.mock('@statsig/js-on-device-eval-client', () => {
-  const mockClient = {
-    dataAdapter: {
-      setData: jest.fn(),
-    },
-    initializeSync: jest.fn().mockReturnValue({
-      success: true,
-      fromCache: true,
-    }),
-    initializeAsync: jest.fn().mockResolvedValue({
-      success: true,
-      fromCache: false,
-    }),
-    checkGate: jest.fn(),
-  };
-
-  return {
-    StatsigOnDeviceEvalClient: jest.fn().mockImplementation(() => mockClient),
-  };
-});
-
 describe('StatsigEdgeClient - initializeFromCDN', () => {
   let client: StatsigEdgeClient;
   let mockFetch: jest.MockedFunction<typeof fetch>;
+  let mockDataAdapterSetData: jest.SpyInstance;
+  let mockInitializeSync: jest.SpyInstance;
 
   beforeEach(() => {
     jest.clearAllMocks();
     client = new StatsigEdgeClient('test-sdk-key');
     mockFetch = global.fetch as jest.MockedFunction<typeof fetch>;
+
+    mockDataAdapterSetData = jest.spyOn(client.dataAdapter, 'setData');
+    mockInitializeSync = jest.spyOn(client, 'initializeSync').mockReturnValue({
+      success: true,
+      duration: 0,
+      source: 'Bootstrap',
+      error: null,
+      sourceUrl: null,
+    });
   });
 
   it('should initialize successfully when data is available', async () => {
@@ -53,17 +43,19 @@ describe('StatsigEdgeClient - initializeFromCDN', () => {
     );
     expect(mockResponse.json).toHaveBeenCalledTimes(1);
 
-    const mockClient = (client as any)._client;
-    expect(mockClient.dataAdapter.setData).toHaveBeenCalledWith(
+    expect(mockDataAdapterSetData).toHaveBeenCalledWith(
       JSON.stringify(mockData),
     );
-    expect(mockClient.initializeSync).toHaveBeenCalledTimes(1);
-    expect(mockClient.initializeSync).toHaveBeenCalledWith({
+    expect(mockInitializeSync).toHaveBeenCalledTimes(1);
+    expect(mockInitializeSync).toHaveBeenCalledWith({
       disableBackgroundCacheRefresh: true,
     });
     expect(result).toEqual({
       success: true,
-      fromCache: true,
+      duration: 0,
+      source: 'Bootstrap',
+      error: null,
+      sourceUrl: null,
     });
   });
 
@@ -86,9 +78,8 @@ describe('StatsigEdgeClient - initializeFromCDN', () => {
       sourceUrl: 'https://test-cdn.example.com/config.json',
     });
 
-    const mockClient = (client as any)._client;
-    expect(mockClient.dataAdapter.setData).not.toHaveBeenCalled();
-    expect(mockClient.initializeSync).not.toHaveBeenCalled();
+    expect(mockDataAdapterSetData).not.toHaveBeenCalled();
+    expect(mockInitializeSync).not.toHaveBeenCalled();
   });
 
   it('should return error when response is not ok', async () => {
@@ -115,9 +106,8 @@ describe('StatsigEdgeClient - initializeFromCDN', () => {
       sourceUrl: 'https://test-cdn.example.com/config.json',
     });
 
-    const mockClient = (client as any)._client;
-    expect(mockClient.dataAdapter.setData).not.toHaveBeenCalled();
-    expect(mockClient.initializeSync).not.toHaveBeenCalled();
+    expect(mockDataAdapterSetData).not.toHaveBeenCalled();
+    expect(mockInitializeSync).not.toHaveBeenCalled();
   });
 
   it('should return error when JSON parsing fails', async () => {
@@ -146,9 +136,8 @@ describe('StatsigEdgeClient - initializeFromCDN', () => {
       sourceUrl: 'https://test-cdn.example.com/config.json',
     });
 
-    const mockClient = (client as any)._client;
-    expect(mockClient.dataAdapter.setData).not.toHaveBeenCalled();
-    expect(mockClient.initializeSync).not.toHaveBeenCalled();
+    expect(mockDataAdapterSetData).not.toHaveBeenCalled();
+    expect(mockInitializeSync).not.toHaveBeenCalled();
   });
 
   it('should handle different HTTP error status codes', async () => {
@@ -175,9 +164,8 @@ describe('StatsigEdgeClient - initializeFromCDN', () => {
       sourceUrl: 'https://test-cdn.example.com/config.json',
     });
 
-    const mockClient = (client as any)._client;
-    expect(mockClient.dataAdapter.setData).not.toHaveBeenCalled();
-    expect(mockClient.initializeSync).not.toHaveBeenCalled();
+    expect(mockDataAdapterSetData).not.toHaveBeenCalled();
+    expect(mockInitializeSync).not.toHaveBeenCalled();
   });
 
   it('should handle 500 server error', async () => {
@@ -204,8 +192,7 @@ describe('StatsigEdgeClient - initializeFromCDN', () => {
       sourceUrl: 'https://test-cdn.example.com/config.json',
     });
 
-    const mockClient = (client as any)._client;
-    expect(mockClient.dataAdapter.setData).not.toHaveBeenCalled();
-    expect(mockClient.initializeSync).not.toHaveBeenCalled();
+    expect(mockDataAdapterSetData).not.toHaveBeenCalled();
+    expect(mockInitializeSync).not.toHaveBeenCalled();
   });
 });

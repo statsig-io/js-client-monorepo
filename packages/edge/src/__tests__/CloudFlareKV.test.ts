@@ -2,32 +2,14 @@ import { DcsResponseString } from 'statsig-test-helpers';
 
 import { StatsigEdgeClient } from '../StatsigEdgeClient';
 
-jest.mock('@statsig/js-on-device-eval-client', () => {
-  const mockClient = {
-    dataAdapter: {
-      setData: jest.fn(),
-    },
-    initializeSync: jest.fn().mockReturnValue({
-      success: true,
-      fromCache: true,
-    }),
-    initializeAsync: jest.fn().mockResolvedValue({
-      success: true,
-      fromCache: false,
-    }),
-    checkGate: jest.fn(),
-  };
-
-  return {
-    StatsigOnDeviceEvalClient: jest.fn().mockImplementation(() => mockClient),
-  };
-});
-
 describe('StatsigEdgeClient - initializeFromCloudflareKV', () => {
   const sdkKey = 'test-sdk-key';
   const kvKey = 'statsig-kvKey';
   let client: StatsigEdgeClient;
   let mockKvBinding: { get: jest.Mock };
+  let mockDataAdapterSetData: jest.SpyInstance;
+  let mockInitializeSync: jest.SpyInstance;
+  let mockInitializeAsync: jest.SpyInstance;
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -35,6 +17,24 @@ describe('StatsigEdgeClient - initializeFromCloudflareKV', () => {
     mockKvBinding = {
       get: jest.fn(),
     };
+
+    mockDataAdapterSetData = jest.spyOn(client.dataAdapter, 'setData');
+    mockInitializeSync = jest.spyOn(client, 'initializeSync').mockReturnValue({
+      success: true,
+      duration: 0,
+      source: 'Bootstrap' as any,
+      error: null,
+      sourceUrl: null,
+    });
+    mockInitializeAsync = jest
+      .spyOn(client, 'initializeAsync')
+      .mockResolvedValue({
+        success: true,
+        duration: 0,
+        source: 'Bootstrap' as any,
+        error: null,
+        sourceUrl: null,
+      });
   });
 
   describe('when KV returns specs data', () => {
@@ -44,15 +44,14 @@ describe('StatsigEdgeClient - initializeFromCloudflareKV', () => {
 
       await client.initializeFromCloudflareKV(mockKvBinding, kvKey);
 
-      const mockClient = (client as any)._client;
-      expect(mockClient.dataAdapter.setData).toHaveBeenCalledWith(mockSpecs);
-      expect(mockClient.dataAdapter.setData).toHaveBeenCalledTimes(1);
+      expect(mockDataAdapterSetData).toHaveBeenCalledWith(mockSpecs);
+      expect(mockDataAdapterSetData).toHaveBeenCalledTimes(1);
 
-      expect(mockClient.initializeSync).toHaveBeenCalledWith({
+      expect(mockInitializeSync).toHaveBeenCalledWith({
         disableBackgroundCacheRefresh: true,
       });
-      expect(mockClient.initializeSync).toHaveBeenCalledTimes(1);
-      expect(mockClient.initializeAsync).not.toHaveBeenCalled();
+      expect(mockInitializeSync).toHaveBeenCalledTimes(1);
+      expect(mockInitializeAsync).not.toHaveBeenCalled();
     });
 
     it('should handle empty string specs by falling back to async initialization', async () => {
@@ -62,10 +61,9 @@ describe('StatsigEdgeClient - initializeFromCloudflareKV', () => {
 
       expect(mockKvBinding.get).toHaveBeenCalledWith(kvKey);
 
-      const mockClient = (client as any)._client;
-      expect(mockClient.dataAdapter.setData).not.toHaveBeenCalled();
-      expect(mockClient.initializeSync).not.toHaveBeenCalled();
-      expect(mockClient.initializeAsync).toHaveBeenCalledTimes(1);
+      expect(mockDataAdapterSetData).not.toHaveBeenCalled();
+      expect(mockInitializeSync).not.toHaveBeenCalled();
+      expect(mockInitializeAsync).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -77,10 +75,9 @@ describe('StatsigEdgeClient - initializeFromCloudflareKV', () => {
 
       expect(mockKvBinding.get).toHaveBeenCalledWith(kvKey);
 
-      const mockClient = (client as any)._client;
-      expect(mockClient.dataAdapter.setData).not.toHaveBeenCalled();
-      expect(mockClient.initializeSync).not.toHaveBeenCalled();
-      expect(mockClient.initializeAsync).toHaveBeenCalledTimes(1);
+      expect(mockDataAdapterSetData).not.toHaveBeenCalled();
+      expect(mockInitializeSync).not.toHaveBeenCalled();
+      expect(mockInitializeAsync).toHaveBeenCalledTimes(1);
     });
 
     it('should fall back to async initialization when KV returns undefined', async () => {
@@ -90,10 +87,9 @@ describe('StatsigEdgeClient - initializeFromCloudflareKV', () => {
 
       expect(mockKvBinding.get).toHaveBeenCalledWith(kvKey);
 
-      const mockClient = (client as any)._client;
-      expect(mockClient.dataAdapter.setData).not.toHaveBeenCalled();
-      expect(mockClient.initializeSync).not.toHaveBeenCalled();
-      expect(mockClient.initializeAsync).toHaveBeenCalledTimes(1);
+      expect(mockDataAdapterSetData).not.toHaveBeenCalled();
+      expect(mockInitializeSync).not.toHaveBeenCalled();
+      expect(mockInitializeAsync).toHaveBeenCalledTimes(1);
     });
   });
 });

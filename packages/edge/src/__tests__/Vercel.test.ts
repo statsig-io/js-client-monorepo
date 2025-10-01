@@ -6,36 +6,36 @@ jest.mock('@vercel/edge-config', () => ({
   getAll: jest.fn(),
 }));
 
-jest.mock('@statsig/js-on-device-eval-client', () => {
-  const mockClient = {
-    dataAdapter: {
-      setData: jest.fn(),
-    },
-    initializeSync: jest.fn().mockReturnValue({
-      success: true,
-      fromCache: true,
-    }),
-    initializeAsync: jest.fn().mockResolvedValue({
-      success: true,
-      fromCache: false,
-    }),
-    checkGate: jest.fn(),
-  };
-
-  return {
-    StatsigOnDeviceEvalClient: jest.fn().mockImplementation(() => mockClient),
-  };
-});
-
 describe('StatsigEdgeClient - initializeFromVercel', () => {
   let client: StatsigEdgeClient;
   let mockGetAll: jest.MockedFunction<any>;
+  let mockDataAdapterSetData: jest.SpyInstance;
+  let mockInitializeSync: jest.SpyInstance;
+  let mockInitializeAsync: jest.SpyInstance;
 
   beforeEach(() => {
     jest.clearAllMocks();
     client = new StatsigEdgeClient('test-sdk-key');
     const { getAll } = jest.requireMock('@vercel/edge-config');
     mockGetAll = getAll;
+
+    mockDataAdapterSetData = jest.spyOn(client.dataAdapter, 'setData');
+    mockInitializeSync = jest.spyOn(client, 'initializeSync').mockReturnValue({
+      success: true,
+      duration: 0,
+      source: 'Bootstrap' as any,
+      error: null,
+      sourceUrl: null,
+    });
+    mockInitializeAsync = jest
+      .spyOn(client, 'initializeAsync')
+      .mockResolvedValue({
+        success: true,
+        duration: 0,
+        source: 'Bootstrap' as any,
+        error: null,
+        sourceUrl: null,
+      });
   });
 
   it('should initialize successfully when specs are available', async () => {
@@ -48,18 +48,20 @@ describe('StatsigEdgeClient - initializeFromVercel', () => {
 
     expect(mockGetAll).toHaveBeenCalledTimes(1);
 
-    const mockClient = (client as any)._client;
-    expect(mockClient.dataAdapter.setData).toHaveBeenCalledWith(
+    expect(mockDataAdapterSetData).toHaveBeenCalledWith(
       JSON.stringify(mockSpecs),
     );
-    expect(mockClient.initializeSync).toHaveBeenCalledTimes(1);
-    expect(mockClient.initializeSync).toHaveBeenCalledWith({
+    expect(mockInitializeSync).toHaveBeenCalledTimes(1);
+    expect(mockInitializeSync).toHaveBeenCalledWith({
       disableBackgroundCacheRefresh: true,
     });
-    expect(mockClient.initializeAsync).not.toHaveBeenCalled();
+    expect(mockInitializeAsync).not.toHaveBeenCalled();
     expect(result).toEqual({
       success: true,
-      fromCache: true,
+      duration: 0,
+      source: 'Bootstrap',
+      error: null,
+      sourceUrl: null,
     });
   });
 
@@ -70,13 +72,15 @@ describe('StatsigEdgeClient - initializeFromVercel', () => {
 
     expect(mockGetAll).toHaveBeenCalledTimes(1);
 
-    const mockClient = (client as any)._client;
-    expect(mockClient.dataAdapter.setData).not.toHaveBeenCalled();
-    expect(mockClient.initializeSync).not.toHaveBeenCalled();
-    expect(mockClient.initializeAsync).toHaveBeenCalledTimes(1);
+    expect(mockDataAdapterSetData).not.toHaveBeenCalled();
+    expect(mockInitializeSync).not.toHaveBeenCalled();
+    expect(mockInitializeAsync).toHaveBeenCalledTimes(1);
     expect(result).toEqual({
       success: true,
-      fromCache: false,
+      duration: 0,
+      source: 'Bootstrap',
+      error: null,
+      sourceUrl: null,
     });
   });
 
@@ -88,13 +92,15 @@ describe('StatsigEdgeClient - initializeFromVercel', () => {
 
     expect(mockGetAll).toHaveBeenCalledTimes(1);
 
-    const mockClient = (client as any)._client;
-    expect(mockClient.dataAdapter.setData).not.toHaveBeenCalled();
-    expect(mockClient.initializeSync).not.toHaveBeenCalled();
-    expect(mockClient.initializeAsync).toHaveBeenCalledTimes(1);
+    expect(mockDataAdapterSetData).not.toHaveBeenCalled();
+    expect(mockInitializeSync).not.toHaveBeenCalled();
+    expect(mockInitializeAsync).toHaveBeenCalledTimes(1);
     expect(result).toEqual({
       success: true,
-      fromCache: false,
+      duration: 0,
+      source: 'Bootstrap',
+      error: null,
+      sourceUrl: null,
     });
   });
 
@@ -105,13 +111,15 @@ describe('StatsigEdgeClient - initializeFromVercel', () => {
 
     expect(mockGetAll).toHaveBeenCalledTimes(1);
 
-    const mockClient = (client as any)._client;
-    expect(mockClient.dataAdapter.setData).not.toHaveBeenCalled();
-    expect(mockClient.initializeSync).not.toHaveBeenCalled();
-    expect(mockClient.initializeAsync).toHaveBeenCalledTimes(1);
+    expect(mockDataAdapterSetData).not.toHaveBeenCalled();
+    expect(mockInitializeSync).not.toHaveBeenCalled();
+    expect(mockInitializeAsync).toHaveBeenCalledTimes(1);
     expect(result).toEqual({
       success: true,
-      fromCache: false,
+      duration: 0,
+      source: 'Bootstrap',
+      error: null,
+      sourceUrl: null,
     });
   });
 });

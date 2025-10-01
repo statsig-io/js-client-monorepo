@@ -1,45 +1,17 @@
-import {
-  DataAdapterAsyncOptions,
-  DataAdapterSyncOptions,
-  FeatureGateEvaluationOptions,
-  Log,
-  StatsigEvent,
-  StatsigUpdateDetails,
-  StatsigUser,
-} from '@statsig/client-core';
+import { Log, StatsigUpdateDetails } from '@statsig/client-core';
 import {
   StatsigOnDeviceEvalClient,
   StatsigOptions,
 } from '@statsig/js-on-device-eval-client';
 
-export class StatsigEdgeClient {
-  private _client: StatsigOnDeviceEvalClient;
-
+export class StatsigEdgeClient extends StatsigOnDeviceEvalClient {
   constructor(sdkKey: string, options: StatsigOptions | null = null) {
     const edgeSafeOptions: StatsigOptions = {
       disableStorage: true,
       loggingIntervalMs: 0,
       ...options,
     };
-    this._client = new StatsigOnDeviceEvalClient(sdkKey, edgeSafeOptions);
-  }
-
-  async initializeAsync(options?: DataAdapterAsyncOptions): Promise<unknown> {
-    return this._client.initializeAsync(options);
-  }
-
-  // If specs are provided, the data adapter will get populated
-  // default to disabling background refresh to avoid a follow-up network call.
-  initializeSync(specs?: string, options?: DataAdapterSyncOptions): unknown {
-    if (specs) {
-      this._client.dataAdapter.setData(specs);
-      const merged: DataAdapterSyncOptions = {
-        disableBackgroundCacheRefresh: true,
-        ...options,
-      };
-      return this._client.initializeSync(merged);
-    }
-    return this._client.initializeSync(options);
+    super(sdkKey, edgeSafeOptions);
   }
 
   async initializeFromCloudflareKV(
@@ -51,21 +23,20 @@ export class StatsigEdgeClient {
       const specs = await kvBinding.get(kvKey);
 
       if (specs) {
-        this._client.dataAdapter.setData(specs);
-        return this._client.initializeSync({
+        this.dataAdapter.setData(specs);
+        return this.initializeSync({
           disableBackgroundCacheRefresh: true,
         });
       } else {
-        return this._client.initializeAsync();
+        return this.initializeAsync();
       }
     } catch (error) {
       Log.error('Failed to fetch specs from Cloudflare KV:', error);
-      return this._client.initializeAsync();
+      return this.initializeAsync();
     }
   }
 
   async initializeFromVercel(ConfigKey: string): Promise<StatsigUpdateDetails> {
-    // dynamic import is required to bypass package not existing in other cloud provider environments
     const { getAll } = await import('@vercel/edge-config');
     const downloaded_specs = await getAll();
 
@@ -73,15 +44,15 @@ export class StatsigEdgeClient {
       const specs = downloaded_specs[ConfigKey];
       if (!specs) {
         Log.error('Invalid Config Key');
-        return this._client.initializeAsync();
+        return this.initializeAsync();
       }
-      this._client.dataAdapter.setData(JSON.stringify(specs));
-      return this._client.initializeSync({
+      this.dataAdapter.setData(JSON.stringify(specs));
+      return this.initializeSync({
         disableBackgroundCacheRefresh: true,
       });
     } else {
       Log.error('Failed to fetch specs from vercel');
-      return this._client.initializeAsync();
+      return this.initializeAsync();
     }
   }
 
@@ -125,8 +96,8 @@ export class StatsigEdgeClient {
           configData = JSON.stringify(res);
         }
         if (configData) {
-          this._client.dataAdapter.setData(configData);
-          return this._client.initializeSync({
+          this.dataAdapter.setData(configData);
+          return this.initializeSync({
             disableBackgroundCacheRefresh: true,
           });
         }
@@ -189,8 +160,8 @@ export class StatsigEdgeClient {
 
     try {
       const specs = await response.json();
-      this._client.dataAdapter.setData(JSON.stringify(specs));
-      return this._client.initializeSync({
+      this.dataAdapter.setData(JSON.stringify(specs));
+      return this.initializeSync({
         disableBackgroundCacheRefresh: true,
       });
     } catch (error) {
@@ -202,26 +173,5 @@ export class StatsigEdgeClient {
         sourceUrl: url,
       };
     }
-  }
-
-  checkGate(
-    name: string,
-    user: StatsigUser,
-    options?: FeatureGateEvaluationOptions,
-  ): boolean {
-    return this._client.checkGate(name, user, options);
-  }
-
-  logEvent(
-    eventName: StatsigEvent | string,
-    user: StatsigUser,
-    value?: string | number,
-    metadata?: Record<string, string>,
-  ): void {
-    return this._client.logEvent(eventName, user, value, metadata);
-  }
-
-  flush(): Promise<void> {
-    return this._client.flush();
   }
 }
