@@ -192,9 +192,11 @@ export class NetworkCore {
     const currentAttempt = attempt ?? 1;
     const abortController =
       typeof AbortController !== 'undefined' ? new AbortController() : null;
+    let reqTimedOut = false;
 
     const timeoutHandle = setTimeout(() => {
-      abortController?.abort(`Timeout of ${this._timeout}ms expired.`);
+      reqTimedOut = true;
+      abortController?.abort();
     }, this._timeout);
 
     const populatedUrl = this._getPopulatedURL(args);
@@ -223,8 +225,23 @@ export class NetworkCore {
       }
 
       const func = this._netConfig.networkOverrideFunc ?? fetch;
-      response = await func(populatedUrl, config);
-      clearTimeout(timeoutHandle);
+
+      if (abortController) {
+        // Modern path: true cancellation with AbortController
+        response = await func(populatedUrl, config);
+        clearTimeout(timeoutHandle);
+      } else {
+        // Fallback path: Promise.race timeout
+        response = await Promise.race([
+          func(populatedUrl, config),
+          new Promise<Response>((_, reject) =>
+            setTimeout(() => {
+              reqTimedOut = true;
+              reject(new Error(`Timeout of ${this._timeout}ms expired.`));
+            }, this._timeout),
+          ),
+        ]);
+      }
 
       if (!response.ok) {
         const text = await response.text().catch(() => 'No Text');
@@ -243,8 +260,8 @@ export class NetworkCore {
         code: response.status,
       };
     } catch (error) {
-      const errorMessage = _getErrorMessage(abortController, error);
-      const timedOut = _didTimeout(abortController);
+      const errorMessage = _getErrorMessage(error);
+      const timedOut = _didTimeout(errorMessage ?? '', reqTimedOut);
 
       _tryMarkInitEnd(args, response, currentAttempt, '', error);
 
@@ -514,17 +531,7 @@ function _allowCompression(
   }
 }
 
-function _getErrorMessage(
-  controller: AbortController | null,
-  error: unknown,
-): string | null {
-  if (
-    controller?.signal.aborted &&
-    typeof controller.signal.reason === 'string'
-  ) {
-    return controller.signal.reason;
-  }
-
+function _getErrorMessage(error: unknown): string | null {
   if (typeof error === 'string') {
     return error;
   }
@@ -536,13 +543,10 @@ function _getErrorMessage(
   return 'Unknown Error';
 }
 
-function _didTimeout(controller: AbortController | null): boolean {
-  const timeout =
-    controller?.signal.aborted &&
-    typeof controller.signal.reason === 'string' &&
-    controller.signal.reason.includes('Timeout');
+function _didTimeout(errorMsg: string, abortedByTimeout: boolean): boolean {
+  const timeout = errorMsg.includes('Timeout'); // probably not needed but just in case
 
-  return timeout || false;
+  return timeout || abortedByTimeout;
 }
 
 function _tryMarkInitStart(args: RequestArgsInternal, attempt: number) {

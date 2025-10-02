@@ -81,6 +81,12 @@ export default class EvaluationStore {
       return true;
     }
 
+    const updatedLcut = values.time ?? 0;
+
+    if (updatedLcut < this._lcut) {
+      return true;
+    }
+
     this._rawValues = result.data;
     this._lcut = values.time;
     this._receivedAt = result.receivedAt;

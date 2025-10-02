@@ -61,6 +61,12 @@ export class SpecStore {
       return;
     }
 
+    const updatedLcut = values.time ?? 0;
+
+    if (updatedLcut < this._lcut) {
+      return;
+    }
+
     this._lcut = values.time;
     this._receivedAt = result.receivedAt;
     this._source = result.source;
