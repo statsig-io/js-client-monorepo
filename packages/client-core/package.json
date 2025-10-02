@@ -1,6 +1,6 @@
 {
   "name": "@statsig/client-core",
-  "version": "3.25.5",
+  "version": "3.25.6",
   "license": "ISC",
   "homepage": "https://github.com/statsig-io/js-client-monorepo",
   "repository": {
