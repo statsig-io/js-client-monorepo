@@ -13,6 +13,7 @@ function getBaseMock<T>(): T {
     getFeatureGate: jest.fn(),
     getDynamicConfig: jest.fn(),
     getExperiment: jest.fn(),
+    getParameterStore: jest.fn(),
     getLayer: jest.fn(),
     logEvent: jest.fn(),
     on: jest.fn(),

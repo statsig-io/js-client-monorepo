@@ -39,7 +39,10 @@
         "@nx/dependency-checks": [
           "error",
           {
-            "ignoredDependencies": ["jest-preset-angular"]
+            "ignoredDependencies": [
+              "jest-preset-angular",
+              "statsig-test-helpers"
+            ]
           }
         ]
       }

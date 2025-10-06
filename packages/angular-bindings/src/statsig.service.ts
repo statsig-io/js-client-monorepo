@@ -12,6 +12,8 @@ import {
   Layer,
   LayerEvaluationOptions,
   Log,
+  ParameterStore,
+  ParameterStoreEvaluationOptions,
   SDKType,
   StatsigEvent,
   StatsigUpdateDetails,
@@ -109,6 +111,20 @@ export class StatsigService implements OnDestroy {
     return this._getLayerImpl(this._renderVersion, layerName, options);
   }
 
+  getParameterStore(
+    parameterStoreName: string,
+    options?: ParameterStoreEvaluationOptions,
+  ): ParameterStore {
+    Log.debug(
+      `getParameterStore called for ${parameterStoreName}, rv: ${this._renderVersion}`,
+    );
+    return this._getParameterStoreImpl(
+      this._renderVersion,
+      parameterStoreName,
+      options,
+    );
+  }
+
   logEvent(
     eventName: StatsigEvent | string,
     value?: string | number,
@@ -186,6 +202,22 @@ export class StatsigService implements OnDestroy {
     options?: LayerEvaluationOptions,
   ): Layer {
     return this._client.getLayer(layerName, options);
+  }
+
+  @Memoize((...args: unknown[]) => {
+    const [rv, pn, opt] = args as [
+      number,
+      string,
+      ParameterStoreEvaluationOptions,
+    ];
+    return `${rv}-${pn}-${JSON.stringify(opt)}`;
+  })
+  private _getParameterStoreImpl(
+    _rv: number,
+    parameterStoreName: string,
+    options?: ParameterStoreEvaluationOptions,
+  ): ParameterStore {
+    return this._client.getParameterStore(parameterStoreName, options);
   }
 
   private _checkAndEmitLoadingStatus(): void {
