@@ -190,14 +190,7 @@ export class NetworkCore {
     }
 
     const currentAttempt = attempt ?? 1;
-    const abortController =
-      typeof AbortController !== 'undefined' ? new AbortController() : null;
     let reqTimedOut = false;
-
-    const timeoutHandle = setTimeout(() => {
-      reqTimedOut = true;
-      abortController?.abort();
-    }, this._timeout);
 
     const populatedUrl = this._getPopulatedURL(args);
 
@@ -211,7 +204,6 @@ export class NetworkCore {
         headers: {
           ...args.headers,
         },
-        signal: abortController?.signal,
         priority: args.priority,
         keepalive,
       };
@@ -226,22 +218,17 @@ export class NetworkCore {
 
       const func = this._netConfig.networkOverrideFunc ?? fetch;
 
-      if (abortController) {
-        // Modern path: true cancellation with AbortController
-        response = await func(populatedUrl, config);
-        clearTimeout(timeoutHandle);
-      } else {
-        // Fallback path: Promise.race timeout
-        response = await Promise.race([
-          func(populatedUrl, config),
-          new Promise<Response>((_, reject) =>
-            setTimeout(() => {
-              reqTimedOut = true;
-              reject(new Error(`Timeout of ${this._timeout}ms expired.`));
-            }, this._timeout),
-          ),
-        ]);
-      }
+      let timeoutId: ReturnType<typeof setTimeout>;
+
+      response = await Promise.race([
+        func(populatedUrl, config).finally(() => clearTimeout(timeoutId)),
+        new Promise<Response>((_, reject) => {
+          timeoutId = setTimeout(() => {
+            reqTimedOut = true;
+            reject(new Error(`Timeout of ${this._timeout}ms expired.`));
+          }, this._timeout);
+        }),
+      ]);
 
       if (!response.ok) {
         const text = await response.text().catch(() => 'No Text');

@@ -18,59 +18,11 @@ describe('NetworkTimeout', () => {
     fetchMock.resetMocks();
   });
 
-  describe('AbortController timeout', () => {
-    let result: unknown;
-    let resolverSpy: jest.SpyInstance;
-
-    beforeAll(async () => {
-      fetchMock.mockImplementationOnce(
-        (_url, options) =>
-          new Promise((_, reject) => {
-            const abortSignal = options?.signal;
-            abortSignal?.addEventListener('abort', () => {
-              reject(new DOMException('Aborted', 'AbortError'));
-            });
-          }),
-      );
-
-      const network = new NetworkCore({
-        networkConfig: { networkTimeoutMs: 1 },
-      });
-      resolverSpy = jest.spyOn(
-        (network as any)._fallbackResolver,
-        'tryFetchUpdatedFallbackInfo',
-      );
-
-      result = await network.post({
-        urlConfig: new UrlConfiguration(Endpoint._initialize, null, null, null),
-        sdkKey: SDK_KEY,
-        data: {},
-      });
-    });
-
-    it('returns null when the request times out with AbortController', () => {
-      expect(result).toBeNull();
-    });
-
-    it('attempts to update the fallback url with AbortController timeout', () => {
-      expect(resolverSpy).toHaveBeenCalledWith(
-        SDK_KEY,
-        anyInstanceOf(UrlConfiguration),
-        expect.any(String),
-        true,
-      );
-    });
-  });
-
   describe('Promise.race timeout', () => {
     let result: unknown;
     let resolverSpy: jest.SpyInstance;
-    let originalAbortController: typeof AbortController;
 
     beforeAll(async () => {
-      originalAbortController = global.AbortController;
-      (global as any).AbortController = undefined;
-
       fetchMock.mockImplementationOnce(
         (_url, _options) =>
           new Promise((_, reject) => {
@@ -93,10 +45,6 @@ describe('NetworkTimeout', () => {
         sdkKey: SDK_KEY,
         data: {},
       });
-    });
-
-    afterAll(() => {
-      global.AbortController = originalAbortController;
     });
 
     it('returns null when the request times out with Promise.race', () => {
