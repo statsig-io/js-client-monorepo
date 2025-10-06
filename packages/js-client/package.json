@@ -1,6 +1,6 @@
 {
   "name": "@statsig/js-client",
-  "version": "3.25.6",
+  "version": "3.26.0",
   "license": "ISC",
   "homepage": "https://github.com/statsig-io/js-client-monorepo",
   "repository": {
@@ -9,7 +9,7 @@
     "directory": "packages/js-client"
   },
   "dependencies": {
-    "@statsig/client-core": "3.25.6"
+    "@statsig/client-core": "3.26.0"
   },
   "jsdelivr": "./build/statsig-js-client.min.js",
   "type": "commonjs",
