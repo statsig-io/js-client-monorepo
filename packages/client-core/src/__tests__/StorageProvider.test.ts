@@ -72,11 +72,6 @@ describe('StorageProvider', () => {
       }
     });
 
-    it('throws the error with statsig key info', () => {
-      const message = error?.message ?? '';
-      expect(message).toContain('Statsig Keys: 2');
-    });
-
     it('throw the error with the correct name', () => {
       expect(error?.name).toBe('QuotaExceededError');
     });

@@ -224,7 +224,10 @@ export abstract class DataAdapterCore {
       } catch (error) {
         if (
           !(error instanceof Error) ||
-          error.name !== 'QuotaExceededError' ||
+          !(
+            error.toString().includes('QuotaExceededError') ||
+            error.toString().includes('QUOTA_EXCEEDED_ERR')
+          ) ||
           this._cacheLimit <= 1
         ) {
           throw error;

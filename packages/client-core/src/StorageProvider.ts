@@ -68,12 +68,6 @@ function _inMemoryBreaker<T>(action: () => T) {
       return null;
     }
 
-    if (error instanceof Error && error.name === 'QuotaExceededError') {
-      const allKeys = Storage.getAllKeys();
-      const statsigKeys = allKeys.filter((key) => key.startsWith('statsig.'));
-      error.message = `${error.message}. Statsig Keys: ${statsigKeys.length}`;
-    }
-
     throw error;
   }
 }
