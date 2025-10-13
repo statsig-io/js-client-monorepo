@@ -5,6 +5,7 @@ import {
   DataAdapterResult,
   EvaluationsDataAdapter,
   InitializeResponse,
+  InitializeResponseV2,
   Log,
   NetworkCore,
   StatsigUser,
@@ -62,7 +63,7 @@ export class StatsigEvaluationsDataAdapter
   }
 
   override setData(data: string): void {
-    const values = _typedJsonParse<InitializeResponse>(
+    const values = _typedJsonParse<InitializeResponse | InitializeResponseV2>(
       data,
       'has_updates',
       'data',

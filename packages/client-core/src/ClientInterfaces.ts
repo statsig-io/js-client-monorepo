@@ -7,7 +7,7 @@ import {
   LayerEvaluationOptions,
   ParameterStoreEvaluationOptions,
 } from './EvaluationOptions';
-import { InitializeResponseWithUpdates } from './InitializeResponse';
+import { AnyInitializeResponse } from './InitializeResponse';
 import { StatsigSession } from './SessionID';
 import { StatsigClientEventEmitterInterface } from './StatsigClientEventEmitter';
 import { EvaluationsDataAdapter, SpecsDataAdapter } from './StatsigDataAdapter';
@@ -90,7 +90,7 @@ export interface OnDeviceEvaluationsInterface
 
 export type PrecomputedEvaluationsContext = Flatten<
   CommonContext & {
-    values: InitializeResponseWithUpdates | null;
+    values: AnyInitializeResponse | null;
     user: StatsigUser;
   }
 >;

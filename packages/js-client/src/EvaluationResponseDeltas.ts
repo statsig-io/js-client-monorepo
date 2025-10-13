@@ -1,10 +1,10 @@
 import {
-  InitializeResponseWithUpdates,
+  InitializeResponseV1WithUpdates,
   _DJB2Object,
   _typedJsonParse,
 } from '@statsig/client-core';
 
-type DeltasEvaluationResponse = InitializeResponseWithUpdates & {
+type DeltasEvaluationResponse = InitializeResponseV1WithUpdates & {
   deleted_configs?: string[];
   deleted_gates?: string[];
   deleted_layers?: string[];
@@ -26,7 +26,7 @@ type DeltasResult = string | DeltasFailureInfo | null;
 const MAX_DELTAS_SORT_DEPTH = 2;
 
 export function _resolveDeltasResponse(
-  cache: InitializeResponseWithUpdates,
+  cache: InitializeResponseV1WithUpdates,
   deltasString: string,
 ): DeltasResult {
   const deltas = _typedJsonParse<DeltasEvaluationResponse>(
@@ -67,7 +67,7 @@ export function _resolveDeltasResponse(
 }
 
 function _mergeDeltasIntoCache(
-  cache: InitializeResponseWithUpdates,
+  cache: InitializeResponseV1WithUpdates,
   deltas: DeltasEvaluationResponse,
 ): DeltasEvaluationResponse {
   return {
@@ -90,7 +90,7 @@ function _mergeDeltasIntoCache(
 
 function _handleDeletedEntries(
   deltas: DeltasEvaluationResponse,
-): InitializeResponseWithUpdates {
+): InitializeResponseV1WithUpdates {
   const result = deltas;
 
   _deleteEntriesInRecord(deltas.deleted_gates, result.feature_gates);

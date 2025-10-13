@@ -40,6 +40,7 @@ export type Experiment = Flatten<{
   readonly details: EvaluationDetails;
   readonly value: Record<string, unknown>;
   readonly groupName: string | null;
+  readonly idType: string | null;
   readonly __evaluation: ExperimentEvaluation | null;
   readonly get: TypedGet;
 }>;

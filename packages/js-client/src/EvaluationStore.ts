@@ -1,5 +1,6 @@
 import {
   AnyEvaluation,
+  AnyInitializeResponse,
   BootstrapMetadata,
   DataAdapterResult,
   DataSource,
@@ -8,7 +9,7 @@ import {
   EvaluationDetails,
   GateEvaluation,
   InitializeResponse,
-  InitializeResponseWithUpdates,
+  InitializeResponseV2,
   LayerEvaluation,
   ParamStoreConfig,
   SDKFlags,
@@ -16,14 +17,17 @@ import {
   StableID,
   StatsigUser,
   StatsigWarnings,
-  _DJB2,
   _getFullUserHash,
   _typedJsonParse,
 } from '@statsig/client-core';
 
+import { InitializeContainer } from './InitializeContainer';
+import { V1InitializeContainer } from './V1InitializeContainer';
+import { V2InitializeContainer } from './V2InitializeContainer';
+
 export default class EvaluationStore {
   private _rawValues: string | null = null;
-  private _values: InitializeResponseWithUpdates | null = null;
+  private _values: InitializeContainer | null = null;
   private _source: DataSource = 'Uninitialized';
   private _lcut = 0;
   private _receivedAt = 0;
@@ -50,9 +54,9 @@ export default class EvaluationStore {
     this._source = 'NoValues';
   }
 
-  getValues(): InitializeResponseWithUpdates | null {
+  getValues(): AnyInitializeResponse | null {
     return this._rawValues
-      ? _typedJsonParse<InitializeResponseWithUpdates>(
+      ? _typedJsonParse<AnyInitializeResponse>(
           this._rawValues,
           'has_updates',
           'EvaluationStoreValues',
@@ -65,7 +69,7 @@ export default class EvaluationStore {
       return false;
     }
 
-    const values = _typedJsonParse<InitializeResponse>(
+    const values = _typedJsonParse<InitializeResponse | InitializeResponseV2>(
       result.data,
       'has_updates',
       'EvaluationResponse',
@@ -90,7 +94,11 @@ export default class EvaluationStore {
     this._rawValues = result.data;
     this._lcut = values.time;
     this._receivedAt = result.receivedAt;
-    this._values = values;
+    if (values.response_format === 'init-v2') {
+      this._values = new V2InitializeContainer(values);
+    } else {
+      this._values = new V1InitializeContainer(values);
+    }
     this._bootstrapMetadata = this._extractBootstrapMetadata(
       result.source,
       values,
@@ -113,29 +121,30 @@ export default class EvaluationStore {
   }
 
   getGate(name: string): DetailedStoreResult<GateEvaluation> {
-    return this._getDetailedStoreResult(this._values?.feature_gates, name);
+    const res = this._values ? this._values.getGate(name) : null;
+    return this._getDetailedStoreResult(res);
   }
 
   getConfig(name: string): DetailedStoreResult<DynamicConfigEvaluation> {
-    return this._getDetailedStoreResult(this._values?.dynamic_configs, name);
+    const res = this._values ? this._values.getConfig(name) : null;
+    return this._getDetailedStoreResult(res);
   }
 
   getConfigList(): string[] {
-    if (!this._values?.dynamic_configs) {
+    if (!this._values) {
       return [];
     }
-
-    return Object.values(this._values.dynamic_configs).map(
-      (config) => config.name,
-    );
+    return this._values.getConfigList();
   }
 
   getLayer(name: string): DetailedStoreResult<LayerEvaluation> {
-    return this._getDetailedStoreResult(this._values?.layer_configs, name);
+    const res = this._values ? this._values.getLayer(name) : null;
+    return this._getDetailedStoreResult(res);
   }
 
   getParamStore(name: string): DetailedStoreResult<ParamStoreConfig> {
-    return this._getDetailedStoreResult(this._values?.param_stores, name);
+    const res = this._values ? this._values.getParamStore(name) : null;
+    return this._getDetailedStoreResult(res);
   }
 
   getSource(): DataSource {
@@ -143,12 +152,12 @@ export default class EvaluationStore {
   }
 
   getExposureMapping(): Record<string, SecondaryExposure> | undefined {
-    return this._values?.exposures;
+    return this._values?.getExposureMapping();
   }
 
   private _extractBootstrapMetadata(
     source: DataSource,
-    values: InitializeResponseWithUpdates,
+    values: AnyInitializeResponse,
   ): BootstrapMetadata | null {
     if (source !== 'Bootstrap') {
       return null;
@@ -167,14 +176,8 @@ export default class EvaluationStore {
   }
 
   private _getDetailedStoreResult<T extends AnyEvaluation | ParamStoreConfig>(
-    lookup: Record<string, T> | undefined,
-    name: string,
+    result: T | null,
   ): DetailedStoreResult<T> {
-    let result: T | null = null;
-    if (lookup) {
-      result = lookup[name] ? lookup[name] : lookup[_DJB2(name)];
-    }
-
     return {
       result,
       details: this._getDetails(result == null),
@@ -183,7 +186,7 @@ export default class EvaluationStore {
 
   private _setWarningState(
     user: StatsigUser,
-    values: InitializeResponse,
+    values: InitializeResponse | InitializeResponseV2,
   ): void {
     const stableID = StableID.get(this._sdkKey);
     if (

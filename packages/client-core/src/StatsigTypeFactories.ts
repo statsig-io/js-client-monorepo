@@ -51,6 +51,7 @@ export function _makeDynamicConfig(
   const value = evaluation?.value ?? {};
   return {
     ..._makeEvaluation(name, details, evaluation, value),
+    idType: evaluation?.id_type ?? null,
     get: _makeTypedGet(name, evaluation?.value),
   };
 }

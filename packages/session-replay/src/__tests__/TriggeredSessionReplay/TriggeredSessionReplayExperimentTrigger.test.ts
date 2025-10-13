@@ -35,6 +35,7 @@ describe('Triggered Session Replay Gate Trigger', () => {
         details: {
           reason: '',
         },
+        idType: 'userID',
         __evaluation: null,
         get: <T = unknown>(_param: string, fallback?: T) => {
           return fallback as TypedReturn<T>;

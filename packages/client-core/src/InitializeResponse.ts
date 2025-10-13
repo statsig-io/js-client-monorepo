@@ -4,6 +4,11 @@ import {
   LayerEvaluation,
   SecondaryExposure,
 } from './EvaluationTypes';
+import {
+  DynamicConfigEvaluationV2,
+  GateEvaluationV2,
+  LayerEvaluationV2,
+} from './EvaluationTypesV2';
 import { ParamStoreConfig } from './ParamStoreTypes';
 import { StatsigUser } from './StatsigUser';
 
@@ -27,11 +32,8 @@ type AutoCaptureFields = {
   };
 };
 
-export type InitializeResponseWithUpdates = SessionReplayFields &
+type InitResponseCommon = SessionReplayFields &
   AutoCaptureFields & {
-    feature_gates: Record<string, GateEvaluation>;
-    dynamic_configs: Record<string, DynamicConfigEvaluation>;
-    layer_configs: Record<string, LayerEvaluation>;
     param_stores?: Record<string, ParamStoreConfig>;
     time: number;
     has_updates: true;
@@ -44,6 +46,25 @@ export type InitializeResponseWithUpdates = SessionReplayFields &
     exposures?: Record<string, SecondaryExposure>;
   };
 
+export type InitializeResponseV1WithUpdates = InitResponseCommon & {
+  feature_gates: Record<string, GateEvaluation>;
+  dynamic_configs: Record<string, DynamicConfigEvaluation>;
+  layer_configs: Record<string, LayerEvaluation>;
+  response_format?: 'init-v1' | null | undefined;
+};
+
+export type InitializeResponseV2 = InitResponseCommon & {
+  feature_gates: Record<string, GateEvaluationV2>;
+  dynamic_configs: Record<string, DynamicConfigEvaluationV2>;
+  layer_configs: Record<string, LayerEvaluationV2>;
+  values: Record<string, Record<string, unknown>>;
+  response_format: 'init-v2';
+};
+
 export type InitializeResponse =
-  | InitializeResponseWithUpdates
+  | InitializeResponseV1WithUpdates
   | { has_updates: false };
+
+export type AnyInitializeResponse =
+  | InitializeResponseV1WithUpdates
+  | InitializeResponseV2;
