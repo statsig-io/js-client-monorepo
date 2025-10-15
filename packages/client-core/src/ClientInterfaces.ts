@@ -7,7 +7,10 @@ import {
   LayerEvaluationOptions,
   ParameterStoreEvaluationOptions,
 } from './EvaluationOptions';
-import { AnyInitializeResponse } from './InitializeResponse';
+import {
+  AnyInitializeResponse,
+  ClientInitializeResponseOptions,
+} from './InitializeResponse';
 import { StatsigSession } from './SessionID';
 import { StatsigClientEventEmitterInterface } from './StatsigClientEventEmitter';
 import { EvaluationsDataAdapter, SpecsDataAdapter } from './StatsigDataAdapter';
@@ -86,6 +89,10 @@ export interface OnDeviceEvaluationsInterface
     value?: string | number,
     metadata?: Record<string, string>,
   ): void;
+  getClientInitializeResponse(
+    user: StatsigUser,
+    options?: ClientInitializeResponseOptions,
+  ): AnyInitializeResponse | null;
 }
 
 export type PrecomputedEvaluationsContext = Flatten<

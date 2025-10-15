@@ -52,11 +52,6 @@ const SECONDARY_EXPOSURES = [
     gateValue: 'false',
     ruleID: '7MfLa1sxHKhPjAKKIYIZ3D',
   },
-  {
-    gate: 'a_holdout',
-    gateValue: 'false',
-    ruleID: '7MfLa1sxHKhPjAKKIYIZ3D',
-  },
 ];
 
 describe('User Persisted Storage', () => {

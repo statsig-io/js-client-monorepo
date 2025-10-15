@@ -49,9 +49,17 @@ export type DownloadConfigSpecsResponse = {
   dynamic_configs: Spec[];
   layer_configs: Spec[];
   param_stores?: Record<string, ParamStore>;
+  layers?: Record<string, string[]>;
   time: number;
   has_updates: boolean;
   sdkInfo?: Record<string, string>;
   user?: StatsigUser;
   default_environment?: string;
+  sdk_keys_to_app_ids?: Record<string, string>;
+  hashed_sdk_keys_to_app_ids?: Record<string, string>;
+  hashed_sdk_keys_to_entities?: Record<
+    string,
+    { gates: string[]; configs: string[]; experiments: string[] }
+  >;
+  app_id?: string;
 };

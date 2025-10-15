@@ -122,4 +122,13 @@ export class SpecStore {
         return this._values?.layer_configs;
     }
   }
+
+  getAllSpecs(kind: SpecKind): Spec[] {
+    const specs = this._getSpecs(kind);
+    return specs || [];
+  }
+
+  getLastUpdateTime(): number {
+    return this._lcut;
+  }
 }

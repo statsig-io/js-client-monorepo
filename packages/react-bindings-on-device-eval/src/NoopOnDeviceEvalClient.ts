@@ -90,6 +90,7 @@ const _client: OnDeviceEvaluationsInterface & { isNoop: true } = {
   getExperiment: _defaultEvaluation<Experiment>('config'),
   getLayer: _defaultEvaluation<Layer>('layer'),
   logEvent: _noop,
+  getClientInitializeResponse: () => null,
   on: _noop,
   off: _noop,
   $on: _noop,

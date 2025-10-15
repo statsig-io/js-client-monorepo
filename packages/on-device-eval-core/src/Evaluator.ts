@@ -47,7 +47,7 @@ export class Evaluator {
     if (!spec) {
       return { evaluation: null, details };
     }
-    const result = this._evaluateSpec(spec, user);
+    const result = this.evaluateSpec(spec, user);
     const evaluation = resultToGateEval(spec, result);
     this._handleUnsupportedEvaluation(result, details);
     return { evaluation, details };
@@ -62,7 +62,7 @@ export class Evaluator {
       return { evaluation: null, details };
     }
 
-    const result = this._evaluateSpec(spec, user);
+    const result = this.evaluateSpec(spec, user);
     const evaluation = resultToConfigEval(spec, result);
     this._handleUnsupportedEvaluation(result, details);
     return { evaluation, details };
@@ -77,7 +77,7 @@ export class Evaluator {
       return { evaluation: null, details };
     }
 
-    const result = this._evaluateSpec(spec, user);
+    const result = this.evaluateSpec(spec, user);
     const experimentName = result?.allocated_experiment_name ?? '';
     const experimentSpec = this._store.getSpecAndSourceInfo(
       'config',
@@ -112,38 +112,7 @@ export class Evaluator {
     };
   }
 
-  private _getSpecAndDetails(
-    kind: SpecKind,
-    name: string,
-  ): { details: EvaluationDetails; spec: Spec | null } {
-    const specAndSourceInfo = this._store.getSpecAndSourceInfo(kind, name);
-    const details = this._getEvaluationDetails(specAndSourceInfo);
-
-    return { details, spec: specAndSourceInfo.spec };
-  }
-
-  private _getEvaluationDetails(
-    info: SpecAndSourceInfo | ParamStoreAndSourceInfo,
-  ): EvaluationDetails {
-    const { source, lcut, receivedAt } = info;
-
-    if (source === 'Uninitialized' || source === 'NoValues') {
-      return { reason: source };
-    }
-
-    const subreason =
-      ('spec' in info ? info.spec : info.paramStoreConfig) == null
-        ? 'Unrecognized'
-        : 'Recognized';
-    const reason = `${source}:${subreason}`;
-
-    return { reason, lcut, receivedAt };
-  }
-
-  private _evaluateSpec(
-    spec: Spec,
-    user: StatsigUserInternal,
-  ): EvaluationResult {
+  evaluateSpec(spec: Spec, user: StatsigUserInternal): EvaluationResult {
     const defaultValue = _isRecord(spec.defaultValue)
       ? spec.defaultValue
       : undefined;
@@ -156,6 +125,7 @@ export class Evaluator {
     }
 
     const exposures: SecondaryExposure[] = [];
+    const seen: Record<string, boolean> = {};
 
     for (const rule of spec.rules) {
       const result = this._evaluateRule(rule, user);
@@ -164,7 +134,14 @@ export class Evaluator {
         return result;
       }
 
-      exposures.push(...result.secondary_exposures);
+      for (const exposure of result.secondary_exposures) {
+        const key = `${exposure.gate}|${exposure.gateValue}|${exposure.ruleID}`;
+        if (seen[key]) {
+          continue;
+        }
+        seen[key] = true;
+        exposures.push(exposure);
+      }
 
       if (!result.bool_value) {
         continue;
@@ -197,6 +174,34 @@ export class Evaluator {
       undelegated_secondary_exposures: exposures,
       rule_id: 'default',
     });
+  }
+
+  private _getSpecAndDetails(
+    kind: SpecKind,
+    name: string,
+  ): { details: EvaluationDetails; spec: Spec | null } {
+    const specAndSourceInfo = this._store.getSpecAndSourceInfo(kind, name);
+    const details = this._getEvaluationDetails(specAndSourceInfo);
+
+    return { details, spec: specAndSourceInfo.spec };
+  }
+
+  private _getEvaluationDetails(
+    info: SpecAndSourceInfo | ParamStoreAndSourceInfo,
+  ): EvaluationDetails {
+    const { source, lcut, receivedAt } = info;
+
+    if (source === 'Uninitialized' || source === 'NoValues') {
+      return { reason: source };
+    }
+
+    const subreason =
+      ('spec' in info ? info.spec : info.paramStoreConfig) == null
+        ? 'Unrecognized'
+        : 'Recognized';
+    const reason = `${source}:${subreason}`;
+
+    return { reason, lcut, receivedAt };
   }
 
   private _evaluateRule(
@@ -399,12 +404,24 @@ export class Evaluator {
       return null;
     }
 
-    const result = this._evaluateSpec(spec, user);
+    const result = this.evaluateSpec(spec, user);
+    const seen: Record<string, boolean> = {};
+    const mergedExposures: SecondaryExposure[] = [];
+
+    for (const exposure of exposures.concat(result.secondary_exposures)) {
+      const key = `${exposure.gate}|${exposure.gateValue}|${exposure.ruleID}`;
+      if (seen[key]) {
+        continue;
+      }
+      seen[key] = true;
+      mergedExposures.push(exposure);
+    }
+
     return makeEvalResult({
       ...result,
       allocated_experiment_name: configDelegate,
       explicit_parameters: spec.explicitParameters,
-      secondary_exposures: exposures.concat(result.secondary_exposures),
+      secondary_exposures: mergedExposures,
       undelegated_secondary_exposures: exposures,
     });
   }
@@ -418,7 +435,7 @@ export class Evaluator {
 
     const { spec } = this._store.getSpecAndSourceInfo('gate', name);
     if (spec) {
-      const result = this._evaluateSpec(spec, user);
+      const result = this.evaluateSpec(spec, user);
 
       if (result.unsupported) {
         return result;
@@ -426,11 +443,13 @@ export class Evaluator {
 
       pass = result.bool_value;
       exposures.push(...result.secondary_exposures);
-      exposures.push({
-        gate: name,
-        gateValue: String(pass),
-        ruleID: result.rule_id,
-      });
+      if (!name.startsWith('segment:')) {
+        exposures.push({
+          gate: name,
+          gateValue: String(pass),
+          ruleID: result.rule_id,
+        });
+      }
     }
 
     return makeEvalResult({

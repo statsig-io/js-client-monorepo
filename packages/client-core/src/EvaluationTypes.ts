@@ -28,6 +28,8 @@ export type ExperimentEvaluation = Flatten<
     is_experiment_active?: boolean;
     is_user_in_experiment?: boolean;
     passed?: boolean;
+    is_in_layer?: boolean;
+    explicit_parameters?: string[];
   }
 >;
 

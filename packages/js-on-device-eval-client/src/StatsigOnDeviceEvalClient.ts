@@ -1,4 +1,5 @@
 import {
+  ClientInitializeResponseOptions,
   DataAdapterAsyncOptions,
   DataAdapterResult,
   DataAdapterSyncOptions,
@@ -9,6 +10,7 @@ import {
   ExperimentEvaluationOptions,
   FeatureGate,
   FeatureGateEvaluationOptions,
+  InitializeResponseV1WithUpdates,
   Layer,
   LayerEvaluationOptions,
   Log,
@@ -39,6 +41,7 @@ import {
 } from '@statsig/client-core';
 import { Evaluator, SpecStore } from '@statsig/on-device-eval-core';
 
+import { GCIRFormatter } from './GCIRFormatter';
 import Network from './Network';
 import { StatsigOptions } from './StatsigOptions';
 import { StatsigSpecsDataAdapter } from './StatsigSpecsDataAdapter';
@@ -60,6 +63,7 @@ export default class StatsigOnDeviceEvalClient
   private _evaluator: Evaluator;
   private _network: Network;
   private _sdkInstanceID: string;
+  private _gcir: GCIRFormatter;
 
   static instance(sdkKey?: string): StatsigOnDeviceEvalClient {
     const instance = _getStatsigGlobal().instance(sdkKey);
@@ -90,6 +94,7 @@ export default class StatsigOnDeviceEvalClient
     this._store = new SpecStore();
     this._evaluator = new Evaluator(this._store);
     this._sdkInstanceID = getUUID();
+    this._gcir = new GCIRFormatter(this._evaluator, this._store, this._options);
   }
 
   initializeSync(options?: SyncUpdateOptions): StatsigUpdateDetails {
@@ -348,5 +353,16 @@ export default class StatsigOnDeviceEvalClient
     this.dataAdapter.getDataAsync(current, { priority: 'low' }).catch((err) => {
       Log.error('An error occurred after update.', err);
     });
+  }
+
+  getClientInitializeResponse(
+    user: StatsigUser,
+    options?: ClientInitializeResponseOptions,
+  ): InitializeResponseV1WithUpdates | null {
+    if (this.loadingStatus !== 'Ready') {
+      return null;
+    }
+
+    return this._gcir.getClientInitializeResponse(user, options);
   }
 }

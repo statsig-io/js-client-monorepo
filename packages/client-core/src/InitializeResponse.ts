@@ -38,9 +38,13 @@ type InitResponseCommon = SessionReplayFields &
     time: number;
     has_updates: true;
     hash_used: 'none' | 'sha256' | 'djb2';
-    derived_fields?: Record<string, unknown>;
-    user?: StatsigUser;
+    user: StatsigUser;
     sdkInfo?: Record<string, string>;
+    sdkParams?: Record<string, unknown>;
+    generator?: string;
+    evaluated_keys?: Record<string, unknown>;
+    pa_hash?: string;
+    derived_fields?: Record<string, unknown>;
     sdk_flags?: Record<string, boolean>;
     full_checksum?: string;
     exposures?: Record<string, SecondaryExposure>;
@@ -64,6 +68,11 @@ export type InitializeResponseV2 = InitResponseCommon & {
 export type InitializeResponse =
   | InitializeResponseV1WithUpdates
   | { has_updates: false };
+
+export type ClientInitializeResponseOptions = {
+  hash?: 'none' | 'sha256' | 'djb2';
+  clientSDKKey?: string;
+};
 
 export type AnyInitializeResponse =
   | InitializeResponseV1WithUpdates

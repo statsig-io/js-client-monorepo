@@ -581,6 +581,9 @@ importers:
       '@statsig/on-device-eval-core':
         specifier: 3.26.0
         version: link:../on-device-eval-core
+      '@statsig/sha256':
+        specifier: 3.26.0
+        version: link:../sha256
 
   packages/js-user-persisted-storage:
     dependencies:
