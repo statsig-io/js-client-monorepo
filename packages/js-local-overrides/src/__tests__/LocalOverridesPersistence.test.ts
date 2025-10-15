@@ -1,7 +1,9 @@
 import {
+  ParameterStore,
   Storage,
   _getStorageKey,
   _makeFeatureGate,
+  _makeTypedGet,
 } from '@statsig/client-core';
 
 import { LocalOverrideAdapter } from '../LocalOverrideAdapter';
@@ -13,6 +15,12 @@ const STORAGE_KEY = `statsig.local-overrides.${_getStorageKey(SDK_KEY)}`;
 describe('Local Overrides Storage', () => {
   const user = { userID: 'a-user' };
   const gate = _makeFeatureGate('a_gate', { reason: '' }, null);
+  const paramStore: ParameterStore = {
+    name: 'a_param_store',
+    details: { reason: '' },
+    get: _makeTypedGet('a_param_store', {}),
+    __configuration: null,
+  };
 
   let mockStorage: MockStorageProvider;
 
@@ -58,6 +66,7 @@ describe('Local Overrides Storage', () => {
       dynamicConfig: {},
       experiment: {},
       layer: {},
+      paramStore: {},
     });
 
     const adapter = new LocalOverrideAdapter();
@@ -65,5 +74,30 @@ describe('Local Overrides Storage', () => {
 
     const result = adapter.getGateOverride(gate, user);
     expect(result).toBeNull();
+  });
+
+  it('loads param store overrides from storage', async () => {
+    mockStorage.data[STORAGE_KEY] = JSON.stringify({
+      gate: {},
+      dynamicConfig: {},
+      experiment: {},
+      layer: {},
+      paramStore: {
+        '2146298833': { key: 'value' },
+        a_param_store: { key: 'value' },
+      },
+    });
+
+    const provider = new LocalOverrideAdapter(SDK_KEY);
+    await provider.loadFromStorage();
+
+    const result = provider.getParamStoreOverride(paramStore);
+    expect(result?.config).toEqual({
+      key: {
+        ref_type: 'static',
+        param_type: 'string',
+        value: 'value',
+      },
+    });
   });
 });

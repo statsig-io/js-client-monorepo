@@ -1,10 +1,14 @@
 import {
   DynamicConfig,
+  EvaluationDetails,
   Experiment,
   FeatureGate,
   Layer,
   Log,
   OverrideAdapter,
+  ParamStoreConfig,
+  ParameterStore,
+  StaticParam,
   StatsigUser,
   Storage,
   _DJB2,
@@ -20,6 +24,7 @@ export type OverrideStore = {
   dynamicConfig: Record<string, Record<string, unknown>>;
   experiment: OverrideStore['dynamicConfig'];
   layer: OverrideStore['dynamicConfig'];
+  paramStore: Record<string, Record<string, unknown>>;
 };
 
 function _makeEmptyStore(): OverrideStore {
@@ -28,6 +33,7 @@ function _makeEmptyStore(): OverrideStore {
     dynamicConfig: {},
     experiment: {},
     layer: {},
+    paramStore: {},
   };
 }
 
@@ -48,6 +54,11 @@ function _mergeOverrides(
       newValues.experiment,
     ),
     layer: Object.assign({}, currentValues.layer, newValues.layer),
+    paramStore: Object.assign(
+      {},
+      currentValues.paramStore,
+      newValues.paramStore,
+    ),
   };
 }
 
@@ -197,6 +208,45 @@ export class LocalOverrideAdapter implements OverrideAdapter {
     this._saveOverridesToStorage();
   }
 
+  overrideParamStore(name: string, value: Record<string, unknown>): void {
+    this._overrides.paramStore[name] = value;
+    this._overrides.paramStore[_DJB2(name)] = value;
+    this._saveOverridesToStorage();
+  }
+
+  removeParamStoreOverride(name: string): void {
+    this._warnIfStorageNotReady();
+    delete this._overrides.paramStore[name];
+    delete this._overrides.paramStore[_DJB2(name)];
+    this._saveOverridesToStorage();
+  }
+
+  getParamStoreOverride(
+    current: ParameterStore,
+  ): { config: ParamStoreConfig; details: EvaluationDetails } | null {
+    const overridden =
+      this._overrides.paramStore[current.name] ??
+      this._overrides.paramStore[_DJB2(current.name)];
+    if (overridden == null) {
+      return null;
+    }
+
+    const config: ParamStoreConfig = { ...(current.__configuration || {}) };
+    for (const [key, value] of Object.entries(overridden)) {
+      const paramType = this._inferParamType(value);
+      config[key] = {
+        ref_type: 'static',
+        param_type: paramType,
+        value,
+      } as StaticParam;
+    }
+
+    return {
+      config,
+      details: { ...current.details, reason: LOCAL_OVERRIDE_REASON },
+    };
+  }
+
   getAllOverrides(): OverrideStore {
     return JSON.parse(JSON.stringify(this._overrides)) as OverrideStore;
   }
@@ -245,7 +295,18 @@ export class LocalOverrideAdapter implements OverrideAdapter {
       Object.keys(this._overrides.gate).length > 0 ||
       Object.keys(this._overrides.dynamicConfig).length > 0 ||
       Object.keys(this._overrides.experiment).length > 0 ||
-      Object.keys(this._overrides.layer).length > 0
+      Object.keys(this._overrides.layer).length > 0 ||
+      Object.keys(this._overrides.paramStore).length > 0
     );
+  }
+
+  private _inferParamType(
+    value: unknown,
+  ): 'string' | 'boolean' | 'number' | 'array' | 'object' {
+    if (typeof value === 'string') return 'string';
+    if (typeof value === 'boolean') return 'boolean';
+    if (typeof value === 'number') return 'number';
+    if (Array.isArray(value)) return 'array';
+    return 'object';
   }
 }

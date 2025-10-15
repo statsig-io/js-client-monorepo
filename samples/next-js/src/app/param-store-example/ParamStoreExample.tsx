@@ -4,6 +4,7 @@ import * as React from 'react';
 import { useEffect } from 'react';
 
 import { AnyStatsigClientEvent } from '@statsig/client-core';
+import { LocalOverrideAdapter } from '@statsig/js-local-overrides';
 import {
   StatsigProvider,
   useClientAsyncInit,
@@ -28,6 +29,7 @@ function Content() {
   const noExposureStore = useParameterStore('a_param_store', {
     disableExposureLog: true,
   });
+  const overriddenStore = useParameterStore('overridden_param_store');
 
   return (
     <div style={{ padding: 16 }}>
@@ -57,14 +59,44 @@ function Content() {
           store.get('my_failing_gated_value_boolean', false) ? 'Yes' : 'No'
         }
       />
+
+      <div
+        style={{ marginTop: 32, borderTop: '1px solid #ccc', paddingTop: 16 }}
+      >
+        <strong>Overridden Param Store:</strong>
+        <ResultRow
+          title="override_string"
+          result={overriddenStore.get('override_string', 'default')}
+        />
+        <ResultRow
+          title="override_number"
+          result={String(overriddenStore.get('override_number', 0))}
+        />
+        <ResultRow
+          title="override_bool"
+          result={overriddenStore.get('override_bool', false) ? 'Yes' : 'No'}
+        />
+      </div>
     </div>
   );
 }
 
 export default function ParamStoreExample(): React.ReactElement {
-  const { client, isLoading } = useClientAsyncInit(DEMO_CLIENT_KEY, {
-    userID: 'a-user',
+  const [overrideAdapter] = React.useState(() => {
+    const adapter = new LocalOverrideAdapter();
+    adapter.overrideParamStore('overridden_param_store', {
+      override_string: 'Local Override Value!',
+      override_number: 999,
+      override_bool: true,
+    });
+    return adapter;
   });
+
+  const { client, isLoading } = useClientAsyncInit(
+    DEMO_CLIENT_KEY,
+    { userID: 'a-user' },
+    { overrideAdapter },
+  );
 
   useEffect(() => {
     const onAnyClientEvent = (event: AnyStatsigClientEvent) =>

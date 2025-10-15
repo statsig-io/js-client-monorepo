@@ -1,4 +1,5 @@
 import {
+  ParameterStore,
   Storage,
   _DJB2,
   _getStorageKey,
@@ -6,6 +7,7 @@ import {
   _makeExperiment,
   _makeFeatureGate,
   _makeLayer,
+  _makeTypedGet,
 } from '@statsig/client-core';
 
 import { LocalOverrideAdapter } from '../LocalOverrideAdapter';
@@ -17,6 +19,12 @@ describe('Local Overrides', () => {
   const dynamicConfig = _makeDynamicConfig('a_config', { reason: '' }, null);
   const experiment = _makeExperiment('an_experiment', { reason: '' }, null);
   const layer = _makeLayer('a_layer', { reason: '' }, null);
+  const paramStore: ParameterStore = {
+    name: 'a_param_store',
+    details: { reason: '' },
+    get: _makeTypedGet('a_param_store', {}),
+    __configuration: null,
+  };
 
   let provider: LocalOverrideAdapter;
 
@@ -55,6 +63,33 @@ describe('Local Overrides', () => {
     expect(overridden?.details.reason).toBe('LocalOverride:Recognized');
   });
 
+  it('returns overidden param store', () => {
+    provider.overrideParamStore(paramStore.name, {
+      a_string: 'override',
+      a_number: 42,
+      a_bool: true,
+    });
+    const overridden = provider.getParamStoreOverride(paramStore);
+    expect(overridden?.config).toEqual({
+      a_string: {
+        ref_type: 'static',
+        param_type: 'string',
+        value: 'override',
+      },
+      a_number: {
+        ref_type: 'static',
+        param_type: 'number',
+        value: 42,
+      },
+      a_bool: {
+        ref_type: 'static',
+        param_type: 'boolean',
+        value: true,
+      },
+    });
+    expect(overridden?.details.reason).toBe('LocalOverride:Recognized');
+  });
+
   it('returns null for unrecognized overrides', () => {
     provider.removeAllOverrides();
 
@@ -72,10 +107,13 @@ describe('Local Overrides', () => {
 
     const overriddenLayer = provider.getLayerOverride(layer, user);
 
+    const overriddenParamStore = provider.getParamStoreOverride(paramStore);
+
     expect(overriddenGate).toBeNull();
     expect(overriddenDynamicConfig).toBeNull();
     expect(overriddenExperiment).toBeNull();
     expect(overriddenLayer).toBeNull();
+    expect(overriddenParamStore).toBeNull();
   });
 
   it('returns all overrides', () => {
@@ -83,6 +121,7 @@ describe('Local Overrides', () => {
     provider.overrideDynamicConfig(dynamicConfig.name, { dc: 'value' });
     provider.overrideExperiment(experiment.name, { exp: 'value' });
     provider.overrideLayer(layer.name, { layer_key: 'value' });
+    provider.overrideParamStore(paramStore.name, { param: 'value' });
 
     expect(provider.getAllOverrides()).toEqual({
       dynamicConfig: {
@@ -100,6 +139,10 @@ describe('Local Overrides', () => {
         a_layer: { layer_key: 'value' },
         '3011030003': { layer_key: 'value' },
       },
+      paramStore: {
+        a_param_store: { param: 'value' },
+        '2146298833': { param: 'value' },
+      },
     });
   });
 
@@ -108,6 +151,7 @@ describe('Local Overrides', () => {
     provider.overrideDynamicConfig(dynamicConfig.name, { dc: 'value' });
     provider.overrideExperiment(experiment.name, { exp: 'value' });
     provider.overrideLayer(layer.name, { layer_key: 'value' });
+    provider.overrideParamStore(paramStore.name, { param: 'value' });
 
     provider.removeAllOverrides();
 
@@ -116,6 +160,7 @@ describe('Local Overrides', () => {
       experiment: {},
       gate: {},
       layer: {},
+      paramStore: {},
     });
   });
 
@@ -164,6 +209,18 @@ describe('Local Overrides', () => {
     expect(provider.getAllOverrides().layer).toEqual({
       layer_b: { b: 2 },
       [_DJB2('layer_b')]: { b: 2 },
+    });
+  });
+
+  it('removes single param store overrides', () => {
+    provider.overrideParamStore('store_a', { a: 1 });
+    provider.overrideParamStore('store_b', { b: 2 });
+
+    provider.removeParamStoreOverride('store_a');
+
+    expect(provider.getAllOverrides().paramStore).toEqual({
+      store_b: { b: 2 },
+      [_DJB2('store_b')]: { b: 2 },
     });
   });
 });
