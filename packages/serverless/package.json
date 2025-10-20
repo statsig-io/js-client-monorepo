@@ -1,12 +1,12 @@
 {
-  "name": "@statsig/experimental-edge-client",
+  "name": "@statsig/serverless-client",
   "version": "3.27.0",
   "license": "ISC",
   "homepage": "https://github.com/statsig-io/js-client-monorepo",
   "repository": {
     "type": "git",
     "url": "github:statsig-io/js-client-monorepo",
-    "directory": "packages/edge"
+    "directory": "packages/serverless"
   },
   "dependencies": {
     "@statsig/client-core": "3.27.0",
@@ -15,16 +15,13 @@
   "type": "commonjs",
   "main": "./src/index.js",
   "typings": "./src/index.d.ts",
-  "devDependencies": {
-    "@vercel/edge-config": "^1.4.0",
-    "ts-node": "^10.9.1"
-  },
-  "peerDependencies": {
-    "@vercel/edge-config": "^1.4.0"
-  },
-  "peerDependenciesMeta": {
-    "@vercel/edge-config": {
-      "optional": true
+  "exports": {
+    "./cloudflare": {
+      "types": "./src/provider/cloudflare.d.ts",
+      "default": "./src/provider/cloudflare.js"
     }
+  },
+  "devDependencies": {
+    "ts-node": "^10.9.1"
   }
 }

@@ -1,10 +1,10 @@
 /* eslint-disable */
 export default {
-  displayName: 'edge',
+  displayName: 'serverless',
   preset: '../../jest.preset.js',
   transform: {
     '^.+\\.[tj]s$': ['ts-jest', { tsconfig: '<rootDir>/tsconfig.spec.json' }],
   },
   moduleFileExtensions: ['ts', 'js', 'html'],
-  coverageDirectory: '../../coverage/packages/edge',
+  coverageDirectory: '../../coverage/packages/serverless',
 };

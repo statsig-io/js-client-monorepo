@@ -1,5 +1,3 @@
-export { StatsigEdgeClient } from './StatsigEdgeClient';
-
 export type {
   StatsigUser,
   FeatureGateEvaluationOptions,
