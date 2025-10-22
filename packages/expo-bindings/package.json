@@ -17,8 +17,8 @@
   "peerDependencies": {
     "react": "^16.6.3 || ^17.0.0 || ^18.0.0 || ^19.0.0",
     "react-native": "0.*",
-    "expo-application": "5.* || 6.*",
-    "expo-device": "5.* || 6.* || 7.*"
+    "expo-application": "5.* || 6.* || 7.*",
+    "expo-device": "5.* || 6.* || 7.* || 8.*"
   },
   "type": "commonjs",
   "main": "./src/index.js",
