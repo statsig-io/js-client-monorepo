@@ -1,6 +1,6 @@
 {
   "name": "@statsig/serverless-client",
-  "version": "3.28.0",
+  "version": "3.28.1",
   "license": "ISC",
   "homepage": "https://github.com/statsig-io/js-client-monorepo",
   "repository": {
@@ -9,8 +9,8 @@
     "directory": "packages/serverless"
   },
   "dependencies": {
-    "@statsig/client-core": "3.28.0",
-    "@statsig/js-on-device-eval-client": "3.28.0"
+    "@statsig/client-core": "3.28.1",
+    "@statsig/js-on-device-eval-client": "3.28.1"
   },
   "type": "commonjs",
   "main": "./src/index.js",

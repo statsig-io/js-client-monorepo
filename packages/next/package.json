@@ -1,6 +1,6 @@
 {
   "name": "@statsig/next",
-  "version": "3.28.0",
+  "version": "3.28.1",
   "license": "ISC",
   "homepage": "https://github.com/statsig-io/js-client-monorepo",
   "repository": {
@@ -9,8 +9,8 @@
     "directory": "packages/next"
   },
   "dependencies": {
-    "@statsig/client-core": "3.28.0",
-    "@statsig/react-bindings": "3.28.0",
+    "@statsig/client-core": "3.28.1",
+    "@statsig/react-bindings": "3.28.1",
     "statsig-node": "^6.4.5"
   },
   "peerDependencies": {
