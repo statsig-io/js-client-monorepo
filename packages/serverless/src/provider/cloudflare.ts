@@ -140,9 +140,7 @@ export function handleWithStatsig(
       );
       await client.initializeFromKV(env[envKvBindingName], env[kvKey]);
       const response = await handler(request, env, ctx, client);
-      if (response.status >= 200 && response.status < 300) {
-        ctx.waitUntil(client.flush());
-      }
+      ctx.waitUntil(client.flush());
       return response;
     },
   };
