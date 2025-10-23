@@ -50,7 +50,7 @@ describe('StatsigCloudflareClient', () => {
       const result = await client.initializeFromKV(null as any, kvKey);
 
       expect(result.success).toBe(false);
-      expect(result.error).toBeInstanceOf(Error);
+      expect(result.error).toHaveProperty('message');
       expect(result.error?.message).toBe('Invalid KV binding provided');
       expect(mockDataAdapterSetData).not.toHaveBeenCalled();
       expect(mockInitializeSync).not.toHaveBeenCalled();
@@ -60,7 +60,7 @@ describe('StatsigCloudflareClient', () => {
       const result = await client.initializeFromKV(undefined as any, kvKey);
 
       expect(result.success).toBe(false);
-      expect(result.error).toBeInstanceOf(Error);
+      expect(result.error).toHaveProperty('message');
       expect(result.error?.message).toBe('Invalid KV binding provided');
     });
 
@@ -68,7 +68,7 @@ describe('StatsigCloudflareClient', () => {
       const result = await client.initializeFromKV(mockKvBinding, '');
 
       expect(result.success).toBe(false);
-      expect(result.error).toBeInstanceOf(Error);
+      expect(result.error).toHaveProperty('message');
       expect(result.error?.message).toBe('Invalid KV key provided');
       expect(mockKvBinding.get).not.toHaveBeenCalled();
     });
@@ -77,7 +77,7 @@ describe('StatsigCloudflareClient', () => {
       const result = await client.initializeFromKV(mockKvBinding, '   ');
 
       expect(result.success).toBe(false);
-      expect(result.error).toBeInstanceOf(Error);
+      expect(result.error).toHaveProperty('message');
       expect(result.error?.message).toBe('Invalid KV key provided');
       expect(mockKvBinding.get).not.toHaveBeenCalled();
     });
@@ -86,7 +86,7 @@ describe('StatsigCloudflareClient', () => {
       const result = await client.initializeFromKV(mockKvBinding, 123 as any);
 
       expect(result.success).toBe(false);
-      expect(result.error).toBeInstanceOf(Error);
+      expect(result.error).toHaveProperty('message');
       expect(result.error?.message).toBe('Invalid KV key provided');
     });
   });
@@ -99,7 +99,7 @@ describe('StatsigCloudflareClient', () => {
 
       expect(mockKvBinding.get).toHaveBeenCalledWith(kvKey);
       expect(result.success).toBe(false);
-      expect(result.error).toBeInstanceOf(Error);
+      expect(result.error).toHaveProperty('message');
       expect(result.error?.message).toContain('Failed to fetch specs');
       expect(mockDataAdapterSetData).not.toHaveBeenCalled();
       expect(mockInitializeSync).not.toHaveBeenCalled();
@@ -112,7 +112,7 @@ describe('StatsigCloudflareClient', () => {
 
       expect(mockKvBinding.get).toHaveBeenCalledWith(kvKey);
       expect(result.success).toBe(false);
-      expect(result.error).toBeInstanceOf(Error);
+      expect(result.error).toHaveProperty('message');
       expect(mockDataAdapterSetData).not.toHaveBeenCalled();
       expect(mockInitializeSync).not.toHaveBeenCalled();
     });
@@ -124,7 +124,7 @@ describe('StatsigCloudflareClient', () => {
 
       expect(mockKvBinding.get).toHaveBeenCalledWith(kvKey);
       expect(result.success).toBe(false);
-      expect(result.error).toBeInstanceOf(Error);
+      expect(result.error).toHaveProperty('message');
       expect(mockDataAdapterSetData).not.toHaveBeenCalled();
       expect(mockInitializeSync).not.toHaveBeenCalled();
     });
@@ -138,7 +138,7 @@ describe('StatsigCloudflareClient', () => {
       const result = await client.initializeFromKV(mockKvBinding, kvKey);
 
       expect(result.success).toBe(false);
-      expect(result.error).toBeInstanceOf(Error);
+      expect(result.error).toHaveProperty('message');
       expect(result.error?.message).toContain('Failed to fetch specs');
       expect(mockDataAdapterSetData).not.toHaveBeenCalled();
       expect(mockInitializeSync).not.toHaveBeenCalled();

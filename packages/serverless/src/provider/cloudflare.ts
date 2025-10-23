@@ -26,7 +26,7 @@ export class StatsigCloudflareClient extends StatsigServerlessClient {
         duration: performance.now() - startTime,
         source: 'Bootstrap',
         success: false,
-        error: new Error('Invalid KV binding provided'),
+        error: { message: 'Invalid KV binding provided' } as Error,
         sourceUrl: null,
       };
     }
@@ -36,7 +36,7 @@ export class StatsigCloudflareClient extends StatsigServerlessClient {
         duration: performance.now() - startTime,
         source: 'Bootstrap',
         success: false,
-        error: new Error('Invalid KV key provided'),
+        error: { message: 'Invalid KV key provided' } as Error,
         sourceUrl: null,
       };
     }
@@ -55,9 +55,9 @@ export class StatsigCloudflareClient extends StatsigServerlessClient {
           duration: performance.now() - startTime,
           source: 'Bootstrap',
           success: false,
-          error: new Error(
-            `Failed to fetch specs from Cloudflare KV for key "${kvKey}"`,
-          ),
+          error: {
+            message: `Failed to fetch specs from Cloudflare KV for key "${kvKey}"`,
+          } as Error,
           sourceUrl: null,
         };
       }
@@ -70,9 +70,9 @@ export class StatsigCloudflareClient extends StatsigServerlessClient {
         duration: performance.now() - startTime,
         source: 'Bootstrap',
         success: false,
-        error: new Error(
-          `Failed to fetch specs from Cloudflare KV for key: "${kvKey}"`,
-        ),
+        error: {
+          message: `Failed to fetch specs from Cloudflare KV for key "${kvKey}"`,
+        } as Error,
         sourceUrl: null,
       };
     }
@@ -115,23 +115,11 @@ export function handleWithStatsig(
       const kvKey = params.kvKey;
 
       if (!env[envStatsigKey]) {
-        return new Response(
-          JSON.stringify({
-            error: `Missing ${envStatsigKey} environment variable`,
-          }),
-          {
-            headers: { 'Content-Type': 'application/json' },
-          },
-        );
+        Log.error(`Missing valid envStatsigKey environment variable`);
       }
 
       if (!env[envKvBindingName]) {
-        return new Response(
-          JSON.stringify({ error: `Missing ${envKvBindingName} Binding` }),
-          {
-            headers: { 'Content-Type': 'application/json' },
-          },
-        );
+        Log.error(`Missing valid envStatsigKey environment variable`);
       }
 
       const client = new StatsigCloudflareClient(
