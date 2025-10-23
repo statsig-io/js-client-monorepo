@@ -1,0 +1,36 @@
+{
+  "name": "vercel-edge",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/vercel-edge/src",
+  "projectType": "library",
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/vercel-edge",
+        "main": "packages/vercel-edge/src/index.ts",
+        "tsConfig": "packages/vercel-edge/tsconfig.lib.json",
+        "assets": ["README.md", "LICENSE"]
+      }
+    },
+    "publish": {
+      "dependsOn": ["build"],
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "ts-node ./tools/scripts/publish.ts vercel-edge"
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "packages/vercel-edge/jest.config.ts"
+      }
+    }
+  }
+}

@@ -710,6 +710,28 @@ importers:
         specifier: 29.7.0
         version: 29.7.0
 
+  packages/vercel-edge:
+    dependencies:
+      '@statsig/client-core':
+        specifier: 3.28.1
+        version: link:../client-core
+      '@statsig/js-on-device-eval-client':
+        specifier: 3.28.1
+        version: link:../js-on-device-eval-client
+      '@statsig/serverless-client':
+        specifier: 3.28.1
+        version: link:../serverless
+      '@vercel/edge-config':
+        specifier: ^1.4.2
+        version: 1.4.2
+      '@vercel/functions':
+        specifier: ^3.1.4
+        version: 3.1.4
+    devDependencies:
+      ts-node:
+        specifier: ^10.9.1
+        version: 10.9.2
+
   packages/web-analytics:
     dependencies:
       '@statsig/client-core':
@@ -6749,7 +6771,7 @@ packages:
       chalk: 4.1.2
       ci-info: 3.9.0
       connect: 3.7.0
-      debug: 4.3.4
+      debug: 4.4.1
       env-editor: 0.4.2
       fast-glob: 3.3.2
       find-yarn-workspace-root: 2.0.0
@@ -6784,7 +6806,7 @@ packages:
       resolve: 1.22.8
       resolve-from: 5.0.0
       resolve.exports: 2.0.2
-      semver: 7.6.0
+      semver: 7.6.3
       send: 0.18.0
       slugify: 1.6.6
       source-map-support: 0.5.21
@@ -8435,7 +8457,7 @@ packages:
     engines: {node: ^16.14.0 || >=18.0.0}
     dependencies:
       '@npmcli/git': 5.0.7
-      glob: 10.3.15
+      glob: 10.4.5
       hosted-git-info: 7.0.1
       json-parse-even-better-errors: 3.0.2
       normalize-package-data: 6.0.1
@@ -12545,6 +12567,42 @@ packages:
       - graphql
     dev: true
 
+  /@vercel/edge-config-fs@0.1.0:
+    resolution: {integrity: sha512-NRIBwfcS0bUoUbRWlNGetqjvLSwgYH/BqKqDN7vK1g32p7dN96k0712COgaz6VFizAm9b0g6IG6hR6+hc0KCPg==}
+    dev: false
+
+  /@vercel/edge-config@1.4.2:
+    resolution: {integrity: sha512-hUTqMLNxs/PEtuvOX67JoN84B3Z8mpSkMTCoMJ4g4G0DrAc3sNu1cUlsFatHOlxQdZLM4iipY7w28qZP4Vy26g==}
+    engines: {node: '>=14.6'}
+    peerDependencies:
+      '@opentelemetry/api': ^1.7.0
+      next: '>=1'
+    peerDependenciesMeta:
+      '@opentelemetry/api':
+        optional: true
+      next:
+        optional: true
+    dependencies:
+      '@vercel/edge-config-fs': 0.1.0
+    dev: false
+
+  /@vercel/functions@3.1.4:
+    resolution: {integrity: sha512-1dEfZkb7qxsA+ilo+1uBUCEgr7e90vHcimpDYkUB84DM051wQ5amJDk9x+cnaI29paZb5XukXwGl8yk3Udb/DQ==}
+    engines: {node: '>= 20'}
+    peerDependencies:
+      '@aws-sdk/credential-provider-web-identity': '*'
+    peerDependenciesMeta:
+      '@aws-sdk/credential-provider-web-identity':
+        optional: true
+    dependencies:
+      '@vercel/oidc': 3.0.3
+    dev: false
+
+  /@vercel/oidc@3.0.3:
+    resolution: {integrity: sha512-yNEQvPcVrK9sIe637+I0jD6leluPxzwJKx/Haw6F4H77CdDsszUn5V3o96LPziXkSNE2B83+Z3mjqGKBK/R6Gg==}
+    engines: {node: '>= 20'}
+    dev: false
+
   /@vitejs/plugin-basic-ssl@1.1.0(vite@5.4.19):
     resolution: {integrity: sha512-wO4Dk/rm8u7RNhOf95ZzcEmC9rYOncYgvq4z3duaJrCgjN8BxAnDVyndanfcJZ0O6XZzHz6Q0hTimxTg8Y9g/A==}
     engines: {node: '>=14.6.0'}
@@ -13687,12 +13745,6 @@ packages:
   /balanced-match@1.0.2:
     resolution: {integrity: sha512-3oSeUO0TMV67hN1AmbXsK4yaqU7tjiHlbxRDZOpH0KW9+CeX4bRAaX0Anxt0tx2MrpRpWwQaPwIlISEJhYU5Pw==}
 
-  /bare-events@2.5.4:
-    resolution: {integrity: sha512-+gFfDkR8pj4/TrWCGUGWmJIkBwuxPS5F+a5yWjOHQt2hHvNZd5YLzadjmDUtFmMM4y429bnKLa8bYBMHcYdnQA==}
-    requiresBuild: true
-    dev: true
-    optional: true
-
   /bare-events@2.8.0:
     resolution: {integrity: sha512-AOhh6Bg5QmFIXdViHbMc2tLDsBIRxdkIaIddPslJF9Z5De3APBScuqGP2uThXnIpqFrgoxMNC6km7uXNIMLHXA==}
     requiresBuild: true
@@ -13714,9 +13766,9 @@ packages:
       bare-buffer:
         optional: true
     dependencies:
-      bare-events: 2.5.4
+      bare-events: 2.8.0
       bare-path: 3.0.0
-      bare-stream: 2.6.5(bare-events@2.5.4)
+      bare-stream: 2.6.5(bare-events@2.8.0)
       bare-url: 2.3.0
       fast-fifo: 1.3.2
     transitivePeerDependencies:
@@ -13737,7 +13789,7 @@ packages:
     dev: true
     optional: true
 
-  /bare-stream@2.6.5(bare-events@2.5.4):
+  /bare-stream@2.6.5(bare-events@2.8.0):
     resolution: {integrity: sha512-jSmxKJNJmHySi6hC42zlZnq00rga4jjxcgNZjY9N5WlOe/iOoGRtdwGsHzQv2RlH2KOYMwGUXhf2zXd32BA9RA==}
     peerDependencies:
       bare-buffer: '*'
@@ -13748,7 +13800,7 @@ packages:
       bare-events:
         optional: true
     dependencies:
-      bare-events: 2.5.4
+      bare-events: 2.8.0
       streamx: 2.22.0
     transitivePeerDependencies:
       - bare-abort-controller
@@ -14011,7 +14063,7 @@ packages:
     dependencies:
       '@npmcli/fs': 3.1.1
       fs-minipass: 3.0.3
-      glob: 10.3.15
+      glob: 10.4.5
       lru-cache: 10.2.0
       minipass: 7.1.1
       minipass-collect: 2.0.1
@@ -16763,45 +16815,6 @@ packages:
     resolution: {integrity: sha512-dX7e/LHVJ6W3DE1MHWi9S1EYzDESENfLrYohG2G++ovZrYOkm4Knwa0mc1cn84xJOR4KEU0WSchhLbd0UklbHw==}
     dev: true
 
-  /express@4.21.1:
-    resolution: {integrity: sha512-YSFlK1Ee0/GC8QaO91tHcDxJiE/X4FbpAyQWkxAvG6AXCuR65YzK8ua6D9hvi/TzUfZMpc+BwuM1IPw8fmQBiQ==}
-    engines: {node: '>= 0.10.0'}
-    dependencies:
-      accepts: 1.3.8
-      array-flatten: 1.1.1
-      body-parser: 1.20.3
-      content-disposition: 0.5.4
-      content-type: 1.0.5
-      cookie: 0.7.1
-      cookie-signature: 1.0.6
-      debug: 2.6.9
-      depd: 2.0.0
-      encodeurl: 2.0.0
-      escape-html: 1.0.3
-      etag: 1.8.1
-      finalhandler: 1.3.1
-      fresh: 0.5.2
-      http-errors: 2.0.0
-      merge-descriptors: 1.0.3
-      methods: 1.1.2
-      on-finished: 2.4.1
-      parseurl: 1.3.3
-      path-to-regexp: 0.1.10
-      proxy-addr: 2.0.7
-      qs: 6.13.0
-      range-parser: 1.2.1
-      safe-buffer: 5.2.1
-      send: 0.19.0
-      serve-static: 1.16.2
-      setprototypeof: 1.2.0
-      statuses: 2.0.1
-      type-is: 1.6.18
-      utils-merge: 1.0.1
-      vary: 1.1.2
-    transitivePeerDependencies:
-      - supports-color
-    dev: true
-
   /express@4.21.2:
     resolution: {integrity: sha512-28HqgMZAmih1Czt9ny7qr6ek2qddF4FclbMzwhCREB6OFfH+rXAnuNCwo1/wFvrtbgsQDb4kSbX9de9lFbrXnA==}
     engines: {node: '>= 0.10.0'}
@@ -17523,17 +17536,6 @@ packages:
       minipass: 7.1.1
       path-scurry: 1.11.1
     dev: true
-
-  /glob@10.3.15:
-    resolution: {integrity: sha512-0c6RlJt1TICLyvJYIApxb8GsXoai0KUP7AxKKAtsYXdgJR1mGEUa7DgwShbdk1nly0PYoZj01xd4hzbq3fsjpw==}
-    engines: {node: '>=16 || 14 >=14.18'}
-    hasBin: true
-    dependencies:
-      foreground-child: 3.1.1
-      jackspeak: 2.3.6
-      minimatch: 9.0.4
-      minipass: 7.1.1
-      path-scurry: 1.11.1
 
   /glob@10.4.5:
     resolution: {integrity: sha512-7Bv8RF0k6xjo7d4A/PxYLbUCfb6c+Vpd2/mB2yRDlew7Jb5hEXiCD9ibfO7wpk8i4sevK6DFny9h7EYbM3/sHg==}
@@ -18765,6 +18767,7 @@ packages:
       '@isaacs/cliui': 8.0.2
     optionalDependencies:
       '@pkgjs/parseargs': 0.11.0
+    dev: true
 
   /jackspeak@3.4.3:
     resolution: {integrity: sha512-OGlZQpz2yfahA/Rd1Y8Cd9SIEsqvXkLVoSw/cgwhnhFMDbsQFeZYoJJ7bIZBS9BcamUW96asq/npPWugM+RQBw==}
@@ -21437,7 +21440,7 @@ packages:
     dependencies:
       env-paths: 2.2.1
       exponential-backoff: 3.1.1
-      glob: 10.3.15
+      glob: 10.4.5
       graceful-fs: 4.2.11
       make-fetch-happen: 13.0.1
       nopt: 7.2.1
@@ -22215,10 +22218,6 @@ packages:
     dependencies:
       lru-cache: 10.2.0
       minipass: 7.1.1
-
-  /path-to-regexp@0.1.10:
-    resolution: {integrity: sha512-7lf7qcQidTku0Gu3YDPc8DJ1q7OOucfa/BSsIwjuh56VU7katFvuM8hULfkwB3Fns/rsVF7PwPKVw1sl5KQS9w==}
-    dev: true
 
   /path-to-regexp@0.1.12:
     resolution: {integrity: sha512-RA1GjUVMnvYFxuqovrEqZoxxW5NUZqbwKtYz/Tt7nXerk0LbLblQmrsgdeOxV5SFHf0UDggjS/bSeOZwt1pmEQ==}
@@ -24534,6 +24533,7 @@ packages:
     hasBin: true
     dependencies:
       lru-cache: 6.0.0
+    dev: true
 
   /semver@7.6.3:
     resolution: {integrity: sha512-oVekP1cKtI+CTDvHWYFUcMtsK/00wmAEfyqKfNdARm8u1wNVhSgaX7A8d4UuIlUI5e84iEwOhs7ZPYRmzU9U6A==}
@@ -26782,7 +26782,7 @@ packages:
       compression: 1.7.5
       connect-history-api-fallback: 2.0.0
       default-gateway: 6.0.3
-      express: 4.21.1
+      express: 4.21.2
       graceful-fs: 4.2.11
       html-entities: 2.4.0
       http-proxy-middleware: 2.0.9(@types/express@4.17.21)

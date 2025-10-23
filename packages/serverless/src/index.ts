@@ -4,3 +4,4 @@ export type {
 } from '@statsig/client-core';
 
 export type { StatsigOptions } from '@statsig/js-on-device-eval-client';
+export { StatsigServerlessClient } from './StatsigServerlessClient';

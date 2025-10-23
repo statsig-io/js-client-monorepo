@@ -53,6 +53,7 @@
       "@statsig/serverless": ["packages/serverless/src/index.ts"],
       "@statsig/session-replay": ["packages/session-replay/src/index.ts"],
       "@statsig/sha256": ["packages/sha256/src/index.ts"],
+      "@statsig/vercel-edge": ["packages/vercel-edge/src/index.ts"],
       "@statsig/web-analytics": ["packages/web-analytics/src/index.ts"],
       "combo": ["packages/combo/src/index.ts"],
       "sidecar": ["packages/sidecar/src/index.ts"],
