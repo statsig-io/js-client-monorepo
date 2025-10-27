@@ -24,7 +24,8 @@
             "ignoredDependencies": [
               "jest-fetch-mock",
               "@nx/webpack",
-              "statsig-test-helpers"
+              "statsig-test-helpers",
+              "@statsig/js-local-overrides"
             ]
           }
         ]

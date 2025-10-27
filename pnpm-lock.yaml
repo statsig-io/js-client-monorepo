@@ -568,6 +568,10 @@ importers:
       '@statsig/sha256':
         specifier: 3.29.0
         version: link:../sha256
+    devDependencies:
+      '@statsig/js-local-overrides':
+        specifier: 3.29.0
+        version: link:../js-local-overrides
 
   packages/js-user-persisted-storage:
     dependencies:

@@ -13,6 +13,9 @@
     "@statsig/on-device-eval-core": "3.29.0",
     "@statsig/sha256": "3.29.0"
   },
+  "devDependencies": {
+    "@statsig/js-local-overrides": "3.29.0"
+  },
   "jsdelivr": "./build/statsig-js-on-device-eval-client.min.js",
   "type": "commonjs",
   "main": "./src/index.js",

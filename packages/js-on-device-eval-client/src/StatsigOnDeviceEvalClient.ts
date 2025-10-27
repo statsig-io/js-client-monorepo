@@ -203,12 +203,22 @@ export default class StatsigOnDeviceEvalClient
     );
 
     const gate = _makeFeatureGate(name, details, evaluation);
+    const overridden = this.overrideAdapter?.getGateOverride?.(
+      gate,
+      normalized,
+      options,
+    );
 
-    this._enqueueExposure(name, _createGateExposure(normalized, gate), options);
+    const result = overridden ?? gate;
+    this._enqueueExposure(
+      name,
+      _createGateExposure(normalized, result),
+      options,
+    );
 
     this.$emt({ name: 'gate_evaluation', gate });
 
-    return gate;
+    return result;
   }
 
   getDynamicConfig(
