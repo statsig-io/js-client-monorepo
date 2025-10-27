@@ -194,7 +194,18 @@
       "$_getSpecs": "fn",
       "$_getOutputs": "_n",
       "$_cacheLimit": "gn",
-      "$_getFailedLogsFromStorage": "pn"
+      "$_getFailedLogsFromStorage": "pn",
+      "$_evaluateAllGates": "bn",
+      "$_evaluateAllConfigs": "yn",
+      "$_evaluateAllLayers": "mn",
+      "$_deleteUndefinedFields": "jn",
+      "$_getFilteredParamStores": "On",
+      "$_evaluateSpecForInitResponse": "wn",
+      "$_createInitializeResponseItem": "Sn",
+      "$_getExperimentLayer": "kn",
+      "$_hashSecondaryExposures": "xn",
+      "$_gcir": "En",
+      "$_encodeBinary": "Dn"
     }
   }
 }
