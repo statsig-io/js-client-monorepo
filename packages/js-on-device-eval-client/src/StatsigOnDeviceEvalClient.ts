@@ -35,6 +35,7 @@ import {
   _makeExperiment,
   _makeFeatureGate,
   _makeLayer,
+  _makeTypedGet,
   _normalizeUser,
   createUpdateDetails,
   getUUID,
@@ -288,21 +289,22 @@ export default class StatsigOnDeviceEvalClient
       normalized,
     );
 
-    const layer = _makeLayer(name, details, evaluation, (param: string) => {
-      this._enqueueExposure(
-        name,
-        _createLayerParameterExposure(normalized, layer, param),
-        options,
-      );
-    });
-
+    const layer = _makeLayer(name, details, evaluation);
     const overridden = this.overrideAdapter?.getLayerOverride?.(
       layer,
       normalized,
       options,
     );
-
     const result = overridden ?? layer;
+
+    result.get = _makeTypedGet(result.name, result.__value, (param: string) => {
+      this._enqueueExposure(
+        name,
+        _createLayerParameterExposure(normalized, result, param),
+        options,
+      );
+    });
+
     this.$emt({ name: 'layer_evaluation', layer: result });
     return result;
   }

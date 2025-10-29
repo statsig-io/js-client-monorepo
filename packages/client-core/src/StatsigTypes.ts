@@ -54,7 +54,7 @@ export type Layer = Flatten<{
   readonly groupName: string | null;
   readonly __value: Record<string, unknown>;
   readonly __evaluation: LayerEvaluation | null;
-  readonly get: TypedGet;
+  get: TypedGet;
 }>;
 
 export type ParameterStore = Flatten<{

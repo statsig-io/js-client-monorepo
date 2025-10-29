@@ -56,4 +56,57 @@ describe('Override Adapter Integration', () => {
       expect(gate.details.reason).toBe('Network:Recognized');
     });
   });
+
+  describe('Layer Overrides', () => {
+    it('should log exposure with override rule ID', () => {
+      overrideAdapter.overrideLayer('a_layer', {
+        test_param: 'override_value',
+      });
+
+      const loggerSpy = jest.spyOn((client as any)._logger, 'enqueue');
+
+      const layer = client.getLayer('a_layer', user);
+      const value = layer.get('test_param');
+
+      expect(value).toBe('override_value');
+      expect(layer.details.reason).toBe('LocalOverride:Recognized');
+
+      expect(loggerSpy).toHaveBeenCalledWith(
+        expect.objectContaining({
+          eventName: 'statsig::layer_exposure',
+          metadata: expect.objectContaining({
+            ruleID: expect.stringContaining('override'),
+            reason: 'LocalOverride:Recognized',
+          }),
+        }),
+      );
+
+      loggerSpy.mockRestore();
+    });
+
+    it('should log exposure with original rule ID ', () => {
+      overrideAdapter.removeLayerOverride('a_layer');
+
+      const loggerSpy = jest.spyOn((client as any)._logger, 'enqueue');
+
+      const layer = client.getLayer('a_layer', user);
+      const value = layer.get('a_string', 'fallback');
+
+      expect(value).toBe('Experiment Test Value');
+      expect(layer.details.reason).toBe('Network:Recognized');
+
+      expect(loggerSpy).toHaveBeenCalledWith(
+        expect.objectContaining({
+          eventName: 'statsig::layer_exposure',
+          metadata: expect.objectContaining({
+            reason: 'Network:Recognized',
+            parameterName: 'a_string',
+            config: 'a_layer',
+          }),
+        }),
+      );
+
+      loggerSpy.mockRestore();
+    });
+  });
 });
