@@ -20,6 +20,7 @@ overrides:
   cross-spawn@>=7.0.0 <7.0.5: '>=7.0.5'
   cross-spawn@<6.0.6: '>=6.0.6'
   tar-fs: '>=3.1.1'
+  browserslist@<=4.25.3: 4.25.3
 
 importers:
 
@@ -2043,7 +2044,7 @@ packages:
     engines: {node: '>=6.9.0'}
     dependencies:
       '@babel/traverse': 7.28.3
-      '@babel/types': 7.28.2
+      '@babel/types': 7.28.4
     transitivePeerDependencies:
       - supports-color
 
