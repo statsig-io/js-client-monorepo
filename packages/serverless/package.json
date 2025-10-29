@@ -19,6 +19,10 @@
     "./cloudflare": {
       "types": "./src/provider/cloudflare.d.ts",
       "default": "./src/provider/cloudflare.js"
+    },
+    "./fastly": {
+      "types": "./src/provider/fastly.d.ts",
+      "default": "./src/provider/fastly.js"
     }
   },
   "devDependencies": {

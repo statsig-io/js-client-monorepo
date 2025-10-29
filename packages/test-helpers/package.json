@@ -10,7 +10,8 @@
     "directory": "packages/test-helpers"
   },
   "dependencies": {
-    "@jest/globals": "29.7.0"
+    "@jest/globals": "29.7.0",
+    "jest-extended": "^6.0.0"
   },
   "type": "commonjs",
   "main": "./src/index.js",

@@ -9,6 +9,7 @@ export * from './Matchers';
 export * from './MockClients';
 export * from './MockLocalStorage';
 export * from './TestPromise';
+export { toStartWith } from 'jest-extended';
 
 const InitResponseString = JSON.stringify(InitResponse);
 const InitResponseStableID = updateUserWithStableID(InitResponse);
