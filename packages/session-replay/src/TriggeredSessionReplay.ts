@@ -125,6 +125,7 @@ export class TriggeredSessionReplay extends SessionReplayBase {
       this._tryStartExposureRecording(
         event.gate.name,
         String(event.gate.value),
+        'gate',
       );
     });
   }
@@ -134,11 +135,16 @@ export class TriggeredSessionReplay extends SessionReplayBase {
       this._tryStartExposureRecording(
         event.experiment.name,
         event.experiment.groupName ?? '',
+        'experiment',
       );
     });
   }
 
-  private _tryStartExposureRecording(name: string, value: string): void {
+  private _tryStartExposureRecording(
+    name: string,
+    value: string,
+    type: 'gate' | 'experiment',
+  ): void {
     if (this._wasStopped) {
       return;
     }
@@ -150,6 +156,15 @@ export class TriggeredSessionReplay extends SessionReplayBase {
     ) {
       return;
     }
+
+    if (
+      (type === 'gate' && values.record_on_gate_check === true) ||
+      (type === 'experiment' && values.record_on_experiment_check === true)
+    ) {
+      this._attemptToStartRecording(true);
+      return;
+    }
+
     const trigger =
       values.session_recording_exposure_triggers[name] ??
       values.session_recording_exposure_triggers[_DJB2(name)];
