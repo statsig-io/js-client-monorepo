@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-import { ErrorBoundary } from '@statsig/client-core';
+import { ErrorBoundary, Log, LogLevel } from '@statsig/client-core';
 
 import { AutoCaptureEventName } from '../AutoCaptureEvent';
 import { ConsoleLogManager } from '../ConsoleLogManager';
@@ -274,6 +274,33 @@ describe('ConsoleLogManager', () => {
           payload: ['test message'],
         }),
       );
+    });
+  });
+
+  describe('internal Statsig logs filtering', () => {
+    let originalLogLevel: number;
+
+    beforeEach(() => {
+      originalLogLevel = Log.level;
+      Log.level = LogLevel.Debug;
+      consoleLogManager = new ConsoleLogManager(mockEnqueueFn, errorBoundary, {
+        enabled: true,
+        logLevel: 'debug',
+      });
+      consoleLogManager.startTracking();
+    });
+
+    afterEach(() => {
+      Log.level = originalLogLevel as LogLevel;
+    });
+
+    it('does not enqueue for debug/info/warn/error emitted by Statsig Log', () => {
+      Log.debug('debug message');
+      Log.info('info message');
+      Log.warn('warn message');
+      Log.error('error message');
+
+      expect(mockEnqueueFn).not.toHaveBeenCalled();
     });
   });
 });

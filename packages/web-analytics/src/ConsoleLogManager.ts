@@ -128,7 +128,7 @@ export class ConsoleLogManager {
     payload: string[],
     trace: string[],
   ): void {
-    if (!this._shouldLog()) return;
+    if (!this._shouldLog(payload)) return;
 
     const metadata: Record<string, unknown> = {
       status: level === 'log' ? 'info' : level,
@@ -147,7 +147,13 @@ export class ConsoleLogManager {
     );
   }
 
-  private _shouldLog(): boolean {
+  private _shouldLog(payload: string[]): boolean {
+    for (const p of payload) {
+      if (p.includes('[Statsig]')) {
+        return false;
+      }
+    }
+
     if (
       !this._options.sampleRate ||
       typeof this._options.sampleRate !== 'number' ||
