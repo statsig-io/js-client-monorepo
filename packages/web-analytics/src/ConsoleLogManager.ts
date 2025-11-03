@@ -24,9 +24,9 @@ const ConsoleLogPriority: Record<ConsoleLogLevel, number> = {
   error: 50,
 };
 
-const DEFAULT_MAX_KEYS = 10;
+const DEFAULT_MAX_KEYS = 50;
 const DEFAULT_MAX_DEPTH = 10;
-const DEFAULT_MAX_STRING_LENGTH = 500;
+const DEFAULT_MAX_STRING_LENGTH = 2500;
 
 export class ConsoleLogManager {
   private _restoreFns: (() => void)[] = [];
