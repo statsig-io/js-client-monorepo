@@ -179,19 +179,43 @@ export class AutoCapture {
       this._tryLogPageView('popstate'),
     );
 
-    window.history.pushState = new Proxy(window.history.pushState, {
-      apply: (target, thisArg, [state, unused, url]) => {
-        target.apply(thisArg, [state, unused, url]);
-        this._tryLogPageView('pushstate');
-      },
-    });
+    if (
+      win.history &&
+      typeof Proxy === 'function' &&
+      typeof win.history.pushState === 'function'
+    ) {
+      try {
+        const originalPushState = win.history.pushState;
+        win.history.pushState = new Proxy(originalPushState, {
+          apply: (target, thisArg, [state, unused, url]) => {
+            const result = target.apply(thisArg, [state, unused, url]);
+            this._tryLogPageView('pushstate');
+            return result;
+          },
+        });
+      } catch (e) {
+        // Silently fail if Proxy creation is not supported
+      }
+    }
 
-    window.history.replaceState = new Proxy(window.history.replaceState, {
-      apply: (target, thisArg, [state, unused, url]) => {
-        target.apply(thisArg, [state, unused, url]);
-        this._tryLogPageView('replacestate');
-      },
-    });
+    if (
+      win.history &&
+      typeof Proxy === 'function' &&
+      typeof win.history.replaceState === 'function'
+    ) {
+      try {
+        const originalReplaceState = win.history.replaceState;
+        win.history.replaceState = new Proxy(originalReplaceState, {
+          apply: (target, thisArg, [state, unused, url]) => {
+            const result = target.apply(thisArg, [state, unused, url]);
+            this._tryLogPageView('replacestate');
+            return result;
+          },
+        });
+      } catch (e) {
+        // Silently fail if Proxy creation is not supported (important-comment)
+      }
+    }
 
     this._tryLogPageView();
   }
