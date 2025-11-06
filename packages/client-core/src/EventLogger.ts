@@ -45,14 +45,6 @@ type StatsigEventExtras = {
 
 type EventQueue = (StatsigEventInternal & StatsigEventExtras)[];
 
-const RetryFailedLogsTrigger = {
-  Startup: 'startup',
-  GainedFocus: 'gained_focus',
-} as const;
-
-type RetryFailedLogsTrigger =
-  (typeof RetryFailedLogsTrigger)[keyof typeof RetryFailedLogsTrigger];
-
 export class EventLogger {
   private _queue: EventQueue = [];
   private _flushIntervalId: ReturnType<typeof setInterval> | null | undefined;
@@ -71,9 +63,7 @@ export class EventLogger {
   }
 
   private static _safeRetryFailedLogs(sdkKey: string) {
-    EVENT_LOGGER_MAP[sdkKey]?._retryFailedLogs(
-      RetryFailedLogsTrigger.GainedFocus,
-    );
+    EVENT_LOGGER_MAP[sdkKey]?._retryFailedLogs();
   }
 
   constructor(
@@ -166,7 +156,7 @@ export class EventLogger {
       });
     }
 
-    this._retryFailedLogs(RetryFailedLogsTrigger.Startup);
+    this._retryFailedLogs();
     this._startBackgroundFlushInterval();
   }
 
@@ -355,7 +345,7 @@ export class EventLogger {
     }
   }
 
-  private _retryFailedLogs(trigger: RetryFailedLogsTrigger) {
+  private _retryFailedLogs() {
     const storageKey = this._getStorageKey();
     (async () => {
       if (!Storage.isReady()) {
@@ -367,14 +357,8 @@ export class EventLogger {
         return;
       }
 
-      if (trigger === RetryFailedLogsTrigger.Startup) {
-        Storage.removeItem(storageKey);
-      }
-
-      const isSuccess = await this._sendEvents(events);
-      if (isSuccess && trigger === RetryFailedLogsTrigger.GainedFocus) {
-        Storage.removeItem(storageKey);
-      }
+      Storage.removeItem(storageKey);
+      await this._sendEvents(events);
     })().catch(() => {
       Log.warn('Failed to flush stored logs');
     });
