@@ -4,6 +4,7 @@
     "outDir": "../../dist/out-tsc",
     "module": "commonjs",
     "types": ["jest", "node"],
+    "resolveJsonModule": true,
     "sourceMap": true
   },
   "include": [

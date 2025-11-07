@@ -2,6 +2,7 @@ import {
   PrecomputedEvaluationsInterface,
   StatsigMetadataProvider,
   StatsigPlugin,
+  _isServerEnv,
 } from '@statsig/client-core';
 
 import { EndReason, SessionReplayBase } from './SessionReplayBase';
@@ -29,6 +30,10 @@ export function runStatsigSessionReplay(
   client: PrecomputedEvaluationsInterface,
   options?: SessionReplayOptions,
 ): void {
+  // Early exit for server-side rendering - plugins should only run in browser
+  if (_isServerEnv()) {
+    return;
+  }
   new SessionReplay(client, options);
 }
 

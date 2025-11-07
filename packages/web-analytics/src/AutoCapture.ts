@@ -55,7 +55,12 @@ export class StatsigAutoCapturePlugin
 export function runStatsigAutoCapture(
   client: PrecomputedEvaluationsInterface,
   options?: AutoCaptureOptions,
-): AutoCapture {
+): AutoCapture | null {
+  // Early exit for server-side rendering - plugins should only run in browser
+  if (_isServerEnv()) {
+    return null;
+  }
+
   const { sdkKey } = client.getContext();
 
   if (!_isServerEnv()) {

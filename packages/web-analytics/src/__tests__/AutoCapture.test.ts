@@ -1,4 +1,5 @@
 import fetchMock from 'jest-fetch-mock';
+import { nullthrows } from 'statsig-test-helpers';
 
 import { _getStatsigGlobal } from '@statsig/client-core';
 import { StatsigClient } from '@statsig/js-client';
@@ -43,7 +44,7 @@ describe('Autocapture Tests', () => {
 
     client = new StatsigClient('client-key', { userID: '' });
     await client.initializeAsync();
-    autoCapture = runStatsigAutoCapture(client);
+    autoCapture = nullthrows(runStatsigAutoCapture(client));
   });
 
   beforeEach(() => {

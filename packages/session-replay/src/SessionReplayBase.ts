@@ -64,11 +64,11 @@ export abstract class SessionReplayBase {
     clickCount: 0,
   };
   protected _events: ReplayEvent[] = [];
-  protected _currentSessionID: string;
-  protected _errorBoundary: ErrorBoundary;
+  protected _currentSessionID!: string;
+  protected _errorBoundary!: ErrorBoundary;
   protected _client: PrecomputedEvaluationsInterface;
   protected _options?: SessionReplayOptions;
-  protected _replayer: SessionReplayClient;
+  protected _replayer!: SessionReplayClient;
   protected _wasStopped = false;
   protected _currentEventIndex = 0;
   protected _totalLogs = 0;
