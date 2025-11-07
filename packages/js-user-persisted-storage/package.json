@@ -1,6 +1,6 @@
 {
   "name": "@statsig/js-user-persisted-storage",
-  "version": "3.29.1",
+  "version": "3.30.0",
   "license": "ISC",
   "homepage": "https://github.com/statsig-io/js-client-monorepo",
   "repository": {
@@ -9,7 +9,7 @@
     "directory": "packages/js-user-persisted-storage"
   },
   "dependencies": {
-    "@statsig/client-core": "3.29.1"
+    "@statsig/client-core": "3.30.0"
   },
   "type": "commonjs",
   "main": "./src/index.js",
