@@ -19,8 +19,6 @@ type SessionReplayFields = {
   passes_session_recording_targeting?: boolean;
   session_recording_event_triggers?: Record<string, SessionReplayTrigger>;
   session_recording_exposure_triggers?: Record<string, SessionReplayTrigger>;
-  record_on_gate_check?: boolean;
-  record_on_experiment_check?: boolean;
 };
 
 type SessionReplayTrigger = {

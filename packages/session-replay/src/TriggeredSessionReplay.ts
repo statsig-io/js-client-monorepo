@@ -19,6 +19,9 @@ type SessionReplayOptions = {
   forceRecording?: boolean;
 };
 
+const ALL_GATES_TRIGGER_ID = 'statsig::session_recording_all_gates';
+const ALL_EXPERIMENTS_TRIGGER_ID = 'statsig::session_recording_all_experiments';
+
 export type TriggeredSessionReplayOptions = {
   autoStartRecording?: boolean;
   keepRollingWindow?: boolean;
@@ -157,17 +160,20 @@ export class TriggeredSessionReplay extends SessionReplayBase {
       return;
     }
 
-    if (
-      (type === 'gate' && values.record_on_gate_check === true) ||
-      (type === 'experiment' && values.record_on_experiment_check === true)
-    ) {
-      this._attemptToStartRecording(true);
-      return;
-    }
-
-    const trigger =
+    let trigger =
       values.session_recording_exposure_triggers[name] ??
       values.session_recording_exposure_triggers[_DJB2(name)];
+
+    if (trigger == null && type === 'gate') {
+      trigger =
+        values.session_recording_exposure_triggers[ALL_GATES_TRIGGER_ID];
+    }
+
+    if (trigger == null && type === 'experiment') {
+      trigger =
+        values.session_recording_exposure_triggers[ALL_EXPERIMENTS_TRIGGER_ID];
+    }
+
     if (trigger == null) {
       return;
     }
