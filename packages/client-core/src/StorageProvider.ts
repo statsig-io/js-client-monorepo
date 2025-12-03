@@ -101,7 +101,12 @@ export const Storage: StorageProvider & StorageProviderManagment = {
 
 export function _getObjectFromStorage<T>(key: string): T | null {
   const value = Storage.getItem(key);
-  return JSON.parse(value ?? 'null') as T | null;
+  try {
+    return JSON.parse(value ?? 'null') as T | null;
+  } catch (e) {
+    Log.error(`Failed to parse value for key "${key}"`);
+    return null;
+  }
 }
 
 export function _setObjectInStorage(key: string, obj: unknown): void {

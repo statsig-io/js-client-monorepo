@@ -248,7 +248,13 @@ export class LocalOverrideAdapter implements OverrideAdapter {
   }
 
   getAllOverrides(): OverrideStore {
-    return JSON.parse(JSON.stringify(this._overrides)) as OverrideStore;
+    return (
+      _typedJsonParse<OverrideStore>(
+        JSON.stringify(this._overrides),
+        'gate',
+        'OverrideStore',
+      ) ?? _makeEmptyStore()
+    );
   }
 
   removeAllOverrides(): void {

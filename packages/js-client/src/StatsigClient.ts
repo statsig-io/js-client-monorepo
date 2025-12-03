@@ -325,11 +325,17 @@ export default class StatsigClient
    * @returns {PrecomputedEvaluationsContext} The current synchronous context for the this StatsigClient instance.
    */
   getContext(): PrecomputedEvaluationsContext {
+    let user: StatsigUser = {};
+    try {
+      user = JSON.parse(JSON.stringify(this._user));
+    } catch {
+      Log.error('Failed to parse user');
+    }
     return {
       sdkKey: this._sdkKey,
       options: this._options,
       values: this._store.getValues(),
-      user: JSON.parse(JSON.stringify(this._user)) as StatsigUser,
+      user,
       errorBoundary: this._errorBoundary,
       session: StatsigSession.get(this._sdkKey),
       stableID: StableID.get(this._sdkKey),
