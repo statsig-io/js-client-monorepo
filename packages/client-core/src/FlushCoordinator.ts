@@ -1,4 +1,5 @@
 import { BatchQueue } from './BatchedEventsQueue';
+import { ErrorBoundary } from './ErrorBoundary';
 import { EventBatch } from './EventBatch';
 import { EventRetryConstants } from './EventRetryConstants';
 import { EventSender } from './EventSender';
@@ -27,6 +28,8 @@ export class FlushCoordinator {
 
   private _onPrepareFlush: PrepareFlushCallBack;
 
+  private _errorBoundary: ErrorBoundary;
+
   private _cooldownTimer: ReturnType<typeof setTimeout> | null = null;
   private _maxIntervalTimer: ReturnType<typeof setTimeout> | null = null;
   private _hasRunQuickFlush = false;
@@ -44,11 +47,13 @@ export class FlushCoordinator {
     logEventUrlConfig: UrlConfiguration,
     options: StatsigOptionsCommon<NetworkConfigCommon> | null,
     loggingEnabled: LoggingEnabledOption,
+    errorBoundary: ErrorBoundary,
   ) {
     this._flushInterval = new FlushInterval();
     this._batchQueue = batchQueue;
     this._pendingEvents = pendingEvents;
     this._onPrepareFlush = onPrepareFlush;
+    this._errorBoundary = errorBoundary;
 
     this._eventSender = new EventSender(
       sdkKey,
@@ -118,7 +123,7 @@ export class FlushCoordinator {
     this._clearAllTimers();
 
     try {
-      this._prepareQueueForFlush();
+      this._prepareQueueForFlush(flushType);
       const batches = this._batchQueue.takeAllBatches();
       if (batches.length === 0) {
         return;
@@ -258,7 +263,7 @@ export class FlushCoordinator {
   }
 
   private async _processNextBatch(flushType: FlushType): Promise<boolean> {
-    this._prepareQueueForFlush();
+    this._prepareQueueForFlush(flushType);
 
     const batch = this._batchQueue.takeNextBatch();
     if (!batch) {
@@ -283,12 +288,22 @@ export class FlushCoordinator {
     return false;
   }
 
-  private _prepareQueueForFlush(): void {
+  private _prepareQueueForFlush(flushType: FlushType): void {
     this._onPrepareFlush();
 
     const droppedCount = this.convertPendingEventsToBatches();
     if (droppedCount > 0) {
       Log.warn(`Dropped ${droppedCount} events`);
+      this._errorBoundary.logDroppedEvents(
+        droppedCount,
+        `Batch queue limit reached`,
+        {
+          loggingInterval: this._flushInterval.getCurrentIntervalMs(),
+          batchSize: this._batchQueue.batchSize(),
+          maxPendingBatches: EventRetryConstants.MAX_PENDING_BATCHES,
+          flushType: flushType,
+        },
+      );
     }
   }
 
@@ -317,6 +332,12 @@ export class FlushCoordinator {
         `${flushType} flush failed after ${batch.attempts} attempt(s). ` +
           `${batch.events.length} event(s) will be dropped.`,
       );
+      this._errorBoundary.logEventRequestFailure(
+        batch.events.length,
+        `flush failed during shutdown`,
+        flushType,
+        statusCode,
+      );
       return;
     }
 
@@ -325,6 +346,12 @@ export class FlushCoordinator {
         `${flushType} flush failed after ${batch.attempts} attempt(s). ` +
           `${batch.events.length} event(s) will be dropped. Non-retryable error: ${statusCode}`,
       );
+      this._errorBoundary.logEventRequestFailure(
+        batch.events.length,
+        `non-retryable error`,
+        flushType,
+        statusCode,
+      );
       return;
     }
 
@@ -332,6 +359,12 @@ export class FlushCoordinator {
       Log.warn(
         `${flushType} flush failed after ${batch.attempts} attempt(s). ` +
           `${batch.events.length} event(s) will be dropped.`,
+      );
+      this._errorBoundary.logEventRequestFailure(
+        batch.events.length,
+        `max retry attempts exceeded`,
+        flushType,
+        statusCode,
       );
       return;
     }
@@ -342,6 +375,16 @@ export class FlushCoordinator {
     if (droppedCount > 0) {
       Log.warn(
         `Failed to requeue batch : dropped ${droppedCount} events due to full queue`,
+      );
+      this._errorBoundary.logDroppedEvents(
+        droppedCount,
+        `Batch queue limit reached`,
+        {
+          loggingInterval: this._flushInterval.getCurrentIntervalMs(),
+          batchSize: this._batchQueue.batchSize(),
+          maxPendingBatches: EventRetryConstants.MAX_PENDING_BATCHES,
+          flushType: flushType,
+        },
       );
     }
   }

@@ -1,5 +1,7 @@
 import { BatchQueue } from '../BatchedEventsQueue';
+import { ErrorBoundary } from '../ErrorBoundary';
 import { EventBatch } from '../EventBatch';
+import { EventRetryConstants } from '../EventRetryConstants';
 import { FlushCoordinator } from '../FlushCoordinator';
 import { FlushType } from '../FlushTypes';
 import { NetworkCore } from '../NetworkCore';
@@ -17,6 +19,7 @@ describe('FlushCoordinator', () => {
   let mockNetwork: jest.Mocked<NetworkCore>;
   let mockEmitter: jest.MockedFunction<StatsigClientEmitEventFunc>;
   let mockUrlConfig: UrlConfiguration;
+  let mockErrorBoundary: jest.Mocked<ErrorBoundary>;
 
   const SDK_KEY = 'test-sdk-key';
 
@@ -36,6 +39,7 @@ describe('FlushCoordinator', () => {
       createBatches: jest.fn(),
       hasFullBatch: jest.fn(),
       requeueBatch: jest.fn(),
+      batchSize: jest.fn(() => 100), // random batch size
     } as any;
 
     mockPendingEvents = {
@@ -57,6 +61,15 @@ describe('FlushCoordinator', () => {
     mockEmitter = jest.fn();
     mockUrlConfig = new UrlConfiguration('rgstr', null, null, null);
 
+    mockErrorBoundary = {
+      logDroppedEvents: jest.fn(),
+      logEventRequestFailure: jest.fn(),
+      logError: jest.fn(),
+      wrap: jest.fn(),
+      getLastSeenErrorAndReset: jest.fn(),
+      attachErrorIfNoneExists: jest.fn(),
+    } as any;
+
     flushCoordinator = new FlushCoordinator(
       mockBatchQueue,
       mockPendingEvents,
@@ -67,6 +80,7 @@ describe('FlushCoordinator', () => {
       mockUrlConfig,
       null,
       LoggingEnabledOption.always,
+      mockErrorBoundary,
     );
   });
 
@@ -501,6 +515,197 @@ describe('FlushCoordinator', () => {
       flushCoordinator.checkQuickFlush();
 
       expect((flushCoordinator as any)._hasRunQuickFlush).toBe(true);
+    });
+  });
+
+  describe('ErrorBoundary integration', () => {
+    describe('logDroppedEvents', () => {
+      it('should call logDroppedEvents when events are dropped during batch conversion', async () => {
+        const droppedCount = 50;
+        mockPendingEvents.isEmpty.mockReturnValue(false);
+        mockPendingEvents.takeAll.mockReturnValue([createMockEvent('event-1')]);
+        mockBatchQueue.createBatches.mockReturnValue(droppedCount);
+        mockBatchQueue.takeAllBatches.mockReturnValue([]);
+
+        await flushCoordinator.processManualFlush();
+
+        expect(mockErrorBoundary.logDroppedEvents).toHaveBeenCalledTimes(1);
+        expect(mockErrorBoundary.logDroppedEvents).toHaveBeenCalledWith(
+          droppedCount,
+          'Batch queue limit reached',
+          expect.objectContaining({
+            flushType: FlushType.Manual,
+            maxPendingBatches: EventRetryConstants.MAX_PENDING_BATCHES,
+          }),
+        );
+      });
+
+      it('should not call logDroppedEvents when no events are dropped during batch conversion', async () => {
+        mockPendingEvents.isEmpty.mockReturnValue(false);
+        mockPendingEvents.takeAll.mockReturnValue([createMockEvent('event-1')]);
+        mockBatchQueue.createBatches.mockReturnValue(0);
+        mockBatchQueue.takeAllBatches.mockReturnValue([]);
+
+        await flushCoordinator.processManualFlush();
+
+        expect(mockErrorBoundary.logDroppedEvents).not.toHaveBeenCalled();
+      });
+
+      it('should call logDroppedEvents when events are dropped during requeue', async () => {
+        const batch = new EventBatch([createMockEvent('event-1')]);
+        const droppedCount = 25;
+
+        const retryableCode = 408;
+
+        mockBatchQueue.takeAllBatches.mockReturnValue([batch]);
+        mockBatchQueue.requeueBatch.mockReturnValue(droppedCount);
+
+        const eventSenderSpy = jest.spyOn(
+          (flushCoordinator as any)._eventSender,
+          'sendBatch',
+        );
+        eventSenderSpy.mockResolvedValue({
+          success: false,
+          statusCode: retryableCode,
+        });
+
+        await flushCoordinator.processManualFlush();
+
+        expect(mockErrorBoundary.logDroppedEvents).toHaveBeenCalledTimes(1);
+        expect(mockErrorBoundary.logDroppedEvents).toHaveBeenCalledWith(
+          droppedCount,
+          'Batch queue limit reached',
+          expect.objectContaining({
+            flushType: FlushType.Manual,
+            maxPendingBatches: EventRetryConstants.MAX_PENDING_BATCHES,
+          }),
+        );
+      });
+
+      it('should not call logDroppedEvents when requeue succeeds without drops', async () => {
+        const batch = new EventBatch([createMockEvent('event-1')]);
+        const retryableCode = 408;
+
+        mockBatchQueue.takeAllBatches.mockReturnValue([batch]);
+        mockBatchQueue.requeueBatch.mockReturnValue(0);
+
+        const eventSenderSpy = jest.spyOn(
+          (flushCoordinator as any)._eventSender,
+          'sendBatch',
+        );
+        eventSenderSpy.mockResolvedValue({
+          success: false,
+          statusCode: retryableCode,
+        });
+
+        await flushCoordinator.processManualFlush();
+
+        expect(mockErrorBoundary.logDroppedEvents).not.toHaveBeenCalled();
+      });
+    });
+
+    describe('logEventRequestFailure', () => {
+      it('should call logEventRequestFailure when shutdown flush fails', async () => {
+        const batch = new EventBatch([
+          createMockEvent('event-1'),
+          createMockEvent('event-2'),
+        ]);
+        const statusCode = 500;
+
+        mockBatchQueue.takeAllBatches.mockReturnValue([batch]);
+
+        const eventSenderSpy = jest.spyOn(
+          (flushCoordinator as any)._eventSender,
+          'sendBatch',
+        );
+        eventSenderSpy.mockResolvedValue({ success: false, statusCode });
+
+        await flushCoordinator.processShutdown();
+
+        expect(mockErrorBoundary.logEventRequestFailure).toHaveBeenCalledTimes(
+          1,
+        );
+        expect(mockErrorBoundary.logEventRequestFailure).toHaveBeenCalledWith(
+          2, // batch.events.length
+          'flush failed during shutdown',
+          FlushType.Shutdown,
+          statusCode,
+        );
+      });
+
+      it('should call logEventRequestFailure for non-retryable error codes', async () => {
+        const batch = new EventBatch([createMockEvent('event-1')]);
+        const nonRetryableCode = 400; // non-retryable
+
+        mockBatchQueue.takeAllBatches.mockReturnValue([batch]);
+
+        const eventSenderSpy = jest.spyOn(
+          (flushCoordinator as any)._eventSender,
+          'sendBatch',
+        );
+        eventSenderSpy.mockResolvedValue({
+          success: false,
+          statusCode: nonRetryableCode,
+        });
+
+        await flushCoordinator.processManualFlush();
+
+        expect(mockErrorBoundary.logEventRequestFailure).toHaveBeenCalledTimes(
+          1,
+        );
+        expect(mockErrorBoundary.logEventRequestFailure).toHaveBeenCalledWith(
+          1,
+          'non-retryable error',
+          FlushType.Manual,
+          nonRetryableCode,
+        );
+      });
+
+      it('should call logEventRequestFailure when max retry attempts exceeded', async () => {
+        const batch = new EventBatch([createMockEvent('event-1')]);
+        batch.attempts = EventRetryConstants.MAX_RETRY_ATTEMPTS + 1;
+
+        const retryableCode = 408;
+
+        mockBatchQueue.takeAllBatches.mockReturnValue([batch]);
+
+        const eventSenderSpy = jest.spyOn(
+          (flushCoordinator as any)._eventSender,
+          'sendBatch',
+        );
+        eventSenderSpy.mockResolvedValue({
+          success: false,
+          statusCode: retryableCode,
+        });
+
+        await flushCoordinator.processManualFlush();
+
+        expect(mockErrorBoundary.logEventRequestFailure).toHaveBeenCalledTimes(
+          1,
+        );
+        expect(mockErrorBoundary.logEventRequestFailure).toHaveBeenCalledWith(
+          1,
+          'max retry attempts exceeded',
+          FlushType.Manual,
+          retryableCode,
+        );
+      });
+
+      it('should not call logEventRequestFailure when batch succeeds', async () => {
+        const batch = new EventBatch([createMockEvent('event-1')]);
+
+        mockBatchQueue.takeAllBatches.mockReturnValue([batch]);
+
+        const eventSenderSpy = jest.spyOn(
+          (flushCoordinator as any)._eventSender,
+          'sendBatch',
+        );
+        eventSenderSpy.mockResolvedValue({ success: true, statusCode: 200 });
+
+        await flushCoordinator.processManualFlush();
+
+        expect(mockErrorBoundary.logEventRequestFailure).not.toHaveBeenCalled();
+      });
     });
   });
 });

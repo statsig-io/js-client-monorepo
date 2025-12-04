@@ -25,19 +25,19 @@ describe('PendingEvents', () => {
 
   describe('constructor', () => {
     it('should initialize with capacity and batch size', () => {
-      pendingEvents = new PendingEvents(100, 10);
+      pendingEvents = new PendingEvents(10);
       expect(pendingEvents).toBeDefined();
     });
 
     it('should initialize with zero capacity and batch size', () => {
-      pendingEvents = new PendingEvents(0, 0);
+      pendingEvents = new PendingEvents(0);
       expect(pendingEvents).toBeDefined();
     });
   });
 
   describe('addToPendingEventsQueue', () => {
     beforeEach(() => {
-      pendingEvents = new PendingEvents(100, 10);
+      pendingEvents = new PendingEvents(10);
     });
 
     it('should add a single event to the queue', () => {
@@ -109,7 +109,7 @@ describe('PendingEvents', () => {
 
   describe('hasEventsForFullBatch', () => {
     beforeEach(() => {
-      pendingEvents = new PendingEvents(100, 10);
+      pendingEvents = new PendingEvents(10);
     });
 
     it('should return false when queue is empty', () => {
@@ -141,14 +141,14 @@ describe('PendingEvents', () => {
     });
 
     it('should return true when batch size is 0 and queue has events', () => {
-      pendingEvents = new PendingEvents(100, 0);
+      pendingEvents = new PendingEvents(0);
       pendingEvents.addToPendingEventsQueue(createMockEvent('event'));
 
       expect(pendingEvents.hasEventsForFullBatch()).toBe(true);
     });
 
     it('should return correct value with batch size of 1', () => {
-      pendingEvents = new PendingEvents(100, 1);
+      pendingEvents = new PendingEvents(1);
 
       expect(pendingEvents.hasEventsForFullBatch()).toBe(false);
 
@@ -158,7 +158,7 @@ describe('PendingEvents', () => {
     });
 
     it('should update correctly as events are added', () => {
-      pendingEvents = new PendingEvents(100, 5);
+      pendingEvents = new PendingEvents(5);
 
       expect(pendingEvents.hasEventsForFullBatch()).toBe(false);
 

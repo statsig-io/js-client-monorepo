@@ -10,6 +10,10 @@ export class BatchQueue {
     this._batchSize = batchSize;
   }
 
+  batchSize(): number {
+    return this._batchSize;
+  }
+
   requeueBatch(batch: EventBatch): number {
     return this._enqueueBatch(batch);
   }

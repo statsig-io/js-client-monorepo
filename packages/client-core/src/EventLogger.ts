@@ -1,5 +1,6 @@
 import { BatchQueue } from './BatchedEventsQueue';
 import { _getUserStorageKey } from './CacheKey';
+import { ErrorBoundary } from './ErrorBoundary';
 import { EventRetryConstants } from './EventRetryConstants';
 import { FlushCoordinator } from './FlushCoordinator';
 import { _DJB2 } from './Hashing';
@@ -57,6 +58,7 @@ export class EventLogger {
     private _emitter: StatsigClientEmitEventFunc,
     private _network: NetworkCore,
     private _options: StatsigOptionsCommon<NetworkConfigCommon> | null,
+    private _errorBoundary: ErrorBoundary,
   ) {
     this._loggingEnabled =
       _options?.loggingEnabled ??
@@ -93,6 +95,7 @@ export class EventLogger {
       this._logEventUrlConfig,
       this._options,
       this._loggingEnabled,
+      this._errorBoundary,
     );
   }
 

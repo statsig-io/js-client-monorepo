@@ -1,5 +1,6 @@
 import { MockLocalStorage } from 'statsig-test-helpers';
 
+import { ErrorBoundary } from '../ErrorBoundary';
 import { EventLogger } from '../EventLogger';
 import { NetworkCore } from '../NetworkCore';
 import { StatsigClientEmitEventFunc } from '../StatsigClientBase';
@@ -16,6 +17,7 @@ describe('EventLogger', () => {
   let eventLogger: EventLogger;
   let mockNetwork: jest.Mocked<NetworkCore>;
   let mockEmitter: jest.Mocked<StatsigClientEmitEventFunc>;
+  let mockErrorBoundary: jest.Mocked<ErrorBoundary>;
 
   const SDK_KEY = 'test-sdk-key';
   const STORAGE_KEY = 'statsig.pending_events.3713636369';
@@ -35,9 +37,24 @@ describe('EventLogger', () => {
 
     mockEmitter = jest.fn();
 
-    eventLogger = new EventLogger(SDK_KEY, mockEmitter, mockNetwork, {
-      loggingEnabled: 'disabled',
-    });
+    mockErrorBoundary = {
+      logDroppedEvents: jest.fn(),
+      logEventRequestFailure: jest.fn(),
+      logError: jest.fn(),
+      wrap: jest.fn(),
+      getLastSeenErrorAndReset: jest.fn(),
+      attachErrorIfNoneExists: jest.fn(),
+    } as any;
+
+    eventLogger = new EventLogger(
+      SDK_KEY,
+      mockEmitter,
+      mockNetwork,
+      {
+        loggingEnabled: 'disabled',
+      },
+      mockErrorBoundary,
+    );
   });
 
   afterEach(() => {
@@ -174,6 +191,7 @@ describe('EventLogger', () => {
         {
           loggingEnabled: LoggingEnabledOption.always,
         },
+        mockErrorBoundary,
       );
 
       const event: StatsigEventInternal = {
@@ -325,9 +343,15 @@ describe('EventLogger', () => {
     });
 
     it('should not load storage when switching between enabled states', () => {
-      const loggerEnabled = new EventLogger(SDK_KEY, mockEmitter, mockNetwork, {
-        loggingEnabled: LoggingEnabledOption.browserOnly,
-      });
+      const loggerEnabled = new EventLogger(
+        SDK_KEY,
+        mockEmitter,
+        mockNetwork,
+        {
+          loggingEnabled: LoggingEnabledOption.browserOnly,
+        },
+        mockErrorBoundary,
+      );
 
       storageMock.setItem(
         STORAGE_KEY,
@@ -384,6 +408,7 @@ describe('EventLogger', () => {
         {
           loggingEnabled: LoggingEnabledOption.always,
         },
+        mockErrorBoundary,
       );
 
       const startScheduledFlushCycleSpy = jest.spyOn(
@@ -406,6 +431,7 @@ describe('EventLogger', () => {
         {
           loggingEnabled: LoggingEnabledOption.always,
         },
+        mockErrorBoundary,
       );
 
       expect((loggerWithLoggingEnabled as any)._isShuttingDown).toBe(false);
@@ -423,6 +449,7 @@ describe('EventLogger', () => {
         {
           loggingEnabled: LoggingEnabledOption.always,
         },
+        mockErrorBoundary,
       );
 
       const processShutdownSpy = jest
@@ -447,6 +474,7 @@ describe('EventLogger', () => {
         {
           loggingEnabled: LoggingEnabledOption.always,
         },
+        mockErrorBoundary,
       );
 
       const processManualFlushSpy = jest
