@@ -30,6 +30,7 @@ export class FlushCoordinator {
   private _cooldownTimer: ReturnType<typeof setTimeout> | null = null;
   private _maxIntervalTimer: ReturnType<typeof setTimeout> | null = null;
   private _hasRunQuickFlush = false;
+  private _currentFlushPromise: Promise<void> | null = null;
   private _creationTime = Date.now();
 
   constructor(
@@ -83,19 +84,34 @@ export class FlushCoordinator {
   }
 
   async processManualFlush(): Promise<void> {
-    try {
-      await this._executeFlush(FlushType.Manual);
-    } finally {
-      this._scheduleNextFlush();
+    if (this._currentFlushPromise) {
+      await this._currentFlushPromise;
     }
+
+    this._currentFlushPromise = this._executeFlush(FlushType.Manual).finally(
+      () => {
+        this._currentFlushPromise = null;
+        this._scheduleNextFlush();
+      },
+    );
+
+    return this._currentFlushPromise;
   }
 
   async processShutdown(): Promise<void> {
-    try {
-      await this._executeFlush(FlushType.Shutdown);
-    } catch (error) {
-      Log.error(`Error during shutdown flush: ${error}`);
+    if (this._currentFlushPromise) {
+      await this._currentFlushPromise;
     }
+
+    this._currentFlushPromise = this._executeFlush(FlushType.Shutdown)
+      .catch((error) => {
+        Log.error(`Error during shutdown flush: ${error}`);
+      })
+      .finally(() => {
+        this._currentFlushPromise = null;
+      });
+
+    return this._currentFlushPromise;
   }
 
   private async _executeFlush(flushType: FlushType) {
@@ -137,6 +153,10 @@ export class FlushCoordinator {
   }
 
   private _attemptScheduledFlush(): void {
+    if (this._currentFlushPromise) {
+      this._scheduleNextFlush();
+      return;
+    }
     const shouldFlushBySize = this.containsAtLeastOneFullBatch();
     const shouldFlushByTime = this._flushInterval.hasReachedMaxInterval();
 
@@ -154,11 +174,15 @@ export class FlushCoordinator {
       flushType = FlushType.ScheduledMaxTime;
     }
 
-    this._processNextBatch(flushType)
+    this._currentFlushPromise = this._processNextBatch(flushType)
+      .then(() => {
+        //This discards boolean result. Main goal here is to track completion
+      })
       .catch((error) => {
         Log.error('Error during scheduled flush:', error);
       })
       .finally(() => {
+        this._currentFlushPromise = null;
         this._scheduleNextFlush();
       });
   }
@@ -167,31 +191,35 @@ export class FlushCoordinator {
     if (!this._flushInterval.hasCompletelyRecoveredFromBackoff()) {
       return;
     }
+    if (this._currentFlushPromise) {
+      return;
+    }
 
-    this._processNextBatch(FlushType.Limit)
-      .then(async (success) => {
-        if (!success) {
-          this._scheduleNextFlush();
-          return;
-        }
-
-        while (
-          this._flushInterval.hasCompletelyRecoveredFromBackoff() &&
-          this.containsAtLeastOneFullBatch()
-        ) {
-          const success = await this._processNextBatch(FlushType.Limit);
-          if (!success) {
-            this._scheduleNextFlush();
-            break;
-          }
-        }
-
-        this._scheduleNextFlush();
-      })
+    this._currentFlushPromise = this._processLimitFlushInternal()
       .catch((error) => {
-        Log.error('Error during limit flush:', error);
+        Log.error(`Error during limit flush`, error);
+      })
+      .finally(() => {
+        this._currentFlushPromise = null;
         this._scheduleNextFlush();
       });
+  }
+
+  private async _processLimitFlushInternal(): Promise<void> {
+    const success = await this._processNextBatch(FlushType.Limit);
+    if (!success) {
+      return;
+    }
+
+    while (
+      this._flushInterval.hasCompletelyRecoveredFromBackoff() &&
+      this.containsAtLeastOneFullBatch()
+    ) {
+      const success = await this._processNextBatch(FlushType.Limit);
+      if (!success) {
+        break;
+      }
+    }
   }
 
   private _scheduleNextFlush(): void {
