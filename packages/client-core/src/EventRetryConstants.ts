@@ -7,6 +7,8 @@ export const EventRetryConstants = {
 
   TICK_INTERVAL_MS: 1000,
 
+  QUICK_FLUSH_WINDOW_MS: 200,
+
   get MAX_QUEUED_EVENTS(): number {
     return this.DEFAULT_BATCH_SIZE * this.MAX_PENDING_BATCHES;
   },

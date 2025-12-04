@@ -1,12 +1,21 @@
 import { BatchQueue } from './BatchedEventsQueue';
 import { EventBatch } from './EventBatch';
 import { EventRetryConstants } from './EventRetryConstants';
+import { EventSender } from './EventSender';
 import { FlushInterval } from './FlushInterval';
 import { FlushType } from './FlushTypes';
 import { Log } from './Log';
-import { RETRYABLE_CODES } from './NetworkCore';
+import { NetworkCore, RETRYABLE_CODES } from './NetworkCore';
 import { PendingEvents } from './PendingEvents';
+import { StatsigClientEmitEventFunc } from './StatsigClientBase';
 import { StatsigEventInternal } from './StatsigEvent';
+import {
+  LogEventCompressionMode,
+  LoggingEnabledOption,
+  NetworkConfigCommon,
+  StatsigOptionsCommon,
+} from './StatsigOptionsCommon';
+import { UrlConfiguration } from './UrlConfiguration';
 
 type PrepareFlushCallBack = () => void;
 
@@ -14,21 +23,48 @@ export class FlushCoordinator {
   private _flushInterval: FlushInterval;
   private _batchQueue: BatchQueue;
   private _pendingEvents: PendingEvents;
+  private _eventSender: EventSender;
 
   private _onPrepareFlush: PrepareFlushCallBack;
 
   private _cooldownTimer: ReturnType<typeof setTimeout> | null = null;
   private _maxIntervalTimer: ReturnType<typeof setTimeout> | null = null;
+  private _hasRunQuickFlush = false;
+  private _creationTime = Date.now();
 
   constructor(
     batchQueue: BatchQueue,
     pendingEvents: PendingEvents,
     onPrepareFlush: PrepareFlushCallBack,
+    // For Event Sender
+    sdkKey: string,
+    network: NetworkCore,
+    emitter: StatsigClientEmitEventFunc,
+    logEventUrlConfig: UrlConfiguration,
+    options: StatsigOptionsCommon<NetworkConfigCommon> | null,
+    loggingEnabled: LoggingEnabledOption,
   ) {
     this._flushInterval = new FlushInterval();
     this._batchQueue = batchQueue;
     this._pendingEvents = pendingEvents;
     this._onPrepareFlush = onPrepareFlush;
+
+    this._eventSender = new EventSender(
+      sdkKey,
+      network,
+      emitter,
+      logEventUrlConfig,
+      options,
+      loggingEnabled,
+    );
+  }
+
+  setLoggingEnabled(loggingEnabled: LoggingEnabledOption): void {
+    this._eventSender.setLoggingEnabled(loggingEnabled);
+  }
+
+  setLogEventCompressionMode(mode: LogEventCompressionMode): void {
+    this._eventSender.setLogEventCompressionMode(mode);
   }
 
   startScheduledFlushCycle(): void {
@@ -64,14 +100,40 @@ export class FlushCoordinator {
 
   private async _executeFlush(flushType: FlushType) {
     this._clearAllTimers();
-    this._prepareQueueForFlush();
-    const batches = this._batchQueue.takeAllBatches();
-    if (batches.length === 0) {
+
+    try {
+      this._prepareQueueForFlush();
+      const batches = this._batchQueue.takeAllBatches();
+      if (batches.length === 0) {
+        return;
+      }
+      await Promise.all(
+        batches.map((batch) => this._processOneBatch(batch, flushType)),
+      );
+    } finally {
+      this._scheduleNextFlush();
+    }
+  }
+
+  checkQuickFlush(): void {
+    if (this._hasRunQuickFlush) {
       return;
     }
-    await Promise.all(
-      batches.map((batch) => this._processOneBatch(batch, flushType)),
-    );
+
+    if (
+      Date.now() - this._creationTime >
+      EventRetryConstants.QUICK_FLUSH_WINDOW_MS
+    ) {
+      return;
+    }
+
+    this._hasRunQuickFlush = true;
+
+    setTimeout(() => {
+      this.processManualFlush().catch((error) => {
+        Log.warn('Quick flush failed:', error);
+      });
+    }, EventRetryConstants.QUICK_FLUSH_WINDOW_MS);
   }
 
   private _attemptScheduledFlush(): void {

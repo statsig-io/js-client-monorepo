@@ -4,6 +4,11 @@ import { StatsigEventInternal } from './StatsigEvent';
 
 export class BatchQueue {
   private _batches: EventBatch[] = [];
+  private _batchSize: number;
+
+  constructor(batchSize: number = EventRetryConstants.DEFAULT_BATCH_SIZE) {
+    this._batchSize = batchSize;
+  }
 
   requeueBatch(batch: EventBatch): number {
     return this._enqueueBatch(batch);
@@ -11,7 +16,7 @@ export class BatchQueue {
 
   hasFullBatch(): boolean {
     return this._batches.some(
-      (batch) => batch.events.length >= EventRetryConstants.DEFAULT_BATCH_SIZE,
+      (batch) => batch.events.length >= this._batchSize,
     );
   }
 
@@ -29,9 +34,9 @@ export class BatchQueue {
     let i = 0;
     let droppedCount = 0;
     while (i < events.length) {
-      const chunk = events.slice(i, i + EventRetryConstants.DEFAULT_BATCH_SIZE);
+      const chunk = events.slice(i, i + this._batchSize);
       droppedCount += this._enqueueBatch(new EventBatch(chunk));
-      i += EventRetryConstants.DEFAULT_BATCH_SIZE;
+      i += this._batchSize;
     }
 
     return droppedCount;
