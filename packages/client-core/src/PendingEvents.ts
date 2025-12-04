@@ -3,11 +3,9 @@ import { StatsigEventInternal } from './StatsigEvent';
 
 export class PendingEvents {
   private _pendingEvents: StatsigEventInternal[] = [];
-  private _maxEventsCapacity: number;
   private _batchSize: number;
 
-  constructor(maxEventsCapacity: number, batchSize: number) {
-    this._maxEventsCapacity = maxEventsCapacity;
+  constructor(batchSize: number) {
     this._batchSize = batchSize;
   }
 
@@ -18,5 +16,15 @@ export class PendingEvents {
 
   hasEventsForFullBatch(): boolean {
     return this._pendingEvents.length >= this._batchSize;
+  }
+
+  takeAll(): StatsigEventInternal[] {
+    const events = this._pendingEvents;
+    this._pendingEvents = [];
+    return events;
+  }
+
+  isEmpty(): boolean {
+    return this._pendingEvents.length === 0;
   }
 }

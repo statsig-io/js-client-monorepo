@@ -15,6 +15,10 @@ export class BatchQueue {
     );
   }
 
+  takeNextBatch(): EventBatch | null {
+    return this._batches.shift() ?? null;
+  }
+
   takeAllBatches(): EventBatch[] {
     const batches = this._batches;
     this._batches = [];

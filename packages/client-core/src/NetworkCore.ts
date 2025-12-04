@@ -37,7 +37,9 @@ const RATE_LIMIT_WINDOW_MS = 1000;
 const RATE_LIMIT_MAX_REQ_COUNT = 50;
 const LEAK_RATE = RATE_LIMIT_MAX_REQ_COUNT / RATE_LIMIT_WINDOW_MS;
 
-const RETRYABLE_CODES = new Set([408, 500, 502, 503, 504, 522, 524, 599]);
+export const RETRYABLE_CODES = new Set([
+  408, 500, 502, 503, 504, 522, 524, 599,
+]);
 
 type RequestArgs = {
   sdkKey: string;
