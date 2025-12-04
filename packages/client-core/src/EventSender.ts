@@ -47,10 +47,6 @@ export class EventSender {
   async sendBatch(
     batch: EventBatch,
   ): Promise<{ success: boolean; statusCode: number }> {
-    if (this._loggingEnabled === 'disabled') {
-      return { success: false, statusCode: -1 };
-    }
-
     try {
       const isClosing = _isUnloading();
       const shouldUseBeacon =

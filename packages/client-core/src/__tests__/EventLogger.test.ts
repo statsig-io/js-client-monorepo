@@ -18,7 +18,7 @@ describe('EventLogger', () => {
   let mockEmitter: jest.Mocked<StatsigClientEmitEventFunc>;
 
   const SDK_KEY = 'test-sdk-key';
-  const FAILED_LOGS_STORAGE_KEY = 'statsig.failed_logs.3713636369';
+  const STORAGE_KEY = 'statsig.pending_events.3713636369';
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -44,126 +44,123 @@ describe('EventLogger', () => {
     MockLocalStorage.disableMockStorage();
   });
 
-  describe('save failed logs to storage', () => {
-    it('should truncate events when they exceed MAX_FAILED_LOGS (5)', () => {
-      const events: StatsigEventInternal[] = Array.from(
-        { length: 6 },
+  describe('save events to storage when logging disabled', () => {
+    it('should save individual event to storage', () => {
+      const event: StatsigEventInternal = {
+        eventName: 'test-event',
+        user: null,
+        time: Date.now(),
+        metadata: {},
+      };
+
+      (eventLogger as any)._storeEventToStorage(event);
+
+      const savedEvents = storageMock.getItem(STORAGE_KEY);
+      expect(savedEvents).not.toBeNull();
+
+      const parsedEvents = JSON.parse(
+        savedEvents as string,
+      ) as StatsigEventInternal[];
+      expect(parsedEvents).toHaveLength(1);
+      expect(parsedEvents[0].eventName).toBe('test-event');
+    });
+
+    it('should concatenate events when saving multiple times', () => {
+      const event1: StatsigEventInternal = {
+        eventName: 'test-event-1',
+        user: null,
+        time: Date.now(),
+        metadata: {},
+      };
+
+      const event2: StatsigEventInternal = {
+        eventName: 'test-event-2',
+        user: null,
+        time: Date.now(),
+        metadata: {},
+      };
+
+      (eventLogger as any)._storeEventToStorage(event1);
+      (eventLogger as any)._storeEventToStorage(event2);
+
+      const savedEvents = storageMock.getItem(STORAGE_KEY);
+      const parsedEvents = JSON.parse(
+        savedEvents as string,
+      ) as StatsigEventInternal[];
+
+      expect(parsedEvents).toHaveLength(2);
+      expect(parsedEvents[0].eventName).toBe('test-event-1');
+      expect(parsedEvents[1].eventName).toBe('test-event-2');
+    });
+
+    it('should truncate events when they exceed MAX_QUEUED_EVENTS', () => {
+      const existingEvents: StatsigEventInternal[] = Array.from(
+        { length: 1000 },
         (_, i) => ({
-          eventName: `test-event-${i}`,
+          eventName: `existing-event-${i}`,
           user: null,
           time: Date.now(),
           metadata: {},
         }),
       );
 
-      (eventLogger as any)._saveFailedLogsToStorage(events);
+      storageMock.setItem(STORAGE_KEY, JSON.stringify(existingEvents));
 
-      const savedEvents = storageMock.getItem(FAILED_LOGS_STORAGE_KEY);
+      const newEvent: StatsigEventInternal = {
+        eventName: 'new-event',
+        user: null,
+        time: Date.now(),
+        metadata: {},
+      };
 
-      expect(savedEvents).not.toBeNull();
+      (eventLogger as any)._storeEventToStorage(newEvent);
+
+      const savedEvents = storageMock.getItem(STORAGE_KEY);
       const parsedEvents = JSON.parse(
         savedEvents as string,
       ) as StatsigEventInternal[];
-      expect(parsedEvents).toHaveLength(5);
 
-      expect(parsedEvents[0].eventName).toBe('test-event-1');
-      expect(parsedEvents[4].eventName).toBe('test-event-5');
-    });
-
-    it('should handle empty events array', () => {
-      const events: StatsigEventInternal[] = [];
-
-      storageMock.setItem(FAILED_LOGS_STORAGE_KEY, JSON.stringify([]));
-
-      (eventLogger as any)._saveFailedLogsToStorage(events);
-
-      expect(events).toHaveLength(0);
-      expect(storageMock.getItem(FAILED_LOGS_STORAGE_KEY)).toEqual(
-        JSON.stringify([]),
-      );
-    });
-
-    it('should concat events and save to storage', () => {
-      const events: StatsigEventInternal[] = [
-        {
-          eventName: 'test-event-1',
-          user: null,
-          time: Date.now(),
-          metadata: {},
-        },
-        {
-          eventName: 'test-event-2',
-          user: null,
-          time: Date.now(),
-          metadata: {},
-        },
-      ];
-
-      storageMock.setItem(FAILED_LOGS_STORAGE_KEY, JSON.stringify(events));
-
-      (eventLogger as any)._saveFailedLogsToStorage(events);
-
-      expect(storageMock.getItem(FAILED_LOGS_STORAGE_KEY)).toEqual(
-        JSON.stringify([...events, ...events]),
-      );
-    });
-
-    it('should handle type mismatch', () => {
-      storageMock.setItem(FAILED_LOGS_STORAGE_KEY, 'not-an-array');
-
-      const events: StatsigEventInternal[] = [
-        {
-          eventName: 'test-event',
-          user: null,
-          time: Date.now(),
-          metadata: {},
-        },
-      ];
-
-      (eventLogger as any)._saveFailedLogsToStorage(events);
-
-      expect(storageMock.getItem(FAILED_LOGS_STORAGE_KEY)).toEqual(
-        JSON.stringify(events),
-      );
+      // Should still be 1000 (oldest event removed, new event added)
+      expect(parsedEvents).toHaveLength(1000);
+      // First event should now be existing-event-1
+      expect(parsedEvents[0].eventName).toBe('existing-event-1');
+      // Last event should be the new-event
+      expect(parsedEvents[999].eventName).toBe('new-event');
     });
   });
 
   describe('error handling', () => {
     it('should handle storage read errors gracefully', () => {
-      const events: StatsigEventInternal[] = [
-        {
-          eventName: 'test-event',
-          user: null,
-          time: Date.now(),
-          metadata: {},
-        },
-      ];
+      const event: StatsigEventInternal = {
+        eventName: 'test-event',
+        user: null,
+        time: Date.now(),
+        metadata: {},
+      };
 
       storageMock.getItem = () => {
         throw new Error('Storage read error');
       };
 
       expect(() => {
-        (eventLogger as any)._saveFailedLogsToStorage(events);
+        (eventLogger as any)._storeEventToStorage(event);
       }).not.toThrow();
     });
 
     it('should handle storage write errors gracefully', () => {
-      const events: StatsigEventInternal[] = [
-        {
-          eventName: 'test-event',
-          user: null,
-          time: Date.now(),
-          metadata: {},
-        },
-      ];
+      const event: StatsigEventInternal = {
+        eventName: 'test-event',
+        user: null,
+        time: Date.now(),
+        metadata: {},
+      };
 
       storageMock.setItem = () => {
         throw new Error('Storage write error');
       };
 
       expect(() => {
-        (eventLogger as any)._saveFailedLogsToStorage(events);
+        (eventLogger as any)._storeEventToStorage(event);
       }).not.toThrow();
     });
   });
@@ -203,6 +200,158 @@ describe('EventLogger', () => {
         }),
       );
       expect(checkQuickFlushSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it('should save event to storage when logging is disabled', () => {
+      const event: StatsigEventInternal = {
+        eventName: 'test-event',
+        user: null,
+        time: Date.now(),
+        metadata: { test: 'data' },
+      };
+
+      const addEventSpy = jest.spyOn(
+        (eventLogger as any)._flushCoordinator,
+        'addEvent',
+      );
+
+      eventLogger.enqueue(event);
+
+      expect(addEventSpy).not.toHaveBeenCalled();
+
+      const savedEvents = storageMock.getItem(STORAGE_KEY);
+      expect(savedEvents).not.toBeNull();
+
+      const parsedEvents = JSON.parse(
+        savedEvents as string,
+      ) as StatsigEventInternal[];
+      expect(parsedEvents).toHaveLength(1);
+      expect(parsedEvents[0].eventName).toBe('test-event');
+    });
+
+    it('should normalize event before saving to storage when disabled', () => {
+      const event: StatsigEventInternal = {
+        eventName: 'test-event',
+        user: {
+          userID: 'test-user',
+          privateAttributes: { secret: 'data' },
+          statsigEnvironment: undefined,
+        },
+        time: Date.now(),
+        metadata: {},
+      };
+
+      eventLogger.enqueue(event);
+
+      const savedEvents = storageMock.getItem(STORAGE_KEY);
+      const parsedEvents = JSON.parse(
+        savedEvents as string,
+      ) as StatsigEventInternal[];
+
+      expect(parsedEvents[0].user?.privateAttributes).toBeUndefined();
+      expect(parsedEvents[0].user?.userID).toBe('test-user');
+    });
+  });
+
+  describe('setLoggingEnabled', () => {
+    it('should load and enqueue stored events when switching from disabled to enabled', () => {
+      const storedEvents: StatsigEventInternal[] = [
+        {
+          eventName: 'stored-event-1',
+          user: null,
+          time: Date.now(),
+          metadata: {},
+        },
+        {
+          eventName: 'stored-event-2',
+          user: null,
+          time: Date.now(),
+          metadata: {},
+        },
+      ];
+
+      storageMock.setItem(STORAGE_KEY, JSON.stringify(storedEvents));
+
+      const addEventSpy = jest.spyOn(
+        (eventLogger as any)._flushCoordinator,
+        'addEvent',
+      );
+      const flushSpy = jest
+        .spyOn(eventLogger, 'flush')
+        .mockResolvedValue(undefined);
+
+      eventLogger.setLoggingEnabled(LoggingEnabledOption.always);
+
+      expect(addEventSpy).toHaveBeenCalledTimes(2);
+      expect(addEventSpy).toHaveBeenCalledWith(
+        expect.objectContaining({ eventName: 'stored-event-1' }),
+      );
+      expect(addEventSpy).toHaveBeenCalledWith(
+        expect.objectContaining({ eventName: 'stored-event-2' }),
+      );
+
+      expect(flushSpy).toHaveBeenCalledTimes(1);
+
+      expect(storageMock.getItem(STORAGE_KEY)).toBeNull();
+    });
+
+    it('should not flush if no stored events when enabling logging', () => {
+      const flushSpy = jest.spyOn(eventLogger, 'flush');
+
+      eventLogger.setLoggingEnabled(LoggingEnabledOption.always);
+
+      expect(flushSpy).not.toHaveBeenCalled();
+    });
+
+    it('should handle flush errors gracefully when re-enabling', () => {
+      const storedEvents: StatsigEventInternal[] = [
+        {
+          eventName: 'stored-event',
+          user: null,
+          time: Date.now(),
+          metadata: {},
+        },
+      ];
+
+      storageMock.setItem(STORAGE_KEY, JSON.stringify(storedEvents));
+
+      jest
+        .spyOn(eventLogger, 'flush')
+        .mockRejectedValue(new Error('Flush failed'));
+
+      expect(() => {
+        eventLogger.setLoggingEnabled(LoggingEnabledOption.always);
+      }).not.toThrow();
+    });
+
+    it('should not load storage when switching between enabled states', () => {
+      const loggerEnabled = new EventLogger(SDK_KEY, mockEmitter, mockNetwork, {
+        loggingEnabled: LoggingEnabledOption.browserOnly,
+      });
+
+      storageMock.setItem(
+        STORAGE_KEY,
+        JSON.stringify([
+          { eventName: 'test', user: null, time: Date.now(), metadata: {} },
+        ]),
+      );
+
+      const loadSpy = jest.spyOn(loggerEnabled as any, '_loadStoredEvents');
+
+      loggerEnabled.setLoggingEnabled(LoggingEnabledOption.always);
+
+      expect(loadSpy).not.toHaveBeenCalled();
+    });
+
+    it('should update flush coordinator logging state', () => {
+      const setLoggingSpy = jest.spyOn(
+        (eventLogger as any)._flushCoordinator,
+        'setLoggingEnabled',
+      );
+
+      eventLogger.setLoggingEnabled(LoggingEnabledOption.always);
+
+      expect(setLoggingSpy).toHaveBeenCalledWith(LoggingEnabledOption.always);
     });
   });
 

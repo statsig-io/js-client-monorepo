@@ -17,7 +17,6 @@ import {
   StatsigOptionsCommon,
 } from './StatsigOptionsCommon';
 import {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   Storage,
   _getObjectFromStorage,
   _setObjectInStorage,
@@ -35,8 +34,6 @@ type StatsigEventExtras = {
   };
 };
 
-type EventQueue = (StatsigEventInternal & StatsigEventExtras)[];
-
 export class EventLogger {
   private _pendingEvents: PendingEvents;
   private _batchQueue: BatchQueue;
@@ -47,6 +44,7 @@ export class EventLogger {
   private _loggingEnabled: LoggingEnabledOption;
   private _logEventUrlConfig: UrlConfiguration;
   private _isShuttingDown = false;
+  private _storageKey: string | null = null;
 
   private static _safeFlushAndForget(sdkKey: string) {
     EVENT_LOGGER_MAP[sdkKey]?.flush().catch(() => {
@@ -104,16 +102,22 @@ export class EventLogger {
 
   setLoggingEnabled(loggingEnabled: LoggingEnabledOption): void {
     const wasDisabled = this._loggingEnabled === 'disabled';
-
     const isNowEnabled = loggingEnabled !== 'disabled';
 
     this._loggingEnabled = loggingEnabled;
     this._flushCoordinator.setLoggingEnabled(loggingEnabled);
 
     if (wasDisabled && isNowEnabled) {
-      this.flush().catch((error) => {
-        Log.warn('Failed to flush events after enabling logging:', error);
-      });
+      const events = this._loadStoredEvents();
+      Log.debug(`Loaded ${events.length} stored event(s) from storage`);
+      if (events.length > 0) {
+        events.forEach((event) => {
+          this._flushCoordinator.addEvent(event);
+        });
+        this.flush().catch((error) => {
+          Log.warn('Failed to flush events after enabling logging:', error);
+        });
+      }
     }
   }
 
@@ -123,6 +127,11 @@ export class EventLogger {
     }
 
     const normalizedEvent = this._normalizeEvent(event);
+
+    if (this._loggingEnabled === 'disabled') {
+      this._storeEventToStorage(normalizedEvent);
+      return;
+    }
     this._flushCoordinator.addEvent(normalizedEvent);
     this._flushCoordinator.checkQuickFlush();
   }
@@ -230,44 +239,58 @@ export class EventLogger {
     return true;
   }
 
-  private _saveFailedLogsToStorage(events: EventQueue) {
-    while (events.length > EventRetryConstants.MAX_RETRY_ATTEMPTS) {
-      events.shift();
-    }
-
-    const storageKey = this._getStorageKey();
-
-    try {
-      const savedEvents = this._getFailedLogsFromStorage(storageKey);
-      _setObjectInStorage(storageKey, [...savedEvents, ...events]);
-    } catch {
-      Log.warn('Unable to save failed logs to storage');
-    }
-  }
-
-  private _getFailedLogsFromStorage(storageKey: string) {
-    let savedEvents: EventQueue = [];
-    try {
-      const retrieved = _getObjectFromStorage<EventQueue>(storageKey);
-      if (Array.isArray(retrieved)) {
-        savedEvents = retrieved;
-      }
-      return savedEvents;
-    } catch {
-      return [];
-    }
-  }
-
-  private _getStorageKey() {
-    return `statsig.failed_logs.${_DJB2(this._sdkKey)}`;
-  }
-
   private _getCurrentPageUrl(): string | undefined {
     if (this._options?.includeCurrentPageUrlWithEvents === false) {
       return;
     }
 
     return _getCurrentPageUrlSafe();
+  }
+  private _getStorageKey(): string {
+    if (!this._storageKey) {
+      this._storageKey = `statsig.pending_events.${_DJB2(this._sdkKey)}`;
+    }
+    return this._storageKey;
+  }
+
+  private _storeEventToStorage(event: StatsigEventInternal): void {
+    const storageKey = this._getStorageKey();
+
+    try {
+      const existingEvents = this._getEventsFromStorage(storageKey);
+      existingEvents.push(event);
+
+      while (existingEvents.length > EventRetryConstants.MAX_QUEUED_EVENTS) {
+        existingEvents.shift();
+      }
+
+      _setObjectInStorage(storageKey, existingEvents);
+    } catch (error) {
+      Log.warn('Unable to save events to storage');
+    }
+  }
+
+  private _getEventsFromStorage(storageKey: string): StatsigEventInternal[] {
+    try {
+      const events = _getObjectFromStorage<StatsigEventInternal[]>(storageKey);
+      if (Array.isArray(events)) {
+        return events;
+      }
+      return [];
+    } catch {
+      return [];
+    }
+  }
+
+  private _loadStoredEvents(): StatsigEventInternal[] {
+    const storageKey = this._getStorageKey();
+    const events = this._getEventsFromStorage(storageKey);
+
+    if (events.length > 0) {
+      Storage.removeItem(storageKey);
+    }
+
+    return events;
   }
 
   private _normalizeEvent(event: StatsigEventInternal): StatsigEventInternal {
