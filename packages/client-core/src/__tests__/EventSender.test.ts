@@ -198,6 +198,10 @@ describe('EventSender', () => {
             params: {
               [NetworkParam.EventCount]: '3',
             },
+            headers: {
+              'statsig-event-count': '3',
+              'statsig-retry-count': '0',
+            },
             credentials: 'same-origin',
           });
         });
@@ -426,6 +430,134 @@ describe('EventSender', () => {
               data: {
                 events,
               },
+            }),
+          );
+        });
+      });
+
+      describe('request headers', () => {
+        beforeEach(() => {
+          mockNetwork.post.mockResolvedValue({ code: 200, body: null });
+        });
+
+        it('should include statsig-event-count header with correct event count', async () => {
+          const batch = createMockBatch(5);
+
+          await eventSender.sendBatch(batch);
+
+          expect(mockNetwork.post).toHaveBeenCalledWith(
+            expect.objectContaining({
+              headers: expect.objectContaining({
+                'statsig-event-count': '5',
+              }),
+            }),
+          );
+        });
+
+        it('should include statsig-retry-count header as 0 for initial attempt', async () => {
+          const batch = createMockBatch(3);
+          expect(batch.attempts).toBe(0);
+
+          await eventSender.sendBatch(batch);
+
+          expect(mockNetwork.post).toHaveBeenCalledWith(
+            expect.objectContaining({
+              headers: expect.objectContaining({
+                'statsig-retry-count': '0',
+              }),
+            }),
+          );
+        });
+
+        it('should include statsig-retry-count header with correct attempt count after retries', async () => {
+          const batch = createMockBatch(3);
+          batch.incrementAttempts();
+          batch.incrementAttempts();
+          expect(batch.attempts).toBe(2);
+
+          await eventSender.sendBatch(batch);
+
+          expect(mockNetwork.post).toHaveBeenCalledWith(
+            expect.objectContaining({
+              headers: expect.objectContaining({
+                'statsig-retry-count': '2',
+              }),
+            }),
+          );
+        });
+
+        it('should include both headers with correct values for large batch', async () => {
+          const batch = createMockBatch(100);
+          batch.incrementAttempts();
+          batch.incrementAttempts();
+          batch.incrementAttempts();
+
+          await eventSender.sendBatch(batch);
+
+          expect(mockNetwork.post).toHaveBeenCalledWith(
+            expect.objectContaining({
+              headers: {
+                'statsig-event-count': '100',
+                'statsig-retry-count': '3',
+              },
+            }),
+          );
+        });
+
+        it('should include headers in beacon requests', async () => {
+          (
+            _isUnloading as jest.MockedFunction<typeof _isUnloading>
+          ).mockReturnValue(true);
+          mockNetwork.isBeaconSupported.mockReturnValue(true);
+          mockNetwork.beacon.mockReturnValue(true);
+
+          const batch = createMockBatch(10);
+          batch.incrementAttempts();
+
+          await eventSender.sendBatch(batch);
+
+          expect(mockNetwork.beacon).toHaveBeenCalledWith(
+            expect.objectContaining({
+              headers: {
+                'statsig-event-count': '10',
+                'statsig-retry-count': '1',
+              },
+            }),
+          );
+        });
+
+        it('should update retry count for each send attempt', async () => {
+          const batch = createMockBatch(5);
+
+          // First attempt
+          await eventSender.sendBatch(batch);
+          expect(mockNetwork.post).toHaveBeenLastCalledWith(
+            expect.objectContaining({
+              headers: expect.objectContaining({
+                'statsig-retry-count': '0',
+              }),
+            }),
+          );
+
+          // Simulate retry
+          batch.incrementAttempts();
+          await eventSender.sendBatch(batch);
+          expect(mockNetwork.post).toHaveBeenLastCalledWith(
+            expect.objectContaining({
+              headers: expect.objectContaining({
+                'statsig-retry-count': '1',
+              }),
+            }),
+          );
+
+          // Another retry
+          batch.incrementAttempts();
+          await eventSender.sendBatch(batch);
+          expect(mockNetwork.post).toHaveBeenLastCalledWith(
+            expect.objectContaining({
+              headers: expect.objectContaining({
+                'statsig-retry-count': '2',
+              }),
             }),
           );
         });

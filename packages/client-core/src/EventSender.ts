@@ -3,7 +3,6 @@ import { Log } from './Log';
 import { NetworkParam } from './NetworkConfig';
 import { NetworkCore, RequestArgsWithData } from './NetworkCore';
 import { StatsigClientEmitEventFunc } from './StatsigClientBase';
-import { StatsigEventInternal } from './StatsigEvent';
 import {
   LogEventCompressionMode,
   LoggingEnabledOption,
@@ -60,8 +59,8 @@ export class EventSender {
       });
 
       const response = shouldUseBeacon
-        ? this._sendEventsViaBeacon(batch.events)
-        : await this._sendEventsViaPost(batch.events);
+        ? this._sendEventsViaBeacon(batch)
+        : await this._sendEventsViaPost(batch);
 
       if (response.success) {
         this._emitter({
@@ -78,35 +77,39 @@ export class EventSender {
   }
 
   private async _sendEventsViaPost(
-    events: StatsigEventInternal[],
+    batch: EventBatch,
   ): Promise<{ success: boolean; statusCode: number }> {
-    const result = await this._network.post(this._getRequestData(events));
+    const result = await this._network.post(this._getRequestData(batch));
     const code = result?.code ?? -1;
     return { success: code >= 200 && code < 300, statusCode: code };
   }
 
-  private _sendEventsViaBeacon(events: StatsigEventInternal[]): {
+  private _sendEventsViaBeacon(batch: EventBatch): {
     success: boolean;
     statusCode: number;
   } {
-    const success = this._network.beacon(this._getRequestData(events));
+    const success = this._network.beacon(this._getRequestData(batch));
     return {
       success,
       statusCode: success ? 200 : -1,
     };
   }
 
-  private _getRequestData(events: StatsigEventInternal[]): RequestArgsWithData {
+  private _getRequestData(batch: EventBatch): RequestArgsWithData {
     return {
       sdkKey: this._sdkKey,
       data: {
-        events,
+        events: batch.events,
       },
       urlConfig: this._logEventUrlConfig,
       retries: 3,
       isCompressable: true,
       params: {
-        [NetworkParam.EventCount]: String(events.length),
+        [NetworkParam.EventCount]: String(batch.events.length),
+      },
+      headers: {
+        'statsig-event-count': String(batch.events.length),
+        'statsig-retry-count': String(batch.attempts),
       },
       credentials: 'same-origin',
     };
