@@ -171,6 +171,10 @@ export class EventLogger {
       });
     }
 
+    this._flushCoordinator.loadAndRetryShutdownFailedEvents().catch((error) => {
+      Log.warn('Failed to load failed shutdown events:', error);
+    });
+
     this._flushCoordinator.startScheduledFlushCycle();
   }
 
@@ -260,11 +264,13 @@ export class EventLogger {
     const storageKey = this._getStorageKey();
 
     try {
-      const existingEvents = this._getEventsFromStorage(storageKey);
+      let existingEvents = this._getEventsFromStorage(storageKey);
       existingEvents.push(event);
 
-      while (existingEvents.length > EventRetryConstants.MAX_QUEUED_EVENTS) {
-        existingEvents.shift();
+      if (existingEvents.length > EventRetryConstants.MAX_LOCAL_STORAGE) {
+        existingEvents = existingEvents.slice(
+          -EventRetryConstants.MAX_LOCAL_STORAGE,
+        );
       }
 
       _setObjectInStorage(storageKey, existingEvents);

@@ -5,6 +5,7 @@ import { EventRetryConstants } from './EventRetryConstants';
 import { EventSender } from './EventSender';
 import { FlushInterval } from './FlushInterval';
 import { FlushType } from './FlushTypes';
+import { _DJB2 } from './Hashing';
 import { Log } from './Log';
 import { NetworkCore, RETRYABLE_CODES } from './NetworkCore';
 import { PendingEvents } from './PendingEvents';
@@ -16,6 +17,11 @@ import {
   NetworkConfigCommon,
   StatsigOptionsCommon,
 } from './StatsigOptionsCommon';
+import {
+  Storage,
+  _getObjectFromStorage,
+  _setObjectInStorage,
+} from './StorageProvider';
 import { UrlConfiguration } from './UrlConfiguration';
 
 type PrepareFlushCallBack = () => void;
@@ -36,6 +42,9 @@ export class FlushCoordinator {
   private _currentFlushPromise: Promise<void> | null = null;
   private _creationTime = Date.now();
 
+  private _sdkKey: string;
+  private _storageKey: string | null = null;
+
   constructor(
     batchQueue: BatchQueue,
     pendingEvents: PendingEvents,
@@ -54,6 +63,7 @@ export class FlushCoordinator {
     this._pendingEvents = pendingEvents;
     this._onPrepareFlush = onPrepareFlush;
     this._errorBoundary = errorBoundary;
+    this._sdkKey = sdkKey;
 
     this._eventSender = new EventSender(
       sdkKey,
@@ -329,12 +339,13 @@ export class FlushCoordinator {
   ): void {
     if (flushType === FlushType.Shutdown) {
       Log.warn(
-        `${flushType} flush failed after ${batch.attempts} attempt(s). ` +
-          `${batch.events.length} event(s) will be dropped.`,
+        `${flushType} flush failed during shutdown. ` +
+          `${batch.events.length} event(s) will be saved to storage for retry in next session.`,
       );
+      this._saveShutdownFailedEventsToStorage(batch.events);
       this._errorBoundary.logEventRequestFailure(
         batch.events.length,
-        `flush failed during shutdown`,
+        `flush failed during shutdown - saved to storage`,
         flushType,
         statusCode,
       );
@@ -386,6 +397,75 @@ export class FlushCoordinator {
           flushType: flushType,
         },
       );
+    }
+  }
+
+  async loadAndRetryShutdownFailedEvents(): Promise<void> {
+    const storageKey = this._getStorageKey();
+
+    try {
+      const events = this._getShutdownFailedEventsFromStorage(storageKey);
+      if (events.length === 0) {
+        return;
+      }
+
+      Log.debug(
+        `Loading ${events.length} failed shutdown event(s) from storage for retry`,
+      );
+
+      Storage.removeItem(storageKey);
+
+      events.forEach((event) => {
+        this.addEvent(event);
+      });
+
+      await this.processManualFlush();
+    } catch (error) {
+      Log.warn('Failed to load and retry failed shutdown events:', error);
+    }
+  }
+
+  private _getStorageKey(): string {
+    if (!this._storageKey) {
+      this._storageKey = `statsig.failed_shutdown_events.${_DJB2(this._sdkKey)}`;
+    }
+    return this._storageKey;
+  }
+
+  private _saveShutdownFailedEventsToStorage(
+    events: StatsigEventInternal[],
+  ): void {
+    const storageKey = this._getStorageKey();
+
+    try {
+      const existingEvents =
+        this._getShutdownFailedEventsFromStorage(storageKey);
+      let allEvents = [...existingEvents, ...events];
+
+      if (allEvents.length > EventRetryConstants.MAX_LOCAL_STORAGE) {
+        allEvents = allEvents.slice(-EventRetryConstants.MAX_LOCAL_STORAGE);
+      }
+
+      _setObjectInStorage(storageKey, allEvents);
+      Log.debug(
+        `Saved ${events.length} failed shutdown event(s) to storage (total stored: ${allEvents.length})`,
+      );
+    } catch (error) {
+      Log.warn('Unable to save failed shutdown events to storage:', error);
+    }
+  }
+
+  private _getShutdownFailedEventsFromStorage(
+    storageKey: string,
+  ): StatsigEventInternal[] {
+    try {
+      const events = _getObjectFromStorage<StatsigEventInternal[]>(storageKey);
+      if (Array.isArray(events)) {
+        return events;
+      }
+      return [];
+    } catch {
+      return [];
     }
   }
 }

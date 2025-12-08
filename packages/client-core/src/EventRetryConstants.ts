@@ -9,6 +9,8 @@ export const EventRetryConstants = {
 
   QUICK_FLUSH_WINDOW_MS: 200,
 
+  MAX_LOCAL_STORAGE: 500,
+
   get MAX_QUEUED_EVENTS(): number {
     return this.DEFAULT_BATCH_SIZE * this.MAX_PENDING_BATCHES;
   },

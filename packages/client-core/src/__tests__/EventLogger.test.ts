@@ -2,6 +2,7 @@ import { MockLocalStorage } from 'statsig-test-helpers';
 
 import { ErrorBoundary } from '../ErrorBoundary';
 import { EventLogger } from '../EventLogger';
+import { EventRetryConstants } from '../EventRetryConstants';
 import { NetworkCore } from '../NetworkCore';
 import { StatsigClientEmitEventFunc } from '../StatsigClientBase';
 import { StatsigEventInternal } from '../StatsigEvent';
@@ -110,9 +111,10 @@ describe('EventLogger', () => {
       expect(parsedEvents[1].eventName).toBe('test-event-2');
     });
 
-    it('should truncate events when they exceed MAX_QUEUED_EVENTS', () => {
+    it('should truncate events when they exceed MAX_LOCAL_STORAGE', () => {
+      const maxEvents = EventRetryConstants.MAX_LOCAL_STORAGE;
       const existingEvents: StatsigEventInternal[] = Array.from(
-        { length: 1000 },
+        { length: maxEvents },
         (_, i) => ({
           eventName: `existing-event-${i}`,
           user: null,
@@ -137,12 +139,12 @@ describe('EventLogger', () => {
         savedEvents as string,
       ) as StatsigEventInternal[];
 
-      // Should still be 1000 (oldest event removed, new event added)
-      expect(parsedEvents).toHaveLength(1000);
-      // First event should now be existing-event-1
+      // Should still be maxEvents (oldest event removed, new event added)
+      expect(parsedEvents).toHaveLength(maxEvents);
+      // First event should now be existing-event-1 (existing-event-0 was dropped)
       expect(parsedEvents[0].eventName).toBe('existing-event-1');
       // Last event should be the new-event
-      expect(parsedEvents[999].eventName).toBe('new-event');
+      expect(parsedEvents[maxEvents - 1].eventName).toBe('new-event');
     });
   });
 

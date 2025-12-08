@@ -9,7 +9,24 @@ import { PendingEvents } from '../PendingEvents';
 import { StatsigClientEmitEventFunc } from '../StatsigClientBase';
 import { StatsigEventInternal } from '../StatsigEvent';
 import { LoggingEnabledOption } from '../StatsigOptionsCommon';
+import {
+  Storage,
+  _getObjectFromStorage,
+  _setObjectInStorage,
+} from '../StorageProvider';
 import { UrlConfiguration } from '../UrlConfiguration';
+
+jest.mock('../StorageProvider', () => ({
+  Storage: {
+    isReady: jest.fn(),
+    isReadyResolver: jest.fn(),
+    getItem: jest.fn(),
+    setItem: jest.fn(),
+    removeItem: jest.fn(),
+  },
+  _getObjectFromStorage: jest.fn(),
+  _setObjectInStorage: jest.fn(),
+}));
 
 describe('FlushCoordinator', () => {
   let flushCoordinator: FlushCoordinator;
@@ -627,7 +644,7 @@ describe('FlushCoordinator', () => {
         );
         expect(mockErrorBoundary.logEventRequestFailure).toHaveBeenCalledWith(
           2, // batch.events.length
-          'flush failed during shutdown',
+          'flush failed during shutdown - saved to storage',
           FlushType.Shutdown,
           statusCode,
         );
@@ -705,6 +722,321 @@ describe('FlushCoordinator', () => {
         await flushCoordinator.processManualFlush();
 
         expect(mockErrorBoundary.logEventRequestFailure).not.toHaveBeenCalled();
+      });
+    });
+  });
+
+  describe('Shutdown Storage Integration', () => {
+    let eventSenderSpy: jest.SpyInstance;
+    let mockStorageGetObject: jest.MockedFunction<typeof _getObjectFromStorage>;
+    let mockStorageSetObject: jest.MockedFunction<typeof _setObjectInStorage>;
+    let mockStorageRemoveItem: jest.MockedFunction<(key: string) => void>;
+
+    beforeEach(() => {
+      eventSenderSpy = jest.spyOn(
+        (flushCoordinator as any)._eventSender,
+        'sendBatch',
+      );
+      mockStorageGetObject = _getObjectFromStorage as jest.MockedFunction<
+        typeof _getObjectFromStorage
+      >;
+      mockStorageSetObject = _setObjectInStorage as jest.MockedFunction<
+        typeof _setObjectInStorage
+      >;
+      mockStorageRemoveItem = Storage.removeItem as jest.MockedFunction<
+        (key: string) => void
+      >;
+
+      // Default mocks
+      (Storage.isReady as jest.Mock).mockReturnValue(true);
+      (Storage.isReadyResolver as jest.Mock).mockResolvedValue(undefined);
+      mockStorageGetObject.mockReturnValue(null);
+    });
+
+    describe('_handleFailure with Shutdown flush', () => {
+      it('should save events to storage when shutdown flush fails', async () => {
+        const events = [createMockEvent('event-1'), createMockEvent('event-2')];
+        const batch = new EventBatch(events);
+        const statusCode = 500;
+
+        mockBatchQueue.takeAllBatches.mockReturnValue([batch]);
+        eventSenderSpy.mockResolvedValue({ success: false, statusCode });
+        mockStorageGetObject.mockReturnValue(null);
+
+        await flushCoordinator.processShutdown();
+
+        expect(mockStorageSetObject).toHaveBeenCalledTimes(1);
+        expect(mockStorageSetObject).toHaveBeenCalledWith(
+          expect.stringContaining('statsig.failed_shutdown_events.'),
+          events,
+        );
+      });
+
+      it('should merge new events with existing stored events', async () => {
+        const existingEvents = [
+          createMockEvent('existing-1'),
+          createMockEvent('existing-2'),
+        ];
+        const newEvents = [createMockEvent('new-1'), createMockEvent('new-2')];
+        const batch = new EventBatch(newEvents);
+        const statusCode = 500;
+
+        mockBatchQueue.takeAllBatches.mockReturnValue([batch]);
+        eventSenderSpy.mockResolvedValue({ success: false, statusCode });
+        mockStorageGetObject.mockReturnValue(existingEvents);
+
+        await flushCoordinator.processShutdown();
+
+        expect(mockStorageSetObject).toHaveBeenCalledWith(
+          expect.stringContaining('statsig.failed_shutdown_events.'),
+          [...existingEvents, ...newEvents],
+        );
+      });
+
+      it('should cap stored events at MAX_LOCAL_STORAGE', async () => {
+        const maxEvents = EventRetryConstants.MAX_LOCAL_STORAGE;
+        const existingEvents = Array.from({ length: maxEvents }, (_, i) =>
+          createMockEvent(`existing-${i}`),
+        );
+        const newEvents = [
+          createMockEvent('new-1'),
+          createMockEvent('new-2'),
+          createMockEvent('new-3'),
+        ];
+        const batch = new EventBatch(newEvents);
+        const statusCode = 500;
+
+        mockBatchQueue.takeAllBatches.mockReturnValue([batch]);
+        eventSenderSpy.mockResolvedValue({ success: false, statusCode });
+        mockStorageGetObject.mockReturnValue(existingEvents);
+
+        await flushCoordinator.processShutdown();
+
+        expect(mockStorageSetObject).toHaveBeenCalledTimes(1);
+        const savedEvents = mockStorageSetObject.mock
+          .calls[0][1] as StatsigEventInternal[];
+        expect(savedEvents.length).toBe(maxEvents);
+        expect(savedEvents[0].eventName).toBe('existing-3');
+        expect(savedEvents[savedEvents.length - 1].eventName).toBe('new-3');
+      });
+
+      it('should not save to storage when shutdown flush succeeds', async () => {
+        const events = [createMockEvent('event-1')];
+        const batch = new EventBatch(events);
+
+        mockBatchQueue.takeAllBatches.mockReturnValue([batch]);
+        eventSenderSpy.mockResolvedValue({ success: true, statusCode: 200 });
+
+        await flushCoordinator.processShutdown();
+
+        expect(mockStorageSetObject).not.toHaveBeenCalled();
+      });
+
+      it('should handle storage errors gracefully', async () => {
+        const events = [createMockEvent('event-1')];
+        const batch = new EventBatch(events);
+        const statusCode = 500;
+
+        mockBatchQueue.takeAllBatches.mockReturnValue([batch]);
+        eventSenderSpy.mockResolvedValue({ success: false, statusCode });
+        mockStorageSetObject.mockImplementation(() => {
+          throw new Error('Storage quota exceeded');
+        });
+
+        await expect(flushCoordinator.processShutdown()).resolves.not.toThrow();
+        expect(mockStorageSetObject).toHaveBeenCalled();
+      });
+
+      it('should save multiple batches that fail during shutdown', async () => {
+        const batch1Events = [createMockEvent('batch1-event1')];
+        const batch2Events = [createMockEvent('batch2-event1')];
+        const batch1 = new EventBatch(batch1Events);
+        const batch2 = new EventBatch(batch2Events);
+
+        mockBatchQueue.takeAllBatches.mockReturnValue([batch1, batch2]);
+        eventSenderSpy.mockResolvedValue({ success: false, statusCode: 500 });
+        mockStorageGetObject.mockReturnValue(null);
+
+        await flushCoordinator.processShutdown();
+
+        expect(mockStorageSetObject).toHaveBeenCalledTimes(2);
+      });
+    });
+
+    describe('loadAndRetryShutdownFailedEvents', () => {
+      it('should load events from storage and retry', async () => {
+        const storedEvents = [
+          createMockEvent('stored-1'),
+          createMockEvent('stored-2'),
+        ];
+
+        mockStorageGetObject.mockReturnValue(storedEvents);
+        mockBatchQueue.takeAllBatches.mockReturnValue([]);
+        mockPendingEvents.hasEventsForFullBatch.mockReturnValue(false);
+
+        await flushCoordinator.loadAndRetryShutdownFailedEvents();
+
+        expect(mockStorageGetObject).toHaveBeenCalledWith(
+          expect.stringContaining('statsig.failed_shutdown_events.'),
+        );
+        expect(mockStorageRemoveItem).toHaveBeenCalledWith(
+          expect.stringContaining('statsig.failed_shutdown_events.'),
+        );
+        expect(mockPendingEvents.addToPendingEventsQueue).toHaveBeenCalledTimes(
+          2,
+        );
+      });
+
+      it('should not do anything when no stored events exist', async () => {
+        mockStorageGetObject.mockReturnValue(null);
+
+        await flushCoordinator.loadAndRetryShutdownFailedEvents();
+
+        expect(mockStorageRemoveItem).not.toHaveBeenCalled();
+        expect(
+          mockPendingEvents.addToPendingEventsQueue,
+        ).not.toHaveBeenCalled();
+      });
+
+      it('should not do anything when stored events array is empty', async () => {
+        mockStorageGetObject.mockReturnValue([]);
+
+        await flushCoordinator.loadAndRetryShutdownFailedEvents();
+
+        expect(mockStorageRemoveItem).not.toHaveBeenCalled();
+        expect(
+          mockPendingEvents.addToPendingEventsQueue,
+        ).not.toHaveBeenCalled();
+      });
+
+      it('should clear storage before retrying events', async () => {
+        const storedEvents = [createMockEvent('stored-1')];
+        mockStorageGetObject.mockReturnValue(storedEvents);
+        mockBatchQueue.takeAllBatches.mockReturnValue([]);
+
+        await flushCoordinator.loadAndRetryShutdownFailedEvents();
+
+        const removeItemCall =
+          mockStorageRemoveItem.mock.invocationCallOrder[0];
+        const addEventCall =
+          mockPendingEvents.addToPendingEventsQueue.mock.invocationCallOrder[0];
+        expect(removeItemCall).toBeLessThan(addEventCall);
+      });
+
+      it('should trigger manual flush after loading events', async () => {
+        const storedEvents = [createMockEvent('stored-1')];
+        const batch = new EventBatch(storedEvents);
+
+        mockStorageGetObject.mockReturnValue(storedEvents);
+        mockPendingEvents.isEmpty.mockReturnValue(false);
+        mockPendingEvents.takeAll.mockReturnValue(storedEvents);
+        mockBatchQueue.createBatches.mockReturnValue(0);
+        mockBatchQueue.takeAllBatches.mockReturnValue([batch]);
+        eventSenderSpy.mockResolvedValue({ success: true, statusCode: 200 });
+
+        await flushCoordinator.loadAndRetryShutdownFailedEvents();
+
+        expect(mockPendingEvents.addToPendingEventsQueue).toHaveBeenCalledWith(
+          storedEvents[0],
+        );
+        expect(mockBatchQueue.takeAllBatches).toHaveBeenCalled();
+      });
+
+      it('should handle storage read errors gracefully', async () => {
+        mockStorageGetObject.mockImplementation(() => {
+          throw new Error('Storage read error');
+        });
+
+        await expect(
+          flushCoordinator.loadAndRetryShutdownFailedEvents(),
+        ).resolves.not.toThrow();
+      });
+    });
+
+    describe('End-to-end shutdown failure recovery', () => {
+      it('should successfully recover from shutdown failure in next session', async () => {
+        // Session 1: Shutdown fails and saves to storage
+        const originalEvents = [
+          createMockEvent('session1-event1'),
+          createMockEvent('session1-event2'),
+        ];
+        const batch = new EventBatch(originalEvents);
+
+        mockBatchQueue.takeAllBatches.mockReturnValueOnce([batch]);
+        eventSenderSpy.mockResolvedValueOnce({
+          success: false,
+          statusCode: 503,
+        });
+
+        await flushCoordinator.processShutdown();
+
+        expect(mockStorageSetObject).toHaveBeenCalled();
+        const savedEvents = mockStorageSetObject.mock
+          .calls[0][1] as StatsigEventInternal[];
+
+        // SESSION 2: Simulate app restart with fresh instances
+
+        const newMockBatchQueue = {
+          takeAllBatches: jest.fn(),
+          takeNextBatch: jest.fn(),
+          createBatches: jest.fn(),
+          hasFullBatch: jest.fn(),
+          requeueBatch: jest.fn(),
+          batchSize: jest.fn(() => 100),
+        } as any;
+
+        const newMockPendingEvents = {
+          addToPendingEventsQueue: jest.fn(),
+          hasEventsForFullBatch: jest.fn(),
+          takeAll: jest.fn(),
+          isEmpty: jest.fn(),
+        } as any;
+
+        const newFlushCoordinator = new FlushCoordinator(
+          newMockBatchQueue,
+          newMockPendingEvents,
+          mockOnPrepareFlush,
+          SDK_KEY, // Same SDK key ensures same storage key
+          mockNetwork,
+          mockEmitter,
+          mockUrlConfig,
+          null,
+          LoggingEnabledOption.always,
+          mockErrorBoundary,
+        );
+
+        const newEventSenderSpy = jest.spyOn(
+          (newFlushCoordinator as any)._eventSender,
+          'sendBatch',
+        );
+
+        mockStorageGetObject.mockReturnValue(savedEvents);
+        newMockPendingEvents.hasEventsForFullBatch.mockReturnValue(false);
+        newMockPendingEvents.isEmpty.mockReturnValue(false);
+        newMockPendingEvents.takeAll.mockReturnValue(savedEvents);
+        newMockBatchQueue.createBatches.mockReturnValue(0);
+        const retryBatch = new EventBatch(savedEvents);
+        newMockBatchQueue.takeAllBatches.mockReturnValue([retryBatch]);
+        newEventSenderSpy.mockResolvedValue({ success: true, statusCode: 200 });
+
+        await newFlushCoordinator.loadAndRetryShutdownFailedEvents();
+
+        expect(mockStorageRemoveItem).toHaveBeenCalledWith(
+          expect.stringContaining('statsig.failed_shutdown_events.'),
+        );
+
+        expect(
+          newMockPendingEvents.addToPendingEventsQueue,
+        ).toHaveBeenCalledTimes(2);
+        expect(
+          newMockPendingEvents.addToPendingEventsQueue,
+        ).toHaveBeenCalledWith(savedEvents[0]);
+        expect(
+          newMockPendingEvents.addToPendingEventsQueue,
+        ).toHaveBeenCalledWith(savedEvents[1]);
+
+        expect(newMockBatchQueue.takeAllBatches).toHaveBeenCalled();
+        expect(newEventSenderSpy).toHaveBeenCalled();
       });
     });
   });
