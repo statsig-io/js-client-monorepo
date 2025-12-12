@@ -95,15 +95,9 @@ export abstract class StatsigClientBase<
     this._options = options ?? {};
     this._memoCache = {};
     this.overrideAdapter = options?.overrideAdapter ?? null;
+    this._logger = new EventLogger(sdkKey, emitter, network, options);
 
     this._errorBoundary = new ErrorBoundary(sdkKey, options, emitter);
-    this._logger = new EventLogger(
-      sdkKey,
-      emitter,
-      network,
-      options,
-      this._errorBoundary,
-    );
     this._errorBoundary.wrap(this);
     this._errorBoundary.wrap(adapter);
     this._errorBoundary.wrap(this._logger);
