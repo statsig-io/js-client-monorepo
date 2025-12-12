@@ -28,6 +28,7 @@ import {
   StatsigUserInternal,
   Storage,
   UPDATE_DETAIL_ERROR_MESSAGES,
+  _cloneObject,
   _createConfigExposure,
   _createGateExposure,
   _createLayerParameterExposure,
@@ -325,12 +326,12 @@ export default class StatsigClient
    * @returns {PrecomputedEvaluationsContext} The current synchronous context for the this StatsigClient instance.
    */
   getContext(): PrecomputedEvaluationsContext {
-    let user: StatsigUser = {};
-    try {
-      user = JSON.parse(JSON.stringify(this._user));
-    } catch {
-      Log.error('Failed to parse user');
+    let user: StatsigUser | null = _cloneObject('StatsigUser', this._user);
+    if (user == null) {
+      Log.error('Failed to clone user');
+      user = {};
     }
+
     return {
       sdkKey: this._sdkKey,
       options: this._options,

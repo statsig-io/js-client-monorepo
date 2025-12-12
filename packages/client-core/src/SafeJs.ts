@@ -1,3 +1,5 @@
+import { Log } from './Log';
+
 declare let EdgeRuntime: unknown;
 declare let process: { versions: { node: unknown } };
 
@@ -59,4 +61,13 @@ export const _getUnloadEvent = (): string => {
   }
   const eventType = 'onpagehide' in win ? 'pagehide' : 'beforeunload';
   return eventType;
+};
+
+export const _cloneObject = <T>(tag: string, obj: T): T | null => {
+  try {
+    return JSON.parse(JSON.stringify(obj)) as T;
+  } catch (error) {
+    Log.error(`Failed to clone object ${tag}`);
+    return null;
+  }
 };

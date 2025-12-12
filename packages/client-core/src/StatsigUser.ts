@@ -1,5 +1,6 @@
 import { _DJB2Object } from './Hashing';
 import { Log } from './Log';
+import { _cloneObject } from './SafeJs';
 import type {
   AnyStatsigOptions,
   StatsigEnvironment,
@@ -38,20 +39,19 @@ export function _normalizeUser(
   options?: AnyStatsigOptions | null,
   fallbackEnvironment?: string | null,
 ): StatsigUserInternal {
-  try {
-    const copy = JSON.parse(JSON.stringify(original)) as StatsigUserInternal;
-
-    if (options != null && options.environment != null) {
-      copy.statsigEnvironment = options.environment;
-    } else if (fallbackEnvironment != null) {
-      copy.statsigEnvironment = { tier: fallbackEnvironment };
-    }
-
-    return copy;
-  } catch (error) {
-    Log.error('Failed to JSON.stringify user');
+  const copy = _cloneObject('StatsigUser', original as StatsigUserInternal);
+  if (copy == null) {
+    Log.error('Failed to clone user');
     return { statsigEnvironment: undefined };
   }
+
+  if (options != null && options.environment != null) {
+    copy.statsigEnvironment = options.environment;
+  } else if (fallbackEnvironment != null) {
+    copy.statsigEnvironment = { tier: fallbackEnvironment };
+  }
+
+  return copy;
 }
 
 export function _getFullUserHash(user: StatsigUser | undefined): string | null {

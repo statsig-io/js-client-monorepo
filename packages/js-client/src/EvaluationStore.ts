@@ -26,7 +26,7 @@ import { V1InitializeContainer } from './V1InitializeContainer';
 import { V2InitializeContainer } from './V2InitializeContainer';
 
 export default class EvaluationStore {
-  private _rawValues: string | null = null;
+  private _valuesForExternalUse: AnyInitializeResponse | null = null;
   private _values: InitializeContainer | null = null;
   private _source: DataSource = 'Uninitialized';
   private _lcut = 0;
@@ -38,7 +38,7 @@ export default class EvaluationStore {
 
   reset(): void {
     this._values = null;
-    this._rawValues = null;
+    this._valuesForExternalUse = null;
     this._source = 'Loading';
     this._lcut = 0;
     this._receivedAt = 0;
@@ -55,13 +55,8 @@ export default class EvaluationStore {
   }
 
   getValues(): AnyInitializeResponse | null {
-    return this._rawValues
-      ? _typedJsonParse<AnyInitializeResponse>(
-          this._rawValues,
-          'has_updates',
-          'EvaluationStoreValues',
-        )
-      : null;
+    // we do not give out the actual _values object to avoid mutating it
+    return this._valuesForExternalUse;
   }
 
   setValues(result: DataAdapterResult | null, user: StatsigUser): boolean {
@@ -91,7 +86,11 @@ export default class EvaluationStore {
       return true;
     }
 
-    this._rawValues = result.data;
+    this._valuesForExternalUse = _typedJsonParse<AnyInitializeResponse>(
+      result.data,
+      'has_updates',
+      'EvaluationResponse',
+    );
     this._lcut = values.time;
     this._receivedAt = result.receivedAt;
     if (values.response_format === 'init-v2') {
