@@ -19,11 +19,19 @@ type SessionReplayFields = {
   passes_session_recording_targeting?: boolean;
   session_recording_event_triggers?: Record<string, SessionReplayTrigger>;
   session_recording_exposure_triggers?: Record<string, SessionReplayTrigger>;
+  session_recording_privacy_settings?: SessionReplayPrivacySettings;
 };
 
 type SessionReplayTrigger = {
   values?: string[];
   passes_sampling?: boolean;
+};
+
+export type SessionReplayPrivacySettings = {
+  privacy_mode?: 'min' | 'input' | 'max';
+  unmasked_elements?: string[];
+  masked_elements?: string[];
+  blocked_elements?: string[];
 };
 
 type AutoCaptureFields = {

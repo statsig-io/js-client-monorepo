@@ -12,9 +12,12 @@ import {
   ReplayEvent,
   ReplaySessionData,
 } from './SessionReplayClient';
-import { MAX_LOGS } from './SessionReplayUtils';
+import {
+  MAX_LOGS,
+  getNewOptionsWithPrivacySettings,
+} from './SessionReplayUtils';
 
-type SessionReplayOptions = {
+export type SessionReplayOptions = {
   rrwebConfig?: RRWebConfig;
   forceRecording?: boolean;
 };
@@ -56,11 +59,21 @@ export class TriggeredSessionReplay extends SessionReplayBase {
     client: PrecomputedEvaluationsInterface,
     options?: TriggeredSessionReplayOptions,
   ) {
-    super(client, options);
-    this._subscribeToClientEvents(options);
-    if (options?.autoStartRecording) {
+    let newOptions = options;
+    const privacySettings =
+      client.getContext().values?.session_recording_privacy_settings;
+    if (privacySettings) {
+      newOptions = getNewOptionsWithPrivacySettings(
+        newOptions ?? {},
+        privacySettings,
+      );
+    }
+
+    super(client, newOptions);
+    this._subscribeToClientEvents(newOptions);
+    if (newOptions?.autoStartRecording) {
       this._attemptToStartRecording(this._options?.forceRecording);
-    } else if (options?.keepRollingWindow) {
+    } else if (newOptions?.keepRollingWindow) {
       this._attemptToStartRollingWindow();
     }
   }

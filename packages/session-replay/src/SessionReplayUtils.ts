@@ -1,6 +1,11 @@
-import { SDK_VERSION, StatsigEvent } from '@statsig/client-core';
+import {
+  SDK_VERSION,
+  SessionReplayPrivacySettings,
+  StatsigEvent,
+} from '@statsig/client-core';
 
 import { ReplaySessionData } from './SessionReplayClient';
+import { SessionReplayOptions } from './TriggeredSessionReplay';
 
 export type RRWebPayload = {
   session_start_ts: string;
@@ -70,4 +75,49 @@ export function _appendSlicedMetadata(
   metadata.slice_index = String(sliceIndex);
   metadata.slice_count = String(sliceCount);
   metadata.slice_byte_size = String(sliceByteSize);
+}
+
+export function getNewOptionsWithPrivacySettings(
+  originalOptions: SessionReplayOptions,
+  privacySettings: SessionReplayPrivacySettings,
+): SessionReplayOptions {
+  const maskValue = (value: string): string => {
+    return value.replace(/./g, '*');
+  };
+
+  const blockSelector = privacySettings.blocked_elements
+    ? privacySettings.blocked_elements.join(', ')
+    : undefined;
+  const maskTextSelector = privacySettings.masked_elements
+    ? privacySettings.masked_elements.join(', ')
+    : undefined;
+  const maskInputFn = (value: string, element: HTMLElement): string => {
+    if (privacySettings.masked_elements?.some((sel) => element.closest(sel))) {
+      return maskValue(value);
+    }
+
+    if (
+      privacySettings.unmasked_elements?.some((sel) => element.closest(sel))
+    ) {
+      return value;
+    }
+
+    return privacySettings.privacy_mode === 'max' ||
+      privacySettings.privacy_mode === 'input'
+      ? maskValue(value)
+      : value;
+  };
+
+  return {
+    ...originalOptions,
+    rrwebConfig: {
+      ...originalOptions?.rrwebConfig,
+      maskTextFn: maskValue,
+      maskInputFn,
+      maskTextSelector,
+      maskAllInputs: true, // always return true here so that maskInputFn is always called. maskInputFn will handle if we should mask the input or not.
+      maskInputOptions: undefined,
+      blockSelector,
+    },
+  };
 }
