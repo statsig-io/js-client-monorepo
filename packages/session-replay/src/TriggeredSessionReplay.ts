@@ -41,7 +41,7 @@ export class StatsigTriggeredSessionReplayPlugin
 
 export function runStatsigTriggeredSessionReplay(
   client: PrecomputedEvaluationsInterface,
-  options?: SessionReplayOptions,
+  options?: TriggeredSessionReplayOptions,
 ): void {
   new TriggeredSessionReplay(client, options);
 }
