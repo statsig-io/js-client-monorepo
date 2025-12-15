@@ -1,6 +1,6 @@
 {
   "name": "@statsig/vercel-edge",
-  "version": "3.30.2",
+  "version": "3.31.0",
   "license": "ISC",
   "homepage": "https://github.com/statsig-io/js-client-monorepo",
   "repository": {
@@ -9,9 +9,9 @@
     "directory": "packages/vercel-edge"
   },
   "dependencies": {
-    "@statsig/client-core": "3.30.2",
-    "@statsig/js-on-device-eval-client": "3.30.2",
-    "@statsig/serverless-client": "3.30.2",
+    "@statsig/client-core": "3.31.0",
+    "@statsig/js-on-device-eval-client": "3.31.0",
+    "@statsig/serverless-client": "3.31.0",
     "@vercel/edge-config": "^1.4.2",
     "@vercel/functions": "^3.1.4"
   },

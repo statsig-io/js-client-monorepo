@@ -1,6 +1,6 @@
 {
   "name": "@statsig/sidecar",
-  "version": "3.30.2",
+  "version": "3.31.0",
   "license": "ISC",
   "homepage": "https://github.com/statsig-io/js-client-monorepo",
   "repository": {
@@ -19,9 +19,9 @@
     "webpack-cli": "^5.1.4"
   },
   "dependencies": {
-    "@statsig/js-client": "3.30.2",
-    "@statsig/js-local-overrides": "3.30.2",
-    "@statsig/web-analytics": "3.30.2"
+    "@statsig/js-client": "3.31.0",
+    "@statsig/js-local-overrides": "3.31.0",
+    "@statsig/web-analytics": "3.31.0"
   },
   "jsdelivr": "./sidecar.min.js",
   "type": "commonjs",
