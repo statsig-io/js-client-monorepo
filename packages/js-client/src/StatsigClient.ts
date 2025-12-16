@@ -561,6 +561,7 @@ export default class StatsigClient
     options?: FeatureGateEvaluationOptions,
   ): FeatureGate {
     const { result: evaluation, details } = this._store.getGate(name);
+    this._checkInitializationStatus(details.reason);
     const gate = _makeFeatureGate(name, details, evaluation);
     const overridden = this.overrideAdapter?.getGateOverride?.(
       gate,
@@ -586,6 +587,7 @@ export default class StatsigClient
     options?: DynamicConfigEvaluationOptions,
   ): DynamicConfig {
     const { result: evaluation, details } = this._store.getConfig(name);
+    this._checkInitializationStatus(details.reason);
     const config = _makeDynamicConfig(name, details, evaluation);
 
     const overridden = this.overrideAdapter?.getDynamicConfigOverride?.(
@@ -614,6 +616,7 @@ export default class StatsigClient
     options?: ExperimentEvaluationOptions,
   ): Experiment {
     const { result: evaluation, details } = this._store.getConfig(name);
+    this._checkInitializationStatus(details.reason);
     const experiment = _makeExperiment(name, details, evaluation);
     if (experiment.__evaluation != null) {
       experiment.__evaluation.secondary_exposures = _mapExposures(
@@ -709,5 +712,11 @@ export default class StatsigClient
     }
 
     return paramStore;
+  }
+
+  private _checkInitializationStatus(reason: string): void {
+    if (reason === 'Uninitialized' || reason.startsWith('Loading')) {
+      Log.warn(`SDK initialization has not completed. Reason: ${reason}`);
+    }
   }
 }
