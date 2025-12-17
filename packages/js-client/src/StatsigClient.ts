@@ -33,6 +33,7 @@ import {
   _createGateExposure,
   _createLayerParameterExposure,
   _getStatsigGlobal,
+  _getUnitIDFromUser,
   _isServerEnv,
   _makeDynamicConfig,
   _makeExperiment,
@@ -561,6 +562,7 @@ export default class StatsigClient
     options?: FeatureGateEvaluationOptions,
   ): FeatureGate {
     const { result: evaluation, details } = this._store.getGate(name);
+    this._checkUserHasIdForEvaluation(evaluation?.id_type, name, 'Gate');
     this._checkInitializationStatus(details.reason);
     const gate = _makeFeatureGate(name, details, evaluation);
     const overridden = this.overrideAdapter?.getGateOverride?.(
@@ -587,6 +589,11 @@ export default class StatsigClient
     options?: DynamicConfigEvaluationOptions,
   ): DynamicConfig {
     const { result: evaluation, details } = this._store.getConfig(name);
+    this._checkUserHasIdForEvaluation(
+      evaluation?.id_type,
+      name,
+      'Dynamic config',
+    );
     this._checkInitializationStatus(details.reason);
     const config = _makeDynamicConfig(name, details, evaluation);
 
@@ -616,6 +623,7 @@ export default class StatsigClient
     options?: ExperimentEvaluationOptions,
   ): Experiment {
     const { result: evaluation, details } = this._store.getConfig(name);
+    this._checkUserHasIdForEvaluation(evaluation?.id_type, name, 'Experiment');
     this._checkInitializationStatus(details.reason);
     const experiment = _makeExperiment(name, details, evaluation);
     if (experiment.__evaluation != null) {
@@ -714,6 +722,20 @@ export default class StatsigClient
     return paramStore;
   }
 
+  private _checkUserHasIdForEvaluation(
+    idType: string | undefined,
+    name: string,
+    type: string,
+  ): void {
+    if (!idType) {
+      return;
+    }
+    if (!_getUnitIDFromUser(this._user, idType)) {
+      Log.warn(
+        `The user does not have the required id_type "${idType}" for ${type} "${name}"`,
+      );
+    }
+  }
   private _checkInitializationStatus(reason: string): void {
     if (reason === 'Uninitialized' || reason.startsWith('Loading')) {
       Log.warn(`SDK initialization has not completed. Reason: ${reason}`);

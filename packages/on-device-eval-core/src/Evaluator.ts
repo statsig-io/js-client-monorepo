@@ -8,8 +8,8 @@ import {
   Spec,
   SpecCondition,
   SpecRule,
-  StatsigUser,
   StatsigUserInternal,
+  _getUnitIDFromUser,
 } from '@statsig/client-core';
 import { SHA256 } from '@statsig/sha256';
 
@@ -499,16 +499,6 @@ export class Evaluator {
       secondary_exposures: exposures,
     });
   }
-}
-
-function _getUnitIDFromUser(
-  user: StatsigUser,
-  idType: string,
-): string | undefined {
-  if (typeof idType === 'string' && idType.toLowerCase() !== 'userid') {
-    return user.customIDs?.[idType] ?? user?.customIDs?.[idType.toLowerCase()];
-  }
-  return user.userID;
 }
 
 function _evalPassPercent(

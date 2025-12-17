@@ -57,3 +57,17 @@ export function _normalizeUser(
 export function _getFullUserHash(user: StatsigUser | undefined): string | null {
   return user ? _DJB2Object(user) : null;
 }
+
+export function _getUnitIDFromUser(
+  user: StatsigUser,
+  idType: string,
+): string | undefined {
+  if (typeof idType !== 'string') {
+    return user.userID;
+  }
+  const lowered = idType.toLowerCase();
+  if (lowered !== 'userid') {
+    return user.customIDs?.[idType] ?? user.customIDs?.[lowered];
+  }
+  return user.userID;
+}

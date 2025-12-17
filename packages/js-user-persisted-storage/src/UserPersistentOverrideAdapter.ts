@@ -8,6 +8,7 @@ import {
   OverrideAdapter,
   SecondaryExposure,
   StatsigUser,
+  _getUnitIDFromUser,
   _makeExperiment,
   _makeLayer,
 } from '@statsig/client-core';
@@ -232,14 +233,4 @@ export class UserPersistentOverrideAdapter implements OverrideAdapter {
   private _getStorageKey(user: StatsigUser, idType: string): string {
     return `${String(_getUnitIDFromUser(user, idType))}:${idType}`;
   }
-}
-
-function _getUnitIDFromUser(
-  user: StatsigUser,
-  idType: string,
-): string | undefined {
-  if (typeof idType === 'string' && idType.toLowerCase() !== 'userid') {
-    return user.customIDs?.[idType] ?? user?.customIDs?.[idType.toLowerCase()];
-  }
-  return user.userID;
 }
