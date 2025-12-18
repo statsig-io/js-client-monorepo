@@ -36,10 +36,6 @@ describe('StatsigCloudflareClient', () => {
 
       expect(mockDataAdapterSetData).toHaveBeenCalledWith(mockSpecs);
       expect(mockDataAdapterSetData).toHaveBeenCalledTimes(1);
-
-      expect(mockInitializeSync).toHaveBeenCalledWith({
-        disableBackgroundCacheRefresh: true,
-      });
       expect(mockInitializeSync).toHaveBeenCalledTimes(1);
       expect(result.success).toBe(true);
     });

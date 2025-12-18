@@ -44,9 +44,7 @@ export class StatsigCloudflareClient extends StatsigServerlessClient {
       const specs = await kvBinding.get(kvKey);
       if (specs) {
         this.dataAdapter.setData(specs);
-        return this.initializeSync({
-          disableBackgroundCacheRefresh: true,
-        });
+        return this.initializeSync();
       } else {
         Log.error(
           `Failed to fetch specs from Cloudflare KV for key "${kvKey}"`,

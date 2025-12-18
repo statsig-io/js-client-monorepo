@@ -57,9 +57,6 @@ describe('StatsigFastlyClient', () => {
       JSON.stringify(mockData),
     );
     expect(mockInitializeSync).toHaveBeenCalledTimes(1);
-    expect(mockInitializeSync).toHaveBeenCalledWith({
-      disableBackgroundCacheRefresh: true,
-    });
     expect(result).toEqual({
       success: true,
       duration: 0,
@@ -101,9 +98,6 @@ describe('StatsigFastlyClient', () => {
       JSON.stringify(DcsResponse),
     );
     expect(mockInitializeSync).toHaveBeenCalledTimes(1);
-    expect(mockInitializeSync).toHaveBeenCalledWith({
-      disableBackgroundCacheRefresh: true,
-    });
     expect(result).toEqual({
       success: true,
       duration: 0,

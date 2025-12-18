@@ -89,9 +89,7 @@ export class StatsigFastlyClient extends StatsigServerlessClient {
         }
 
         this.dataAdapter.setData(configData);
-        return this.initializeSync({
-          disableBackgroundCacheRefresh: true,
-        });
+        return this.initializeSync();
       }
       return {
         duration: performance.now() - startTime,
