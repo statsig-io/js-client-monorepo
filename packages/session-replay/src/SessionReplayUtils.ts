@@ -88,9 +88,12 @@ export function getNewOptionsWithPrivacySettings(
   const blockSelector = privacySettings.blocked_elements
     ? privacySettings.blocked_elements.join(', ')
     : undefined;
-  const maskTextSelector = privacySettings.masked_elements
-    ? privacySettings.masked_elements.join(', ')
-    : undefined;
+  const maskTextSelector =
+    privacySettings.privacy_mode === 'max'
+      ? '*'
+      : privacySettings.masked_elements
+        ? privacySettings.masked_elements.join(', ')
+        : undefined;
   const maskInputFn = (value: string, element: HTMLElement): string => {
     if (privacySettings.masked_elements?.some((sel) => element.closest(sel))) {
       return maskValue(value);
