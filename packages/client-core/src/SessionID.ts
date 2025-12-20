@@ -78,13 +78,10 @@ function _bumpSession(session: StatsigSession): StatsigSession {
 
   const data = session.data;
   const sdkKey = session.sdkKey;
-  if (_isIdle(data) || _hasRunTooLong(data)) {
+  const sessionExpired = _isIdle(data) || _hasRunTooLong(data);
+  if (sessionExpired) {
     data.sessionID = getUUID();
     data.startTime = now;
-    const client = __STATSIG__?.instance(sdkKey);
-    if (client) {
-      client.$emt({ name: 'session_expired' });
-    }
   }
 
   data.lastUpdate = now;
@@ -100,6 +97,10 @@ function _bumpSession(session: StatsigSession): StatsigSession {
     sdkKey,
     MAX_SESSION_AGE - lifetime,
   );
+
+  if (sessionExpired) {
+    __STATSIG__?.instance(sdkKey)?.$emt({ name: 'session_expired' });
+  }
 
   return session;
 }
