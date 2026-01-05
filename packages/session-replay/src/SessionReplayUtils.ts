@@ -4,8 +4,7 @@ import {
   StatsigEvent,
 } from '@statsig/client-core';
 
-import { ReplaySessionData } from './SessionReplayClient';
-import { SessionReplayOptions } from './TriggeredSessionReplay';
+import { RRWebConfig, ReplaySessionData } from './SessionReplayClient';
 
 export type RRWebPayload = {
   session_start_ts: string;
@@ -77,10 +76,10 @@ export function _appendSlicedMetadata(
   metadata.slice_byte_size = String(sliceByteSize);
 }
 
-export function getNewOptionsWithPrivacySettings(
-  originalOptions: SessionReplayOptions,
+export function getNewRRWebConfigWithPrivacySettings(
+  originalOptions: RRWebConfig,
   privacySettings: SessionReplayPrivacySettings,
-): SessionReplayOptions {
+): RRWebConfig {
   const maskValue = (value: string): string => {
     return value.replace(/./g, '*');
   };
@@ -113,14 +112,11 @@ export function getNewOptionsWithPrivacySettings(
 
   return {
     ...originalOptions,
-    rrwebConfig: {
-      ...originalOptions?.rrwebConfig,
-      maskTextFn: maskValue,
-      maskInputFn,
-      maskTextSelector,
-      maskAllInputs: true, // always return true here so that maskInputFn is always called. maskInputFn will handle if we should mask the input or not.
-      maskInputOptions: undefined,
-      blockSelector,
-    },
+    maskTextFn: maskValue,
+    maskInputFn,
+    maskTextSelector,
+    maskAllInputs: true, // always return true here so that maskInputFn is always called. maskInputFn will handle if we should mask the input or not.
+    maskInputOptions: undefined,
+    blockSelector,
   };
 }

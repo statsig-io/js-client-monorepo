@@ -9,7 +9,7 @@ import { EndReason, SessionReplayBase } from './SessionReplayBase';
 import { RRWebConfig } from './SessionReplayClient';
 import {
   MAX_LOGS,
-  getNewOptionsWithPrivacySettings,
+  getNewRRWebConfigWithPrivacySettings,
 } from './SessionReplayUtils';
 
 type SessionReplayOptions = {
@@ -45,17 +45,7 @@ export class SessionReplay extends SessionReplayBase {
     client: PrecomputedEvaluationsInterface,
     options?: SessionReplayOptions,
   ) {
-    let newOptions = options;
-    const privacySettings =
-      client.getContext().values?.session_recording_privacy_settings;
-    if (privacySettings) {
-      newOptions = getNewOptionsWithPrivacySettings(
-        newOptions ?? {},
-        privacySettings,
-      );
-    }
-
-    super(client, newOptions);
+    super(client, options);
     this._client.$on('values_updated', () => {
       if (!this._wasStopped) {
         this._attemptToStartRecording(this._options?.forceRecording);
@@ -94,11 +84,16 @@ export class SessionReplay extends SessionReplayBase {
       return;
     }
 
+    const newRRWebConfig = getNewRRWebConfigWithPrivacySettings(
+      this._options?.rrwebConfig ?? {},
+      values?.session_recording_privacy_settings ?? {},
+    );
+
     this._wasStopped = false;
     StatsigMetadataProvider.add({ isRecordingSession: 'true' });
     this._replayer.record(
       (e, d) => this._onRecordingEvent(e, d),
-      this._options?.rrwebConfig ?? {},
+      newRRWebConfig,
       () => {
         this._shutdown();
       },

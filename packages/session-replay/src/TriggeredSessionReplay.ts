@@ -14,7 +14,7 @@ import {
 } from './SessionReplayClient';
 import {
   MAX_LOGS,
-  getNewOptionsWithPrivacySettings,
+  getNewRRWebConfigWithPrivacySettings,
 } from './SessionReplayUtils';
 
 export type SessionReplayOptions = {
@@ -59,21 +59,11 @@ export class TriggeredSessionReplay extends SessionReplayBase {
     client: PrecomputedEvaluationsInterface,
     options?: TriggeredSessionReplayOptions,
   ) {
-    let newOptions = options;
-    const privacySettings =
-      client.getContext().values?.session_recording_privacy_settings;
-    if (privacySettings) {
-      newOptions = getNewOptionsWithPrivacySettings(
-        newOptions ?? {},
-        privacySettings,
-      );
-    }
-
-    super(client, newOptions);
-    this._subscribeToClientEvents(newOptions);
-    if (newOptions?.autoStartRecording) {
+    super(client, options);
+    this._subscribeToClientEvents(options);
+    if (options?.autoStartRecording) {
       this._attemptToStartRecording(this._options?.forceRecording);
-    } else if (newOptions?.keepRollingWindow) {
+    } else if (options?.keepRollingWindow) {
       this._attemptToStartRollingWindow();
     }
   }
@@ -337,9 +327,14 @@ export class TriggeredSessionReplay extends SessionReplayBase {
       return;
     }
 
+    const newRRWebConfig = getNewRRWebConfigWithPrivacySettings(
+      this._options?.rrwebConfig ?? {},
+      values?.session_recording_privacy_settings ?? {},
+    );
+
     this._replayer.record(
       (e, d, isCheckOut) => this._onRecordingEvent(e, d, isCheckOut),
-      this._options?.rrwebConfig ?? {},
+      newRRWebConfig,
       () => {
         this._shutdown();
       },
