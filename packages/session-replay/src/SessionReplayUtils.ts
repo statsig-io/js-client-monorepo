@@ -87,12 +87,24 @@ export function getNewRRWebConfigWithPrivacySettings(
   const blockSelector = privacySettings.blocked_elements
     ? privacySettings.blocked_elements.join(', ')
     : undefined;
-  const maskTextSelector =
-    privacySettings.privacy_mode === 'max'
-      ? '*'
-      : privacySettings.masked_elements
-        ? privacySettings.masked_elements.join(', ')
-        : undefined;
+  const maskTextFn = (value: string, element: HTMLElement | null): string => {
+    if (!element) {
+      return privacySettings.privacy_mode === 'max' ? maskValue(value) : value;
+    }
+
+    if (privacySettings.masked_elements?.some((sel) => element.closest(sel))) {
+      return maskValue(value);
+    }
+
+    if (
+      privacySettings.unmasked_elements?.some((sel) => element.closest(sel))
+    ) {
+      return value;
+    }
+
+    return privacySettings.privacy_mode === 'max' ? maskValue(value) : value;
+  };
+
   const maskInputFn = (value: string, element: HTMLElement): string => {
     if (privacySettings.masked_elements?.some((sel) => element.closest(sel))) {
       return maskValue(value);
@@ -112,9 +124,9 @@ export function getNewRRWebConfigWithPrivacySettings(
 
   return {
     ...originalOptions,
-    maskTextFn: maskValue,
+    maskTextFn: maskTextFn,
     maskInputFn,
-    maskTextSelector,
+    maskTextSelector: '*',
     maskAllInputs: true, // always return true here so that maskInputFn is always called. maskInputFn will handle if we should mask the input or not.
     maskInputOptions: undefined,
     blockSelector,
