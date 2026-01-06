@@ -6,6 +6,7 @@ import {
   FeatureGate,
   Layer,
   ParameterStore,
+  PrecomputedEvaluationsContextHandle,
   PrecomputedEvaluationsInterface,
   SpecsDataAdapter,
   StatsigUpdateDetails,
@@ -80,6 +81,15 @@ const context = {
   sdkInstanceID: '',
 };
 
+const _noopContextHandle = new PrecomputedEvaluationsContextHandle(
+  '',
+  () => ({}),
+  () => ({}) as ErrorBoundary,
+  () => null,
+  () => ({ userID: '' }),
+  () => '',
+);
+
 const _client: PrecomputedEvaluationsInterface & { isNoop: true } = {
   isNoop: true,
   loadingStatus: 'Uninitialized',
@@ -93,6 +103,7 @@ const _client: PrecomputedEvaluationsInterface & { isNoop: true } = {
   getContext: () => ({
     ...context,
   }),
+  getContextHandle: () => _noopContextHandle,
   checkGate: () => false,
   getFeatureGate: _defaultEvaluation<FeatureGate>('gate'),
   getDynamicConfig: _defaultEvaluation<DynamicConfig>('config'),

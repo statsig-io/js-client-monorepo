@@ -17,6 +17,7 @@ import {
   ParameterStore,
   ParameterStoreEvaluationOptions,
   PrecomputedEvaluationsContext,
+  PrecomputedEvaluationsContextHandle,
   PrecomputedEvaluationsInterface,
   SDKType,
   StableID,
@@ -64,6 +65,7 @@ export default class StatsigClient
   private _network: Network;
   private _possibleFirstTouchMetadata: Record<string, string | number> = {};
   private _sdkInstanceID: string;
+  private _contextHandle: PrecomputedEvaluationsContextHandle;
 
   /**
    * Retrieves an instance of the StatsigClient based on the provided SDK key.
@@ -116,6 +118,14 @@ export default class StatsigClient
     this._network = network;
     this._user = this._configureUser(user, options);
     this._sdkInstanceID = getUUID();
+    this._contextHandle = new PrecomputedEvaluationsContextHandle(
+      sdkKey,
+      () => this._options,
+      () => this._errorBoundary,
+      () => this._store.getValues(),
+      () => this._user,
+      () => this._sdkInstanceID,
+    );
 
     const plugins = options?.plugins ?? [];
     for (const plugin of plugins) {
@@ -343,6 +353,16 @@ export default class StatsigClient
       stableID: StableID.get(this._sdkKey),
       sdkInstanceID: this._sdkInstanceID,
     };
+  }
+
+  /**
+   * Retrieves a context handle that computes fields lazily on access.
+   * This is more efficient than getContext() when you only need certain fields,
+   *
+   * @returns {PrecomputedEvaluationsContextHandle} A handle with lazy getters for context fields.
+   */
+  getContextHandle(): PrecomputedEvaluationsContextHandle {
+    return this._contextHandle;
   }
 
   /**

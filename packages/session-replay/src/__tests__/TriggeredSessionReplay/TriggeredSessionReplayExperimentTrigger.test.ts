@@ -9,6 +9,7 @@ import {
 } from '@statsig/client-core';
 
 import { TriggeredSessionReplay } from '../../TriggeredSessionReplay';
+import { mockClientContext } from '../../testUtils/mockClientContext';
 
 describe('Triggered Session Replay Gate Trigger', () => {
   let client: jest.MockedObject<PrecomputedEvaluationsInterface>;
@@ -48,19 +49,15 @@ describe('Triggered Session Replay Gate Trigger', () => {
   });
 
   it('does not start recording when wrong experiment is checked', () => {
-    const ctx = {
-      errorBoundary: { wrap: jest.fn() },
-      values: {
-        session_recording_rate: 1,
-        can_record_session: false,
-        passes_session_recording_targeting: true,
-        session_recording_exposure_triggers: {
-          4209630205: {},
-        },
+    mockClientContext(client, {
+      session_recording_rate: 1,
+      can_record_session: false,
+      passes_session_recording_targeting: true,
+      session_recording_exposure_triggers: {
+        4209630205: {},
       },
-      session: { data: { sessionID: '' } },
-    } as any;
-    client.getContext.mockReturnValue(ctx);
+    });
+
     new TriggeredSessionReplay(client);
     let metadata = StatsigMetadataProvider.get() as any;
     expect(metadata.isRecordingSession).toBe(undefined);
@@ -70,19 +67,15 @@ describe('Triggered Session Replay Gate Trigger', () => {
   });
 
   it('starts recording when experiment is checked and passes targeting', () => {
-    const ctx = {
-      errorBoundary: { wrap: jest.fn() },
-      values: {
-        session_recording_rate: 1,
-        can_record_session: false,
-        passes_session_recording_targeting: true,
-        session_recording_exposure_triggers: {
-          4209630205: {},
-        },
+    mockClientContext(client, {
+      session_recording_rate: 1,
+      can_record_session: false,
+      passes_session_recording_targeting: true,
+      session_recording_exposure_triggers: {
+        4209630205: {},
       },
-      session: { data: { sessionID: '' } },
-    } as any;
-    client.getContext.mockReturnValue(ctx);
+    });
+
     new TriggeredSessionReplay(client);
     let metadata = StatsigMetadataProvider.get() as any;
     expect(metadata.isRecordingSession).toBe(undefined);
@@ -92,19 +85,15 @@ describe('Triggered Session Replay Gate Trigger', () => {
   });
 
   it('does not start recording when event is logged and fails targeting', () => {
-    const ctx = {
-      errorBoundary: { wrap: jest.fn() },
-      values: {
-        session_recording_rate: 1,
-        can_record_session: false,
-        passes_session_recording_targeting: false,
-        session_recording_exposure_triggers: {
-          4209630205: {},
-        },
+    mockClientContext(client, {
+      session_recording_rate: 1,
+      can_record_session: false,
+      passes_session_recording_targeting: false,
+      session_recording_exposure_triggers: {
+        4209630205: {},
       },
-      session: { data: { sessionID: '' } },
-    } as any;
-    client.getContext.mockReturnValue(ctx);
+    });
+
     new TriggeredSessionReplay(client);
     let metadata = StatsigMetadataProvider.get() as any;
     expect(metadata.isRecordingSession).toBe(undefined);
@@ -114,19 +103,15 @@ describe('Triggered Session Replay Gate Trigger', () => {
   });
 
   it('does not start recording when experiment is checked but groupName does not match', () => {
-    const ctx = {
-      errorBoundary: { wrap: jest.fn() },
-      values: {
-        session_recording_rate: 1,
-        can_record_session: false,
-        passes_session_recording_targeting: true,
-        session_recording_exposure_triggers: {
-          4209630205: { values: ['control_group'] },
-        },
+    mockClientContext(client, {
+      session_recording_rate: 1,
+      can_record_session: false,
+      passes_session_recording_targeting: true,
+      session_recording_exposure_triggers: {
+        4209630205: { values: ['control_group'] },
       },
-      session: { data: { sessionID: '' } },
-    } as any;
-    client.getContext.mockReturnValue(ctx);
+    });
+
     new TriggeredSessionReplay(client);
     let metadata = StatsigMetadataProvider.get() as any;
     expect(metadata.isRecordingSession).toBe(undefined);
@@ -136,19 +121,15 @@ describe('Triggered Session Replay Gate Trigger', () => {
   });
 
   it('does not start recording when experiment is checked but does not pass sampling', () => {
-    const ctx = {
-      errorBoundary: { wrap: jest.fn() },
-      values: {
-        session_recording_rate: 1,
-        can_record_session: false,
-        passes_session_recording_targeting: true,
-        session_recording_exposure_triggers: {
-          4209630205: { passes_sampling: false },
-        },
+    mockClientContext(client, {
+      session_recording_rate: 1,
+      can_record_session: false,
+      passes_session_recording_targeting: true,
+      session_recording_exposure_triggers: {
+        4209630205: { passes_sampling: false },
       },
-      session: { data: { sessionID: '' } },
-    } as any;
-    client.getContext.mockReturnValue(ctx);
+    });
+
     new TriggeredSessionReplay(client);
     let metadata = StatsigMetadataProvider.get() as any;
     expect(metadata.isRecordingSession).toBe(undefined);
@@ -158,19 +139,15 @@ describe('Triggered Session Replay Gate Trigger', () => {
   });
 
   it('does start recording when experiment is checked and groupName does match', () => {
-    const ctx = {
-      errorBoundary: { wrap: jest.fn() },
-      values: {
-        session_recording_rate: 1,
-        can_record_session: false,
-        passes_session_recording_targeting: true,
-        session_recording_exposure_triggers: {
-          4209630205: { values: ['test_group'] },
-        },
+    mockClientContext(client, {
+      session_recording_rate: 1,
+      can_record_session: false,
+      passes_session_recording_targeting: true,
+      session_recording_exposure_triggers: {
+        4209630205: { values: ['test_group'] },
       },
-      session: { data: { sessionID: '' } },
-    } as any;
-    client.getContext.mockReturnValue(ctx);
+    });
+
     new TriggeredSessionReplay(client);
     let metadata = StatsigMetadataProvider.get() as any;
     expect(metadata.isRecordingSession).toBe(undefined);
@@ -180,19 +157,15 @@ describe('Triggered Session Replay Gate Trigger', () => {
   });
 
   it('does not start recording if recording previously stopped', () => {
-    const ctx = {
-      errorBoundary: { wrap: jest.fn() },
-      values: {
-        session_recording_rate: 1,
-        can_record_session: true,
-        passes_session_recording_targeting: true,
-        session_recording_exposure_triggers: {
-          4209630205: { values: ['false'] },
-        },
+    mockClientContext(client, {
+      session_recording_rate: 1,
+      can_record_session: true,
+      passes_session_recording_targeting: true,
+      session_recording_exposure_triggers: {
+        4209630205: { values: ['false'] },
       },
-      session: { data: { sessionID: '' } },
-    } as any;
-    client.getContext.mockReturnValue(ctx);
+    });
+
     const replay = new TriggeredSessionReplay(client, {
       autoStartRecording: true,
     });

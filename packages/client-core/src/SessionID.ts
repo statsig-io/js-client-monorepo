@@ -30,13 +30,13 @@ export const SessionID = {
 };
 
 export const StatsigSession = {
-  get: (sdkKey: string): StatsigSession => {
+  get: (sdkKey: string, bumpSession = true): StatsigSession => {
     if (PROMISE_MAP[sdkKey] == null) {
       PROMISE_MAP[sdkKey] = _loadSession(sdkKey);
     }
 
     const session = PROMISE_MAP[sdkKey];
-    return _bumpSession(session);
+    return bumpSession ? _bumpSession(session) : session;
   },
 
   overrideInitialSessionID: (override: string, sdkKey: string): void => {

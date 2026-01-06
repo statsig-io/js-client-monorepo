@@ -11,7 +11,11 @@ import {
   _isServerEnv,
 } from '@statsig/client-core';
 
-import { AutoCaptureEvent, AutoCaptureEventName } from './AutoCaptureEvent';
+import {
+  AutoCaptureEvent,
+  AutoCaptureEventName,
+  isUserActionAutoCaptureEvent,
+} from './AutoCaptureEvent';
 import { AutoCaptureOptions } from './AutoCaptureOptions';
 import { ConsoleLogManager } from './ConsoleLogManager';
 import DeadClickManager from './DeadClickManager';
@@ -61,7 +65,7 @@ export function runStatsigAutoCapture(
     return null;
   }
 
-  const { sdkKey } = client.getContext();
+  const { sdkKey } = client.getContextHandle();
 
   if (!_isServerEnv()) {
     const global = _getStatsigGlobal();
@@ -93,13 +97,13 @@ export class AutoCapture {
     private _client: PrecomputedEvaluationsInterface,
     options?: AutoCaptureOptions,
   ) {
-    const { sdkKey, errorBoundary, values } = _client.getContext();
+    const { sdkKey, errorBoundary, values } = _client.getContextHandle();
     this._options = options;
     this._disabledEvents = values?.auto_capture_settings?.disabled_events ?? {};
     this._errorBoundary = errorBoundary;
     this._errorBoundary.wrap(this, 'autoCapture:');
     this._client.$on('values_updated', () => {
-      const values = this._client.getContext().values;
+      const values = this._client.getContextHandle().values;
       this._disabledEvents =
         values?.auto_capture_settings?.disabled_events ?? this._disabledEvents;
     });
@@ -312,7 +316,7 @@ export class AutoCapture {
   }
 
   private _logSessionStart() {
-    const session = this._getSessionFromClient();
+    const session = this._client.getContextHandle().getSession();
 
     try {
       if (!this._isNewSession(session)) {
@@ -477,7 +481,8 @@ export class AutoCapture {
       return;
     }
 
-    const session = this._getSessionFromClient();
+    const isUserAction = isUserActionAutoCaptureEvent(eventName);
+    const session = this._client.getContextHandle().getSession(isUserAction);
     try {
       const logMetadata: Record<string, string> = {
         sessionID: session.data.sessionID,
@@ -539,10 +544,6 @@ export class AutoCapture {
   private _isNewSession(session: StatsigSession) {
     // within the last second
     return Math.abs(session.data.startTime - Date.now()) < 1000;
-  }
-
-  private _getSessionFromClient() {
-    return this._client.getContext().session;
   }
 
   public static getAllMetadata(): Record<string, string | number> {

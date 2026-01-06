@@ -6,6 +6,7 @@ import {
 } from '@statsig/client-core';
 
 import { TriggeredSessionReplay } from '../../TriggeredSessionReplay';
+import { mockClientContext } from '../../testUtils/mockClientContext';
 
 describe('Triggered Session Replay Force', () => {
   let client: jest.MockedObject<PrecomputedEvaluationsInterface>;
@@ -17,17 +18,12 @@ describe('Triggered Session Replay Force', () => {
   });
 
   it('does not start recording when recording blocked', () => {
-    const ctx = {
-      errorBoundary: { wrap: jest.fn() },
-      values: {
-        session_recording_rate: 1,
-        can_record_session: false,
-        recording_blocked: true,
-        passes_session_recording_targeting: true,
-      },
-      session: { data: { sessionID: '' } },
-    } as any;
-    client.getContext.mockReturnValue(ctx);
+    mockClientContext(client, {
+      session_recording_rate: 1,
+      can_record_session: false,
+      recording_blocked: true,
+      passes_session_recording_targeting: true,
+    });
     const replay = new TriggeredSessionReplay(client);
     let metadata = StatsigMetadataProvider.get() as any;
     expect(metadata.isRecordingSession).toBe(undefined);
@@ -37,17 +33,12 @@ describe('Triggered Session Replay Force', () => {
   });
 
   it('does start recording when recording when forced', () => {
-    const ctx = {
-      errorBoundary: { wrap: jest.fn() },
-      values: {
-        session_recording_rate: 1,
-        can_record_session: false,
-        recording_blocked: false,
-        passes_session_recording_targeting: true,
-      },
-      session: { data: { sessionID: '' } },
-    } as any;
-    client.getContext.mockReturnValue(ctx);
+    mockClientContext(client, {
+      session_recording_rate: 1,
+      can_record_session: false,
+      recording_blocked: false,
+      passes_session_recording_targeting: true,
+    });
     const replay = new TriggeredSessionReplay(client);
     let metadata = StatsigMetadataProvider.get() as any;
     expect(metadata.isRecordingSession).toBe(undefined);

@@ -63,7 +63,7 @@ export class SessionReplay extends SessionReplayBase {
     if (this._totalLogs >= MAX_LOGS) {
       return;
     }
-    const values = this._client.getContext().values;
+    const values = this._client.getContextHandle().values;
 
     if (values?.recording_blocked === true) {
       this._shutdown();

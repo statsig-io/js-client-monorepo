@@ -9,6 +9,7 @@ import {
 } from '@statsig/client-core';
 
 import { TriggeredSessionReplay } from '../../TriggeredSessionReplay';
+import { mockClientContext } from '../../testUtils/mockClientContext';
 
 describe('Triggered Session Replay No Auto Record', () => {
   let client: jest.MockedObject<PrecomputedEvaluationsInterface>;
@@ -25,12 +26,10 @@ describe('Triggered Session Replay No Auto Record', () => {
         listener({ name: 'logs_flushed', events: [] });
       }
     });
-    const ctx = {
-      errorBoundary: { wrap: jest.fn() },
-      values: { session_recording_rate: 1, can_record_session: true },
-      session: { data: { sessionID: '' } },
-    } as any;
-    client.getContext.mockReturnValue(ctx);
+    mockClientContext(client, {
+      session_recording_rate: 1,
+      can_record_session: true,
+    });
     new TriggeredSessionReplay(client);
   });
 

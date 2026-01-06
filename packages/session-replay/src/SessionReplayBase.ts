@@ -79,7 +79,7 @@ export abstract class SessionReplayBase {
   ) {
     this._client = client;
     this._options = options;
-    const { sdkKey, errorBoundary } = this._client.getContext();
+    const { sdkKey, errorBoundary } = this._client.getContextHandle();
     this._errorBoundary = errorBoundary;
     this._errorBoundary.wrap(this);
     this._replayer = new SessionReplayClient();
@@ -146,7 +146,7 @@ export abstract class SessionReplayBase {
 
   protected _subscribeToVisibilityChanged(): void {
     // Note: this exists as a separate function to ensure closure scope only contains `sdkKey`
-    const { sdkKey } = this._client.getContext();
+    const { sdkKey } = this._client.getContextHandle();
 
     _subscribeToVisiblityChanged((vis) => {
       const inst = _getStatsigGlobal()?.srInstances?.[sdkKey];
@@ -177,7 +177,7 @@ export abstract class SessionReplayBase {
         payload,
         sessionID,
         data,
-        this._client.getContext().sdkInstanceID,
+        this._client.getContextHandle().sdkInstanceID,
       );
 
       if (slicedID != null) {
@@ -216,8 +216,9 @@ export abstract class SessionReplayBase {
     this._logRecording();
   }
 
-  protected _getSessionIdFromClient(): string {
-    return this._client.getContext().session.data.sessionID;
+  protected _getSessionIdFromClient(bumpSession?: boolean): string {
+    return this._client.getContextHandle().getSession(bumpSession).data
+      .sessionID;
   }
 
   protected abstract _shutdown(endReason?: EndReason): void;
@@ -261,7 +262,7 @@ export abstract class SessionReplayBase {
     data: ReplaySessionData,
   ): void {
     // The session has expired so we should stop recording
-    if (this._currentSessionID !== this._getSessionIdFromClient()) {
+    if (this._currentSessionID !== this._getSessionIdFromClient(false)) {
       this._shutdown('session_expired');
       return;
     }

@@ -9,6 +9,7 @@ import {
 } from '@statsig/client-core';
 
 import { SessionReplay } from '../SessionReplay';
+import { mockClientContext } from '../testUtils/mockClientContext';
 
 describe('Session Replay Force', () => {
   let client: jest.MockedObject<PrecomputedEvaluationsInterface>;
@@ -25,12 +26,10 @@ describe('Session Replay Force', () => {
         listener({ name: 'logs_flushed', events: [] });
       }
     });
-    const ctx = {
-      errorBoundary: { wrap: jest.fn() },
-      values: { session_recording_rate: 1, can_record_session: false },
-      session: { data: { sessionID: '' } },
-    } as any;
-    client.getContext.mockReturnValue(ctx);
+    mockClientContext(client, {
+      session_recording_rate: 1,
+      can_record_session: false,
+    });
     const sessionReplay = new SessionReplay(client);
     sessionReplay.forceStartRecording();
   });

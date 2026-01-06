@@ -25,12 +25,27 @@ describe('Cli Recording', () => {
         listener({ name: 'logs_flushed', events: [] });
       }
     });
-    const ctx = {
+
+    const mockContextHandle = {
+      sdkKey: '',
+      options: {},
       errorBoundary: { wrap: jest.fn() },
-      values: { session_recording_rate: 1, can_record_session: true },
-      session: { data: { sessionID: '' } },
-    } as any;
-    client.getContext.mockReturnValue(ctx);
+      values: null,
+      user: { userID: '' },
+      stableID: '',
+      sdkInstanceID: '',
+      getSession: jest.fn().mockReturnValue({
+        data: { sessionID: 'test-session-id', startTime: 0, lastUpdate: 0 },
+        sdkKey: '',
+      }),
+      toContext: jest.fn(),
+    };
+    client.getContextHandle.mockReturnValue(mockContextHandle as any);
+    client.getContext.mockReturnValue({
+      ...mockContextHandle,
+      session: mockContextHandle.getSession(),
+    } as any);
+
     CliRecording.record(client, CliRecordingNodeAdapterFactory);
   });
 

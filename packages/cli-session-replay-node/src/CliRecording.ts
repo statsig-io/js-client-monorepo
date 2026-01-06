@@ -1,5 +1,4 @@
 import {
-  PrecomputedEvaluationsContext,
   PrecomputedEvaluationsInterface,
   SDK_VERSION,
   StatsigMetadataProvider,
@@ -104,8 +103,7 @@ export class CliRecording {
     this._adapter = adapterFactory(this._buildController());
 
     // Read data from client
-    const clientContext = this._client.getContext();
-    this._sessionID = this._getSessionIdFromClient(clientContext);
+    this._sessionID = this._getSessionIdFromClient();
 
     // Subscribe to events
     const timeout = setTimeout(() => {
@@ -243,10 +241,9 @@ export class CliRecording {
     });
   }
 
-  private _getSessionIdFromClient(
-    context: PrecomputedEvaluationsContext = this._client.getContext(),
-  ): string {
-    return context.session.data.sessionID;
+  private _getSessionIdFromClient(): string {
+    const context = this._client.getContextHandle();
+    return context.getSession().data.sessionID;
   }
 
   private _recTime(now: number = Date.now()): number {

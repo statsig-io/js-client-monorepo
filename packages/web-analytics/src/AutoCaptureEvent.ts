@@ -22,3 +22,19 @@ export type AutoCaptureEventName =
 export type AutoCaptureEvent = StatsigEvent & {
   eventName: AutoCaptureEventName;
 };
+
+const USER_ACTION_EVENTS = new Set<AutoCaptureEventName>([
+  AutoCaptureEventName.PAGE_VIEW,
+  AutoCaptureEventName.PAGE_VIEW_END,
+  AutoCaptureEventName.SESSION_START,
+  AutoCaptureEventName.FORM_SUBMIT,
+  AutoCaptureEventName.CLICK,
+  AutoCaptureEventName.RAGE_CLICK,
+  AutoCaptureEventName.COPY,
+]);
+
+export const isUserActionAutoCaptureEvent = (
+  eventName: AutoCaptureEventName,
+): boolean => {
+  return USER_ACTION_EVENTS.has(eventName);
+};

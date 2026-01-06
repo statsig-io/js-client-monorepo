@@ -32,7 +32,7 @@ module.exports = [
   // On Device Eval
   {
     name: 'statsig-js-on-device-eval-client.min.js',
-    limit: '20 kB',
+    limit: '21 kB',
     path: 'dist/packages/combo/build/js-on-device-eval-client/statsig-js-on-device-eval-client.min.js',
     import: '{ StatsigClient }',
     ignore: ['rrwebRecord'],

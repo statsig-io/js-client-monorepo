@@ -96,7 +96,7 @@ export class TriggeredSessionReplay extends SessionReplayBase {
       if (this._wasStopped) {
         return;
       }
-      const values = this._client.getContext().values;
+      const values = this._client.getContextHandle().values;
       const passedTargeting = values?.passes_session_recording_targeting;
       if (
         passedTargeting === false ||
@@ -154,7 +154,7 @@ export class TriggeredSessionReplay extends SessionReplayBase {
     if (this._wasStopped) {
       return;
     }
-    const values = this._client.getContext().values;
+    const values = this._client.getContextHandle().values;
     const passedTargeting = values?.passes_session_recording_targeting;
     if (
       passedTargeting === false ||
@@ -277,7 +277,7 @@ export class TriggeredSessionReplay extends SessionReplayBase {
   }
 
   protected _attemptToStartRollingWindow(): void {
-    const values = this._client.getContext().values;
+    const values = this._client.getContextHandle().values;
 
     if (values?.passes_session_recording_targeting === false) {
       this._shutdown();
@@ -302,7 +302,7 @@ export class TriggeredSessionReplay extends SessionReplayBase {
     if (this._totalLogs >= MAX_LOGS) {
       return;
     }
-    const values = this._client.getContext().values;
+    const values = this._client.getContextHandle().values;
 
     if (values?.recording_blocked === true) {
       this._shutdown();

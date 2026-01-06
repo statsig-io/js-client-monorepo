@@ -8,6 +8,7 @@ import {
   ReplaySessionData,
   SessionReplayClient,
 } from '../SessionReplayClient';
+import { mockClientContext } from '../testUtils/mockClientContext';
 
 const DUMMY_DATA = 'a'.repeat(512 * 1024);
 
@@ -45,13 +46,16 @@ describe('Session Replay Force', () => {
     client = MockRemoteServerEvalClient.create();
     client.flush.mockResolvedValue();
 
-    const ctx = {
-      errorBoundary: { wrap: jest.fn() },
-      values: { session_recording_rate: 1, can_record_session: true },
-      session: { data: { sessionID: 'my-session-id' } },
-    } as any;
-
-    client.getContext.mockReturnValue(ctx);
+    mockClientContext(
+      client,
+      {
+        session_recording_rate: 1,
+        can_record_session: true,
+      },
+      {
+        session: { data: { sessionID: 'my-session-id' } },
+      },
+    );
 
     sessionReplay = new SessionReplay(client);
     replayer = (sessionReplay as any)._replayer;

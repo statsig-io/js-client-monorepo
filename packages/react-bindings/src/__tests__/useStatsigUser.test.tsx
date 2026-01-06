@@ -34,6 +34,9 @@ describe('useStatsigUser', () => {
       updateUserSync: jest.fn().mockReturnValue({}),
       updateUserAsync: jest.fn().mockReturnValue(Promise.resolve({})),
       getContext: jest.fn().mockReturnValue({ user: { userID: 'test-user' } }),
+      getContextHandle: jest.fn().mockReturnValue({
+        user: { userID: 'test-user' },
+      }),
       $on: jest.fn().mockImplementation((event, callback) => {
         if (event === 'values_updated') {
           valuesUpdated = jest.fn(callback);

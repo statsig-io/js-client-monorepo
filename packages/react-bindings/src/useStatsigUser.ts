@@ -21,7 +21,7 @@ export type UseStatsigUserResult = {
 };
 
 function getClientUser(client: PrecomputedEvaluationsInterface) {
-  const context = client.getContext();
+  const context = client.getContextHandle();
   return context.user;
 }
 

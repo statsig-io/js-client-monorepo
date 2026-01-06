@@ -11,7 +11,13 @@ import {
   AnyInitializeResponse,
   ClientInitializeResponseOptions,
 } from './InitializeResponse';
-import { StatsigSession } from './SessionID';
+import { Log } from './Log';
+import { _cloneObject } from './SafeJs';
+import {
+  StatsigSession,
+  StatsigSession as StatsigSessionType,
+} from './SessionID';
+import { StableID } from './StableID';
 import { StatsigClientEventEmitterInterface } from './StatsigClientEventEmitter';
 import { EvaluationsDataAdapter, SpecsDataAdapter } from './StatsigDataAdapter';
 import { StatsigEvent } from './StatsigEvent';
@@ -107,6 +113,7 @@ export interface PrecomputedEvaluationsInterface
   readonly dataAdapter: EvaluationsDataAdapter;
 
   getContext(): PrecomputedEvaluationsContext;
+  getContextHandle(): PrecomputedEvaluationsContextHandle;
   updateUserSync(user: StatsigUser): StatsigUpdateDetails;
   updateUserAsync(user: StatsigUser): Promise<StatsigUpdateDetails>;
   checkGate(name: string, options?: FeatureGateEvaluationOptions): boolean;
@@ -138,3 +145,92 @@ export interface PrecomputedEvaluationsInterface
 export type StatsigClientInterface =
   | OnDeviceEvaluationsInterface
   | PrecomputedEvaluationsInterface;
+
+/**
+ * A handle to the PrecomputedEvaluationsContext that computes fields lazily on access.
+ * This avoids unnecessary computation (e.g., cloning the user) when only certain fields are needed.
+ * The handle is created once and reused; individual getters fetch current values on each access.
+ */
+export class PrecomputedEvaluationsContextHandle {
+  private _sdkKey: string;
+  private _getOptions: () => AnyStatsigOptions;
+  private _getErrorBoundary: () => ErrorBoundary;
+  private _getValues: () => AnyInitializeResponse | null;
+  private _getUser: () => StatsigUser;
+  private _getSdkInstanceID: () => string;
+
+  constructor(
+    sdkKey: string,
+    getOptions: () => AnyStatsigOptions,
+    getErrorBoundary: () => ErrorBoundary,
+    getValues: () => AnyInitializeResponse | null,
+    getUser: () => StatsigUser,
+    getSdkInstanceID: () => string,
+  ) {
+    this._sdkKey = sdkKey;
+    this._getOptions = getOptions;
+    this._getErrorBoundary = getErrorBoundary;
+    this._getValues = getValues;
+    this._getUser = getUser;
+    this._getSdkInstanceID = getSdkInstanceID;
+  }
+
+  get sdkKey(): string {
+    return this._sdkKey;
+  }
+
+  get options(): AnyStatsigOptions {
+    return this._getOptions();
+  }
+
+  get errorBoundary(): ErrorBoundary {
+    return this._getErrorBoundary();
+  }
+
+  get values(): AnyInitializeResponse | null {
+    return this._getValues();
+  }
+
+  get user(): StatsigUser {
+    let user: StatsigUser | null = _cloneObject('StatsigUser', this._getUser());
+    if (user == null) {
+      Log.error('Failed to clone user');
+      user = {};
+    }
+    return user;
+  }
+
+  /**
+   * Gets the current session.
+   * @param {boolean} [bumpSession=true] - Whether to bump/update the session timing. Set to false to read without affecting session state.
+   */
+  getSession(bumpSession = true): StatsigSessionType {
+    return StatsigSession.get(this._sdkKey, bumpSession);
+  }
+
+  get stableID(): string | null {
+    return StableID.get(this._sdkKey);
+  }
+
+  get sdkInstanceID(): string {
+    return this._getSdkInstanceID();
+  }
+
+  /**
+   * Returns the full PrecomputedEvaluationsContext object.
+   * Use this when you need all fields at once.
+   * @param {boolean} [bumpSession=true] - Whether to bump the session when building the context.
+   */
+  toContext(bumpSession = true): PrecomputedEvaluationsContext {
+    return {
+      sdkKey: this.sdkKey,
+      options: this.options,
+      values: this.values,
+      user: this.user,
+      errorBoundary: this.errorBoundary,
+      session: this.getSession(bumpSession),
+      stableID: this.stableID,
+      sdkInstanceID: this.sdkInstanceID,
+    };
+  }
+}
