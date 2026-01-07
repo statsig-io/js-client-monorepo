@@ -1,5 +1,6 @@
 import 'jest-fetch-mock';
 import {
+  InitResponseStableID,
   MockLocalStorage,
   anyObject,
   anyStringContaining,
@@ -125,6 +126,45 @@ describe('Stable ID Disabled Tests', () => {
       expect(gate.details.reason).toBe('Bootstrap:Recognized');
       expect(gate.details.reason).not.toBe(
         'BootstrapStableIDMismatch:Recognized',
+      );
+    });
+  });
+
+  describe('When bootstrapping with stableID and disableStableID is set', () => {
+    let client: StatsigClient;
+
+    beforeAll(() => {
+      fetchMock.mockClear();
+      storage.clear();
+
+      client = new StatsigClient(
+        'client-key',
+        {
+          userID: 'a-user',
+        },
+        {
+          disableStableID: true,
+          disableStatsigEncoding: true,
+        },
+      );
+
+      client.dataAdapter.setDataLegacy(
+        JSON.stringify({ ...InitResponseStableID, time: 1743809566095 }),
+        { userID: 'a-user' },
+      );
+
+      client.initializeSync();
+    });
+
+    afterAll(async () => {
+      await client.shutdown();
+    });
+
+    it('does not treat stableID as a bootstrap mismatch', () => {
+      const gate = client.getFeatureGate('610600137');
+      expect(gate.details.reason).toBe('Bootstrap:Recognized');
+      expect(gate.details.reason).not.toBe(
+        'BootstrapPartialUserMatch:Recognized',
       );
     });
   });

@@ -114,7 +114,7 @@ export default class StatsigClient
       options,
     );
 
-    this._store = new EvaluationStore(sdkKey);
+    this._store = new EvaluationStore(sdkKey, options ?? null);
     this._network = network;
     this._user = this._configureUser(user, options);
     this._sdkInstanceID = getUUID();

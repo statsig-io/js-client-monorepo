@@ -22,6 +22,7 @@ import {
 } from '@statsig/client-core';
 
 import { InitializeContainer } from './InitializeContainer';
+import type { StatsigOptions } from './StatsigOptions';
 import { V1InitializeContainer } from './V1InitializeContainer';
 import { V2InitializeContainer } from './V2InitializeContainer';
 
@@ -34,7 +35,10 @@ export default class EvaluationStore {
   private _bootstrapMetadata: BootstrapMetadata | null = null;
   private _warnings: Set<StatsigWarnings> = new Set();
 
-  constructor(private _sdkKey: string) {}
+  constructor(
+    private _sdkKey: string,
+    private _options: StatsigOptions | null,
+  ) {}
 
   reset(): void {
     this._values = null;
@@ -196,12 +200,29 @@ export default class EvaluationStore {
       return;
     }
     if ('user' in values) {
-      const bootstrapUser = values['user'] as StatsigUser;
-      const userForComparison = {
+      let bootstrapUser = values['user'] as StatsigUser;
+      let userForComparison = {
         ...user,
         analyticsOnlyMetadata: undefined,
         privateAttributes: undefined,
       };
+
+      if (this._options?.disableStableID) {
+        userForComparison = {
+          ...userForComparison,
+          customIDs: {
+            ...userForComparison.customIDs,
+            stableID: undefined,
+          },
+        };
+        bootstrapUser = {
+          ...bootstrapUser,
+          customIDs: {
+            ...bootstrapUser.customIDs,
+            stableID: undefined,
+          },
+        };
+      }
       if (
         _getFullUserHash(userForComparison) !== _getFullUserHash(bootstrapUser)
       ) {
