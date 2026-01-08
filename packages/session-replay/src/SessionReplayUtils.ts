@@ -84,6 +84,26 @@ export function getNewRRWebConfigWithPrivacySettings(
     return value.replace(/./g, '*');
   };
 
+  function getNearestPrivacyMatch(
+    element: HTMLElement,
+    maskedSelectors: string[] = [],
+    unmaskedSelectors: string[] = [],
+  ): 'masked' | 'unmasked' | null {
+    let current: HTMLElement | null = element;
+
+    while (current !== null) {
+      if (maskedSelectors.some((sel) => current?.matches(sel))) {
+        return 'masked';
+      }
+      if (unmaskedSelectors.some((sel) => current?.matches(sel))) {
+        return 'unmasked';
+      }
+      current = current.parentElement;
+    }
+
+    return null;
+  }
+
   const blockSelector = privacySettings.blocked_elements
     ? privacySettings.blocked_elements.join(', ')
     : undefined;
@@ -92,13 +112,17 @@ export function getNewRRWebConfigWithPrivacySettings(
       return privacySettings.privacy_mode === 'max' ? maskValue(value) : value;
     }
 
-    if (privacySettings.masked_elements?.some((sel) => element.closest(sel))) {
+    const nearest = getNearestPrivacyMatch(
+      element,
+      privacySettings.masked_elements,
+      privacySettings.unmasked_elements,
+    );
+
+    if (nearest === 'masked') {
       return maskValue(value);
     }
 
-    if (
-      privacySettings.unmasked_elements?.some((sel) => element.closest(sel))
-    ) {
+    if (nearest === 'unmasked') {
       return value;
     }
 
