@@ -327,10 +327,18 @@ export class TriggeredSessionReplay extends SessionReplayBase {
       return;
     }
 
-    const newRRWebConfig = getNewRRWebConfigWithPrivacySettings(
-      this._options?.rrwebConfig ?? {},
-      values?.session_recording_privacy_settings ?? {},
-    );
+    const usePrivacySettings =
+      values?.session_recording_privacy_settings &&
+      (values?.session_recording_privacy_settings.privacy_mode !== 'min' ||
+        values?.session_recording_privacy_settings.blocked_elements ||
+        values?.session_recording_privacy_settings.masked_elements ||
+        values?.session_recording_privacy_settings.unmasked_elements);
+    const newRRWebConfig = usePrivacySettings
+      ? getNewRRWebConfigWithPrivacySettings(
+          this._options?.rrwebConfig ?? {},
+          values?.session_recording_privacy_settings ?? {},
+        )
+      : this._options?.rrwebConfig ?? {};
 
     this._replayer.record(
       (e, d, isCheckOut) => this._onRecordingEvent(e, d, isCheckOut),
