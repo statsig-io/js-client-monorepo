@@ -158,10 +158,10 @@ describe('SessionID', () => {
       storageMock.data[STORAGE_KEY] = JSON.stringify({
         sessionID: existingSessionID,
         startTime: Date.now(),
-        lastUpdate: 0,
+        lastUpdate: 1,
       });
 
-      sessionID = await SessionID.get(SDK_KEY);
+      sessionID = await getSessionIDIgnoringInMemoryCache(SDK_KEY);
     });
 
     it('does not match what is in storage', async () => {
@@ -173,7 +173,7 @@ describe('SessionID', () => {
     });
 
     it('returns the new value when queried again', async () => {
-      const again = await SessionID.get(SDK_KEY);
+      const again = await getSessionIDIgnoringInMemoryCache(SDK_KEY);
       expect(again).toBe(sessionID);
     });
   });
@@ -203,7 +203,8 @@ describe('SessionID', () => {
 
     it('calls emit function after age timeout', async () => {
       await getSessionIDIgnoringInMemoryCache(SDK_KEY);
-      jest.advanceTimersByTime(1);
+      jest.advanceTimersByTime(2);
+      await getSessionIDIgnoringInMemoryCache(SDK_KEY);
 
       expect(client.$emt).toHaveBeenCalledTimes(1);
       expect(client.$emt).toHaveBeenCalledWith({ name: 'session_expired' });
@@ -234,8 +235,9 @@ describe('SessionID', () => {
     });
 
     it('calls emit function after idle timeout', async () => {
-      await SessionID.get(SDK_KEY);
+      await getSessionIDIgnoringInMemoryCache(SDK_KEY);
       jest.advanceTimersByTime(MAX_SESSION_IDLE_TIME + 1);
+      await getSessionIDIgnoringInMemoryCache(SDK_KEY); // need to use get to trigger idle check since no event logger background interval
 
       expect(client.$emt).toHaveBeenCalledTimes(1);
       expect(client.$emt).toHaveBeenCalledWith({ name: 'session_expired' });

@@ -4,6 +4,7 @@ import { Log } from './Log';
 import { Endpoint, NetworkParam } from './NetworkConfig';
 import { NetworkCore, RequestArgsWithData } from './NetworkCore';
 import { _getCurrentPageUrlSafe, _isServerEnv } from './SafeJs';
+import { StatsigSession } from './SessionID';
 import { StatsigClientEmitEventFunc } from './StatsigClientBase';
 import { StatsigEventInternal, _isExposureEvent } from './StatsigEvent';
 import {
@@ -424,6 +425,7 @@ export class EventLogger {
         clearInterval(intervalId);
       } else {
         EventLogger._safeFlushAndForget(this._sdkKey);
+        StatsigSession.checkForIdleSession(this._sdkKey);
       }
     }, flushInterval);
     this._flushIntervalId = intervalId;

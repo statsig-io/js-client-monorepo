@@ -1,6 +1,7 @@
 import { _getDocumentSafe, _getWindowSafe } from '@statsig/client-core';
 
 const PAGE_INACTIVE_TIMEOUT = 600000; // 10 minutes
+const BUMP_THROTTLE_MS = 1000;
 
 export class EngagementManager {
   private _lastScrollY = 0;
@@ -11,6 +12,7 @@ export class EngagementManager {
   private _inactiveTimer: number | null = null;
   private _onInactivityCallback: (() => void) | null = null;
   private _meaningfulEngagementOccurred = false;
+  private _lastBumpTime = 0;
 
   constructor() {
     this._initializeScrollTracking();
@@ -83,6 +85,12 @@ export class EngagementManager {
     if (!win) {
       return;
     }
+
+    const now = Date.now();
+    if (now - this._lastBumpTime < BUMP_THROTTLE_MS) {
+      return;
+    }
+    this._lastBumpTime = now;
 
     if (this._inactiveTimer) {
       clearTimeout(this._inactiveTimer);

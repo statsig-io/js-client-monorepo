@@ -67,6 +67,8 @@ const context = {
   session: {
     data: { sessionID: '', startTime: 0, lastUpdate: 0 },
     sdkKey: '',
+    lastPersistedAt: 0,
+    storageKey: '',
   },
   stableID: '',
   storageProvider: Storage,

@@ -33,6 +33,8 @@ export type MockContextOverrides = Partial<PrecomputedEvaluationsContext>;
 const DEFAULT_SESSION: StatsigSession = {
   data: { sessionID: 'test-session-id', startTime: 0, lastUpdate: 0 },
   sdkKey: '',
+  lastPersistedAt: 0,
+  storageKey: '',
 };
 
 /**

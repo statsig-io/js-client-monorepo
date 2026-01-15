@@ -1,10 +1,8 @@
-import { _getStatsigGlobal } from './$_StatsigGlobal';
 import { _getStorageKey } from './CacheKey';
 import { Log } from './Log';
 import { _getObjectFromStorage, _setObjectInStorage } from './StorageProvider';
 import { getUUID } from './UUID';
-
-type SessionTimeoutID = ReturnType<typeof setTimeout>;
+import { _subscribeToVisiblityChanged } from './VisibilityObserving';
 
 type SessionData = {
   sessionID: string;
@@ -15,13 +13,21 @@ type SessionData = {
 export type StatsigSession = {
   data: SessionData;
   sdkKey: string;
-  ageTimeoutID?: SessionTimeoutID;
-  idleTimeoutID?: SessionTimeoutID;
+  lastPersistedAt: number;
+  storageKey: string;
 };
 
 const MAX_SESSION_IDLE_TIME = 30 * 60 * 1000; // 30 minutes
 const MAX_SESSION_AGE = 4 * 60 * 60 * 1000; // 4 hours
-const PROMISE_MAP: Record<string, StatsigSession> = {};
+const PERSIST_THROTTLE_MS = 15_000;
+
+const SESSION_MAP: Record<string, StatsigSession> = {};
+
+_subscribeToVisiblityChanged((visibility) => {
+  if (visibility === 'background') {
+    Object.values(SESSION_MAP).forEach((session) => _persistNow(session));
+  }
+});
 
 export const SessionID = {
   get: (sdkKey: string): string => {
@@ -31,90 +37,70 @@ export const SessionID = {
 
 export const StatsigSession = {
   get: (sdkKey: string, bumpSession = true): StatsigSession => {
-    if (PROMISE_MAP[sdkKey] == null) {
-      PROMISE_MAP[sdkKey] = _loadSession(sdkKey);
+    if (SESSION_MAP[sdkKey] == null) {
+      SESSION_MAP[sdkKey] = _loadOrCreateSharedSession(sdkKey);
     }
 
-    const session = PROMISE_MAP[sdkKey];
-    return bumpSession ? _bumpSession(session) : session;
+    const session = SESSION_MAP[sdkKey];
+    return _maybeBumpSession(session, bumpSession);
   },
 
   overrideInitialSessionID: (override: string, sdkKey: string): void => {
-    PROMISE_MAP[sdkKey] = _overrideSessionId(override, sdkKey);
+    const now = Date.now();
+
+    const session: StatsigSession = {
+      data: {
+        sessionID: override,
+        startTime: now,
+        lastUpdate: now,
+      },
+      sdkKey,
+      lastPersistedAt: Date.now(),
+      storageKey: _getSessionIDStorageKey(sdkKey),
+    };
+    _persistNow(session);
+    SESSION_MAP[sdkKey] = session;
+  },
+
+  checkForIdleSession: (sdkKey: string): void => {
+    const session = SESSION_MAP[sdkKey];
+    if (!session) {
+      return;
+    }
+    const sessionExpired = _checkForExpiredSession(session);
+    if (sessionExpired) {
+      _persistNow(session);
+    }
   },
 };
 
-function _loadSession(sdkKey: string): StatsigSession {
-  let data = _loadFromStorage(sdkKey);
-  const now = Date.now();
-  if (!data) {
-    data = {
-      sessionID: getUUID(),
-      startTime: now,
-      lastUpdate: now,
-    };
-  }
-
-  return {
-    data,
-    sdkKey,
-  };
-}
-
-function _overrideSessionId(override: string, sdkKey: string): StatsigSession {
-  const now = Date.now();
-  return {
-    data: {
-      sessionID: override,
-      startTime: now,
-      lastUpdate: now,
-    },
-    sdkKey,
-  };
-}
-
-function _bumpSession(session: StatsigSession): StatsigSession {
+function _maybeBumpSession(
+  session: StatsigSession,
+  allowSessionBump: boolean,
+): StatsigSession {
   const now = Date.now();
 
-  const data = session.data;
-  const sdkKey = session.sdkKey;
-  const sessionExpired = _isIdle(data) || _hasRunTooLong(data);
-  if (sessionExpired) {
-    data.sessionID = getUUID();
-    data.startTime = now;
-  }
-
-  data.lastUpdate = now;
-  _persistToStorage(data, session.sdkKey);
-
-  clearTimeout(session.idleTimeoutID);
-  clearTimeout(session.ageTimeoutID);
-
-  const lifetime = now - data.startTime;
-
-  session.idleTimeoutID = _createSessionTimeout(sdkKey, MAX_SESSION_IDLE_TIME);
-  session.ageTimeoutID = _createSessionTimeout(
-    sdkKey,
-    MAX_SESSION_AGE - lifetime,
-  );
+  const sessionExpired = _checkForExpiredSession(session);
 
   if (sessionExpired) {
-    __STATSIG__?.instance(sdkKey)?.$emt({ name: 'session_expired' });
+    _persistNow(session);
+  } else if (allowSessionBump) {
+    session.data.lastUpdate = now;
+    _persistThrottled(session);
   }
 
   return session;
 }
 
-function _createSessionTimeout(
-  sdkKey: string,
-  duration: number,
-): SessionTimeoutID {
-  return setTimeout(() => {
-    const client = _getStatsigGlobal()?.instance(sdkKey);
-    if (client) {
-      client.$emt({ name: 'session_expired' });
-    }
-  }, duration);
+function _checkForExpiredSession(session: StatsigSession): boolean {
+  const data = session.data;
+  const sessionExpired = _isIdle(data) || _hasRunTooLong(data);
+  if (sessionExpired) {
+    session.data = _newSessionData();
+
+    __STATSIG__?.instance(session.sdkKey)?.$emt({ name: 'session_expired' });
+  }
+  return sessionExpired;
 }
 
 function _isIdle({ lastUpdate }: SessionData): boolean {
@@ -129,16 +115,52 @@ function _getSessionIDStorageKey(sdkKey: string): string {
   return `statsig.session_id.${_getStorageKey(sdkKey)}`;
 }
 
-function _persistToStorage(session: SessionData, sdkKey: string) {
-  const storageKey = _getSessionIDStorageKey(sdkKey);
+function _persistNow(session: StatsigSession) {
   try {
-    _setObjectInStorage(storageKey, session);
+    _setObjectInStorage(session.storageKey, session.data);
+    session.lastPersistedAt = Date.now();
   } catch (e) {
     Log.warn('Failed to save SessionID');
   }
 }
 
-function _loadFromStorage(sdkKey: string) {
+function _persistThrottled(session: StatsigSession): void {
+  const now = Date.now();
+  if (now - session.lastPersistedAt > PERSIST_THROTTLE_MS) {
+    _persistNow(session);
+  }
+}
+
+function _loadSessionFromStorage(storageKey: string) {
+  const data = _getObjectFromStorage<SessionData>(storageKey);
+  return data;
+}
+
+function _loadOrCreateSharedSession(sdkKey: string): StatsigSession {
   const storageKey = _getSessionIDStorageKey(sdkKey);
-  return _getObjectFromStorage<SessionData>(storageKey);
+  const existing = _loadSessionFromStorage(storageKey);
+
+  if (
+    existing &&
+    existing.sessionID &&
+    existing.startTime &&
+    existing.lastUpdate
+  ) {
+    return { data: existing, sdkKey, lastPersistedAt: 0, storageKey };
+  }
+
+  return {
+    data: _newSessionData(),
+    sdkKey,
+    lastPersistedAt: 0,
+    storageKey,
+  };
+}
+
+function _newSessionData(): SessionData {
+  return {
+    sessionID: getUUID(),
+    startTime: Date.now(),
+    lastUpdate: Date.now(),
+  };
 }

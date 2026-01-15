@@ -109,6 +109,11 @@ export default function Index(): React.ReactElement {
             </a>
           </button>
         </li>
+        <li>
+          <button>
+            <a href="/profiling">DOM Events Profiling (Chrome DevTools)</a>
+          </button>
+        </li>
       </ul>
     </div>
   );
