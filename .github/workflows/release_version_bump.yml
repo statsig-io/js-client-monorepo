@@ -1,6 +1,11 @@
-name: Update Official Versions in Statsig Projects
+name: Update JsMono Versions in Statsig Projects
 
 on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Enter JsMono tag manually'
+        required: false
   release:
     types: [published]
 
@@ -122,6 +127,8 @@ jobs:
       - name: Wait until PR is auto-merged
         id: check_pr
         if: steps.create_pr.outputs.pull-request-number != ''
+        env:
+          GH_TOKEN: ${{ secrets.ROIM }}
         run: |
           pr_number=${{ steps.create_pr.outputs.pull-request-number }}
           repo="statsig-io/statsig"
@@ -138,8 +145,6 @@ jobs:
           done
           echo "⏰ Timeout waiting for auto-merge."
           echo "merge_result=timeout" >> $GITHUB_OUTPUT
-        env:
-          GH_TOKEN: ${{ secrets.ROIM }}
 
       - name: Notify Slack about new PR
         if: steps.create_pr.outputs.pull-request-url != ''
