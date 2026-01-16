@@ -11,23 +11,26 @@ on:
 
 jobs:
   update-js-mono-version:
-    if: github.event_name == 'workflow_dispatch' || github.event_name == 'release')
+    if: github.event_name == 'workflow_dispatch' || github.event_name == 'release'
     timeout-minutes: 60
     runs-on: ubuntu-latest
+
     steps:
       - name: Resolve Release version from event
         id: ver_res
         shell: bash
         run: |
+          set -euo pipefail
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-              TAG="${{ github.event.inputs.tag }}"
-              if [ -z "$TAG" ]; then
-                echo "❌ No tag provided via workflow_dispatch input."
-                exit 1
-              fi
+            TAG="${{ github.event.inputs.tag }}"
+            if [ -z "$TAG" ]; then
+              echo "❌ No tag provided via workflow_dispatch input."
+              exit 1
+            fi
           else
             TAG="${{ github.event.release.tag_name }}"
           fi
+
           VER="${TAG#v}"
           echo "version=$VER" >> "$GITHUB_OUTPUT"
           echo "Using version: $VER"
@@ -71,9 +74,11 @@ jobs:
           node-version: '23'
 
       - name: Install pnpm
+        shell: bash
         run: npm install -g pnpm
 
       - name: Install dependencies
+        shell: bash
         run: pnpm install
 
       - name: Bump JsMono Package Versions
@@ -89,7 +94,6 @@ jobs:
           NEW_VER="${{ steps.ver_res.outputs.version }}"
           echo "Updating to version $NEW_VER for: $pkgs"
 
-          # Use pnpm to update all target packages in the overall repo (workspace)
           pnpm update $pkgs --workspace-root --no-save --force --include=optional
 
           echo "Changed files:"
@@ -129,64 +133,65 @@ jobs:
         if: steps.create_pr.outputs.pull-request-number != ''
         env:
           GH_TOKEN: ${{ secrets.ROIM }}
+        shell: bash
         run: |
+          set -euo pipefail
           pr_number=${{ steps.create_pr.outputs.pull-request-number }}
           repo="statsig-io/statsig"
           echo "⏳ Waiting for PR #$pr_number to be auto-merged..."
           for i in {1..60}; do
-            merged=$(gh pr view $pr_number --repo $repo --json mergedAt,state -q 'if .mergedAt != null or .state=="MERGED" then "true" else "false" end' || echo "false")
+            merged=$(gh pr view "$pr_number" --repo "$repo" --json mergedAt,state -q 'if .mergedAt != null or .state=="MERGED" then "true" else "false" end' || echo "false")
             if [ "$merged" = "true" ]; then
               echo "✅ PR #$pr_number has been merged!"
-              echo "merge_result=success" >> $GITHUB_OUTPUT
+              echo "merge_result=success" >> "$GITHUB_OUTPUT"
               exit 0
             fi
             echo "Still waiting... (attempt $i)"
             sleep 30
           done
           echo "⏰ Timeout waiting for auto-merge."
-          echo "merge_result=timeout" >> $GITHUB_OUTPUT
+          echo "merge_result=timeout" >> "$GITHUB_OUTPUT"
 
       - name: Notify Slack about new PR
         if: steps.create_pr.outputs.pull-request-url != ''
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SDK_SLACK_WEBHOOK_URL }}
-          run: |
-            pr_url="${{ steps.create_pr.outputs.pull-request-url }}"
-            pr_title="[automated][js-mono] bump statsig packages to new release"
-            jsmono_version="${{ steps.ver_res.outputs.version }}"
-            actor="${{ github.actor }}"
-            repo="statsig-io/statsig"
-            branch="bump_official_release_${{ steps.ver_res.outputs.version }}_${{ github.run_id }}"
-            merge_result="${{ steps.check_pr.outputs.merge_result }}"
+        shell: bash
+        run: |
+          set -euo pipefail
+          pr_url="${{ steps.create_pr.outputs.pull-request-url }}"
+          jsmono_version="${{ steps.ver_res.outputs.version }}"
+          actor="${{ github.actor }}"
+          repo="statsig-io/statsig"
+          branch="bump_official_release_${jsmono_version}_${{ github.run_id }}"
+          merge_result="${{ steps.check_pr.outputs.merge_result }}"
 
-            if [ "$merge_result" = "success" ]; then
-              color="#36a64f"
-              text="✅ *${actor}*'s JsMono Release bump PR for *${jsmono_version}* passed all checks and was *auto-merged* into *${repo}*."
-            else
-              color="#ff9f00"
-              text="⚠️ *${actor}*'s JsMono Release bump PR for *${jsmono_version}* failed some checks or auto-merge did not occur.\nPlease review manually."
-            fi
+          if [ "$merge_result" = "success" ]; then
+            color="#36a64f"
+            text="✅ *${actor}*'s JsMono Release bump PR for *${jsmono_version}* passed all checks and was *auto-merged* into *${repo}*."
+          else
+            color="#ff9f00"
+            text="⚠️ *${actor}*'s JsMono Release bump PR for *${jsmono_version}* failed some checks or auto-merge did not occur.\nPlease review manually."
+          fi
 
-            payload=$(cat <<EOF
-            {
-              "attachments": [
-                {
-                  "color": "${color}",
-                  "title": ":rocket: JsMono Release Bump Status Update",
-                  "text": "${text}\n<${pr_url}|View PR>",
-                  "fields": [
-                    { "title": "JsMono Version", "value": "${jsmono_version}", "short": true },
-                    { "title": "Branch", "value": "${branch}", "short": true },
-                    { "title": "Repository", "value": "${repo}", "short": true }
-                  ],
-                  "footer": "Posted by 🚀 SDKbot",
-                  "ts": $(date +%s)
-                }
-              ]
-            }
-            EOF
-            )
+          payload=$(cat <<EOF
+          {
+            "attachments": [
+              {
+                "color": "${color}",
+                "title": ":rocket: JsMono Release Bump Status Update",
+                "text": "${text}\n<${pr_url}|View PR>",
+                "fields": [
+                  { "title": "JsMono Version", "value": "${jsmono_version}", "short": true },
+                  { "title": "Branch", "value": "${branch}", "short": true },
+                  { "title": "Repository", "value": "${repo}", "short": true }
+                ],
+                "footer": "Posted by 🚀 SDKbot",
+                "ts": $(date +%s)
+              }
+            ]
+          }
+          EOF
+          )
 
-            curl -X POST -H 'Content-type: application/json' \
-              --data "$payload" \
-              "$SLACK_WEBHOOK_URL"
+          curl -X POST -H 'Content-type: application/json' --data "$payload" "$SLACK_WEBHOOK_URL"
