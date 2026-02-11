@@ -18,7 +18,7 @@ permissions:
 jobs:
   lint:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v3
       - uses: ./.github/actions/setup-action
@@ -26,7 +26,7 @@ jobs:
 
   build:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     env:
       CI_JOB_NUMBER: 1
     steps:
@@ -54,7 +54,7 @@ jobs:
 
   test:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v3
       - uses: ./.github/actions/setup-action
@@ -63,7 +63,7 @@ jobs:
           pnpm exec nx run statsig-combo:test --testPathPattern=MemoryLeak.test.ts
   e2e:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     steps:
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps
