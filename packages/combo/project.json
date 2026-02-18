@@ -18,6 +18,10 @@
     },
     "copy-js-min-bundles": {
       "executor": "nx:run-commands",
+      "outputs": [
+        "{workspaceRoot}/dist/packages/js-client/build",
+        "{workspaceRoot}/dist/packages/js-on-device-eval-client/build"
+      ],
       "options": {
         "commands": [
           "cp -r dist/packages/combo/build/js-client dist/packages/js-client/build",
@@ -39,7 +43,7 @@
     },
     "build-webpack-js-client+session-replay+web-analytics": {
       "executor": "@nx/webpack:webpack",
-      "outputs": ["{options.outputPath}"],
+      "outputs": ["{workspaceRoot}/dist/packages/combo/build/js-client"],
       "defaultConfiguration": "production",
       "options": {
         "statsJson": true,
@@ -58,7 +62,7 @@
     },
     "build-webpack-js-client+web-analytics": {
       "executor": "@nx/webpack:webpack",
-      "outputs": ["{options.outputPath}"],
+      "outputs": ["{workspaceRoot}/dist/packages/combo/build/js-client"],
       "defaultConfiguration": "production",
       "options": {
         "statsJson": true,
@@ -72,7 +76,7 @@
     },
     "build-webpack-js-client+session-replay": {
       "executor": "@nx/webpack:webpack",
-      "outputs": ["{options.outputPath}"],
+      "outputs": ["{workspaceRoot}/dist/packages/combo/build/js-client"],
       "defaultConfiguration": "production",
       "options": {
         "statsJson": true,
@@ -86,7 +90,7 @@
     },
     "build-webpack-js-client": {
       "executor": "@nx/webpack:webpack",
-      "outputs": ["{options.outputPath}"],
+      "outputs": ["{workspaceRoot}/dist/packages/combo/build/js-client"],
       "defaultConfiguration": "production",
       "options": {
         "statsJson": true,
@@ -100,7 +104,9 @@
     },
     "build-webpack-js-on-device-eval-client": {
       "executor": "@nx/webpack:webpack",
-      "outputs": ["{options.outputPath}"],
+      "outputs": [
+        "{workspaceRoot}/dist/packages/combo/build/js-on-device-eval-client"
+      ],
       "defaultConfiguration": "production",
       "options": {
         "statsJson": true,
