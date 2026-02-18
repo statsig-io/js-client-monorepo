@@ -10,7 +10,7 @@ overrides:
   semver@>=7.0.0 <7.5.2: '>=7.5.2'
   webpack-dev-middleware@<=5.3.3: '>=5.3.4'
   yargs-parser@<=5.0.0: '>=5.0.1'
-  tar: '>=7.5.4'
+  tar: '>=7.5.8'
   fast-loops: '>=1.1.4'
   axios: '>=1.8.2'
   body-parser: '>=1.20.3'
@@ -25,6 +25,7 @@ overrides:
   node-forge: '>=1.3.2'
   qs: '>=6.14.1'
   lodash: '>=4.17.23'
+  fast-xml-parser: '>=5.3.6'
 
 importers:
 
@@ -6831,7 +6832,7 @@ packages:
       source-map-support: 0.5.21
       stacktrace-parser: 0.1.10
       structured-headers: 0.4.1
-      tar: 7.5.7
+      tar: 7.5.9
       temp-dir: 2.0.0
       tempy: 0.7.1
       terminal-link: 2.1.1
@@ -6920,7 +6921,7 @@ packages:
       source-map-support: 0.5.21
       stacktrace-parser: 0.1.10
       structured-headers: 0.4.1
-      tar: 7.5.7
+      tar: 7.5.9
       terminal-link: 2.1.1
       undici: 6.22.0
       wrap-ansi: 7.0.0
@@ -10001,7 +10002,7 @@ packages:
       chalk: 4.1.2
       execa: 5.1.1
       fast-glob: 3.3.2
-      fast-xml-parser: 4.3.4
+      fast-xml-parser: 5.3.6
       logkitty: 0.7.1
     transitivePeerDependencies:
       - encoding
@@ -10013,7 +10014,7 @@ packages:
       chalk: 4.1.2
       execa: 5.1.1
       fast-glob: 3.3.2
-      fast-xml-parser: 4.3.4
+      fast-xml-parser: 5.3.6
       logkitty: 0.7.1
     transitivePeerDependencies:
       - encoding
@@ -10026,7 +10027,7 @@ packages:
       chalk: 4.1.2
       execa: 5.1.1
       fast-glob: 3.3.2
-      fast-xml-parser: 4.3.4
+      fast-xml-parser: 5.3.6
       ora: 5.4.1
     transitivePeerDependencies:
       - encoding
@@ -14242,7 +14243,7 @@ packages:
       minipass-pipeline: 1.2.4
       p-map: 4.0.0
       ssri: 10.0.6
-      tar: 7.5.7
+      tar: 7.5.9
       unique-filename: 3.0.0
 
   /cachedir@2.4.0:
@@ -17149,11 +17150,11 @@ packages:
     resolution: {integrity: sha512-Atfo14OibSv5wAp4VWNsFYE1AchQRTv9cBGWET4pZWHzYshFSS9NQI6I57rdKn9croWVMbYFbLhJ+yJvmZIIHw==}
     dev: true
 
-  /fast-xml-parser@4.3.4:
-    resolution: {integrity: sha512-utnwm92SyozgA3hhH2I8qldf2lBqm6qHOICawRNRFu1qMe3+oqr+GcXjGqTmXTMGE5T4eC03kr/rlh5C1IRdZA==}
+  /fast-xml-parser@5.3.6:
+    resolution: {integrity: sha512-QNI3sAvSvaOiaMl8FYU4trnEzCwiRr8XMWgAHzlrWpTSj+QaCSvOf1h82OEP1s4hiAXhnbXSyFWCf4ldZzZRVA==}
     hasBin: true
     dependencies:
-      strnum: 1.0.5
+      strnum: 2.1.2
 
   /fastest-levenshtein@1.0.16:
     resolution: {integrity: sha512-eRnCtTTtGZFpQCwhJiUOuxPQWRXVKYDn0b2PeHfXL6/Zi53SLAzAHfVhVWK2AryC/WH05kGfxhFIPvTF0SXQzg==}
@@ -21573,7 +21574,7 @@ packages:
       nopt: 7.2.1
       proc-log: 3.0.0
       semver: 7.6.3
-      tar: 7.5.7
+      tar: 7.5.9
       which: 4.0.0
     transitivePeerDependencies:
       - supports-color
@@ -22218,7 +22219,7 @@ packages:
       promise-retry: 2.0.1
       sigstore: 2.3.1
       ssri: 10.0.6
-      tar: 7.5.7
+      tar: 7.5.9
     transitivePeerDependencies:
       - bluebird
       - supports-color
@@ -25467,8 +25468,8 @@ packages:
     engines: {node: '>=8'}
     dev: true
 
-  /strnum@1.0.5:
-    resolution: {integrity: sha512-J8bbNyKKXl5qYcR36TIO8W3mVGVHrmmxsd5PAItGkmyzwJvybiw2IVq5nqd0i4LSNSkB/sx9VHllbfFdr9k1JA==}
+  /strnum@2.1.2:
+    resolution: {integrity: sha512-l63NF9y/cLROq/yqKXSLtcMeeyOfnSQlfMSlzFt/K73oIaD8DGaQWd7Z34X9GPiKqP5rbSh84Hl4bOlLcjiSrQ==}
 
   /strong-log-transformer@2.1.0:
     resolution: {integrity: sha512-B3Hgul+z0L9a236FAUC9iZsL+nVHgoCJnqCbN588DjYxvGXaXaaFbfmQ/JhvKjZwsOukuR72XbHv71Qkug0HxA==}
@@ -25730,8 +25731,8 @@ packages:
       - bare-abort-controller
     dev: true
 
-  /tar@7.5.7:
-    resolution: {integrity: sha512-fov56fJiRuThVFXD6o6/Q354S7pnWMJIVlDBYijsTNx6jKSE4pvrDTs6lUnmGvNyfJwFQQwWy3owKz1ucIhveQ==}
+  /tar@7.5.9:
+    resolution: {integrity: sha512-BTLcK0xsDh2+PUe9F6c2TlRp4zOOBMTkoQHQIWSIzI0R7KG46uEwq4OPk2W7bZcprBMsuaeFsqwYr7pjh6CuHg==}
     engines: {node: '>=18'}
     dependencies:
       '@isaacs/fs-minipass': 4.0.1
