@@ -132,6 +132,7 @@ function createStatsigWebpackBundle({
       externals,
       output: {
         filename: `statsig-${bundleFile}.min.js`,
+        clean: false,
         library: {
           type: 'umd',
           name: {

@@ -24,10 +24,14 @@
       ],
       "options": {
         "commands": [
-          "cp -r dist/packages/combo/build/js-client dist/packages/js-client/build",
-          "cp -r dist/packages/combo/build/js-on-device-eval-client dist/packages/js-on-device-eval-client/build"
+          "mkdir -p dist/packages/js-client/build dist/packages/js-on-device-eval-client/build",
+          "cp dist/packages/combo/build/js-client/statsig-js-client.min.js dist/packages/js-client/build/statsig-js-client.min.js",
+          "cp dist/packages/combo/build/js-client/statsig-js-client+session-replay.min.js dist/packages/js-client/build/statsig-js-client+session-replay.min.js",
+          "cp dist/packages/combo/build/js-client/statsig-js-client+web-analytics.min.js dist/packages/js-client/build/statsig-js-client+web-analytics.min.js",
+          "cp dist/packages/combo/build/js-client/statsig-js-client+session-replay+web-analytics.min.js dist/packages/js-client/build/statsig-js-client+session-replay+web-analytics.min.js",
+          "cp dist/packages/combo/build/js-on-device-eval-client/statsig-js-on-device-eval-client.min.js dist/packages/js-on-device-eval-client/build/statsig-js-on-device-eval-client.min.js"
         ],
-        "parallel": true
+        "parallel": false
       },
       "dependsOn": ["build"]
     },
@@ -43,7 +47,10 @@
     },
     "build-webpack-js-client+session-replay+web-analytics": {
       "executor": "@nx/webpack:webpack",
-      "outputs": ["{workspaceRoot}/dist/packages/combo/build/js-client"],
+      "outputs": [
+        "{workspaceRoot}/dist/packages/combo/build/js-client/statsig-js-client+session-replay+web-analytics.min.js",
+        "{workspaceRoot}/dist/packages/combo/build/stats/js-client+session-replay+web-analytics.json"
+      ],
       "defaultConfiguration": "production",
       "options": {
         "statsJson": true,
@@ -62,7 +69,10 @@
     },
     "build-webpack-js-client+web-analytics": {
       "executor": "@nx/webpack:webpack",
-      "outputs": ["{workspaceRoot}/dist/packages/combo/build/js-client"],
+      "outputs": [
+        "{workspaceRoot}/dist/packages/combo/build/js-client/statsig-js-client+web-analytics.min.js",
+        "{workspaceRoot}/dist/packages/combo/build/stats/js-client+web-analytics.json"
+      ],
       "defaultConfiguration": "production",
       "options": {
         "statsJson": true,
@@ -76,7 +86,10 @@
     },
     "build-webpack-js-client+session-replay": {
       "executor": "@nx/webpack:webpack",
-      "outputs": ["{workspaceRoot}/dist/packages/combo/build/js-client"],
+      "outputs": [
+        "{workspaceRoot}/dist/packages/combo/build/js-client/statsig-js-client+session-replay.min.js",
+        "{workspaceRoot}/dist/packages/combo/build/stats/js-client+session-replay.json"
+      ],
       "defaultConfiguration": "production",
       "options": {
         "statsJson": true,
@@ -90,7 +103,10 @@
     },
     "build-webpack-js-client": {
       "executor": "@nx/webpack:webpack",
-      "outputs": ["{workspaceRoot}/dist/packages/combo/build/js-client"],
+      "outputs": [
+        "{workspaceRoot}/dist/packages/combo/build/js-client/statsig-js-client.min.js",
+        "{workspaceRoot}/dist/packages/combo/build/stats/js-client.json"
+      ],
       "defaultConfiguration": "production",
       "options": {
         "statsJson": true,
@@ -105,7 +121,8 @@
     "build-webpack-js-on-device-eval-client": {
       "executor": "@nx/webpack:webpack",
       "outputs": [
-        "{workspaceRoot}/dist/packages/combo/build/js-on-device-eval-client"
+        "{workspaceRoot}/dist/packages/combo/build/js-on-device-eval-client/statsig-js-on-device-eval-client.min.js",
+        "{workspaceRoot}/dist/packages/combo/build/stats/js-on-device-eval-client.json"
       ],
       "defaultConfiguration": "production",
       "options": {
