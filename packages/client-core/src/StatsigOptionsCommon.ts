@@ -138,14 +138,12 @@ export type StatsigOptionsCommon<NetworkConfig extends NetworkConfigCommon> =
     /**
      * The maximum number of events to batch before flushing logs to Statsig.
      *
-     * default: `50`
+     * default: `100`
      */
     loggingBufferMaxSize?: number;
 
     /**
-     * How often (in milliseconds) to flush logs to Statsig.
-     *
-     * default: `10,000 ms` (10 seconds)
+     * @deprecated The event logger now has built in flush timing.
      */
     loggingIntervalMs?: number;
 
