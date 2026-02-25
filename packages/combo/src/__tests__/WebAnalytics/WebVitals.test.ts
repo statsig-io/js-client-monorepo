@@ -163,7 +163,7 @@ describe('WebVitalsManager', () => {
       'client-key',
       { userID: 'test-user' },
       {
-        loggingIntervalMs: 100,
+        loggingBufferMaxSize: 1,
       },
     );
     await client.initializeAsync();

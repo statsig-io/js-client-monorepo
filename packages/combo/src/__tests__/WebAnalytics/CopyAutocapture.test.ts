@@ -31,6 +31,14 @@ describe('CopyAutocapture', () => {
   const requestDataList: Record<string, any>[] = [];
   let copyEventResolver: ((v: unknown) => void) | null = null;
   let testElement: HTMLDivElement;
+  const trackedListeners: Array<{
+    target: Document | Window;
+    type: string;
+    handler: EventListenerOrEventListenerObject;
+    options?: boolean | AddEventListenerOptions;
+  }> = [];
+  let originalDocumentAdd: Document['addEventListener'];
+  let originalWindowAdd: Window['addEventListener'];
 
   function getLastCopyEvent(
     requests: Record<string, any>[],
@@ -50,6 +58,35 @@ describe('CopyAutocapture', () => {
   }
 
   beforeAll(async () => {
+    originalDocumentAdd = document.addEventListener;
+    originalWindowAdd = window.addEventListener;
+    document.addEventListener = function (
+      type: string,
+      listener: EventListenerOrEventListenerObject,
+      options?: boolean | AddEventListenerOptions,
+    ): void {
+      trackedListeners.push({
+        target: document,
+        type,
+        handler: listener,
+        options,
+      });
+      return originalDocumentAdd.call(document, type, listener, options);
+    };
+    window.addEventListener = function (
+      type: string,
+      listener: EventListenerOrEventListenerObject,
+      options?: boolean | AddEventListenerOptions,
+    ): void {
+      trackedListeners.push({
+        target: window,
+        type,
+        handler: listener,
+        options,
+      });
+      return originalWindowAdd.call(window, type, listener, options);
+    };
+
     fetchMock.enableMocks();
     fetchMock.mockResponse(async (r: Request) => {
       const reqData = (await r.json()) as Record<string, any>;
@@ -108,7 +145,7 @@ describe('CopyAutocapture', () => {
       'client-key',
       { userID: 'a-user' },
       {
-        loggingIntervalMs: 100,
+        loggingBufferMaxSize: 1,
       },
     );
     await client.initializeAsync();
@@ -123,6 +160,22 @@ describe('CopyAutocapture', () => {
       document.body.removeChild(testElement);
     }
     copyEventResolver = null;
+    while (trackedListeners.length > 0) {
+      const listener = trackedListeners.pop();
+      if (!listener) {
+        break;
+      }
+      listener.target.removeEventListener(
+        listener.type,
+        listener.handler,
+        listener.options,
+      );
+    }
+  });
+
+  afterAll(() => {
+    document.addEventListener = originalDocumentAdd;
+    window.addEventListener = originalWindowAdd;
   });
 
   it('should log copy events when text is copied', async () => {
@@ -236,8 +289,9 @@ describe('CopyAutocapture', () => {
   });
 
   it('should not capture selected text if captureCopyText is not set', async () => {
+    await client.flush();
     setWindowTextSelection('copy text');
-    runStatsigAutoCapture(client);
+    runStatsigAutoCapture(client, { captureCopyText: false });
 
     const copyEvent = new ClipboardEvent('copy', {
       bubbles: true,

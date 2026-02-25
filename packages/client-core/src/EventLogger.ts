@@ -1,10 +1,14 @@
+import { BatchQueue } from './BatchedEventsQueue';
 import { _getUserStorageKey } from './CacheKey';
+import { ErrorBoundary } from './ErrorBoundary';
+import { EventRetryConstants } from './EventRetryConstants';
+import { FlushCoordinator } from './FlushCoordinator';
 import { _DJB2 } from './Hashing';
 import { Log } from './Log';
-import { Endpoint, NetworkParam } from './NetworkConfig';
-import { NetworkCore, RequestArgsWithData } from './NetworkCore';
+import { Endpoint } from './NetworkConfig';
+import { NetworkCore } from './NetworkCore';
+import { PendingEvents } from './PendingEvents';
 import { _getCurrentPageUrlSafe, _isServerEnv } from './SafeJs';
-import { StatsigSession } from './SessionID';
 import { StatsigClientEmitEventFunc } from './StatsigClientBase';
 import { StatsigEventInternal, _isExposureEvent } from './StatsigEvent';
 import {
@@ -19,24 +23,11 @@ import {
   _setObjectInStorage,
 } from './StorageProvider';
 import { UrlConfiguration } from './UrlConfiguration';
-import {
-  _isUnloading,
-  _subscribeToVisiblityChanged,
-} from './VisibilityObserving';
-
-const DEFAULT_QUEUE_SIZE = 100;
-const DEFAULT_FLUSH_INTERVAL_MS = 10_000;
+import { _subscribeToVisiblityChanged } from './VisibilityObserving';
 
 const MAX_DEDUPER_KEYS = 1000;
 const DEDUPER_WINDOW_DURATION_MS = 600_000;
-const MAX_FAILED_LOGS = 500;
-
-const QUICK_FLUSH_WINDOW_MS = 200;
 const EVENT_LOGGER_MAP: Record<string, EventLogger | undefined> = {};
-
-type SendEventsResponse = {
-  success: boolean;
-};
 
 type StatsigEventExtras = {
   statsigMetadata?: {
@@ -44,18 +35,18 @@ type StatsigEventExtras = {
   };
 };
 
-type EventQueue = (StatsigEventInternal & StatsigEventExtras)[];
-
 export class EventLogger {
-  private _queue: EventQueue = [];
-  private _flushIntervalId: ReturnType<typeof setInterval> | null | undefined;
+  private _pendingEvents: PendingEvents | null = null;
+  private _batchQueue: BatchQueue | null = null;
+  private _flushCoordinator: FlushCoordinator | null = null;
+
   private _lastExposureTimeMap: Record<string, number> = {};
   private _nonExposedChecks: Record<string, number> = {};
-  private _maxQueueSize: number;
-  private _hasRunQuickFlush = false;
-  private _creationTime = Date.now();
   private _loggingEnabled: LoggingEnabledOption;
   private _logEventUrlConfig: UrlConfiguration;
+  private _isShuttingDown = false;
+  private _storageKey: string | null = null;
+  private _pendingCompressionMode: LogEventCompressionMode | null = null;
 
   private static _safeFlushAndForget(sdkKey: string) {
     EVENT_LOGGER_MAP[sdkKey]?.flush().catch(() => {
@@ -63,15 +54,12 @@ export class EventLogger {
     });
   }
 
-  private static _safeRetryFailedLogs(sdkKey: string) {
-    EVENT_LOGGER_MAP[sdkKey]?._retryFailedLogs();
-  }
-
   constructor(
     private _sdkKey: string,
     private _emitter: StatsigClientEmitEventFunc,
     private _network: NetworkCore,
     private _options: StatsigOptionsCommon<NetworkConfigCommon> | null,
+    private _errorBoundary: ErrorBoundary,
   ) {
     this._loggingEnabled =
       _options?.loggingEnabled ??
@@ -83,7 +71,6 @@ export class EventLogger {
         'Detected both loggingEnabled and disableLogging options. loggingEnabled takes precedence - please remove disableLogging.',
       );
     }
-    this._maxQueueSize = _options?.loggingBufferMaxSize ?? DEFAULT_QUEUE_SIZE;
 
     const config = _options?.networkConfig;
     this._logEventUrlConfig = new UrlConfiguration(
@@ -95,21 +82,34 @@ export class EventLogger {
   }
 
   setLogEventCompressionMode(mode: LogEventCompressionMode): void {
-    this._network.setLogEventCompressionMode(mode);
+    if (this._flushCoordinator) {
+      this._flushCoordinator.setLogEventCompressionMode(mode);
+    } else {
+      this._pendingCompressionMode = mode;
+    }
   }
 
   setLoggingEnabled(loggingEnabled: LoggingEnabledOption): void {
-    if (this._loggingEnabled === 'disabled' && loggingEnabled !== 'disabled') {
-      // load any pre consented events into memory
-      const storageKey = this._getStorageKey();
-      const events = _getObjectFromStorage<EventQueue>(storageKey);
-      if (events) {
-        this._queue.push(...events);
-      }
-      Storage.removeItem(storageKey);
-    }
+    const wasDisabled = this._loggingEnabled === 'disabled';
+    const isNowEnabled = loggingEnabled !== 'disabled';
 
     this._loggingEnabled = loggingEnabled;
+    if (this._flushCoordinator) {
+      this._flushCoordinator.setLoggingEnabled(loggingEnabled);
+    }
+
+    if (wasDisabled && isNowEnabled) {
+      const events = this._loadStoredEvents();
+      Log.debug(`Loaded ${events.length} stored event(s) from storage`);
+      if (events.length > 0) {
+        events.forEach((event) => {
+          this._initFlushCoordinator().addEvent(event);
+        });
+        this.flush().catch((error) => {
+          Log.warn('Failed to flush events after enabling logging:', error);
+        });
+      }
+    }
   }
 
   enqueue(event: StatsigEventInternal): void {
@@ -117,12 +117,14 @@ export class EventLogger {
       return;
     }
 
-    this._normalizeAndAppendEvent(event);
-    this._quickFlushIfNeeded();
+    const normalizedEvent = this._normalizeEvent(event);
 
-    if (this._queue.length > this._maxQueueSize) {
-      EventLogger._safeFlushAndForget(this._sdkKey);
+    if (this._loggingEnabled === 'disabled') {
+      this._storeEventToStorage(normalizedEvent);
+      return;
     }
+    this._initFlushCoordinator().addEvent(normalizedEvent);
+    this._flushCoordinator?.checkQuickFlush();
   }
 
   incrementNonExposureCount(name: string): void {
@@ -145,6 +147,8 @@ export class EventLogger {
       return;
     }
 
+    const flushCoordinator = this._initFlushCoordinator();
+
     EVENT_LOGGER_MAP[this._sdkKey] = this;
 
     if (!isServerEnv) {
@@ -152,57 +156,57 @@ export class EventLogger {
         if (visibility === 'background') {
           EventLogger._safeFlushAndForget(this._sdkKey);
         } else if (visibility === 'foreground') {
-          EventLogger._safeRetryFailedLogs(this._sdkKey);
+          flushCoordinator.startScheduledFlushCycle();
         }
       });
     }
 
-    this._retryFailedLogs();
-    this._startBackgroundFlushInterval();
+    flushCoordinator.loadAndRetryShutdownFailedEvents().catch((error) => {
+      Log.warn('Failed to load failed shutdown events:', error);
+    });
+
+    flushCoordinator.startScheduledFlushCycle();
   }
 
   async stop(): Promise<void> {
-    if (this._flushIntervalId) {
-      clearInterval(this._flushIntervalId);
-      this._flushIntervalId = null;
+    this._isShuttingDown = true;
+    if (this._flushCoordinator) {
+      await this._flushCoordinator.processShutdown();
     }
-
     delete EVENT_LOGGER_MAP[this._sdkKey];
-
-    await this.flush();
+    this._flushCoordinator = null;
+    this._pendingEvents = null;
+    this._batchQueue = null;
   }
 
   async flush(): Promise<void> {
-    this._appendAndResetNonExposedChecks();
-
-    if (this._queue.length === 0) {
+    if (!this._flushCoordinator) {
       return;
     }
-
-    const events = this._queue;
-    this._queue = [];
-
-    await this._sendEvents(events);
+    return this._flushCoordinator.processManualFlush();
   }
 
-  /**
-   * We 'Quick Flush' following the very first event enqueued
-   * within the quick flush window
-   */
-  private _quickFlushIfNeeded() {
-    if (this._hasRunQuickFlush) {
-      return;
-    }
-    this._hasRunQuickFlush = true;
-
-    if (Date.now() - this._creationTime > QUICK_FLUSH_WINDOW_MS) {
+  appendAndResetNonExposedChecks(): void {
+    if (Object.keys(this._nonExposedChecks).length === 0) {
       return;
     }
 
-    setTimeout(
-      () => EventLogger._safeFlushAndForget(this._sdkKey),
-      QUICK_FLUSH_WINDOW_MS,
-    );
+    const checks = { ...this._nonExposedChecks };
+    this._nonExposedChecks = {};
+
+    const event = this._normalizeEvent({
+      eventName: 'statsig::non_exposed_checks',
+      user: null,
+      time: Date.now(),
+      metadata: {
+        checks,
+      },
+    });
+
+    if (!this._flushCoordinator) {
+      return;
+    }
+    this._flushCoordinator.addEvent(event);
   }
 
   private _shouldLogEvent(event: StatsigEventInternal): boolean {
@@ -245,131 +249,98 @@ export class EventLogger {
     return true;
   }
 
-  private async _sendEvents(events: EventQueue): Promise<boolean> {
-    if (this._loggingEnabled === 'disabled') {
-      this._saveFailedLogsToStorage(events);
-      return false;
+  private _getCurrentPageUrl(): string | undefined {
+    if (this._options?.includeCurrentPageUrlWithEvents === false) {
+      return;
     }
 
-    try {
-      const isClosing = _isUnloading();
-
-      const shouldUseBeacon =
-        isClosing &&
-        this._network.isBeaconSupported() &&
-        this._options?.networkConfig?.networkOverrideFunc == null;
-
-      this._emitter({
-        name: 'pre_logs_flushed',
-        events,
-      });
-
-      const response = shouldUseBeacon
-        ? this._sendEventsViaBeacon(events)
-        : await this._sendEventsViaPost(events);
-
-      if (response.success) {
-        this._emitter({
-          name: 'logs_flushed',
-          events,
-        });
-        return true;
-      } else {
-        Log.warn('Failed to flush events.');
-        this._saveFailedLogsToStorage(events);
-        return false;
-      }
-    } catch {
-      Log.warn('Failed to flush events.');
-      return false;
+    return _getCurrentPageUrlSafe();
+  }
+  private _getStorageKey(): string {
+    if (!this._storageKey) {
+      this._storageKey = `statsig.pending_events.${_DJB2(this._sdkKey)}`;
     }
+    return this._storageKey;
   }
 
-  private async _sendEventsViaPost(
-    events: StatsigEventInternal[],
-  ): Promise<SendEventsResponse> {
-    const result = await this._network.post(this._getRequestData(events));
-
-    const code = result?.code ?? -1;
-    return { success: code >= 200 && code < 300 };
-  }
-
-  private _sendEventsViaBeacon(
-    events: StatsigEventInternal[],
-  ): SendEventsResponse {
-    return {
-      success: this._network.beacon(this._getRequestData(events)),
-    };
-  }
-
-  private _getRequestData(events: StatsigEventInternal[]): RequestArgsWithData {
-    return {
-      sdkKey: this._sdkKey,
-      data: {
-        events,
-      },
-      urlConfig: this._logEventUrlConfig,
-      retries: 3,
-      isCompressable: true,
-      params: {
-        [NetworkParam.EventCount]: String(events.length),
-      },
-      credentials: 'same-origin',
-    };
-  }
-
-  private _saveFailedLogsToStorage(events: EventQueue) {
-    while (events.length > MAX_FAILED_LOGS) {
-      events.shift();
+  private _initFlushCoordinator(): FlushCoordinator {
+    if (this._flushCoordinator) {
+      return this._flushCoordinator;
     }
 
+    const batchSize =
+      this._options?.loggingBufferMaxSize ??
+      EventRetryConstants.DEFAULT_BATCH_SIZE;
+
+    this._pendingEvents = new PendingEvents(batchSize);
+    this._batchQueue = new BatchQueue(batchSize);
+
+    this._flushCoordinator = new FlushCoordinator(
+      this._batchQueue,
+      this._pendingEvents,
+      () => this.appendAndResetNonExposedChecks(),
+      this._sdkKey,
+      this._network,
+      this._emitter,
+      this._logEventUrlConfig,
+      this._options,
+      this._loggingEnabled,
+      this._errorBoundary,
+    );
+
+    if (this._pendingCompressionMode) {
+      this._flushCoordinator.setLogEventCompressionMode(
+        this._pendingCompressionMode,
+      );
+      this._pendingCompressionMode = null;
+    }
+
+    return this._flushCoordinator;
+  }
+
+  private _storeEventToStorage(event: StatsigEventInternal): void {
     const storageKey = this._getStorageKey();
 
     try {
-      const savedEvents = this._getFailedLogsFromStorage(storageKey);
-      _setObjectInStorage(storageKey, [...savedEvents, ...events]);
-    } catch {
-      Log.warn('Unable to save failed logs to storage');
+      let existingEvents = this._getEventsFromStorage(storageKey);
+      existingEvents.push(event);
+
+      if (existingEvents.length > EventRetryConstants.MAX_LOCAL_STORAGE) {
+        existingEvents = existingEvents.slice(
+          -EventRetryConstants.MAX_LOCAL_STORAGE,
+        );
+      }
+
+      _setObjectInStorage(storageKey, existingEvents);
+    } catch (error) {
+      Log.warn('Unable to save events to storage');
     }
   }
 
-  private _getFailedLogsFromStorage(storageKey: string) {
-    let savedEvents: EventQueue = [];
+  private _getEventsFromStorage(storageKey: string): StatsigEventInternal[] {
     try {
-      const retrieved = _getObjectFromStorage<EventQueue>(storageKey);
-      if (Array.isArray(retrieved)) {
-        savedEvents = retrieved;
+      const events = _getObjectFromStorage<StatsigEventInternal[]>(storageKey);
+      if (Array.isArray(events)) {
+        return events;
       }
-      return savedEvents;
+      return [];
     } catch {
       return [];
     }
   }
 
-  private _retryFailedLogs() {
+  private _loadStoredEvents(): StatsigEventInternal[] {
     const storageKey = this._getStorageKey();
-    (async () => {
-      if (!Storage.isReady()) {
-        await Storage.isReadyResolver();
-      }
+    const events = this._getEventsFromStorage(storageKey);
 
-      const events = _getObjectFromStorage<EventQueue>(storageKey);
-      if (!events) {
-        return;
-      }
-
+    if (events.length > 0) {
       Storage.removeItem(storageKey);
-      await this._sendEvents(events);
-    })().catch(() => {
-      Log.warn('Failed to flush stored logs');
-    });
+    }
+
+    return events;
   }
 
-  private _getStorageKey() {
-    return `statsig.failed_logs.${_DJB2(this._sdkKey)}`;
-  }
-
-  private _normalizeAndAppendEvent(event: StatsigEventInternal) {
+  private _normalizeEvent(event: StatsigEventInternal): StatsigEventInternal {
     if (event.user) {
       event.user = { ...event.user };
       delete event.user.privateAttributes;
@@ -381,53 +352,9 @@ export class EventLogger {
       extras.statsigMetadata = { currentPage };
     }
 
-    const final = {
+    return {
       ...event,
       ...extras,
     };
-
-    Log.debug('Enqueued Event:', final);
-    this._queue.push(final);
-  }
-
-  private _appendAndResetNonExposedChecks() {
-    if (Object.keys(this._nonExposedChecks).length === 0) {
-      return;
-    }
-
-    this._normalizeAndAppendEvent({
-      eventName: 'statsig::non_exposed_checks',
-      user: null,
-      time: Date.now(),
-      metadata: {
-        checks: { ...this._nonExposedChecks },
-      },
-    });
-
-    this._nonExposedChecks = {};
-  }
-
-  private _getCurrentPageUrl(): string | undefined {
-    if (this._options?.includeCurrentPageUrlWithEvents === false) {
-      return;
-    }
-
-    return _getCurrentPageUrlSafe();
-  }
-
-  private _startBackgroundFlushInterval() {
-    const flushInterval =
-      this._options?.loggingIntervalMs ?? DEFAULT_FLUSH_INTERVAL_MS;
-
-    const intervalId = setInterval(() => {
-      const logger = EVENT_LOGGER_MAP[this._sdkKey];
-      if (!logger || logger._flushIntervalId !== intervalId) {
-        clearInterval(intervalId);
-      } else {
-        EventLogger._safeFlushAndForget(this._sdkKey);
-        StatsigSession.checkForIdleSession(this._sdkKey);
-      }
-    }, flushInterval);
-    this._flushIntervalId = intervalId;
   }
 }

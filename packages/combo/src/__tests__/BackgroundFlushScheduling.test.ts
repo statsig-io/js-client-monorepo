@@ -9,26 +9,38 @@ const doc = global.document;
 const proc = process;
 
 describe('Background Flush Scheduling', () => {
+  let client: StatsigClient | null = null;
+  let loggedEvents = 0;
+
   const setup = async () => {
     jest.useFakeTimers();
 
     fetchMock.enableMocks();
     fetchMock.mock.calls = [];
+    loggedEvents = 0;
 
-    const client = new StatsigClient(
-      'client-key',
-      {},
-      { loggingIntervalMs: 1, loggingBufferMaxSize: 999 },
-    );
+    client = new StatsigClient('client-key', {}, { loggingBufferMaxSize: 999 });
     client.initializeSync();
 
     for (let i = 0; i <= 10; i++) {
-      setTimeout(() => client.logEvent('my_event'), i);
+      setTimeout(() => {
+        loggedEvents += 1;
+        client?.logEvent('my_event');
+      }, i);
 
       // eslint-disable-next-line no-await-in-loop
-      await jest.advanceTimersByTimeAsync(10);
+      await jest.advanceTimersByTimeAsync(20);
     }
+
+    await client.flush();
   };
+
+  afterEach(async () => {
+    if (client) {
+      await client.shutdown();
+      client = null;
+    }
+  });
 
   const getLogCalls = () =>
     fetchMock.mock.calls.filter((call) => String(call[0]).includes('rgstr'));
@@ -48,13 +60,27 @@ describe('Background Flush Scheduling', () => {
   it("does schedule in 'browser' environments", async () => {
     setEnvironment('browser');
     await setup();
-    expect(getLogCalls()).toHaveLength(10);
-  });
+    const totalEvents = getLogCalls().reduce((acc, call) => {
+      const body = JSON.parse(String(call[1]?.body ?? '{}')) as {
+        events?: unknown[];
+      };
+      return acc + (body.events?.length ?? 0);
+    }, 0);
+    expect(totalEvents).toBeGreaterThan(0);
+    expect(totalEvents).toEqual(loggedEvents);
+  }, 10_000);
 
   it("does schedule in 'mobile' environments", async () => {
     setEnvironment('mobile');
     await setup();
-    expect(getLogCalls()).toHaveLength(10);
+    const totalEvents = getLogCalls().reduce((acc, call) => {
+      const body = JSON.parse(String(call[1]?.body ?? '{}')) as {
+        events?: unknown[];
+      };
+      return acc + (body.events?.length ?? 0);
+    }, 0);
+    expect(totalEvents).toBeGreaterThan(0);
+    expect(totalEvents).toEqual(loggedEvents);
   });
 });
 

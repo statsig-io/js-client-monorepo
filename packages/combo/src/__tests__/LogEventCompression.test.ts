@@ -4,6 +4,7 @@ import { TextDecoder, TextEncoder } from 'util';
 
 import {
   Endpoint,
+  ErrorBoundary,
   EventLogger,
   LogEventCompressionMode,
   NetworkCore,
@@ -305,10 +306,16 @@ describe('Log Event Compression', () => {
         logEventCompressionMode: mode,
       });
 
-      const logger = new EventLogger('client-key', noopEmitEvent, network, {
-        networkConfig: statsigOptions.networkConfig,
-        disableLogging: false,
-      });
+      const logger = new EventLogger(
+        'client-key',
+        noopEmitEvent,
+        network,
+        {
+          networkConfig: statsigOptions.networkConfig,
+          disableLogging: false,
+        },
+        new ErrorBoundary('key', {}),
+      );
 
       logger.enqueue({
         eventName: 'test_event',

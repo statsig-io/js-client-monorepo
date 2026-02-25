@@ -44,6 +44,45 @@ export class ErrorBoundary {
     this._onError(tag, error);
   }
 
+  logDroppedEvents(
+    count: number,
+    reason: string,
+    metadata?: Record<string, unknown>,
+  ): void {
+    const extra: Record<string, string> = {
+      eventCount: String(count),
+    };
+
+    if (metadata) {
+      Object.keys(metadata).forEach((key) => {
+        extra[key] = String(metadata[key]);
+      });
+    }
+    this._onError(
+      `statsig::log_event_dropped_event_count`,
+      new Error(reason),
+      true,
+      extra,
+    );
+  }
+
+  logEventRequestFailure(
+    count: number,
+    reason: string,
+    flushType: string,
+    statusCode: number,
+    retries: number,
+  ): void {
+    const extra: Record<string, string> = {
+      eventCount: String(count),
+      flushType: flushType,
+      statusCode: String(statusCode),
+      reason: reason,
+      retries: String(retries),
+    };
+    this._onError(`statsig::log_event_failed`, new Error(reason), true, extra);
+  }
+
   getLastSeenErrorAndReset(): Error | null {
     const tempError = this._lastSeenError;
     this._lastSeenError = undefined;
@@ -70,7 +109,12 @@ export class ErrorBoundary {
     }
   }
 
-  private _onError(tag: string, error: unknown) {
+  private _onError(
+    tag: string,
+    error: unknown,
+    bypassDedupe = false,
+    extra?: Record<string, string>,
+  ) {
     try {
       Log.warn(`Caught error in ${tag}`, { error });
 
@@ -82,7 +126,7 @@ export class ErrorBoundary {
         const resolvedError = _resolveError(unwrapped);
 
         this._lastSeenError = resolvedError;
-        if (this._seen.has(name)) {
+        if (!bypassDedupe && this._seen.has(name)) {
           return;
         }
 
@@ -106,6 +150,7 @@ export class ErrorBoundary {
           info,
           statsigOptions: _getStatsigOptionLoggingCopy(this._options),
           ...{ ...statsigMetadata, sdkType },
+          ...(extra ?? {}),
         };
 
         const func = this._options?.networkConfig?.networkOverrideFunc ?? fetch;

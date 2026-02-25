@@ -35,29 +35,8 @@ describe('Event Logger', () => {
     expect(getLogEventCalls()).toHaveLength(0);
   });
 
-  it('calls flush on a set interval', async () => {
-    const client = new StatsigClient('my-key', {}, { loggingIntervalMs: 1 });
-    client.initializeSync();
-
-    client.logEvent('one');
-    await timeout(2);
-
-    expect(getLogEventCalls()[0]).toEqual([
-      anyStringContaining('/v1/rgstr'),
-      anyObject(),
-    ]);
-
-    client.logEvent('two');
-    await timeout(2);
-
-    expect(getLogEventCalls()[1]).toEqual([
-      anyStringContaining('/v1/rgstr'),
-      anyObject(),
-    ]);
-  });
-
   it('flushes when backgrounded', async () => {
-    const client = new StatsigClient('my-key', {}, { loggingIntervalMs: 1 });
+    const client = new StatsigClient('my-key', {});
     client.initializeSync();
 
     client.logEvent('one');
@@ -72,13 +51,13 @@ describe('Event Logger', () => {
   });
 
   it('flushes when pagehide', async () => {
-    const client = new StatsigClient('my-key', {}, { loggingIntervalMs: 1 });
+    const client = new StatsigClient('my-key', {});
     client.initializeSync();
 
     client.logEvent('one');
 
     window.dispatchEvent(new Event('pagehide'));
-    await timeout(1);
+    await timeout(500);
 
     expect(getLogEventCalls()[0]).toEqual([
       anyStringContaining('/v1/rgstr'),
@@ -87,14 +66,14 @@ describe('Event Logger', () => {
   });
 
   it('does not double flush with unloading and pagehide', async () => {
-    const client = new StatsigClient('my-key', {}, { loggingIntervalMs: 1 });
+    const client = new StatsigClient('my-key', {});
     client.initializeSync();
 
     client.logEvent('one');
 
     window.dispatchEvent(new Event('beforeunload'));
     window.dispatchEvent(new Event('pagehide'));
-    await timeout(1);
+    await timeout(500);
 
     expect(getLogEventCalls().length).toEqual(1);
   });
@@ -111,12 +90,12 @@ describe('Event Logger', () => {
     const client = new StatsigClient(
       'my-key',
       {},
-      { loggingIntervalMs: 1, loggingEnabled: 'always' },
+      { loggingEnabled: 'always' },
     );
     client.initializeSync();
 
     client.logEvent('electron-app-event');
-    await timeout(2);
+    await timeout(500);
 
     expect(getLogEventCalls()[0]).toEqual([
       anyStringContaining('/v1/rgstr'),
@@ -147,7 +126,8 @@ describe('Event Logger Update Runtime Options', () => {
     client.logEvent('test-event222');
 
     await client.flush();
-    expect(getLogEventCalls()).toHaveLength(1);
+    //loads from storage
+    expect(getLogEventCalls()).toHaveLength(2);
   });
 
   it('loads pre consent events after enabling logging', async () => {
@@ -165,10 +145,12 @@ describe('Event Logger Update Runtime Options', () => {
     client.logEvent('test-event222');
 
     await client.flush();
+    await timeout(500);
     const logEventCalls = getLogEventCalls();
-    expect(logEventCalls).toHaveLength(1);
-    const body = JSON.parse(String(logEventCalls[0][1]?.body ?? '')) as any;
-    expect(body.events[0].eventName).toEqual('test-event111');
-    expect(body.events[1].eventName).toEqual('test-event222');
+    expect(logEventCalls).toHaveLength(2);
+    const body1 = JSON.parse(String(logEventCalls[0][1]?.body ?? '')) as any;
+    const body2 = JSON.parse(String(logEventCalls[1][1]?.body ?? '')) as any;
+    expect(body1.events[0].eventName).toEqual('test-event111');
+    expect(body2.events[0].eventName).toEqual('test-event222');
   });
 });

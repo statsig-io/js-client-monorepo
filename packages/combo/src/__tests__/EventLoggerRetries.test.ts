@@ -1,12 +1,8 @@
 import 'jest-fetch-mock';
 import { MockLocalStorage } from 'statsig-test-helpers';
 
-import { Log, LogLevel, _notifyVisibilityChanged } from '@statsig/client-core';
+import { Log, LogLevel, _DJB2 } from '@statsig/client-core';
 import { StatsigClient } from '@statsig/js-client';
-
-const timeout = async (ms: number) => {
-  return new Promise((r) => setTimeout(r, ms));
-};
 
 function getLogEventCalls(): typeof fetchMock.mock.calls {
   return fetchMock.mock.calls.filter((call) =>
@@ -15,73 +11,51 @@ function getLogEventCalls(): typeof fetchMock.mock.calls {
 }
 
 const USER = { userID: 'a-user' };
-const FAILED_LOGS_KEY = 'statsig.failed_logs.1101277533';
+const FAILED_SHUTDOWN_KEY = `statsig.failed_shutdown_events.${_DJB2(
+  'client-key',
+)}`;
 
 describe('Event Logger Retries', () => {
   let storageMock: MockLocalStorage;
-  let client: StatsigClient;
 
   beforeAll(async () => {
     fetchMock.enableMocks();
     storageMock = MockLocalStorage.enabledMockStorage();
 
-    client = new StatsigClient('client-key', USER);
-    await client.initializeAsync();
-
     Log.level = LogLevel.None;
   });
 
-  beforeEach(async () => {
+  beforeEach(() => {
     storageMock.clear();
-
-    client.logEvent('one');
-
-    fetchMock.mockResponse('', { status: 555 });
-    await client.flush();
-
     fetchMock.mock.calls = [];
-  });
-
-  it('writes failed logs to storage', () => {
-    expect(storageMock.getItem(FAILED_LOGS_KEY)).not.toBeNull();
-  });
-
-  describe('retry reason "GainedFocus"', () => {
-    const reforeground = async () => {
-      _notifyVisibilityChanged('background');
-      _notifyVisibilityChanged('foreground');
-
-      await timeout(1);
-    };
-
-    it('retries and removes failed logs on success', async () => {
-      fetchMock.mockResponse('{"success": "true"}', { status: 200 });
-
-      await reforeground();
-
-      expect(getLogEventCalls()).toHaveLength(1);
-      expect(storageMock.getItem(FAILED_LOGS_KEY)).toBeNull();
-    });
-
-    it('retries and retains failed logs on failure', async () => {
-      fetchMock.mockResponse('', { status: 555 });
-
-      await reforeground();
-
-      expect(getLogEventCalls()).toHaveLength(1);
-      expect(storageMock.getItem(FAILED_LOGS_KEY)).not.toBeNull();
-    });
   });
 
   describe('retry reason "Startup"', () => {
     it('retries and removes failed logs on success', async () => {
+      const oldClient = new StatsigClient('client-key', USER);
+      await oldClient.initializeAsync();
+
+      oldClient.logEvent('one');
+      fetchMock.mockResponse('', { status: 502 });
+      await oldClient.shutdown();
+
+      fetchMock.mock.calls = [];
       fetchMock.mockResponse('{"success": "true"}', { status: 200 });
 
-      const newClient = (client = new StatsigClient('client-key', USER));
+      const newClient = new StatsigClient('client-key', USER);
       await newClient.initializeAsync();
+      await newClient.flush();
 
-      expect(getLogEventCalls()).toHaveLength(1);
-      expect(storageMock.getItem(FAILED_LOGS_KEY)).toBeNull();
+      const retryCalls = getLogEventCalls().filter((call) => {
+        const body = JSON.parse(String(call[1]?.body ?? '{}')) as {
+          events?: { eventName?: string }[];
+        };
+        return body.events?.some((e) => e.eventName === 'one');
+      });
+      expect(retryCalls).toHaveLength(1);
+      expect(storageMock.getItem(FAILED_SHUTDOWN_KEY)).toBeNull();
+
+      await newClient.shutdown();
     });
   });
 });
