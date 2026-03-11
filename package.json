@@ -205,7 +205,8 @@
       "lodash": ">=4.17.23",
       "fast-xml-parser": ">=5.3.6",
       "@nx/workspace": ">=22.4.5",
-      "basic-ftp": ">=5.2.0"
+      "basic-ftp": ">=5.2.0",
+      "svgo": ">=3.3.3"
     }
   },
   "engines": {
