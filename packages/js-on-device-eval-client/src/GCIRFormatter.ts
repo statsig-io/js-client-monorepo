@@ -1,6 +1,7 @@
 import {
   AnyStatsigOptions,
   ClientInitializeResponseOptions,
+  type DownloadConfigSpecsResponse,
   DynamicConfigEvaluation,
   GateEvaluation,
   InitializeResponseV1WithUpdates,
@@ -18,6 +19,12 @@ import {
 } from '@statsig/on-device-eval-core';
 
 import { hashPrivateAttributes, hashString } from './Hashing';
+
+type SessionReplayTriggersSpec = NonNullable<
+  DownloadConfigSpecsResponse['session_replay_info']
+>['session_recording_event_triggers'];
+
+type SessionReplayInfoSpec = DownloadConfigSpecsResponse['session_replay_info'];
 
 export class GCIRFormatter {
   constructor(
@@ -124,6 +131,13 @@ export class GCIRFormatter {
       user: cleanUser,
     };
 
+    this._addSessionReplayFieldsToResponse(
+      response,
+      normalizedUser,
+      hashAlgo,
+      this._store.getValues()?.session_replay_info,
+    );
+
     if (paramStores && Object.keys(paramStores).length > 0) {
       response.param_stores = paramStores;
     }
@@ -133,6 +147,117 @@ export class GCIRFormatter {
     }
 
     return response;
+  }
+
+  private _addSessionReplayFieldsToResponse(
+    response: InitializeResponseV1WithUpdates,
+    user: StatsigUserInternal,
+    hashAlgo: 'none' | 'sha256' | 'djb2',
+    sessionReplayInfo: SessionReplayInfoSpec | undefined,
+  ): void {
+    if (sessionReplayInfo == null) {
+      return;
+    }
+
+    let canRecord = true;
+    const recordingBlocked = sessionReplayInfo.recording_blocked;
+    if (recordingBlocked === true) {
+      canRecord = false;
+    }
+
+    let passesTargeting: boolean | undefined = undefined;
+    if (sessionReplayInfo.targeting_gate) {
+      const targetingGateSpec = this._store
+        .getAllSpecs('gate')
+        .find((s) => s.name === sessionReplayInfo.targeting_gate);
+      if (targetingGateSpec) {
+        const targetingResult = this._evaluateSpecForInitResponse(
+          targetingGateSpec,
+          user,
+        );
+        passesTargeting = targetingResult.bool_value === true;
+      } else {
+        passesTargeting = false;
+      }
+
+      if (passesTargeting === false) {
+        canRecord = false;
+      }
+    }
+
+    const random = Math.random();
+    const samplingRate = sessionReplayInfo.sampling_rate;
+    if (typeof samplingRate === 'number') {
+      if (random > samplingRate) {
+        canRecord = false;
+      }
+    }
+
+    response.can_record_session = canRecord;
+    if (recordingBlocked !== undefined) {
+      response.recording_blocked = recordingBlocked;
+    }
+    if (passesTargeting !== undefined) {
+      response.passes_session_recording_targeting = passesTargeting;
+    }
+    if (typeof samplingRate === 'number') {
+      response.session_recording_rate = samplingRate;
+    }
+
+    const eventTriggers = this._formatSessionReplayTriggers(
+      sessionReplayInfo.session_recording_event_triggers,
+      random,
+      (key) => key,
+    );
+    if (eventTriggers) {
+      response.session_recording_event_triggers = eventTriggers;
+    }
+
+    const exposureTriggers = this._formatSessionReplayTriggers(
+      sessionReplayInfo.session_recording_exposure_triggers,
+      random,
+      (key) => hashString(key, hashAlgo),
+    );
+    if (exposureTriggers) {
+      response.session_recording_exposure_triggers = exposureTriggers;
+    }
+
+    if (sessionReplayInfo.session_recording_privacy_settings) {
+      response.session_recording_privacy_settings =
+        sessionReplayInfo.session_recording_privacy_settings;
+    }
+  }
+
+  private _formatSessionReplayTriggers(
+    triggers: SessionReplayTriggersSpec | undefined,
+    random: number,
+    keyTransform: (key: string) => string,
+  ): Record<string, { values?: string[]; passes_sampling?: boolean }> | null {
+    if (triggers == null) {
+      return null;
+    }
+
+    const formatted: Record<
+      string,
+      { values?: string[]; passes_sampling?: boolean }
+    > = {};
+
+    for (const [key, trigger] of Object.entries(triggers)) {
+      const out: { values?: string[]; passes_sampling?: boolean } = {};
+
+      if (Array.isArray(trigger?.values)) {
+        out.values = trigger.values as string[];
+      }
+
+      const rate = (trigger as any)?.sampling_rate;
+      if (typeof rate === 'number') {
+        out.passes_sampling = random <= rate;
+      }
+
+      formatted[keyTransform(key)] = out;
+    }
+
+    return formatted;
   }
 
   private _evaluateAllGates(
