@@ -18,6 +18,8 @@ jobs:
           version: 7.32.4
 
       - uses: statsig-io/statsig-publish-sdk-action@main
+        env:
+          NX_BASE: HEAD
         with:
           kong-private-key: ${{ secrets.KONG_GH_APP_PRIVATE_KEY }}
           npm-token: ${{ secrets.NPM_AUTOMATION_KEY }}
