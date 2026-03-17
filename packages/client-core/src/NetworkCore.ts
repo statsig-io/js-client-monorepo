@@ -47,6 +47,7 @@ type RequestArgs = {
   priority?: NetworkPriority;
   retries?: number;
   attempt?: number;
+  preserveFailedStatusCode?: boolean;
   params?: Record<string, string>;
   headers?: /* Warn: Using headers leads to preflight requests */ Record<
     string,
@@ -283,6 +284,14 @@ export class NetworkCore {
         const formattedErrorMsg = `A networking error occurred during ${method} request to ${populatedUrl}.`;
         Log.error(formattedErrorMsg, errorMessage, error);
         this._errorBoundary?.attachErrorIfNoneExists(formattedErrorMsg);
+
+        if (args.preserveFailedStatusCode && response != null) {
+          return {
+            body: null,
+            code: response.status,
+          };
+        }
+
         return null;
       }
 

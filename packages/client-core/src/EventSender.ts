@@ -103,6 +103,7 @@ export class EventSender {
       },
       urlConfig: this._logEventUrlConfig,
       retries: 3,
+      preserveFailedStatusCode: true,
       isCompressable: true,
       params: {
         [NetworkParam.EventCount]: String(batch.events.length),

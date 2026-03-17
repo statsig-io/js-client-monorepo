@@ -222,6 +222,41 @@ describe('Network Core', () => {
     });
   });
 
+  describe('Failed Status Preservation', () => {
+    it('returns the final retryable HTTP status when opted in', async () => {
+      fetchMock.mockClear();
+      fetchMock.mockResponse('', { status: 500 });
+      emitter.mockClear();
+
+      const result = await network.post({
+        sdkKey,
+        urlConfig,
+        data: {},
+        retries: 2,
+        preserveFailedStatusCode: true,
+      });
+
+      expect(fetchMock).toHaveBeenCalledTimes(3);
+      expect(result).toEqual({ body: null, code: 500 });
+    });
+
+    it('keeps returning null on failed responses by default', async () => {
+      fetchMock.mockClear();
+      fetchMock.mockResponse('', { status: 500 });
+      emitter.mockClear();
+
+      const result = await network.post({
+        sdkKey,
+        urlConfig,
+        data: {},
+        retries: 2,
+      });
+
+      expect(fetchMock).toHaveBeenCalledTimes(3);
+      expect(result).toBeNull();
+    });
+  });
+
   describe('Empty Keys', () => {
     let logSpy: jest.SpyInstance;
 

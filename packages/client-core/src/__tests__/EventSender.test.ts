@@ -194,6 +194,7 @@ describe('EventSender', () => {
             },
             urlConfig: mockUrlConfig,
             retries: 3,
+            preserveFailedStatusCode: true,
             isCompressable: true,
             params: {
               [NetworkParam.EventCount]: '3',
