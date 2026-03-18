@@ -9,6 +9,7 @@ import { _DJB2 } from './Hashing';
 import { Log } from './Log';
 import { NetworkCore, RETRYABLE_CODES } from './NetworkCore';
 import { PendingEvents } from './PendingEvents';
+import { _isServerEnv } from './SafeJs';
 import { StatsigSession } from './SessionID';
 import { StatsigClientEmitEventFunc } from './StatsigClientBase';
 import { StatsigEventInternal } from './StatsigEvent';
@@ -43,6 +44,7 @@ export class FlushCoordinator {
   private _currentFlushPromise: Promise<void> | null = null;
   private _creationTime = Date.now();
   private _isShuttingDown = false;
+  private _loggingEnabled: LoggingEnabledOption;
 
   private _sdkKey: string;
   private _storageKey: string | null = null;
@@ -66,6 +68,7 @@ export class FlushCoordinator {
     this._onPrepareFlush = onPrepareFlush;
     this._errorBoundary = errorBoundary;
     this._sdkKey = sdkKey;
+    this._loggingEnabled = loggingEnabled;
 
     this._eventSender = new EventSender(
       sdkKey,
@@ -73,12 +76,11 @@ export class FlushCoordinator {
       emitter,
       logEventUrlConfig,
       options,
-      loggingEnabled,
     );
   }
 
   setLoggingEnabled(loggingEnabled: LoggingEnabledOption): void {
-    this._eventSender.setLoggingEnabled(loggingEnabled);
+    this._loggingEnabled = loggingEnabled;
   }
 
   setLogEventCompressionMode(mode: LogEventCompressionMode): void {
@@ -325,6 +327,14 @@ export class FlushCoordinator {
     batch: EventBatch,
     flushType: FlushType,
   ): Promise<boolean> {
+    if (
+      this._loggingEnabled !== LoggingEnabledOption.always &&
+      _isServerEnv()
+    ) {
+      this._flushInterval.adjustForSuccess();
+      return true;
+    }
+
     const result = await this._eventSender.sendBatch(batch);
 
     if (result.success) {

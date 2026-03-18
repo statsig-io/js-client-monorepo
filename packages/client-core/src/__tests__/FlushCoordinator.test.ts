@@ -6,6 +6,7 @@ import { FlushCoordinator } from '../FlushCoordinator';
 import { FlushType } from '../FlushTypes';
 import { NetworkCore } from '../NetworkCore';
 import { PendingEvents } from '../PendingEvents';
+import { _isServerEnv } from '../SafeJs';
 import { StatsigClientEmitEventFunc } from '../StatsigClientBase';
 import { StatsigEventInternal } from '../StatsigEvent';
 import { LoggingEnabledOption } from '../StatsigOptionsCommon';
@@ -28,6 +29,14 @@ jest.mock('../StorageProvider', () => ({
   _setObjectInStorage: jest.fn(),
 }));
 
+jest.mock('../SafeJs', () => {
+  const actual = jest.requireActual('../SafeJs');
+  return {
+    ...actual,
+    _isServerEnv: jest.fn(() => false),
+  };
+});
+
 describe('FlushCoordinator', () => {
   let flushCoordinator: FlushCoordinator;
   let mockBatchQueue: jest.Mocked<BatchQueue>;
@@ -49,6 +58,10 @@ describe('FlushCoordinator', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+
+    (_isServerEnv as jest.MockedFunction<typeof _isServerEnv>).mockReturnValue(
+      false,
+    );
 
     mockBatchQueue = {
       takeAllBatches: jest.fn(),
@@ -99,6 +112,56 @@ describe('FlushCoordinator', () => {
       LoggingEnabledOption.always,
       mockErrorBoundary,
     );
+  });
+
+  describe('_processOneBatch', () => {
+    it('should noop on the server when logging is browser-only', async () => {
+      const batch = new EventBatch([createMockEvent('event-1')]);
+      const eventSenderSpy = jest.spyOn(
+        (flushCoordinator as any)._eventSender,
+        'sendBatch',
+      );
+      const flushIntervalSpy = jest.spyOn(
+        (flushCoordinator as any)._flushInterval,
+        'adjustForSuccess',
+      );
+
+      (
+        _isServerEnv as jest.MockedFunction<typeof _isServerEnv>
+      ).mockReturnValue(true);
+      flushCoordinator.setLoggingEnabled(LoggingEnabledOption.browserOnly);
+
+      const result = await (flushCoordinator as any)._processOneBatch(
+        batch,
+        FlushType.Manual,
+      );
+
+      expect(result).toBe(true);
+      expect(eventSenderSpy).not.toHaveBeenCalled();
+      expect(flushIntervalSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it('should still send on the server when logging is always', async () => {
+      const batch = new EventBatch([createMockEvent('event-1')]);
+      const eventSenderSpy = jest.spyOn(
+        (flushCoordinator as any)._eventSender,
+        'sendBatch',
+      );
+
+      (
+        _isServerEnv as jest.MockedFunction<typeof _isServerEnv>
+      ).mockReturnValue(true);
+      flushCoordinator.setLoggingEnabled(LoggingEnabledOption.always);
+      eventSenderSpy.mockResolvedValue({ success: true, statusCode: 200 });
+
+      const result = await (flushCoordinator as any)._processOneBatch(
+        batch,
+        FlushType.Manual,
+      );
+
+      expect(result).toBe(true);
+      expect(eventSenderSpy).toHaveBeenCalledWith(batch);
+    });
   });
 
   describe('processManualFlush', () => {

@@ -5,7 +5,6 @@ import { NetworkCore, RequestArgsWithData } from './NetworkCore';
 import { StatsigClientEmitEventFunc } from './StatsigClientBase';
 import {
   LogEventCompressionMode,
-  LoggingEnabledOption,
   NetworkConfigCommon,
   StatsigOptionsCommon,
 } from './StatsigOptionsCommon';
@@ -18,7 +17,6 @@ export class EventSender {
   private _options: StatsigOptionsCommon<NetworkConfigCommon> | null;
   private _logEventUrlConfig: UrlConfiguration;
   private _emitter: StatsigClientEmitEventFunc;
-  private _loggingEnabled: LoggingEnabledOption;
 
   constructor(
     sdkKey: string,
@@ -26,21 +24,15 @@ export class EventSender {
     emitter: StatsigClientEmitEventFunc,
     logEventUrlConfig: UrlConfiguration,
     options: StatsigOptionsCommon<NetworkConfigCommon> | null,
-    loggingEnabled: LoggingEnabledOption,
   ) {
     this._sdkKey = sdkKey;
     this._network = network;
     this._emitter = emitter;
     this._options = options;
     this._logEventUrlConfig = logEventUrlConfig;
-    this._loggingEnabled = loggingEnabled;
   }
   setLogEventCompressionMode(mode: LogEventCompressionMode): void {
     this._network.setLogEventCompressionMode(mode);
-  }
-
-  setLoggingEnabled(enabled: LoggingEnabledOption): void {
-    this._loggingEnabled = enabled;
   }
 
   async sendBatch(

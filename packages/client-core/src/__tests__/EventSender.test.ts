@@ -4,10 +4,7 @@ import { NetworkParam } from '../NetworkConfig';
 import { NetworkCore } from '../NetworkCore';
 import { StatsigClientEmitEventFunc } from '../StatsigClientBase';
 import { StatsigEventInternal } from '../StatsigEvent';
-import {
-  LogEventCompressionMode,
-  LoggingEnabledOption,
-} from '../StatsigOptionsCommon';
+import { LogEventCompressionMode } from '../StatsigOptionsCommon';
 import { UrlConfiguration } from '../UrlConfiguration';
 import { _isUnloading } from '../VisibilityObserving';
 
@@ -62,7 +59,6 @@ describe('EventSender', () => {
       mockEmitter,
       mockUrlConfig,
       TEST_OPTIONS,
-      LoggingEnabledOption.browserOnly,
     );
   });
 
@@ -74,9 +70,6 @@ describe('EventSender', () => {
       expect((eventSender as any)._emitter).toBe(mockEmitter);
       expect((eventSender as any)._options).toBe(TEST_OPTIONS);
       expect((eventSender as any)._logEventUrlConfig).toBe(mockUrlConfig);
-      expect((eventSender as any)._loggingEnabled).toBe(
-        LoggingEnabledOption.browserOnly,
-      );
     });
 
     it('should accept null options', () => {
@@ -86,7 +79,6 @@ describe('EventSender', () => {
         mockEmitter,
         mockUrlConfig,
         null,
-        LoggingEnabledOption.always,
       );
 
       expect((senderWithNullOptions as any)._options).toBeNull();
@@ -112,32 +104,6 @@ describe('EventSender', () => {
       eventSender.setLogEventCompressionMode(LogEventCompressionMode.Enabled);
       expect(mockNetwork.setLogEventCompressionMode).toHaveBeenCalledWith(
         LogEventCompressionMode.Enabled,
-      );
-    });
-  });
-
-  describe('setLoggingEnabled', () => {
-    it('should update the logging enabled state', () => {
-      eventSender.setLoggingEnabled(LoggingEnabledOption.disabled);
-
-      expect((eventSender as any)._loggingEnabled).toBe(
-        LoggingEnabledOption.disabled,
-      );
-    });
-
-    it('should allow setting to always', () => {
-      eventSender.setLoggingEnabled(LoggingEnabledOption.always);
-
-      expect((eventSender as any)._loggingEnabled).toBe(
-        LoggingEnabledOption.always,
-      );
-    });
-
-    it('should allow setting to browserOnly', () => {
-      eventSender.setLoggingEnabled(LoggingEnabledOption.browserOnly);
-
-      expect((eventSender as any)._loggingEnabled).toBe(
-        LoggingEnabledOption.browserOnly,
       );
     });
   });
@@ -253,7 +219,6 @@ describe('EventSender', () => {
                 networkOverrideFunc: jest.fn(),
               },
             },
-            LoggingEnabledOption.browserOnly,
           );
 
           const batch = createMockBatch(3);
