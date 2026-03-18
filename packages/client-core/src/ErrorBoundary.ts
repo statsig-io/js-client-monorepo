@@ -51,6 +51,7 @@ export class ErrorBoundary {
   ): void {
     const extra: Record<string, string> = {
       eventCount: String(count),
+      reason,
     };
 
     if (metadata) {

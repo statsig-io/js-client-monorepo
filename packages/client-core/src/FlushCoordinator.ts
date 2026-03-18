@@ -355,7 +355,7 @@ export class FlushCoordinator {
       Log.warn(`Dropped ${droppedCount} events`);
       this._errorBoundary.logDroppedEvents(
         droppedCount,
-        `Batch queue limit reached`,
+        `Batch queue limit reached during batching`,
         {
           loggingInterval: this._flushInterval.getCurrentIntervalMs(),
           batchSize: this._batchQueue.batchSize(),
@@ -435,7 +435,7 @@ export class FlushCoordinator {
       );
       this._errorBoundary.logDroppedEvents(
         droppedCount,
-        `Batch queue limit reached`,
+        `Batch queue limit reached during requeue`,
         {
           loggingInterval: this._flushInterval.getCurrentIntervalMs(),
           batchSize: this._batchQueue.batchSize(),

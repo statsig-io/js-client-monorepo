@@ -631,7 +631,7 @@ describe('FlushCoordinator', () => {
         expect(mockErrorBoundary.logDroppedEvents).toHaveBeenCalledTimes(1);
         expect(mockErrorBoundary.logDroppedEvents).toHaveBeenCalledWith(
           droppedCount,
-          'Batch queue limit reached',
+          'Batch queue limit reached during batching',
           expect.objectContaining({
             flushType: FlushType.Manual,
             maxPendingBatches: EventRetryConstants.MAX_PENDING_BATCHES,
@@ -673,7 +673,7 @@ describe('FlushCoordinator', () => {
         expect(mockErrorBoundary.logDroppedEvents).toHaveBeenCalledTimes(1);
         expect(mockErrorBoundary.logDroppedEvents).toHaveBeenCalledWith(
           droppedCount,
-          'Batch queue limit reached',
+          'Batch queue limit reached during requeue',
           expect.objectContaining({
             flushType: FlushType.Manual,
             maxPendingBatches: EventRetryConstants.MAX_PENDING_BATCHES,
