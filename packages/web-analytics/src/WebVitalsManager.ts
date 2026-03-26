@@ -63,6 +63,15 @@ export class WebVitalsManager {
     }
   }
 
+  public flushPendingMetrics(): boolean {
+    if (this._metricEvent.metrics.length === 0) {
+      return false;
+    }
+
+    this._enqueueWebVitalsAutoCaptureEvent();
+    return true;
+  }
+
   private _handleMetric(metric: unknown): void {
     if (this._metricEvent.firstMetricTimestamp === undefined) {
       this._metricEvent.firstMetricTimestamp = Date.now();

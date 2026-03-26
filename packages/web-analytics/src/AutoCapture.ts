@@ -340,6 +340,10 @@ export class AutoCapture {
   private _tryLogPageView(
     navigationType?: 'pushstate' | 'replacestate' | 'popstate',
   ) {
+    if (this._webVitalsManager.flushPendingMetrics()) {
+      this._flushImmediately();
+    }
+
     const url = _getSafeUrl();
 
     const last = this._previousLoggedPageViewUrl;
@@ -378,6 +382,10 @@ export class AutoCapture {
   }
 
   private _tryLogPageViewEnd(dueToInactivity = false) {
+    if (this._webVitalsManager.flushPendingMetrics()) {
+      this._flushImmediately();
+    }
+
     if (this._hasLoggedPageViewEnd) {
       return;
     }
