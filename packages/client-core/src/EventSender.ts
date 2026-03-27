@@ -2,7 +2,9 @@ import { EventBatch } from './EventBatch';
 import { Log } from './Log';
 import { NetworkParam } from './NetworkConfig';
 import { NetworkCore, RequestArgsWithData } from './NetworkCore';
+import { SDKType } from './SDKType';
 import { StatsigClientEmitEventFunc } from './StatsigClientBase';
+import { SDK_VERSION } from './StatsigMetadata';
 import {
   LogEventCompressionMode,
   NetworkConfigCommon,
@@ -103,6 +105,8 @@ export class EventSender {
       headers: {
         'statsig-event-count': String(batch.events.length),
         'statsig-retry-count': String(batch.attempts),
+        'statsig-sdk-type': SDKType._get(this._sdkKey),
+        'statsig-sdk-version': SDK_VERSION,
       },
       credentials: 'same-origin',
     };

@@ -2,8 +2,10 @@ import { EventBatch } from '../EventBatch';
 import { EventSender } from '../EventSender';
 import { NetworkParam } from '../NetworkConfig';
 import { NetworkCore } from '../NetworkCore';
+import { SDKType } from '../SDKType';
 import { StatsigClientEmitEventFunc } from '../StatsigClientBase';
 import { StatsigEventInternal } from '../StatsigEvent';
+import { SDK_VERSION } from '../StatsigMetadata';
 import { LogEventCompressionMode } from '../StatsigOptionsCommon';
 import { UrlConfiguration } from '../UrlConfiguration';
 import { _isUnloading } from '../VisibilityObserving';
@@ -168,6 +170,8 @@ describe('EventSender', () => {
             headers: {
               'statsig-event-count': '3',
               'statsig-retry-count': '0',
+              'statsig-sdk-type': SDKType._get(SDK_KEY),
+              'statsig-sdk-version': SDK_VERSION,
             },
             credentials: 'same-origin',
           });
@@ -420,6 +424,34 @@ describe('EventSender', () => {
           );
         });
 
+        it('should include statsig-sdk-type header', async () => {
+          const batch = createMockBatch(2);
+
+          await eventSender.sendBatch(batch);
+
+          expect(mockNetwork.post).toHaveBeenCalledWith(
+            expect.objectContaining({
+              headers: expect.objectContaining({
+                'statsig-sdk-type': SDKType._get(SDK_KEY),
+              }),
+            }),
+          );
+        });
+
+        it('should include statsig-sdk-version header', async () => {
+          const batch = createMockBatch(2);
+
+          await eventSender.sendBatch(batch);
+
+          expect(mockNetwork.post).toHaveBeenCalledWith(
+            expect.objectContaining({
+              headers: expect.objectContaining({
+                'statsig-sdk-version': SDK_VERSION,
+              }),
+            }),
+          );
+        });
+
         it('should include statsig-retry-count header as 0 for initial attempt', async () => {
           const batch = createMockBatch(3);
           expect(batch.attempts).toBe(0);
@@ -452,7 +484,7 @@ describe('EventSender', () => {
           );
         });
 
-        it('should include both headers with correct values for large batch', async () => {
+        it('should include all log event headers with correct values for large batch', async () => {
           const batch = createMockBatch(100);
           batch.incrementAttempts();
           batch.incrementAttempts();
@@ -465,12 +497,14 @@ describe('EventSender', () => {
               headers: {
                 'statsig-event-count': '100',
                 'statsig-retry-count': '3',
+                'statsig-sdk-type': SDKType._get(SDK_KEY),
+                'statsig-sdk-version': SDK_VERSION,
               },
             }),
           );
         });
 
-        it('should include headers in beacon requests', async () => {
+        it('should include headers in beacon request args', async () => {
           (
             _isUnloading as jest.MockedFunction<typeof _isUnloading>
           ).mockReturnValue(true);
@@ -487,6 +521,8 @@ describe('EventSender', () => {
               headers: {
                 'statsig-event-count': '10',
                 'statsig-retry-count': '1',
+                'statsig-sdk-type': SDKType._get(SDK_KEY),
+                'statsig-sdk-version': SDK_VERSION,
               },
             }),
           );
