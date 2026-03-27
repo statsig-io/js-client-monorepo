@@ -13,6 +13,12 @@ import {
 import { UrlConfiguration } from './UrlConfiguration';
 import { _isUnloading } from './VisibilityObserving';
 
+type EventSendResult = {
+  success: boolean;
+  statusCode: number;
+  failurePath?: string;
+};
+
 export class EventSender {
   private _network: NetworkCore;
   private _sdkKey: string;
@@ -37,9 +43,11 @@ export class EventSender {
     this._network.setLogEventCompressionMode(mode);
   }
 
-  async sendBatch(
-    batch: EventBatch,
-  ): Promise<{ success: boolean; statusCode: number }> {
+  async sendBatch(batch: EventBatch): Promise<EventSendResult> {
+    let failurePath = 'event_sender_unexpected_exception';
+
+    this._network.getLastRequestFailurePathAndReset();
+
     try {
       const isClosing = _isUnloading();
       const shouldUseBeacon =
@@ -47,45 +55,75 @@ export class EventSender {
         this._network.isBeaconSupported() &&
         this._options?.networkConfig?.networkOverrideFunc == null;
 
+      failurePath = 'event_sender_pre_logs_flushed_emitter_exception';
       this._emitter({
         name: 'pre_logs_flushed',
         events: batch.events,
       });
 
+      failurePath = shouldUseBeacon
+        ? 'event_sender_unexpected_exception'
+        : 'event_sender_post_exception';
       const response = shouldUseBeacon
         ? this._sendEventsViaBeacon(batch)
         : await this._sendEventsViaPost(batch);
 
       if (response.success) {
+        failurePath = 'event_sender_logs_flushed_emitter_exception';
         this._emitter({
           name: 'logs_flushed',
           events: batch.events,
         });
         return response;
       }
-      return { success: false, statusCode: response.statusCode };
+      return {
+        success: false,
+        statusCode: response.statusCode,
+        failurePath: response.failurePath,
+      };
     } catch (error) {
       Log.warn('Failed to send batch:', error);
-      return { success: false, statusCode: -1 };
+      return {
+        success: false,
+        statusCode: -1,
+        failurePath:
+          this._network.getLastRequestFailurePathAndReset() ?? failurePath,
+      };
     }
   }
 
   private async _sendEventsViaPost(
     batch: EventBatch,
-  ): Promise<{ success: boolean; statusCode: number }> {
+  ): Promise<EventSendResult> {
     const result = await this._network.post(this._getRequestData(batch));
     const code = result?.code ?? -1;
+    if (code === -1) {
+      return {
+        success: false,
+        statusCode: -1,
+        failurePath:
+          this._network.getLastRequestFailurePathAndReset() ??
+          (result === undefined
+            ? 'event_sender_post_returned_undefined'
+            : 'event_sender_post_returned_null'),
+      };
+    }
     return { success: code >= 200 && code < 300, statusCode: code };
   }
 
   private _sendEventsViaBeacon(batch: EventBatch): {
     success: boolean;
     statusCode: number;
+    failurePath?: string;
   } {
     const success = this._network.beacon(this._getRequestData(batch));
     return {
       success,
       statusCode: success ? 200 : -1,
+      failurePath: success
+        ? undefined
+        : this._network.getLastRequestFailurePathAndReset() ??
+          'beacon_send_false',
     };
   }
 

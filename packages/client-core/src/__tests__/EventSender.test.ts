@@ -48,6 +48,7 @@ describe('EventSender', () => {
     mockNetwork = {
       post: jest.fn(),
       beacon: jest.fn(),
+      getLastRequestFailurePathAndReset: jest.fn(() => null),
       isBeaconSupported: jest.fn(),
       setLogEventCompressionMode: jest.fn(),
     } as any;
@@ -296,7 +297,11 @@ describe('EventSender', () => {
 
           const result = await eventSender.sendBatch(batch);
 
-          expect(result).toEqual({ success: false, statusCode: -1 });
+          expect(result).toEqual({
+            success: false,
+            statusCode: -1,
+            failurePath: 'event_sender_post_exception',
+          });
         });
 
         it('should handle network POST returning undefined', async () => {
@@ -305,19 +310,43 @@ describe('EventSender', () => {
 
           const result = await eventSender.sendBatch(batch);
 
-          expect(result).toEqual({ success: false, statusCode: -1 });
+          expect(result).toEqual({
+            success: false,
+            statusCode: -1,
+            failurePath: 'event_sender_post_returned_undefined',
+          });
         });
 
-        it('should handle network POST returning null', async () => {
+        it('should use the network failure path when POST returns null', async () => {
+          mockNetwork.post.mockResolvedValue(null as any);
+          mockNetwork.getLastRequestFailurePathAndReset
+            .mockReturnValueOnce(null)
+            .mockReturnValueOnce('network_rate_limited');
+          const batch = createMockBatch(3);
+
+          const result = await eventSender.sendBatch(batch);
+
+          expect(result).toEqual({
+            success: false,
+            statusCode: -1,
+            failurePath: 'network_rate_limited',
+          });
+        });
+
+        it('should use the fallback null path when POST returns null without a network path', async () => {
           mockNetwork.post.mockResolvedValue(null as any);
           const batch = createMockBatch(3);
 
           const result = await eventSender.sendBatch(batch);
 
-          expect(result).toEqual({ success: false, statusCode: -1 });
+          expect(result).toEqual({
+            success: false,
+            statusCode: -1,
+            failurePath: 'event_sender_post_returned_null',
+          });
         });
 
-        it('should handle exceptions thrown during send', async () => {
+        it('should handle network POST throws', async () => {
           mockNetwork.post.mockImplementation(() => {
             throw new Error('Unexpected error');
           });
@@ -325,10 +354,14 @@ describe('EventSender', () => {
 
           const result = await eventSender.sendBatch(batch);
 
-          expect(result).toEqual({ success: false, statusCode: -1 });
+          expect(result).toEqual({
+            success: false,
+            statusCode: -1,
+            failurePath: 'event_sender_post_exception',
+          });
         });
 
-        it('should handle exceptions in emitter', async () => {
+        it('should handle pre_logs_flushed emitter exceptions', async () => {
           mockNetwork.post.mockResolvedValue({ code: 200, body: null });
           mockEmitter.mockImplementation(() => {
             throw new Error('Emitter error');
@@ -337,7 +370,73 @@ describe('EventSender', () => {
 
           const result = await eventSender.sendBatch(batch);
 
-          expect(result).toEqual({ success: false, statusCode: -1 });
+          expect(result).toEqual({
+            success: false,
+            statusCode: -1,
+            failurePath: 'event_sender_pre_logs_flushed_emitter_exception',
+          });
+        });
+
+        it('should handle logs_flushed emitter exceptions', async () => {
+          mockNetwork.post.mockResolvedValue({ code: 200, body: null });
+          mockEmitter
+            .mockImplementationOnce(() => {
+              /* noop */
+            })
+            .mockImplementationOnce(() => {
+              throw new Error('Emitter error');
+            });
+          const batch = createMockBatch(3);
+
+          const result = await eventSender.sendBatch(batch);
+
+          expect(result).toEqual({
+            success: false,
+            statusCode: -1,
+            failurePath: 'event_sender_logs_flushed_emitter_exception',
+          });
+        });
+
+        it('should use the network failure path when beacon returns false', async () => {
+          (
+            _isUnloading as jest.MockedFunction<typeof _isUnloading>
+          ).mockReturnValue(true);
+          mockNetwork.isBeaconSupported.mockReturnValue(true);
+          mockNetwork.beacon.mockReturnValue(false);
+          mockNetwork.getLastRequestFailurePathAndReset
+            .mockReturnValueOnce(null)
+            .mockReturnValueOnce('beacon_send_false');
+          const batch = createMockBatch(3);
+
+          const result = await eventSender.sendBatch(batch);
+
+          expect(result).toEqual({
+            success: false,
+            statusCode: -1,
+            failurePath: 'beacon_send_false',
+          });
+        });
+
+        it('should use the network failure path when beacon throws', async () => {
+          (
+            _isUnloading as jest.MockedFunction<typeof _isUnloading>
+          ).mockReturnValue(true);
+          mockNetwork.isBeaconSupported.mockReturnValue(true);
+          mockNetwork.beacon.mockImplementation(() => {
+            throw new Error('Beacon error');
+          });
+          mockNetwork.getLastRequestFailurePathAndReset
+            .mockReturnValueOnce(null)
+            .mockReturnValueOnce('beacon_send_exception');
+          const batch = createMockBatch(3);
+
+          const result = await eventSender.sendBatch(batch);
+
+          expect(result).toEqual({
+            success: false,
+            statusCode: -1,
+            failurePath: 'beacon_send_exception',
+          });
         });
 
         it('should return failure status code for non-2xx responses', async () => {

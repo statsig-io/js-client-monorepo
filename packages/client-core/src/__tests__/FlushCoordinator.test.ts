@@ -84,6 +84,7 @@ describe('FlushCoordinator', () => {
     mockNetwork = {
       post: jest.fn(),
       beacon: jest.fn(),
+      getLastRequestFailurePathAndReset: jest.fn(() => null),
       isBeaconSupported: jest.fn(() => false),
       setLogEventCompressionMode: jest.fn(),
     } as any;
@@ -750,6 +751,7 @@ describe('FlushCoordinator', () => {
           FlushType.Manual,
           nonRetryableCode,
           batch.attempts,
+          undefined,
         );
       });
 
@@ -781,6 +783,34 @@ describe('FlushCoordinator', () => {
           FlushType.Manual,
           retryableCode,
           batch.attempts,
+          undefined,
+        );
+      });
+
+      it('should forward failurePath for -1 status codes', async () => {
+        const batch = new EventBatch([createMockEvent('event-1')]);
+
+        mockBatchQueue.takeAllBatches.mockReturnValue([batch]);
+
+        const eventSenderSpy = jest.spyOn(
+          (flushCoordinator as any)._eventSender,
+          'sendBatch',
+        );
+        eventSenderSpy.mockResolvedValue({
+          success: false,
+          statusCode: -1,
+          failurePath: 'network_rate_limited',
+        });
+
+        await flushCoordinator.processManualFlush();
+
+        expect(mockErrorBoundary.logEventRequestFailure).toHaveBeenCalledWith(
+          1,
+          'non-retryable error',
+          FlushType.Manual,
+          -1,
+          batch.attempts,
+          'network_rate_limited',
         );
       });
 

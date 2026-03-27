@@ -73,6 +73,7 @@ export class ErrorBoundary {
     flushType: string,
     statusCode: number,
     retries: number,
+    failurePath?: string,
   ): void {
     const extra: Record<string, string> = {
       eventCount: String(count),
@@ -81,6 +82,9 @@ export class ErrorBoundary {
       reason: reason,
       retries: String(retries),
     };
+    if (failurePath) {
+      extra['failurePath'] = failurePath;
+    }
     this._onError(`statsig::log_event_failed`, new Error(reason), true, extra);
   }
 

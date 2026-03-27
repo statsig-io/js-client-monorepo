@@ -343,7 +343,12 @@ export class FlushCoordinator {
     }
 
     this._flushInterval.adjustForFailure();
-    this._handleFailure(batch, flushType, result.statusCode);
+    this._handleFailure(
+      batch,
+      flushType,
+      result.statusCode,
+      result.failurePath,
+    );
     return false;
   }
 
@@ -386,6 +391,7 @@ export class FlushCoordinator {
     batch: EventBatch,
     flushType: FlushType,
     statusCode: number,
+    failurePath?: string,
   ): void {
     if (flushType === FlushType.Shutdown) {
       Log.warn(
@@ -407,6 +413,7 @@ export class FlushCoordinator {
         flushType,
         statusCode,
         batch.attempts,
+        failurePath,
       );
       return;
     }
@@ -422,6 +429,7 @@ export class FlushCoordinator {
         flushType,
         statusCode,
         batch.attempts,
+        failurePath,
       );
       return;
     }
