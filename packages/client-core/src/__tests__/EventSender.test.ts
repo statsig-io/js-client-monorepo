@@ -48,7 +48,6 @@ describe('EventSender', () => {
     mockNetwork = {
       post: jest.fn(),
       beacon: jest.fn(),
-      getLastRequestFailurePathAndReset: jest.fn(() => null),
       isBeaconSupported: jest.fn(),
       setLogEventCompressionMode: jest.fn(),
     } as any;
@@ -156,26 +155,29 @@ describe('EventSender', () => {
 
           await eventSender.sendBatch(batch);
 
-          expect(mockNetwork.post).toHaveBeenCalledWith({
-            sdkKey: SDK_KEY,
-            data: {
-              events: batch.events,
+          expect(mockNetwork.post).toHaveBeenCalledWith(
+            {
+              sdkKey: SDK_KEY,
+              data: {
+                events: batch.events,
+              },
+              urlConfig: mockUrlConfig,
+              retries: 3,
+              preserveFailedStatusCode: true,
+              isCompressable: true,
+              params: {
+                [NetworkParam.EventCount]: '3',
+              },
+              headers: {
+                'statsig-event-count': '3',
+                'statsig-retry-count': '0',
+                'statsig-sdk-type': SDKType._get(SDK_KEY),
+                'statsig-sdk-version': SDK_VERSION,
+              },
+              credentials: 'same-origin',
             },
-            urlConfig: mockUrlConfig,
-            retries: 3,
-            preserveFailedStatusCode: true,
-            isCompressable: true,
-            params: {
-              [NetworkParam.EventCount]: '3',
-            },
-            headers: {
-              'statsig-event-count': '3',
-              'statsig-retry-count': '0',
-              'statsig-sdk-type': SDKType._get(SDK_KEY),
-              'statsig-sdk-version': SDK_VERSION,
-            },
-            credentials: 'same-origin',
-          });
+            expect.any(Object),
+          );
         });
 
         it('should return success for any 2xx status code', async () => {
@@ -318,10 +320,12 @@ describe('EventSender', () => {
         });
 
         it('should use the network failure path when POST returns null', async () => {
-          mockNetwork.post.mockResolvedValue(null as any);
-          mockNetwork.getLastRequestFailurePathAndReset
-            .mockReturnValueOnce(null)
-            .mockReturnValueOnce('network_rate_limited');
+          mockNetwork.post.mockImplementation(async (_args, failureInfo) => {
+            if (failureInfo) {
+              failureInfo.path = 'network_rate_limited';
+            }
+            return null as any;
+          });
           const batch = createMockBatch(3);
 
           const result = await eventSender.sendBatch(batch);
@@ -402,10 +406,12 @@ describe('EventSender', () => {
             _isUnloading as jest.MockedFunction<typeof _isUnloading>
           ).mockReturnValue(true);
           mockNetwork.isBeaconSupported.mockReturnValue(true);
-          mockNetwork.beacon.mockReturnValue(false);
-          mockNetwork.getLastRequestFailurePathAndReset
-            .mockReturnValueOnce(null)
-            .mockReturnValueOnce('beacon_send_false');
+          mockNetwork.beacon.mockImplementation((_args, failureInfo) => {
+            if (failureInfo) {
+              failureInfo.path = 'beacon_send_false';
+            }
+            return false;
+          });
           const batch = createMockBatch(3);
 
           const result = await eventSender.sendBatch(batch);
@@ -422,12 +428,12 @@ describe('EventSender', () => {
             _isUnloading as jest.MockedFunction<typeof _isUnloading>
           ).mockReturnValue(true);
           mockNetwork.isBeaconSupported.mockReturnValue(true);
-          mockNetwork.beacon.mockImplementation(() => {
+          mockNetwork.beacon.mockImplementation((_args, failureInfo) => {
+            if (failureInfo) {
+              failureInfo.path = 'beacon_send_exception';
+            }
             throw new Error('Beacon error');
           });
-          mockNetwork.getLastRequestFailurePathAndReset
-            .mockReturnValueOnce(null)
-            .mockReturnValueOnce('beacon_send_exception');
           const batch = createMockBatch(3);
 
           const result = await eventSender.sendBatch(batch);
@@ -500,6 +506,7 @@ describe('EventSender', () => {
                 events,
               },
             }),
+            expect.any(Object),
           );
         });
       });
@@ -520,6 +527,7 @@ describe('EventSender', () => {
                 'statsig-event-count': '5',
               }),
             }),
+            expect.any(Object),
           );
         });
 
@@ -534,6 +542,7 @@ describe('EventSender', () => {
                 'statsig-sdk-type': SDKType._get(SDK_KEY),
               }),
             }),
+            expect.any(Object),
           );
         });
 
@@ -548,6 +557,7 @@ describe('EventSender', () => {
                 'statsig-sdk-version': SDK_VERSION,
               }),
             }),
+            expect.any(Object),
           );
         });
 
@@ -563,6 +573,7 @@ describe('EventSender', () => {
                 'statsig-retry-count': '0',
               }),
             }),
+            expect.any(Object),
           );
         });
 
@@ -580,6 +591,7 @@ describe('EventSender', () => {
                 'statsig-retry-count': '2',
               }),
             }),
+            expect.any(Object),
           );
         });
 
@@ -600,6 +612,7 @@ describe('EventSender', () => {
                 'statsig-sdk-version': SDK_VERSION,
               },
             }),
+            expect.any(Object),
           );
         });
 
@@ -624,6 +637,7 @@ describe('EventSender', () => {
                 'statsig-sdk-version': SDK_VERSION,
               },
             }),
+            expect.any(Object),
           );
         });
 
@@ -638,6 +652,7 @@ describe('EventSender', () => {
                 'statsig-retry-count': '0',
               }),
             }),
+            expect.any(Object),
           );
 
           // Simulate retry
@@ -649,6 +664,7 @@ describe('EventSender', () => {
                 'statsig-retry-count': '1',
               }),
             }),
+            expect.any(Object),
           );
 
           // Another retry
@@ -660,6 +676,7 @@ describe('EventSender', () => {
                 'statsig-retry-count': '2',
               }),
             }),
+            expect.any(Object),
           );
         });
       });
@@ -683,6 +700,51 @@ describe('EventSender', () => {
       expect(result3).toEqual({ success: true, statusCode: 200 });
       expect(mockNetwork.post).toHaveBeenCalledTimes(3);
       expect(mockEmitter).toHaveBeenCalledTimes(6); // pre and post for each
+    });
+
+    it('keeps failure paths isolated across concurrent sendBatch calls', async () => {
+      const pendingRequests: Array<{
+        failureInfo?: { path?: string };
+        resolve: (value: { code: number; body: string | null } | null) => void;
+      }> = [];
+
+      mockNetwork.post.mockImplementation(
+        (_args, failureInfo) =>
+          new Promise((resolve) => {
+            pendingRequests.push({ failureInfo, resolve });
+          }),
+      );
+
+      const batch1 = createMockBatch(3);
+      const batch2 = createMockBatch(5);
+
+      const result1Promise = eventSender.sendBatch(batch1);
+      const result2Promise = eventSender.sendBatch(batch2);
+
+      expect(pendingRequests).toHaveLength(2);
+
+      pendingRequests[1].failureInfo!.path =
+        'network_request_timed_out_no_response';
+      pendingRequests[1].resolve(null);
+
+      pendingRequests[0].failureInfo!.path = 'network_rate_limited';
+      pendingRequests[0].resolve(null);
+
+      const [result1, result2] = await Promise.all([
+        result1Promise,
+        result2Promise,
+      ]);
+
+      expect(result1).toEqual({
+        success: false,
+        statusCode: -1,
+        failurePath: 'network_rate_limited',
+      });
+      expect(result2).toEqual({
+        success: false,
+        statusCode: -1,
+        failurePath: 'network_request_timed_out_no_response',
+      });
     });
 
     it('should handle mixed success and failure sends', async () => {

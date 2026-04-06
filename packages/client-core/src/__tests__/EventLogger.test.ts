@@ -34,7 +34,6 @@ describe('EventLogger', () => {
     mockNetwork = {
       post: jest.fn(),
       beacon: jest.fn(),
-      getLastRequestFailurePathAndReset: jest.fn(() => null),
       isBeaconSupported: jest.fn(() => false),
       setLogEventCompressionMode: jest.fn(),
     } as any;

@@ -67,6 +67,10 @@ export type RequestArgsWithData = Flatten<
   } & DataFlags
 >;
 
+export type RequestFailureInfo = {
+  path?: string;
+};
+
 type BeaconRequestArgs = Pick<
   RequestArgsWithData,
   'data' | 'sdkKey' | 'urlConfig' | 'params' | 'isCompressable' | 'attempt'
@@ -100,7 +104,6 @@ export class NetworkCore {
 
   private _leakyBucket: Record<string, LeakyBucketEntry> = {};
   private _lastUsedInitUrl: string | null = null;
-  private _lastRequestFailurePath: string | null = null;
 
   constructor(
     options: AnyStatsigOptions | null,
@@ -146,17 +149,11 @@ export class NetworkCore {
     return tempUrl;
   }
 
-  getLastRequestFailurePathAndReset(): string | null {
-    const tempPath = this._lastRequestFailurePath;
-    this._lastRequestFailurePath = null;
-    return tempPath;
-  }
-
-  beacon(args: BeaconRequestArgs): boolean {
-    this._lastRequestFailurePath = null;
-
+  beacon(args: BeaconRequestArgs, failureInfo?: RequestFailureInfo): boolean {
     if (!_ensureValidSdkKey(args)) {
-      this._lastRequestFailurePath = 'beacon_invalid_sdk_key';
+      if (failureInfo) {
+        failureInfo.path = 'beacon_invalid_sdk_key';
+      }
       return false;
     }
 
@@ -167,23 +164,29 @@ export class NetworkCore {
     try {
       const success = nav.sendBeacon.bind(nav)(url, argsInternal.body);
       if (!success) {
-        this._lastRequestFailurePath = 'beacon_send_false';
+        if (failureInfo) {
+          failureInfo.path = 'beacon_send_false';
+        }
       }
       return success;
     } catch (error) {
-      this._lastRequestFailurePath = 'beacon_send_exception';
+      if (failureInfo) {
+        failureInfo.path = 'beacon_send_exception';
+      }
       throw error;
     }
   }
 
-  async post(args: RequestArgsWithData): Promise<NetworkResponse | null> {
-    this._lastRequestFailurePath = null;
+  async post(
+    args: RequestArgsWithData,
+    failureInfo?: RequestFailureInfo,
+  ): Promise<NetworkResponse | null> {
     const argsInternal = this._getInternalRequestArgs('POST', args);
 
     this._tryEncodeBody(argsInternal);
     await this._tryToCompressBody(argsInternal);
 
-    return this._sendRequest(argsInternal);
+    return this._sendRequest(argsInternal, failureInfo);
   }
 
   get(args: RequestArgs): Promise<NetworkResponse | null> {
@@ -193,14 +196,19 @@ export class NetworkCore {
 
   private async _sendRequest(
     args: RequestArgsInternal,
+    failureInfo?: RequestFailureInfo,
   ): Promise<NetworkResponse | null> {
     if (!_ensureValidSdkKey(args)) {
-      this._lastRequestFailurePath = 'network_invalid_sdk_key';
+      if (failureInfo) {
+        failureInfo.path = 'network_invalid_sdk_key';
+      }
       return null;
     }
 
     if (this._netConfig.preventAllNetworkTraffic) {
-      this._lastRequestFailurePath = 'network_prevent_all_network_traffic';
+      if (failureInfo) {
+        failureInfo.path = 'network_prevent_all_network_traffic';
+      }
       return null;
     }
 
@@ -211,7 +219,9 @@ export class NetworkCore {
       Log.warn(
         `Request to ${endpoint} was blocked because you are making requests too frequently.`,
       );
-      this._lastRequestFailurePath = 'network_rate_limited';
+      if (failureInfo) {
+        failureInfo.path = 'network_rate_limited';
+      }
       return null;
     }
 
@@ -316,20 +326,25 @@ export class NetworkCore {
         }
 
         if (response == null) {
-          this._lastRequestFailurePath = timedOut
-            ? 'network_request_timed_out_no_response'
-            : 'network_request_exception_no_response';
+          if (failureInfo) {
+            failureInfo.path = timedOut
+              ? 'network_request_timed_out_no_response'
+              : 'network_request_exception_no_response';
+          }
         }
         return null;
       }
 
       await _exponentialBackoff(currentAttempt);
 
-      return this._sendRequest({
-        ...args,
-        retries,
-        attempt: currentAttempt + 1,
-      });
+      return this._sendRequest(
+        {
+          ...args,
+          retries,
+          attempt: currentAttempt + 1,
+        },
+        failureInfo,
+      );
     }
   }
 

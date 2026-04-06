@@ -288,19 +288,21 @@ describe('Network Core', () => {
       fetchMock.mockClear();
       emitter.mockClear();
       (network as any)._leakyBucket = {};
-      network.getLastRequestFailurePathAndReset();
     });
 
     it('tracks invalid sdk key failures for post', async () => {
-      await network.post({
-        sdkKey: '',
-        urlConfig,
-        data: {},
-      });
+      const failureInfo: { path?: string } = {};
 
-      expect(network.getLastRequestFailurePathAndReset()).toBe(
-        'network_invalid_sdk_key',
+      await network.post(
+        {
+          sdkKey: '',
+          urlConfig,
+          data: {},
+        },
+        failureInfo,
       );
+
+      expect(failureInfo.path).toBe('network_invalid_sdk_key');
     });
 
     it('tracks preventAllNetworkTraffic failures', async () => {
@@ -312,16 +314,18 @@ describe('Network Core', () => {
         },
         emitter,
       );
+      const failureInfo: { path?: string } = {};
 
-      await blockedNetwork.post({
-        sdkKey,
-        urlConfig,
-        data: {},
-      });
-
-      expect(blockedNetwork.getLastRequestFailurePathAndReset()).toBe(
-        'network_prevent_all_network_traffic',
+      await blockedNetwork.post(
+        {
+          sdkKey,
+          urlConfig,
+          data: {},
+        },
+        failureInfo,
       );
+
+      expect(failureInfo.path).toBe('network_prevent_all_network_traffic');
     });
 
     it('tracks rate limited failures', async () => {
@@ -329,16 +333,18 @@ describe('Network Core', () => {
         count: 50,
         lastRequestTime: Date.now(),
       };
+      const failureInfo: { path?: string } = {};
 
-      await network.post({
-        sdkKey,
-        urlConfig,
-        data: {},
-      });
-
-      expect(network.getLastRequestFailurePathAndReset()).toBe(
-        'network_rate_limited',
+      await network.post(
+        {
+          sdkKey,
+          urlConfig,
+          data: {},
+        },
+        failureInfo,
       );
+
+      expect(failureInfo.path).toBe('network_rate_limited');
     });
 
     it('tracks timeout failures without a response', async () => {
@@ -357,43 +363,49 @@ describe('Network Core', () => {
         },
         emitter,
       );
+      const failureInfo: { path?: string } = {};
 
-      await timeoutNetwork.post({
-        sdkKey,
-        urlConfig,
-        data: {},
-      });
-
-      expect(timeoutNetwork.getLastRequestFailurePathAndReset()).toBe(
-        'network_request_timed_out_no_response',
+      await timeoutNetwork.post(
+        {
+          sdkKey,
+          urlConfig,
+          data: {},
+        },
+        failureInfo,
       );
+
+      expect(failureInfo.path).toBe('network_request_timed_out_no_response');
     });
 
     it('tracks non-timeout exceptions without a response', async () => {
       fetchMock.mockRejectOnce(new Error('Lost Connection'));
+      const failureInfo: { path?: string } = {};
 
-      await network.post({
-        sdkKey,
-        urlConfig,
-        data: {},
-      });
-
-      expect(network.getLastRequestFailurePathAndReset()).toBe(
-        'network_request_exception_no_response',
+      await network.post(
+        {
+          sdkKey,
+          urlConfig,
+          data: {},
+        },
+        failureInfo,
       );
+
+      expect(failureInfo.path).toBe('network_request_exception_no_response');
     });
 
     it('tracks invalid sdk key failures for beacon', () => {
-      const result = network.beacon({
-        sdkKey: '',
-        urlConfig,
-        data,
-      });
+      const failureInfo: { path?: string } = {};
+      const result = network.beacon(
+        {
+          sdkKey: '',
+          urlConfig,
+          data,
+        },
+        failureInfo,
+      );
 
       expect(result).toBe(false);
-      expect(network.getLastRequestFailurePathAndReset()).toBe(
-        'beacon_invalid_sdk_key',
-      );
+      expect(failureInfo.path).toBe('beacon_invalid_sdk_key');
     });
 
     it('tracks beacon false failures', () => {
@@ -401,17 +413,19 @@ describe('Network Core', () => {
       const bindSpy = jest.fn(() => sendBeacon);
       navigator.sendBeacon = sendBeacon as typeof navigator.sendBeacon;
       navigator.sendBeacon.bind = bindSpy as typeof navigator.sendBeacon.bind;
+      const failureInfo: { path?: string } = {};
 
-      const result = network.beacon({
-        sdkKey,
-        urlConfig,
-        data,
-      });
+      const result = network.beacon(
+        {
+          sdkKey,
+          urlConfig,
+          data,
+        },
+        failureInfo,
+      );
 
       expect(result).toBe(false);
-      expect(network.getLastRequestFailurePathAndReset()).toBe(
-        'beacon_send_false',
-      );
+      expect(failureInfo.path).toBe('beacon_send_false');
     });
 
     it('tracks beacon exception failures', () => {
@@ -421,17 +435,19 @@ describe('Network Core', () => {
       const bindSpy = jest.fn(() => sendBeacon);
       navigator.sendBeacon = sendBeacon as typeof navigator.sendBeacon;
       navigator.sendBeacon.bind = bindSpy as typeof navigator.sendBeacon.bind;
+      const failureInfo: { path?: string } = {};
 
       expect(() =>
-        network.beacon({
-          sdkKey,
-          urlConfig,
-          data,
-        }),
+        network.beacon(
+          {
+            sdkKey,
+            urlConfig,
+            data,
+          },
+          failureInfo,
+        ),
       ).toThrow('Beacon failed');
-      expect(network.getLastRequestFailurePathAndReset()).toBe(
-        'beacon_send_exception',
-      );
+      expect(failureInfo.path).toBe('beacon_send_exception');
     });
   });
 });

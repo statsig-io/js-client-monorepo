@@ -1,7 +1,11 @@
 import { EventBatch } from './EventBatch';
 import { Log } from './Log';
 import { NetworkParam } from './NetworkConfig';
-import { NetworkCore, RequestArgsWithData } from './NetworkCore';
+import {
+  NetworkCore,
+  RequestArgsWithData,
+  RequestFailureInfo,
+} from './NetworkCore';
 import { SDKType } from './SDKType';
 import { StatsigClientEmitEventFunc } from './StatsigClientBase';
 import { SDK_VERSION } from './StatsigMetadata';
@@ -45,8 +49,7 @@ export class EventSender {
 
   async sendBatch(batch: EventBatch): Promise<EventSendResult> {
     let failurePath = 'event_sender_unexpected_exception';
-
-    this._network.getLastRequestFailurePathAndReset();
+    const transportFailure: RequestFailureInfo = {};
 
     try {
       const isClosing = _isUnloading();
@@ -65,8 +68,8 @@ export class EventSender {
         ? 'event_sender_unexpected_exception'
         : 'event_sender_post_exception';
       const response = shouldUseBeacon
-        ? this._sendEventsViaBeacon(batch)
-        : await this._sendEventsViaPost(batch);
+        ? this._sendEventsViaBeacon(batch, transportFailure)
+        : await this._sendEventsViaPost(batch, transportFailure);
 
       if (response.success) {
         failurePath = 'event_sender_logs_flushed_emitter_exception';
@@ -86,23 +89,26 @@ export class EventSender {
       return {
         success: false,
         statusCode: -1,
-        failurePath:
-          this._network.getLastRequestFailurePathAndReset() ?? failurePath,
+        failurePath: transportFailure.path ?? failurePath,
       };
     }
   }
 
   private async _sendEventsViaPost(
     batch: EventBatch,
+    failureInfo: RequestFailureInfo,
   ): Promise<EventSendResult> {
-    const result = await this._network.post(this._getRequestData(batch));
+    const result = await this._network.post(
+      this._getRequestData(batch),
+      failureInfo,
+    );
     const code = result?.code ?? -1;
     if (code === -1) {
       return {
         success: false,
         statusCode: -1,
         failurePath:
-          this._network.getLastRequestFailurePathAndReset() ??
+          failureInfo.path ??
           (result === undefined
             ? 'event_sender_post_returned_undefined'
             : 'event_sender_post_returned_null'),
@@ -111,19 +117,24 @@ export class EventSender {
     return { success: code >= 200 && code < 300, statusCode: code };
   }
 
-  private _sendEventsViaBeacon(batch: EventBatch): {
+  private _sendEventsViaBeacon(
+    batch: EventBatch,
+    failureInfo: RequestFailureInfo,
+  ): {
     success: boolean;
     statusCode: number;
     failurePath?: string;
   } {
-    const success = this._network.beacon(this._getRequestData(batch));
+    const success = this._network.beacon(
+      this._getRequestData(batch),
+      failureInfo,
+    );
     return {
       success,
       statusCode: success ? 200 : -1,
       failurePath: success
         ? undefined
-        : this._network.getLastRequestFailurePathAndReset() ??
-          'beacon_send_false',
+        : failureInfo.path ?? 'beacon_send_false',
     };
   }
 
