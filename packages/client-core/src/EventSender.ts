@@ -21,6 +21,7 @@ type EventSendResult = {
   success: boolean;
   statusCode: number;
   failurePath?: string;
+  failureErrorMessage?: string;
 };
 
 export class EventSender {
@@ -83,6 +84,9 @@ export class EventSender {
         success: false,
         statusCode: response.statusCode,
         failurePath: response.failurePath,
+        ...(response.failureErrorMessage
+          ? { failureErrorMessage: response.failureErrorMessage }
+          : {}),
       };
     } catch (error) {
       Log.warn('Failed to send batch:', error);
@@ -90,6 +94,9 @@ export class EventSender {
         success: false,
         statusCode: -1,
         failurePath: transportFailure.path ?? failurePath,
+        ...(transportFailure.errorMessage
+          ? { failureErrorMessage: transportFailure.errorMessage }
+          : {}),
       };
     }
   }
@@ -112,6 +119,9 @@ export class EventSender {
           (result === undefined
             ? 'event_sender_post_returned_undefined'
             : 'event_sender_post_returned_null'),
+        ...(failureInfo.errorMessage
+          ? { failureErrorMessage: failureInfo.errorMessage }
+          : {}),
       };
     }
     return { success: code >= 200 && code < 300, statusCode: code };
@@ -124,6 +134,7 @@ export class EventSender {
     success: boolean;
     statusCode: number;
     failurePath?: string;
+    failureErrorMessage?: string;
   } {
     const success = this._network.beacon(
       this._getRequestData(batch),
@@ -135,6 +146,9 @@ export class EventSender {
       failurePath: success
         ? undefined
         : failureInfo.path ?? 'beacon_send_false',
+      ...(!success && failureInfo.errorMessage
+        ? { failureErrorMessage: failureInfo.errorMessage }
+        : {}),
     };
   }
 

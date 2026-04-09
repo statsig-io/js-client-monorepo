@@ -356,6 +356,7 @@ export class FlushCoordinator {
       flushType,
       result.statusCode,
       result.failurePath,
+      result.failureErrorMessage,
     );
     return false;
   }
@@ -414,6 +415,7 @@ export class FlushCoordinator {
     flushType: FlushType,
     statusCode: number,
     failurePath?: string,
+    failureErrorMessage?: string,
   ): void {
     if (flushType === FlushType.Shutdown) {
       Log.warn(
@@ -436,6 +438,7 @@ export class FlushCoordinator {
         statusCode,
         batch.attempts,
         failurePath,
+        failureErrorMessage,
       );
       return;
     }
@@ -452,6 +455,7 @@ export class FlushCoordinator {
         statusCode,
         batch.attempts,
         failurePath,
+        failureErrorMessage,
       );
       return;
     }

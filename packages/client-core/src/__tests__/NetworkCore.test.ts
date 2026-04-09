@@ -363,7 +363,7 @@ describe('Network Core', () => {
         },
         emitter,
       );
-      const failureInfo: { path?: string } = {};
+      const failureInfo: { path?: string; errorMessage?: string } = {};
 
       await timeoutNetwork.post(
         {
@@ -375,11 +375,12 @@ describe('Network Core', () => {
       );
 
       expect(failureInfo.path).toBe('network_request_timed_out_no_response');
+      expect(failureInfo.errorMessage).toBe('Error: Timeout of 1ms expired.');
     });
 
     it('tracks non-timeout exceptions without a response', async () => {
       fetchMock.mockRejectOnce(new Error('Lost Connection'));
-      const failureInfo: { path?: string } = {};
+      const failureInfo: { path?: string; errorMessage?: string } = {};
 
       await network.post(
         {
@@ -391,6 +392,7 @@ describe('Network Core', () => {
       );
 
       expect(failureInfo.path).toBe('network_request_exception_no_response');
+      expect(failureInfo.errorMessage).toBe('Error: Lost Connection');
     });
 
     it('tracks invalid sdk key failures for beacon', () => {

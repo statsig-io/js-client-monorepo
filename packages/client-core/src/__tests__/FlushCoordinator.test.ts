@@ -751,6 +751,7 @@ describe('FlushCoordinator', () => {
           nonRetryableCode,
           batch.attempts,
           undefined,
+          undefined,
         );
       });
 
@@ -783,6 +784,7 @@ describe('FlushCoordinator', () => {
           retryableCode,
           batch.attempts,
           undefined,
+          undefined,
         );
       });
 
@@ -810,6 +812,36 @@ describe('FlushCoordinator', () => {
           -1,
           batch.attempts,
           'network_rate_limited',
+          undefined,
+        );
+      });
+
+      it('should forward failure error message for -1 status codes', async () => {
+        const batch = new EventBatch([createMockEvent('event-1')]);
+
+        mockBatchQueue.takeAllBatches.mockReturnValue([batch]);
+
+        const eventSenderSpy = jest.spyOn(
+          (flushCoordinator as any)._eventSender,
+          'sendBatch',
+        );
+        eventSenderSpy.mockResolvedValue({
+          success: false,
+          statusCode: -1,
+          failurePath: 'network_request_exception_no_response',
+          failureErrorMessage: 'TypeError: Failed to fetch',
+        });
+
+        await flushCoordinator.processManualFlush();
+
+        expect(mockErrorBoundary.logEventRequestFailure).toHaveBeenCalledWith(
+          1,
+          'non-retryable error',
+          FlushType.Manual,
+          -1,
+          batch.attempts,
+          'network_request_exception_no_response',
+          'TypeError: Failed to fetch',
         );
       });
 

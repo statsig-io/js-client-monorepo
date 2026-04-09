@@ -63,4 +63,42 @@ describe('Error Boundary', () => {
       storageProvider: 'set',
     });
   });
+
+  it('logs event request failure messages to sdk_exception', () => {
+    eb.logEventRequestFailure(
+      3,
+      'non-retryable error',
+      'Manual',
+      -1,
+      1,
+      'network_request_exception_no_response',
+      'TypeError: Failed to fetch',
+    );
+
+    const body = JSON.parse(
+      fetchMock.mock.calls[0]?.[1]?.body?.toString() ?? '{}',
+    );
+
+    expect(body.failurePath).toBe('network_request_exception_no_response');
+    expect(body.failureErrorMessage).toBe('TypeError: Failed to fetch');
+  });
+
+  it('omits empty event request failure messages', () => {
+    eb.logEventRequestFailure(
+      3,
+      'non-retryable error',
+      'Manual',
+      -1,
+      1,
+      'network_request_exception_no_response',
+      '',
+    );
+
+    const body = JSON.parse(
+      fetchMock.mock.calls[0]?.[1]?.body?.toString() ?? '{}',
+    );
+
+    expect(body.failurePath).toBe('network_request_exception_no_response');
+    expect(body).not.toHaveProperty('failureErrorMessage');
+  });
 });

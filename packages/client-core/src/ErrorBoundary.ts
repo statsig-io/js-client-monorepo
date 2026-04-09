@@ -74,6 +74,7 @@ export class ErrorBoundary {
     statusCode: number,
     retries: number,
     failurePath?: string,
+    failureErrorMessage?: string,
   ): void {
     const extra: Record<string, string> = {
       eventCount: String(count),
@@ -84,6 +85,12 @@ export class ErrorBoundary {
     };
     if (failurePath) {
       extra['failurePath'] = failurePath;
+    }
+    if (
+      typeof failureErrorMessage === 'string' &&
+      failureErrorMessage.length > 0
+    ) {
+      extra['failureErrorMessage'] = failureErrorMessage;
     }
     this._onError(`statsig::log_event_failed`, new Error(reason), true, extra);
   }

@@ -69,6 +69,7 @@ export type RequestArgsWithData = Flatten<
 
 export type RequestFailureInfo = {
   path?: string;
+  errorMessage?: string;
 };
 
 type BeaconRequestArgs = Pick<
@@ -330,6 +331,9 @@ export class NetworkCore {
             failureInfo.path = timedOut
               ? 'network_request_timed_out_no_response'
               : 'network_request_exception_no_response';
+            if (errorMessage) {
+              failureInfo.errorMessage = errorMessage;
+            }
           }
         }
         return null;

@@ -337,6 +337,26 @@ describe('EventSender', () => {
           });
         });
 
+        it('should use the network failure error message when POST returns null', async () => {
+          mockNetwork.post.mockImplementation(async (_args, failureInfo) => {
+            if (failureInfo) {
+              failureInfo.path = 'network_request_exception_no_response';
+              failureInfo.errorMessage = 'TypeError: Failed to fetch';
+            }
+            return null as any;
+          });
+          const batch = createMockBatch(3);
+
+          const result = await eventSender.sendBatch(batch);
+
+          expect(result).toEqual({
+            success: false,
+            statusCode: -1,
+            failurePath: 'network_request_exception_no_response',
+            failureErrorMessage: 'TypeError: Failed to fetch',
+          });
+        });
+
         it('should use the fallback null path when POST returns null without a network path', async () => {
           mockNetwork.post.mockResolvedValue(null as any);
           const batch = createMockBatch(3);
