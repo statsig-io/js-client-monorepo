@@ -28,6 +28,14 @@ import { UrlConfiguration } from './UrlConfiguration';
 
 type PrepareFlushCallBack = () => void;
 
+const RETRYABLE_NO_RESPONSE_FAILURE_PATHS = new Set([
+  'network_request_timed_out_no_response',
+  'network_request_exception_no_response',
+  'event_sender_post_returned_null',
+  'event_sender_post_returned_undefined',
+  'event_sender_post_exception',
+]);
+
 export class FlushCoordinator {
   private _flushInterval: FlushInterval;
   private _batchQueue: BatchQueue;
@@ -387,6 +395,20 @@ export class FlushCoordinator {
     return this._batchQueue.createBatches(allEvents);
   }
 
+  private _isRetryableBatch(statusCode: number, failurePath?: string): boolean {
+    if (RETRYABLE_CODES.has(statusCode)) {
+      return true;
+    }
+    if (
+      statusCode === -1 &&
+      failurePath &&
+      RETRYABLE_NO_RESPONSE_FAILURE_PATHS.has(failurePath)
+    ) {
+      return true;
+    }
+    return false;
+  }
+
   private _handleFailure(
     batch: EventBatch,
     flushType: FlushType,
@@ -402,7 +424,7 @@ export class FlushCoordinator {
       return;
     }
 
-    if (!RETRYABLE_CODES.has(statusCode)) {
+    if (!this._isRetryableBatch(statusCode, failurePath)) {
       Log.warn(
         `${flushType} flush failed after ${batch.attempts} attempt(s). ` +
           `${batch.events.length} event(s) will be dropped. Non-retryable error: ${statusCode}`,

@@ -813,6 +813,59 @@ describe('FlushCoordinator', () => {
         );
       });
 
+      it('should requeue retryable -1 status code failures', async () => {
+        const batch = new EventBatch([createMockEvent('event-1')]);
+
+        mockBatchQueue.takeAllBatches.mockReturnValue([batch]);
+        mockBatchQueue.requeueBatch.mockReturnValue(0);
+
+        const eventSenderSpy = jest.spyOn(
+          (flushCoordinator as any)._eventSender,
+          'sendBatch',
+        );
+        eventSenderSpy.mockResolvedValue({
+          success: false,
+          statusCode: -1,
+          failurePath: 'network_request_exception_no_response',
+        });
+
+        await flushCoordinator.processManualFlush();
+
+        expect(batch.attempts).toBe(1);
+        expect(mockBatchQueue.requeueBatch).toHaveBeenCalledWith(batch);
+        expect(mockErrorBoundary.logEventRequestFailure).not.toHaveBeenCalled();
+      });
+
+      it('should forward failurePath for retryable -1 status codes when max retry attempts are exceeded', async () => {
+        const batch = new EventBatch([createMockEvent('event-1')]);
+        batch.attempts = EventRetryConstants.MAX_RETRY_ATTEMPTS + 1;
+        const failurePath = 'network_request_timed_out_no_response';
+
+        mockBatchQueue.takeAllBatches.mockReturnValue([batch]);
+
+        const eventSenderSpy = jest.spyOn(
+          (flushCoordinator as any)._eventSender,
+          'sendBatch',
+        );
+        eventSenderSpy.mockResolvedValue({
+          success: false,
+          statusCode: -1,
+          failurePath,
+        });
+
+        await flushCoordinator.processManualFlush();
+
+        expect(mockBatchQueue.requeueBatch).not.toHaveBeenCalled();
+        expect(mockErrorBoundary.logEventRequestFailure).toHaveBeenCalledWith(
+          1,
+          'max retry attempts exceeded',
+          FlushType.Manual,
+          -1,
+          batch.attempts,
+          failurePath,
+        );
+      });
+
       it('should not call logEventRequestFailure when batch succeeds', async () => {
         const batch = new EventBatch([createMockEvent('event-1')]);
 
