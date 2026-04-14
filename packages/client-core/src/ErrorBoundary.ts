@@ -181,8 +181,9 @@ export class ErrorBoundary {
           ...(extra ?? {}),
         };
 
-        const func = this._options?.networkConfig?.networkOverrideFunc ?? fetch;
-        await func(EXCEPTION_ENDPOINT, {
+        const networkConfig = this._options?.networkConfig;
+        const func = networkConfig?.networkOverrideFunc ?? fetch;
+        await func(networkConfig?.sdkExceptionUrl ?? EXCEPTION_ENDPOINT, {
           method: 'POST',
           headers: {
             'STATSIG-API-KEY': this._sdkKey,

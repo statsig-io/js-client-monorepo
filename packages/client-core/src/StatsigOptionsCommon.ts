@@ -67,6 +67,13 @@ export type NetworkConfigCommon = {
   logEventUrl?: string;
 
   /**
+   * The URL used to report SDK exceptions via a POST request.
+   *
+   * default: `https://statsigapi.net/v1/sdk_exception`
+   */
+  sdkExceptionUrl?: string;
+
+  /**
    * A list of URLs to try if the primary logEventUrl fails.
    */
   logEventFallbackUrls?: string[];

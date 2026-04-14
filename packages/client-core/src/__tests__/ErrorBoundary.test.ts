@@ -49,6 +49,21 @@ describe('Error Boundary', () => {
     );
   });
 
+  it('uses custom sdk_exception url when configured', () => {
+    eb = new ErrorBoundary('client-key', {
+      networkConfig: {
+        sdkExceptionUrl: 'https://proxy.example.com/sdk_exception',
+      },
+    });
+
+    throwing();
+
+    expect(fetchMock.mock.calls).toHaveLength(1);
+    expect(fetchMock.mock.calls[0][0]).toBe(
+      'https://proxy.example.com/sdk_exception',
+    );
+  });
+
   it('logs statsig option to sdk_exception', () => {
     throwing();
 
