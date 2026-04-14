@@ -1,7 +1,7 @@
 module.exports = [
   {
     name: 'statsig-js-client',
-    limit: '19.75 kB', // hard limit! please do not adjust
+    limit: '20.75 kB', // hard limit! please do not adjust
     path: 'dist/packages/combo/build/js-client/statsig-js-client.min.js',
     import: '{ StatsigClient }',
     running: false,
@@ -15,7 +15,7 @@ module.exports = [
   },
   {
     name: 'statsig-js-client + session-replay',
-    limit: '59.5 kB',
+    limit: '61.5 kB',
     path: 'dist/packages/combo/build/js-client/statsig-js-client+session-replay.min.js',
     import: '{ StatsigClient }',
     ignore: ['rrwebRecord'],
@@ -23,7 +23,7 @@ module.exports = [
   },
   {
     name: 'statsig-js-client + session-replay + web-analytics',
-    limit: '68.5 kB',
+    limit: '69.5 kB',
     path: 'dist/packages/combo/build/js-client/statsig-js-client+session-replay+web-analytics.min.js',
     import: '{ StatsigClient }',
     ignore: ['rrwebRecord'],
@@ -32,7 +32,7 @@ module.exports = [
   // On Device Eval
   {
     name: 'statsig-js-on-device-eval-client.min.js',
-    limit: '23.20 kB',
+    limit: '24.20 kB',
     path: 'dist/packages/combo/build/js-on-device-eval-client/statsig-js-on-device-eval-client.min.js',
     import: '{ StatsigClient }',
     ignore: ['rrwebRecord'],

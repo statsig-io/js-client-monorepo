@@ -22,6 +22,8 @@ type EventSendResult = {
   statusCode: number;
   failurePath?: string;
   failureErrorMessage?: string;
+  failureDiagnosticBucket?: string;
+  failureDiagnosticMetadata?: Record<string, string>;
 };
 
 export class EventSender {
@@ -87,6 +89,12 @@ export class EventSender {
         ...(response.failureErrorMessage
           ? { failureErrorMessage: response.failureErrorMessage }
           : {}),
+        ...(response.failureDiagnosticBucket
+          ? { failureDiagnosticBucket: response.failureDiagnosticBucket }
+          : {}),
+        ...(response.failureDiagnosticMetadata
+          ? { failureDiagnosticMetadata: response.failureDiagnosticMetadata }
+          : {}),
       };
     } catch (error) {
       Log.warn('Failed to send batch:', error);
@@ -96,6 +104,12 @@ export class EventSender {
         failurePath: transportFailure.path ?? failurePath,
         ...(transportFailure.errorMessage
           ? { failureErrorMessage: transportFailure.errorMessage }
+          : {}),
+        ...(transportFailure.diagnosticBucket
+          ? { failureDiagnosticBucket: transportFailure.diagnosticBucket }
+          : {}),
+        ...(transportFailure.diagnosticMetadata
+          ? { failureDiagnosticMetadata: transportFailure.diagnosticMetadata }
           : {}),
       };
     }
@@ -122,6 +136,12 @@ export class EventSender {
         ...(failureInfo.errorMessage
           ? { failureErrorMessage: failureInfo.errorMessage }
           : {}),
+        ...(failureInfo.diagnosticBucket
+          ? { failureDiagnosticBucket: failureInfo.diagnosticBucket }
+          : {}),
+        ...(failureInfo.diagnosticMetadata
+          ? { failureDiagnosticMetadata: failureInfo.diagnosticMetadata }
+          : {}),
       };
     }
     return { success: code >= 200 && code < 300, statusCode: code };
@@ -135,6 +155,8 @@ export class EventSender {
     statusCode: number;
     failurePath?: string;
     failureErrorMessage?: string;
+    failureDiagnosticBucket?: string;
+    failureDiagnosticMetadata?: Record<string, string>;
   } {
     const success = this._network.beacon(
       this._getRequestData(batch),
@@ -148,6 +170,12 @@ export class EventSender {
         : failureInfo.path ?? 'beacon_send_false',
       ...(!success && failureInfo.errorMessage
         ? { failureErrorMessage: failureInfo.errorMessage }
+        : {}),
+      ...(!success && failureInfo.diagnosticBucket
+        ? { failureDiagnosticBucket: failureInfo.diagnosticBucket }
+        : {}),
+      ...(!success && failureInfo.diagnosticMetadata
+        ? { failureDiagnosticMetadata: failureInfo.diagnosticMetadata }
         : {}),
     };
   }

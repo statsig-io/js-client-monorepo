@@ -83,6 +83,37 @@ describe('Error Boundary', () => {
     expect(body.failureErrorMessage).toBe('TypeError: Failed to fetch');
   });
 
+  it('logs event request failure diagnostics to sdk_exception', () => {
+    eb.logEventRequestFailure(
+      3,
+      'max retry attempts exceeded',
+      'Manual',
+      -1,
+      5,
+      'network_request_exception_no_response',
+      'TypeError: Failed to fetch',
+      'cross_origin_custom_headers_preflight_risk',
+      {
+        elapsedMsBucket: '<250',
+        bodySizeBucket: '<16384',
+        crossOrigin: 'true',
+        hasCustomUrl: 'true',
+      },
+    );
+
+    const body = JSON.parse(
+      fetchMock.mock.calls[0]?.[1]?.body?.toString() ?? '{}',
+    );
+
+    expect(body.failureDiagnosticBucket).toBe(
+      'cross_origin_custom_headers_preflight_risk',
+    );
+    expect(body.failureDiagnostic_elapsedMsBucket).toBe('<250');
+    expect(body.failureDiagnostic_bodySizeBucket).toBe('<16384');
+    expect(body.failureDiagnostic_crossOrigin).toBe('true');
+    expect(body.failureDiagnostic_hasCustomUrl).toBe('true');
+  });
+
   it('omits empty event request failure messages', () => {
     eb.logEventRequestFailure(
       3,

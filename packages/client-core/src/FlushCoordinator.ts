@@ -357,6 +357,8 @@ export class FlushCoordinator {
       result.statusCode,
       result.failurePath,
       result.failureErrorMessage,
+      result.failureDiagnosticBucket,
+      result.failureDiagnosticMetadata,
     );
     return false;
   }
@@ -416,6 +418,8 @@ export class FlushCoordinator {
     statusCode: number,
     failurePath?: string,
     failureErrorMessage?: string,
+    failureDiagnosticBucket?: string,
+    failureDiagnosticMetadata?: Record<string, string>,
   ): void {
     if (flushType === FlushType.Shutdown) {
       Log.warn(
@@ -427,35 +431,41 @@ export class FlushCoordinator {
     }
 
     if (!this._isRetryableBatch(statusCode, failurePath)) {
+      const reason = `non-retryable error`;
       Log.warn(
         `${flushType} flush failed after ${batch.attempts} attempt(s). ` +
           `${batch.events.length} event(s) will be dropped. Non-retryable error: ${statusCode}`,
       );
       this._errorBoundary.logEventRequestFailure(
         batch.events.length,
-        `non-retryable error`,
+        reason,
         flushType,
         statusCode,
         batch.attempts,
         failurePath,
         failureErrorMessage,
+        failureDiagnosticBucket,
+        failureDiagnosticMetadata,
       );
       return;
     }
 
     if (batch.attempts >= EventRetryConstants.MAX_RETRY_ATTEMPTS) {
+      const reason = `max retry attempts exceeded`;
       Log.warn(
         `${flushType} flush failed after ${batch.attempts} attempt(s). ` +
           `${batch.events.length} event(s) will be dropped.`,
       );
       this._errorBoundary.logEventRequestFailure(
         batch.events.length,
-        `max retry attempts exceeded`,
+        reason,
         flushType,
         statusCode,
         batch.attempts,
         failurePath,
         failureErrorMessage,
+        failureDiagnosticBucket,
+        failureDiagnosticMetadata,
       );
       return;
     }

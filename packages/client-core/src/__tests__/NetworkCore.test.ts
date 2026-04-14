@@ -363,7 +363,12 @@ describe('Network Core', () => {
         },
         emitter,
       );
-      const failureInfo: { path?: string; errorMessage?: string } = {};
+      const failureInfo: {
+        path?: string;
+        errorMessage?: string;
+        diagnosticBucket?: string;
+        diagnosticMetadata?: Record<string, string>;
+      } = {};
 
       await timeoutNetwork.post(
         {
@@ -376,16 +381,40 @@ describe('Network Core', () => {
 
       expect(failureInfo.path).toBe('network_request_timed_out_no_response');
       expect(failureInfo.errorMessage).toBe('Error: Timeout of 1ms expired.');
+      expect(failureInfo.diagnosticBucket).toBe('timeout');
+      expect(failureInfo.diagnosticMetadata).toMatchObject({
+        bodySizeBucket: '<16384',
+        hasCustomUrl: 'true',
+        isUnloading: 'false',
+        online: 'true',
+        visibilityState: 'visible',
+      });
+      expect(failureInfo.diagnosticMetadata?.['crossOrigin']).toEqual(
+        expect.any(String),
+      );
+      expect(failureInfo.diagnosticMetadata?.['elapsedMsBucket']).toEqual(
+        expect.any(String),
+      );
     });
 
     it('tracks non-timeout exceptions without a response', async () => {
       fetchMock.mockRejectOnce(new Error('Lost Connection'));
-      const failureInfo: { path?: string; errorMessage?: string } = {};
+      const failureInfo: {
+        path?: string;
+        errorMessage?: string;
+        diagnosticBucket?: string;
+        diagnosticMetadata?: Record<string, string>;
+      } = {};
 
       await network.post(
         {
-          sdkKey,
-          urlConfig,
+          sdkKey: `${sdkKey}-immediate`,
+          urlConfig: new UrlConfiguration(
+            Endpoint._initialize,
+            null,
+            null,
+            null,
+          ),
           data: {},
         },
         failureInfo,
@@ -393,6 +422,62 @@ describe('Network Core', () => {
 
       expect(failureInfo.path).toBe('network_request_exception_no_response');
       expect(failureInfo.errorMessage).toBe('Error: Lost Connection');
+      expect(failureInfo.diagnosticBucket).toBe('immediate_network_rejection');
+      expect(failureInfo.diagnosticMetadata).toMatchObject({
+        bodySizeBucket: '<16384',
+        crossOrigin: 'true',
+        hasCustomUrl: 'false',
+        isUnloading: 'false',
+        online: 'true',
+        visibilityState: 'visible',
+      });
+      expect(failureInfo.diagnosticMetadata?.['elapsedMsBucket']).toEqual(
+        expect.any(String),
+      );
+    });
+
+    it('buckets cross-origin failures with custom headers as preflight risk', async () => {
+      fetchMock.mockRejectOnce(new TypeError('Failed to fetch'));
+      const failureInfo: {
+        path?: string;
+        errorMessage?: string;
+        diagnosticBucket?: string;
+        diagnosticMetadata?: Record<string, string>;
+      } = {};
+      const crossOriginConfig = new UrlConfiguration(
+        Endpoint._rgstr,
+        'https://events.example.com/v1/rgstr',
+        null,
+        null,
+      );
+
+      await network.post(
+        {
+          sdkKey,
+          urlConfig: crossOriginConfig,
+          data: {},
+          headers: {
+            'statsig-event-count': '1',
+          },
+        },
+        failureInfo,
+      );
+
+      expect(failureInfo.path).toBe('network_request_exception_no_response');
+      expect(failureInfo.diagnosticBucket).toBe(
+        'cross_origin_custom_headers_preflight_risk',
+      );
+      expect(failureInfo.diagnosticMetadata).toMatchObject({
+        bodySizeBucket: '<16384',
+        crossOrigin: 'true',
+        hasCustomUrl: 'true',
+        isUnloading: 'false',
+        online: 'true',
+        visibilityState: 'visible',
+      });
+      expect(failureInfo.diagnosticMetadata?.['elapsedMsBucket']).toEqual(
+        expect.any(String),
+      );
     });
 
     it('tracks invalid sdk key failures for beacon', () => {

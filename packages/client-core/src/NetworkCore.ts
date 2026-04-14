@@ -70,6 +70,8 @@ export type RequestArgsWithData = Flatten<
 export type RequestFailureInfo = {
   path?: string;
   errorMessage?: string;
+  diagnosticBucket?: string;
+  diagnosticMetadata?: Record<string, string>;
 };
 
 type BeaconRequestArgs = Pick<
@@ -230,6 +232,7 @@ export class NetworkCore {
     let reqTimedOut = false;
 
     const populatedUrl = this._getPopulatedURL(args);
+    const startTime = Date.now();
 
     let response: Response | null = null;
     const keepalive = _isUnloading();
@@ -333,6 +336,18 @@ export class NetworkCore {
               : 'network_request_exception_no_response';
             if (errorMessage) {
               failureInfo.errorMessage = errorMessage;
+            }
+            try {
+              const diagnostics = _getNoResponseDiagnostics(
+                args,
+                populatedUrl,
+                timedOut,
+                Date.now() - startTime,
+              );
+              failureInfo.diagnosticBucket = diagnostics.bucket;
+              failureInfo.diagnosticMetadata = diagnostics.metadata;
+            } catch {
+              // Diagnostics should not affect request failure handling.
             }
           }
         }
@@ -592,6 +607,102 @@ function _didTimeout(errorMsg: string, abortedByTimeout: boolean): boolean {
   const timeout = errorMsg.includes('Timeout'); // probably not needed but just in case
 
   return timeout || abortedByTimeout;
+}
+
+function _getNoResponseDiagnostics(
+  args: RequestArgsInternal,
+  populatedUrl: string,
+  timedOut: boolean,
+  elapsedMs: number,
+): { bucket: string; metadata: Record<string, string> } {
+  const win = _getWindowSafe();
+  const doc = win?.document;
+  const nav = typeof navigator !== 'undefined' ? navigator : null;
+  const isUnloading = _isUnloading();
+  const online =
+    nav && typeof nav.onLine === 'boolean' ? String(nav.onLine) : 'unknown';
+  const visibilityState = doc?.visibilityState ?? 'unknown';
+  const hasCustomHeaders = Object.keys(args.headers ?? {}).length > 0;
+  const crossOrigin = _isCrossOrigin(populatedUrl, win?.location?.origin);
+  const hasCustomUrl = args.urlConfig.customUrl != null;
+  const hasFallbackUrl = args.fallbackUrl != null;
+  const elapsedMsBucket = _bucketNumber(elapsedMs, [250, 1000, 5000, 10000]);
+  const bodySizeBucket = _bucketNumber(
+    _getBodySize(args.body),
+    [16_384, 65_536, 262_144, 1_048_576],
+  );
+
+  let bucket = 'unknown_no_response';
+  if (timedOut) {
+    bucket = 'timeout';
+  } else if (online === 'false') {
+    bucket = 'browser_offline';
+  } else if (isUnloading) {
+    bucket = 'page_unloading';
+  } else if (visibilityState === 'hidden') {
+    bucket = 'page_hidden';
+  } else if (crossOrigin && hasCustomHeaders) {
+    bucket = 'cross_origin_custom_headers_preflight_risk';
+  } else if (hasCustomUrl || hasFallbackUrl) {
+    bucket = 'custom_url_no_response';
+  } else if (elapsedMs < 250) {
+    bucket = 'immediate_network_rejection';
+  }
+
+  return {
+    bucket,
+    metadata: {
+      elapsedMsBucket,
+      bodySizeBucket,
+      online,
+      visibilityState,
+      isUnloading: String(isUnloading),
+      crossOrigin: String(crossOrigin),
+      hasCustomUrl: String(hasCustomUrl),
+    },
+  };
+}
+
+function _isCrossOrigin(
+  url: string,
+  currentOrigin: string | undefined,
+): boolean {
+  if (!currentOrigin) {
+    return true;
+  }
+  return (
+    !url.startsWith(`${currentOrigin}/`) &&
+    !url.startsWith(`${currentOrigin}?`) &&
+    url !== currentOrigin
+  );
+}
+
+function _getBodySize(body: BodyInit | undefined): number {
+  if (body == null) {
+    return 0;
+  }
+  if (typeof body === 'string') {
+    return body.length;
+  }
+  if (body instanceof Uint8Array) {
+    return body.byteLength;
+  }
+  if (typeof Blob !== 'undefined' && body instanceof Blob) {
+    return body.size;
+  }
+  return -1;
+}
+
+function _bucketNumber(value: number, thresholds: number[]): string {
+  if (value < 0) {
+    return 'unknown';
+  }
+  for (const threshold of thresholds) {
+    if (value < threshold) {
+      return `<${threshold}`;
+    }
+  }
+  return `>=${thresholds[thresholds.length - 1]}`;
 }
 
 function _tryMarkInitStart(args: RequestArgsInternal, attempt: number) {

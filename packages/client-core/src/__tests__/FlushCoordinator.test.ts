@@ -752,6 +752,8 @@ describe('FlushCoordinator', () => {
           batch.attempts,
           undefined,
           undefined,
+          undefined,
+          undefined,
         );
       });
 
@@ -785,6 +787,8 @@ describe('FlushCoordinator', () => {
           batch.attempts,
           undefined,
           undefined,
+          undefined,
+          undefined,
         );
       });
 
@@ -812,6 +816,8 @@ describe('FlushCoordinator', () => {
           -1,
           batch.attempts,
           'network_rate_limited',
+          undefined,
+          undefined,
           undefined,
         );
       });
@@ -844,6 +850,12 @@ describe('FlushCoordinator', () => {
         batch.attempts = EventRetryConstants.MAX_RETRY_ATTEMPTS + 1;
         const failurePath = 'network_request_timed_out_no_response';
         const failureErrorMessage = 'Error: Timeout of 10000ms expired.';
+        const failureDiagnosticBucket = 'timeout';
+        const failureDiagnosticMetadata = {
+          elapsedMsBucket: '>=10000',
+          bodySizeBucket: '<16384',
+          online: 'true',
+        };
 
         mockBatchQueue.takeAllBatches.mockReturnValue([batch]);
 
@@ -856,6 +868,8 @@ describe('FlushCoordinator', () => {
           statusCode: -1,
           failurePath,
           failureErrorMessage,
+          failureDiagnosticBucket,
+          failureDiagnosticMetadata,
         });
 
         await flushCoordinator.processManualFlush();
@@ -869,6 +883,8 @@ describe('FlushCoordinator', () => {
           batch.attempts,
           failurePath,
           failureErrorMessage,
+          failureDiagnosticBucket,
+          failureDiagnosticMetadata,
         );
       });
 

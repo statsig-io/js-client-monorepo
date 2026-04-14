@@ -75,6 +75,8 @@ export class ErrorBoundary {
     retries: number,
     failurePath?: string,
     failureErrorMessage?: string,
+    failureDiagnosticBucket?: string,
+    failureDiagnosticMetadata?: Record<string, string>,
   ): void {
     const extra: Record<string, string> = {
       eventCount: String(count),
@@ -91,6 +93,20 @@ export class ErrorBoundary {
       failureErrorMessage.length > 0
     ) {
       extra['failureErrorMessage'] = failureErrorMessage;
+    }
+    if (
+      typeof failureDiagnosticBucket === 'string' &&
+      failureDiagnosticBucket.length > 0
+    ) {
+      extra['failureDiagnosticBucket'] = failureDiagnosticBucket;
+    }
+    if (failureDiagnosticMetadata) {
+      Object.keys(failureDiagnosticMetadata).forEach((key) => {
+        const value = failureDiagnosticMetadata[key];
+        if (value.length > 0) {
+          extra[`failureDiagnostic_${key}`] = value;
+        }
+      });
     }
     this._onError(`statsig::log_event_failed`, new Error(reason), true, extra);
   }
