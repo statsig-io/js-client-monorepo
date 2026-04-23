@@ -1,4 +1,5 @@
 import {
+  _getSafeNavigationType,
   _getSafeNetworkInformation,
   _shouldLogEvent,
 } from '../utils/commonUtils';
@@ -89,6 +90,37 @@ describe('_getSafeNetworkInformation', () => {
 
     const result = _getSafeNetworkInformation();
     expect(result).toEqual(mockConnection);
+  });
+});
+
+describe('_getSafeNavigationType', () => {
+  const originalPerformance = window.performance;
+
+  afterEach(() => {
+    Object.defineProperty(window, 'performance', {
+      value: originalPerformance,
+      writable: true,
+    });
+  });
+
+  it('should return null if performance is not defined', () => {
+    Object.defineProperty(window, 'performance', {
+      value: undefined,
+      writable: true,
+    });
+
+    expect(_getSafeNavigationType()).toBeNull();
+  });
+
+  it('should return the current navigation type when available', () => {
+    Object.defineProperty(window, 'performance', {
+      value: {
+        getEntriesByType: jest.fn().mockReturnValue([{ type: 'reload' }]),
+      },
+      writable: true,
+    });
+
+    expect(_getSafeNavigationType()).toBe('reload');
   });
 });
 

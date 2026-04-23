@@ -1,6 +1,7 @@
 import { _getDocumentSafe, _getWindowSafe } from '@statsig/client-core';
 
 import {
+  _getSafeNavigationType,
   _getSafeNetworkInformation,
   _getSafeTimezone,
   _getSafeTimezoneOffset,
@@ -32,6 +33,7 @@ export function _gatherCommonMetadata(
     timestamp: Date.now(),
     timezone: _getSafeTimezone(),
     timezone_offset: _getSafeTimezoneOffset(),
+    navigation_type: _getSafeNavigationType(),
     ..._getNetworkInfo(),
   });
 }

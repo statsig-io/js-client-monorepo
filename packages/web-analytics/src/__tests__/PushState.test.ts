@@ -44,6 +44,7 @@ describe('PushState Tests', () => {
     expect(eventData['value']).toMatch('/new-page');
     expect(eventData['metadata']).toMatchObject({
       page_url: expect.stringContaining('/new-page'),
+      navigation_type: 'pushstate',
     });
   });
 

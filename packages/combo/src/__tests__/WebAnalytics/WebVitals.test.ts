@@ -281,7 +281,13 @@ describe('WebVitalsManager', () => {
     it('should batch enqueue metrics', async () => {
       runStatsigAutoCapture(client);
 
-      callMetricCallback('CLS', { ...mockMetric, name: 'CLS', value: 0.1 });
+      callMetricCallback('CLS', {
+        ...mockMetric,
+        name: 'CLS',
+        value: 0.1,
+        rating: 'good',
+        navigationType: 'navigate',
+      });
       callMetricCallback('FCP', { ...mockMetric, name: 'FCP', value: 1200 });
       triggerWebVitalsEnqueue();
 
@@ -293,8 +299,10 @@ describe('WebVitalsManager', () => {
       expect(eventData).toBeDefined();
       expect(eventData['metadata'].cls_value).toBe(0.1);
       expect(eventData['metadata'].cls_delta).toBe(0.05);
+      expect(eventData['metadata'].cls_rating).toBe('good');
       expect(eventData['metadata'].fcp_value).toBe(1200);
       expect(eventData['metadata'].fcp_delta).toBe(0.05);
+      expect(eventData['metadata'].navigation_type).toBe('navigate');
     });
 
     it('should handle multiple metrics of the same type', async () => {
@@ -338,6 +346,8 @@ describe('WebVitalsManager', () => {
       expect(eventData['metadata'].cls_value).toBe(0.25);
       expect(eventData['metadata'].cls_delta).toBe(0.1);
       expect(eventData['metadata'].cls_id).toBe('metric-123');
+      expect(eventData['metadata'].cls_rating).toBeUndefined();
+      expect(eventData['metadata'].navigation_type).toBe('navigate');
     });
 
     it('should handle metrics with less than required properties on page change', async () => {

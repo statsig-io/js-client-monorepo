@@ -156,6 +156,26 @@ export function _getSafeNetworkInformation(): NetworkInformation | null {
   return connection;
 }
 
+export function _getSafeNavigationType(): string | null {
+  const win = _getWindowSafe();
+  if (
+    !win ||
+    !win.performance ||
+    typeof win.performance.getEntriesByType !== 'function'
+  ) {
+    return null;
+  }
+
+  try {
+    const navEntry = win.performance.getEntriesByType('navigation')[0] as
+      | PerformanceNavigationTiming
+      | undefined;
+    return navEntry?.type ?? null;
+  } catch {
+    return null;
+  }
+}
+
 export function _getSafeTimezone(): string | null {
   try {
     return Intl.DateTimeFormat().resolvedOptions().timeZone;

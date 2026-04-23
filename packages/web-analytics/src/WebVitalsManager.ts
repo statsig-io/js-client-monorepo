@@ -10,8 +10,16 @@ const VALID_METRIC_NAMES = ['CLS', 'FCP', 'INP', 'LCP', 'TTFB'];
 type WebVitalsMetric = {
   name: 'CLS' | 'FCP' | 'INP' | 'LCP' | 'TTFB';
   value: number;
-  delta: number;
+  delta?: number;
   id: string;
+  rating?: 'good' | 'needs-improvement' | 'poor';
+  navigationType?:
+    | 'navigate'
+    | 'reload'
+    | 'back-forward'
+    | 'back-forward-cache'
+    | 'prerender'
+    | 'restore';
 };
 
 export class WebVitalsManager {
@@ -107,6 +115,8 @@ export class WebVitalsManager {
       value: metricData.value,
       delta: metricData.delta,
       id: metricData.id,
+      rating: metricData.rating,
+      navigationType: metricData.navigationType,
     });
 
     if (this._metricEvent.metrics.length === VALID_METRIC_NAMES.length) {
@@ -129,6 +139,10 @@ export class WebVitalsManager {
       flattenedMetrics[`${prefix}_value`] = metric.value;
       flattenedMetrics[`${prefix}_delta`] = metric.delta;
       flattenedMetrics[`${prefix}_id`] = metric.id;
+      flattenedMetrics[`${prefix}_rating`] = metric.rating;
+      if (metric.navigationType != null) {
+        flattenedMetrics['navigation_type'] = metric.navigationType;
+      }
     });
 
     this._enqueueFn(
