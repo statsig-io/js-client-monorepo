@@ -8,7 +8,7 @@ import {
 
 import { Log } from '@statsig/client-core';
 
-import { FeatureGateOptions } from './statsig.module';
+import { FeatureGateOptions } from './statsig.providers';
 import { StatsigService } from './statsig.service';
 
 @Directive({
