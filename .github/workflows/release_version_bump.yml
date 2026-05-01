@@ -61,7 +61,7 @@ jobs:
           done
 
       - name: Checkout Statsig Repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
         with:
           repository: statsig-io/statsig
           ref: main
@@ -69,7 +69,7 @@ jobs:
           persist-credentials: false
 
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: '23'
 
@@ -101,7 +101,7 @@ jobs:
 
       - name: Commit and create PR
         id: create_pr
-        uses: peter-evans/create-pull-request@v7
+        uses: peter-evans/create-pull-request@22a9089034f40e5a961c8808d113e2c98fb63676 # v7
         with:
           token: ${{ secrets.ROIM }}
           commit-message: 'Automator: [automated][release] Bump versions for official release ${{ steps.ver_res.outputs.version }}'
@@ -121,7 +121,7 @@ jobs:
 
       - name: Enable auto-merge for PR
         if: steps.create_pr.outputs.pull-request-number != ''
-        uses: peter-evans/enable-pull-request-automerge@v3
+        uses: peter-evans/enable-pull-request-automerge@a660677d5469627102a1c1e11409dd063606628d # v3
         with:
           token: ${{ secrets.ROIM }}
           pull-request-number: ${{ steps.create_pr.outputs.pull-request-number }}
