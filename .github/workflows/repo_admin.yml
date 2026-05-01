@@ -11,7 +11,7 @@ jobs:
     timeout-minutes: 5
     steps:
       - name: Close Stale Pull Requests
-        uses: actions/stale@v9
+        uses: actions/stale@5bef64f19d7facfb25b37b414482c7164d639639 # v9
         with:
           days-before-stale: 14 # Mark Issues/PRs as stale after 18 days (3 weeks - 7 days)
           days-before-close: 7 # Close stale Issues/PRs after 7 additional days
