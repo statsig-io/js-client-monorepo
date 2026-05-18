@@ -6,6 +6,7 @@ import {
   RequestArgsWithData,
   RequestFailureInfo,
 } from './NetworkCore';
+import { _getWindowSafe } from './SafeJs';
 import { SDKType } from './SDKType';
 import { StatsigClientEmitEventFunc } from './StatsigClientBase';
 import { SDK_VERSION } from './StatsigMetadata';
@@ -181,6 +182,15 @@ export class EventSender {
   }
 
   private _getRequestData(batch: EventBatch): RequestArgsWithData {
+    const headers = this._shouldIncludeEventHeaders()
+      ? {
+          'statsig-event-count': String(batch.events.length),
+          'statsig-retry-count': String(batch.attempts),
+          'statsig-sdk-type': SDKType._get(this._sdkKey),
+          'statsig-sdk-version': SDK_VERSION,
+        }
+      : undefined;
+
     return {
       sdkKey: this._sdkKey,
       data: {
@@ -193,13 +203,28 @@ export class EventSender {
       params: {
         [NetworkParam.EventCount]: String(batch.events.length),
       },
-      headers: {
-        'statsig-event-count': String(batch.events.length),
-        'statsig-retry-count': String(batch.attempts),
-        'statsig-sdk-type': SDKType._get(this._sdkKey),
-        'statsig-sdk-version': SDK_VERSION,
-      },
+      ...(headers ? { headers } : {}),
       credentials: 'same-origin',
     };
+  }
+
+  private _shouldIncludeEventHeaders(): boolean {
+    if (this._logEventUrlConfig.customUrl == null) {
+      return true;
+    }
+
+    const currentOrigin = _getWindowSafe()?.location?.origin;
+    if (!currentOrigin) {
+      return true;
+    }
+
+    try {
+      return (
+        new URL(this._logEventUrlConfig.getUrl(), currentOrigin).origin ===
+        currentOrigin
+      );
+    } catch {
+      return false;
+    }
   }
 }
