@@ -1,15 +1,18 @@
 import {
   AnyStatsigOptions,
   ClientInitializeResponseOptions,
+  type DeepReadonly,
   type DownloadConfigSpecsResponse,
   DynamicConfigEvaluation,
   GateEvaluation,
   InitializeResponseV1WithUpdates,
   LayerEvaluation,
   SecondaryExposure,
+  type SessionReplayPrivacySettings,
   Spec,
   StatsigUser,
   StatsigUserInternal,
+  _cloneObject,
   _normalizeUser,
 } from '@statsig/client-core';
 import {
@@ -46,19 +49,19 @@ export class GCIRFormatter {
 
     let targetAppID: string | null = null;
     let targetEntities: {
-      gates: string[];
-      configs: string[];
-      experiments: string[];
+      gates: readonly string[];
+      configs: readonly string[];
+      experiments: readonly string[];
     } | null = null;
 
     const clientSDKKey = options?.clientSDKKey;
 
     const clientKeyToAppMap =
-      this._store.getValues()?.sdk_keys_to_app_ids ?? {};
+      this._store.getValuesReadOnly()?.sdk_keys_to_app_ids ?? {};
     const hashedClientKeyToAppMap =
-      this._store.getValues()?.hashed_sdk_keys_to_app_ids ?? {};
+      this._store.getValuesReadOnly()?.hashed_sdk_keys_to_app_ids ?? {};
     const hashedSDKKeysToEntities =
-      this._store.getValues()?.hashed_sdk_keys_to_entities ?? {};
+      this._store.getValuesReadOnly()?.hashed_sdk_keys_to_entities ?? {};
 
     if (clientSDKKey) {
       const hashedKey = hashString(clientSDKKey, 'djb2');
@@ -135,7 +138,7 @@ export class GCIRFormatter {
       response,
       normalizedUser,
       hashAlgo,
-      this._store.getValues()?.session_replay_info,
+      this._store.getValuesReadOnly()?.session_replay_info,
     );
 
     if (paramStores && Object.keys(paramStores).length > 0) {
@@ -153,7 +156,7 @@ export class GCIRFormatter {
     response: InitializeResponseV1WithUpdates,
     user: StatsigUserInternal,
     hashAlgo: 'none' | 'sha256' | 'djb2',
-    sessionReplayInfo: SessionReplayInfoSpec | undefined,
+    sessionReplayInfo: DeepReadonly<SessionReplayInfoSpec> | undefined,
   ): void {
     if (sessionReplayInfo == null) {
       return;
@@ -224,12 +227,15 @@ export class GCIRFormatter {
 
     if (sessionReplayInfo.session_recording_privacy_settings) {
       response.session_recording_privacy_settings =
-        sessionReplayInfo.session_recording_privacy_settings;
+        _cloneObject<SessionReplayPrivacySettings>(
+          'session_recording_privacy_settings',
+          sessionReplayInfo.session_recording_privacy_settings as SessionReplayPrivacySettings,
+        ) ?? undefined;
     }
   }
 
   private _formatSessionReplayTriggers(
-    triggers: SessionReplayTriggersSpec | undefined,
+    triggers: DeepReadonly<SessionReplayTriggersSpec> | undefined,
     random: number,
     keyTransform: (key: string) => string,
   ): Record<string, { values?: string[]; passes_sampling?: boolean }> | null {
@@ -265,9 +271,9 @@ export class GCIRFormatter {
     _options?: ClientInitializeResponseOptions,
     targetAppID?: string | null,
     targetEntities?: {
-      gates: string[];
-      configs: string[];
-      experiments: string[];
+      gates: readonly string[];
+      configs: readonly string[];
+      experiments: readonly string[];
     } | null,
     hashAlgo?: 'none' | 'sha256' | 'djb2',
   ): Record<string, GateEvaluation> {
@@ -308,9 +314,9 @@ export class GCIRFormatter {
     _options?: ClientInitializeResponseOptions,
     targetAppID?: string | null,
     targetEntities?: {
-      gates: string[];
-      configs: string[];
-      experiments: string[];
+      gates: readonly string[];
+      configs: readonly string[];
+      experiments: readonly string[];
     } | null,
     hashAlgo?: 'none' | 'sha256' | 'djb2',
   ): Record<string, DynamicConfigEvaluation> {
@@ -503,7 +509,7 @@ export class GCIRFormatter {
     targetAppID: string | null,
     hashAlgo: 'none' | 'sha256' | 'djb2',
   ): Record<string, any> | undefined {
-    const allParamStores = this._store.getValues()?.param_stores;
+    const allParamStores = this._store.getValuesReadOnly()?.param_stores;
     if (!allParamStores) {
       return undefined;
     }
@@ -579,7 +585,7 @@ export class GCIRFormatter {
   }
 
   private _getExperimentLayer(experimentName: string): string | null {
-    const values = this._store.getValues();
+    const values = this._store.getValuesReadOnly();
     if (!values?.layers) {
       return null;
     }

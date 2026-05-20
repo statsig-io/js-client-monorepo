@@ -15,6 +15,12 @@ export type Flatten<T> = {
   // eslint-disable-next-line @typescript-eslint/ban-types
 } & {};
 
+export type DeepReadonly<T> = T extends readonly (infer U)[]
+  ? readonly DeepReadonly<U>[]
+  : T extends object
+    ? { readonly [K in keyof T]: DeepReadonly<T[K]> }
+    : T;
+
 export function _typeOf(input: unknown): Primitive | 'array' {
   return Array.isArray(input) ? 'array' : typeof input;
 }

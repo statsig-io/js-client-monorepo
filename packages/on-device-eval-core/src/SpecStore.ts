@@ -1,6 +1,7 @@
 import {
   DataAdapterResult,
   DataSource,
+  type DeepReadonly,
   DownloadConfigSpecsResponse,
   ParamStoreConfig,
   Spec,
@@ -41,6 +42,10 @@ export class SpecStore {
 
   getValues(): DownloadConfigSpecsResponse | null {
     return this._rawValues ? _parseResponse(this._rawValues) : null;
+  }
+
+  getValuesReadOnly(): DeepReadonly<DownloadConfigSpecsResponse> | null {
+    return this._values as DeepReadonly<DownloadConfigSpecsResponse> | null;
   }
 
   getSource(): DataSource {
