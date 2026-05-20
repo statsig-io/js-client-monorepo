@@ -3,7 +3,7 @@ import { ErrorBoundary } from '../ErrorBoundary';
 import { EventBatch } from '../EventBatch';
 import { EventRetryConstants } from '../EventRetryConstants';
 import { FlushCoordinator } from '../FlushCoordinator';
-import { FlushType } from '../FlushTypes';
+import { FlushTypeValues } from '../FlushTypes';
 import { NetworkCore } from '../NetworkCore';
 import { PendingEvents } from '../PendingEvents';
 import { _isServerEnv } from '../SafeJs';
@@ -133,7 +133,7 @@ describe('FlushCoordinator', () => {
 
       const result = await (flushCoordinator as any)._processOneBatch(
         batch,
-        FlushType.Manual,
+        FlushTypeValues.Manual,
       );
 
       expect(result).toBe(true);
@@ -156,7 +156,7 @@ describe('FlushCoordinator', () => {
 
       const result = await (flushCoordinator as any)._processOneBatch(
         batch,
-        FlushType.Manual,
+        FlushTypeValues.Manual,
       );
 
       expect(result).toBe(true);
@@ -232,7 +232,10 @@ describe('FlushCoordinator', () => {
       await flushCoordinator.processManualFlush();
 
       expect(processOneBatchSpy).toHaveBeenCalledTimes(1);
-      expect(processOneBatchSpy).toHaveBeenCalledWith(batch, FlushType.Manual);
+      expect(processOneBatchSpy).toHaveBeenCalledWith(
+        batch,
+        FlushTypeValues.Manual,
+      );
     });
 
     it('should process multiple batches in parallel', async () => {
@@ -245,9 +248,18 @@ describe('FlushCoordinator', () => {
       await flushCoordinator.processManualFlush();
 
       expect(processOneBatchSpy).toHaveBeenCalledTimes(3);
-      expect(processOneBatchSpy).toHaveBeenCalledWith(batch1, FlushType.Manual);
-      expect(processOneBatchSpy).toHaveBeenCalledWith(batch2, FlushType.Manual);
-      expect(processOneBatchSpy).toHaveBeenCalledWith(batch3, FlushType.Manual);
+      expect(processOneBatchSpy).toHaveBeenCalledWith(
+        batch1,
+        FlushTypeValues.Manual,
+      );
+      expect(processOneBatchSpy).toHaveBeenCalledWith(
+        batch2,
+        FlushTypeValues.Manual,
+      );
+      expect(processOneBatchSpy).toHaveBeenCalledWith(
+        batch3,
+        FlushTypeValues.Manual,
+      );
     });
 
     it('should always call _scheduleNextFlush in finally block after success', async () => {
@@ -292,7 +304,7 @@ describe('FlushCoordinator', () => {
       batches.forEach((batch) => {
         expect(processOneBatchSpy).toHaveBeenCalledWith(
           batch,
-          FlushType.Manual,
+          FlushTypeValues.Manual,
         );
       });
     });
@@ -377,7 +389,7 @@ describe('FlushCoordinator', () => {
 
       expect(flushIntervalSpy.markFlushAttempt).toHaveBeenCalledTimes(1);
       expect(processNextBatchSpy).toHaveBeenCalledWith(
-        FlushType.ScheduledFullBatch,
+        FlushTypeValues.ScheduledFullBatch,
       );
     });
 
@@ -390,7 +402,7 @@ describe('FlushCoordinator', () => {
 
       expect(flushIntervalSpy.markFlushAttempt).toHaveBeenCalledTimes(1);
       expect(processNextBatchSpy).toHaveBeenCalledWith(
-        FlushType.ScheduledMaxTime,
+        FlushTypeValues.ScheduledMaxTime,
       );
     });
 
@@ -471,7 +483,7 @@ describe('FlushCoordinator', () => {
 
       expect(processOneBatchSpy).toHaveBeenCalledWith(
         batch,
-        FlushType.Shutdown,
+        FlushTypeValues.Shutdown,
       );
     });
 
@@ -486,11 +498,11 @@ describe('FlushCoordinator', () => {
       expect(processOneBatchSpy).toHaveBeenCalledTimes(2);
       expect(processOneBatchSpy).toHaveBeenCalledWith(
         batch1,
-        FlushType.Shutdown,
+        FlushTypeValues.Shutdown,
       );
       expect(processOneBatchSpy).toHaveBeenCalledWith(
         batch2,
-        FlushType.Shutdown,
+        FlushTypeValues.Shutdown,
       );
     });
 
@@ -552,7 +564,7 @@ describe('FlushCoordinator', () => {
 
       await new Promise(process.nextTick);
 
-      expect(processNextBatchSpy).toHaveBeenCalledWith(FlushType.Limit);
+      expect(processNextBatchSpy).toHaveBeenCalledWith(FlushTypeValues.Limit);
     });
 
     it('should schedule next flush when batch processing fails', async () => {
@@ -633,7 +645,7 @@ describe('FlushCoordinator', () => {
           droppedCount,
           'Batch queue limit reached during batching',
           expect.objectContaining({
-            flushType: FlushType.Manual,
+            flushType: FlushTypeValues.Manual,
             maxPendingBatches: EventRetryConstants.MAX_PENDING_BATCHES,
           }),
         );
@@ -675,7 +687,7 @@ describe('FlushCoordinator', () => {
           droppedCount,
           'Batch queue limit reached during requeue',
           expect.objectContaining({
-            flushType: FlushType.Manual,
+            flushType: FlushTypeValues.Manual,
             maxPendingBatches: EventRetryConstants.MAX_PENDING_BATCHES,
           }),
         );
@@ -747,7 +759,7 @@ describe('FlushCoordinator', () => {
         expect(mockErrorBoundary.logEventRequestFailure).toHaveBeenCalledWith(
           1,
           'non-retryable error',
-          FlushType.Manual,
+          FlushTypeValues.Manual,
           nonRetryableCode,
           batch.attempts,
           undefined,
@@ -782,7 +794,7 @@ describe('FlushCoordinator', () => {
         expect(mockErrorBoundary.logEventRequestFailure).toHaveBeenCalledWith(
           1,
           'max retry attempts exceeded',
-          FlushType.Manual,
+          FlushTypeValues.Manual,
           retryableCode,
           batch.attempts,
           undefined,
@@ -812,7 +824,7 @@ describe('FlushCoordinator', () => {
         expect(mockErrorBoundary.logEventRequestFailure).toHaveBeenCalledWith(
           1,
           'non-retryable error',
-          FlushType.Manual,
+          FlushTypeValues.Manual,
           -1,
           batch.attempts,
           'network_rate_limited',
@@ -878,7 +890,7 @@ describe('FlushCoordinator', () => {
         expect(mockErrorBoundary.logEventRequestFailure).toHaveBeenCalledWith(
           1,
           'max retry attempts exceeded',
-          FlushType.Manual,
+          FlushTypeValues.Manual,
           -1,
           batch.attempts,
           failurePath,

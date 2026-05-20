@@ -4,7 +4,7 @@ import { EventBatch } from './EventBatch';
 import { EventRetryConstants } from './EventRetryConstants';
 import { EventSender } from './EventSender';
 import { FlushInterval } from './FlushInterval';
-import { FlushType } from './FlushTypes';
+import { FlushType, FlushTypeValues } from './FlushTypes';
 import { _DJB2 } from './Hashing';
 import { Log } from './Log';
 import { NetworkCore, RETRYABLE_CODES } from './NetworkCore';
@@ -118,12 +118,12 @@ export class FlushCoordinator {
       await this._currentFlushPromise;
     }
 
-    this._currentFlushPromise = this._executeFlush(FlushType.Manual).finally(
-      () => {
-        this._currentFlushPromise = null;
-        this._scheduleNextFlush();
-      },
-    );
+    this._currentFlushPromise = this._executeFlush(
+      FlushTypeValues.Manual,
+    ).finally(() => {
+      this._currentFlushPromise = null;
+      this._scheduleNextFlush();
+    });
 
     return this._currentFlushPromise;
   }
@@ -136,7 +136,7 @@ export class FlushCoordinator {
       await this._currentFlushPromise;
     }
 
-    this._currentFlushPromise = this._executeFlush(FlushType.Shutdown)
+    this._currentFlushPromise = this._executeFlush(FlushTypeValues.Shutdown)
       .catch((error) => {
         Log.error(`Error during shutdown flush: ${error}`);
       })
@@ -204,9 +204,9 @@ export class FlushCoordinator {
 
     let flushType: FlushType;
     if (shouldFlushBySize) {
-      flushType = FlushType.ScheduledFullBatch;
+      flushType = FlushTypeValues.ScheduledFullBatch;
     } else {
-      flushType = FlushType.ScheduledMaxTime;
+      flushType = FlushTypeValues.ScheduledMaxTime;
     }
 
     this._currentFlushPromise = this._processNextBatch(flushType)
@@ -241,7 +241,7 @@ export class FlushCoordinator {
   }
 
   private async _processLimitFlushInternal(): Promise<void> {
-    const success = await this._processNextBatch(FlushType.Limit);
+    const success = await this._processNextBatch(FlushTypeValues.Limit);
     if (!success) {
       return;
     }
@@ -250,7 +250,7 @@ export class FlushCoordinator {
       this._flushInterval.hasCompletelyRecoveredFromBackoff() &&
       this.containsAtLeastOneFullBatch()
     ) {
-      const success = await this._processNextBatch(FlushType.Limit);
+      const success = await this._processNextBatch(FlushTypeValues.Limit);
       if (!success) {
         break;
       }
@@ -421,7 +421,7 @@ export class FlushCoordinator {
     failureDiagnosticBucket?: string,
     failureDiagnosticMetadata?: Record<string, string>,
   ): void {
-    if (flushType === FlushType.Shutdown) {
+    if (flushType === FlushTypeValues.Shutdown) {
       Log.warn(
         `${flushType} flush failed during shutdown. ` +
           `${batch.events.length} event(s) will be saved to storage for retry in next session.`,
