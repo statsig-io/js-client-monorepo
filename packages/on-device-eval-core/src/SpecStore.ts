@@ -40,7 +40,7 @@ export class SpecStore {
   private _defaultEnvironment: string | null = null;
 
   getValues(): DownloadConfigSpecsResponse | null {
-    return this._rawValues ? _parseResponse(this._rawValues) : null;
+    return this._values;
   }
 
   getSource(): DataSource {
