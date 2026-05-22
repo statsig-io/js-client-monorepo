@@ -11,6 +11,9 @@ jobs:
   run:
     if: startsWith(github.head_ref, 'releases/') || github.event_name == 'release'
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write # Required for npm Trusted Publishing (OIDC)
     steps:
       - name: Setup PNPM
         uses: pnpm/action-setup@v4
