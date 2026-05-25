@@ -130,7 +130,7 @@ export class OnDeviceEvalAdapter implements OverrideAdapter {
   }
 
   private _shouldTryOnDeviceEval(details: EvaluationDetails): boolean {
-    const values = this._store.getValues();
+    const values = this._store.getValuesReadOnly();
     if (values == null) {
       return false;
     }
