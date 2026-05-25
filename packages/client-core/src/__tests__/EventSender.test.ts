@@ -687,7 +687,7 @@ describe('EventSender', () => {
           );
         });
 
-        it('should not include custom headers for cross-origin custom log event urls', async () => {
+        it('should send empty headers for cross-origin custom log event urls', async () => {
           setWindowOrigin('https://local.kraken.zone:4200');
 
           const customUrlConfig = new UrlConfiguration(
@@ -713,11 +713,9 @@ describe('EventSender', () => {
               params: {
                 [NetworkParam.EventCount]: '3',
               },
+              headers: {},
             }),
             expect.any(Object),
-          );
-          expect(mockNetwork.post.mock.calls[0]?.[0]).not.toHaveProperty(
-            'headers',
           );
         });
 
