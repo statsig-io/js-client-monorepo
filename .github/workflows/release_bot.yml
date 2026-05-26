@@ -15,6 +15,14 @@ jobs:
       contents: read
       id-token: write # Required for npm Trusted Publishing (OIDC)
     steps:
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.14.0
+
+      - name: Setup NPM
+        run: npm install -g npm@11.15.0
+
       - name: Setup PNPM
         uses: pnpm/action-setup@v4
         with:
@@ -23,4 +31,3 @@ jobs:
       - uses: statsig-io/statsig-publish-sdk-action@main
         with:
           kong-private-key: ${{ secrets.KONG_GH_APP_PRIVATE_KEY }}
-          npm-token: ${{ secrets.NPM_AUTOMATION_KEY }}
