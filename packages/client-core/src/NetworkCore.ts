@@ -28,6 +28,7 @@ import {
 } from './StatsigOptionsCommon';
 import { Flatten } from './TypingUtils';
 import { UrlConfiguration } from './UrlConfiguration';
+import { _isCrossOrigin } from './UrlUtils';
 import { _isUnloading } from './VisibilityObserving';
 
 const DEFAULT_TIMEOUT_MS = 10_000;
@@ -661,20 +662,6 @@ function _getNoResponseDiagnostics(
       hasCustomUrl: String(hasCustomUrl),
     },
   };
-}
-
-function _isCrossOrigin(
-  url: string,
-  currentOrigin: string | undefined,
-): boolean {
-  if (!currentOrigin) {
-    return true;
-  }
-  return (
-    !url.startsWith(`${currentOrigin}/`) &&
-    !url.startsWith(`${currentOrigin}?`) &&
-    url !== currentOrigin
-  );
 }
 
 function _getBodySize(body: BodyInit | undefined): number {

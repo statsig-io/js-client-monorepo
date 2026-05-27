@@ -19,6 +19,7 @@ describe('EventSender', () => {
   let mockEmitter: jest.MockedFunction<StatsigClientEmitEventFunc>;
   let mockUrlConfig: UrlConfiguration;
   let eventSender: EventSender;
+  const originalWindow = (global as any).window;
 
   const SDK_KEY = 'test-sdk-key';
   const TEST_OPTIONS = { networkConfig: {} };
@@ -36,6 +37,17 @@ describe('EventSender', () => {
       createMockEvent(`test-event-${i}`),
     );
     return new EventBatch(events);
+  };
+
+  const setWindowOrigin = (origin: string) => {
+    Object.defineProperty(global, 'window', {
+      configurable: true,
+      value: {
+        location: {
+          origin,
+        },
+      },
+    });
   };
 
   beforeEach(() => {
@@ -62,6 +74,13 @@ describe('EventSender', () => {
       mockUrlConfig,
       TEST_OPTIONS,
     );
+  });
+
+  afterEach(() => {
+    Object.defineProperty(global, 'window', {
+      configurable: true,
+      value: originalWindow,
+    });
   });
 
   describe('constructor', () => {
@@ -660,6 +679,104 @@ describe('EventSender', () => {
               headers: {
                 'statsig-event-count': '100',
                 'statsig-retry-count': '3',
+                'statsig-sdk-type': SDKType._get(SDK_KEY),
+                'statsig-sdk-version': SDK_VERSION,
+              },
+            }),
+            expect.any(Object),
+          );
+        });
+
+        it('should send empty headers for cross-origin custom log event urls', async () => {
+          setWindowOrigin('https://local.kraken.zone:4200');
+
+          const customUrlConfig = new UrlConfiguration(
+            'rgstr',
+            null,
+            'https://proxy.example.com/v1',
+            null,
+          );
+          const senderWithCustomUrl = new EventSender(
+            SDK_KEY,
+            mockNetwork,
+            mockEmitter,
+            customUrlConfig,
+            TEST_OPTIONS,
+          );
+          const batch = createMockBatch(3);
+
+          await senderWithCustomUrl.sendBatch(batch);
+
+          expect(mockNetwork.post).toHaveBeenCalledWith(
+            expect.objectContaining({
+              urlConfig: customUrlConfig,
+              params: {
+                [NetworkParam.EventCount]: '3',
+              },
+              headers: {},
+            }),
+            expect.any(Object),
+          );
+        });
+
+        it('should include custom headers for same-origin custom log event urls', async () => {
+          setWindowOrigin('https://local.kraken.zone:4200');
+
+          const customUrlConfig = new UrlConfiguration(
+            'rgstr',
+            null,
+            'https://local.kraken.zone:4200/statsig/v1',
+            null,
+          );
+          const senderWithCustomUrl = new EventSender(
+            SDK_KEY,
+            mockNetwork,
+            mockEmitter,
+            customUrlConfig,
+            TEST_OPTIONS,
+          );
+          const batch = createMockBatch(3);
+
+          await senderWithCustomUrl.sendBatch(batch);
+
+          expect(mockNetwork.post).toHaveBeenCalledWith(
+            expect.objectContaining({
+              headers: {
+                'statsig-event-count': '3',
+                'statsig-retry-count': '0',
+                'statsig-sdk-type': SDKType._get(SDK_KEY),
+                'statsig-sdk-version': SDK_VERSION,
+              },
+            }),
+            expect.any(Object),
+          );
+        });
+
+        it('should include custom headers for relative custom log event urls', async () => {
+          setWindowOrigin('https://local.kraken.zone:4200');
+
+          const customUrlConfig = new UrlConfiguration(
+            'rgstr',
+            '/statsig/v1/rgstr',
+            null,
+            null,
+          );
+          const senderWithCustomUrl = new EventSender(
+            SDK_KEY,
+            mockNetwork,
+            mockEmitter,
+            customUrlConfig,
+            TEST_OPTIONS,
+          );
+          const batch = createMockBatch(3);
+
+          await senderWithCustomUrl.sendBatch(batch);
+
+          expect(mockNetwork.post).toHaveBeenCalledWith(
+            expect.objectContaining({
+              headers: {
+                'statsig-event-count': '3',
+                'statsig-retry-count': '0',
                 'statsig-sdk-type': SDKType._get(SDK_KEY),
                 'statsig-sdk-version': SDK_VERSION,
               },
