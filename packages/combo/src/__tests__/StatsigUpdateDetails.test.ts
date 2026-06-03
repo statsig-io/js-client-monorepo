@@ -16,6 +16,7 @@ describe('Statsig Update Details', () => {
 
   afterEach(async () => {
     await client.shutdown();
+    jest.useRealTimers();
   });
 
   it('InitializeSync Successfully with Bootstrap', async () => {
@@ -67,8 +68,11 @@ describe('Statsig Update Details', () => {
   });
 
   it('InitializeAsync Success', async () => {
+    jest.useFakeTimers({ doNotFake: ['performance'] });
     client = new StatsigClient('client-key', user);
-    const updateDetails = await client.initializeAsync();
+    const updateDetailsPromise = client.initializeAsync();
+    jest.advanceTimersByTime(10);
+    const updateDetails = await updateDetailsPromise;
 
     expect(updateDetails).toEqual(
       expect.objectContaining({
