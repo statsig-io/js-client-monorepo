@@ -34,7 +34,7 @@ jobs:
       - uses: ./.github/actions/setup-action
       - run: pnpm run build
 
-      - uses: daniel-statsig/size-limit-action@710d41ebc34634c011e8a91fe165d6ff49536a74 # v1
+      - uses: amplitude/size-limit-action@710d41ebc34634c011e8a91fe165d6ff49536a74 # v1
         if: github.event_name == 'pull_request'
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
