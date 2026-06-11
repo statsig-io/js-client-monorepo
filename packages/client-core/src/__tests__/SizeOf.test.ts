@@ -34,4 +34,10 @@ describe('SizeOf', () => {
     expect(result).toBeGreaterThan(50);
     expect(result).toBeLessThan(EXPECTED_APPROX_SIZE);
   });
+
+  it('matches recursive early-exit when parent size precedes nested cap', () => {
+    const nested = { x: 'hello', nested: { y: 'world', z: '!!!' } };
+    expect(_fastApproxSizeOf(nested, 10)).toBe(27);
+    expect(_fastApproxSizeOf(nested, 20)).toBe(27);
+  });
 });
