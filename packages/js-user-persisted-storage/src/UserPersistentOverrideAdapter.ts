@@ -182,7 +182,7 @@ export class UserPersistentOverrideAdapter implements OverrideAdapter {
       json_value: evaluation.value,
       secondary_exposures:
         evaluation.secondary_exposures as SecondaryExposure[],
-      group_name: evaluation.group,
+      group_name: evaluation.group_name ?? null,
       time: layer.details.lcut ?? 0,
       undelegated_secondary_exposures:
         evaluation.undelegated_secondary_exposures as
@@ -220,7 +220,7 @@ export class UserPersistentOverrideAdapter implements OverrideAdapter {
       json_value: evaluation.value,
       secondary_exposures:
         evaluation.secondary_exposures as SecondaryExposure[],
-      group_name: evaluation.group,
+      group_name: evaluation.group_name ?? null,
       time: experiment.details.lcut ?? 0,
       config_delegate: null,
       undelegated_secondary_exposures:
