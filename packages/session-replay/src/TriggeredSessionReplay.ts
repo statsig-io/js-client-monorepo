@@ -308,23 +308,24 @@ export class TriggeredSessionReplay extends SessionReplayBase {
     const keepRollingWindow =
       (this._options as TriggeredSessionReplayOptions | undefined)
         ?.keepRollingWindow === true;
+    const preserveRollingBuffer = keepRollingWindow && !this._isActiveRecording;
 
     if (values?.recording_blocked === true) {
-      if (!keepRollingWindow) {
+      if (!preserveRollingBuffer) {
         this._shutdown();
       }
       return;
     }
 
     if (!force && values?.can_record_session !== true) {
-      if (!keepRollingWindow) {
+      if (!preserveRollingBuffer) {
         this._shutdown();
       }
       return;
     }
 
     if (values?.passes_session_recording_targeting === false) {
-      if (!keepRollingWindow) {
+      if (!preserveRollingBuffer) {
         this._shutdown();
       }
       return;
