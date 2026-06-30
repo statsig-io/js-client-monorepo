@@ -61,10 +61,11 @@ export class TriggeredSessionReplay extends SessionReplayBase {
   ) {
     super(client, options);
     this._subscribeToClientEvents(options);
+    if (options?.keepRollingWindow) {
+      this._attemptToStartRollingWindow();
+    }
     if (options?.autoStartRecording) {
       this._attemptToStartRecording(this._options?.forceRecording);
-    } else if (options?.keepRollingWindow) {
-      this._attemptToStartRollingWindow();
     }
   }
 
@@ -82,10 +83,11 @@ export class TriggeredSessionReplay extends SessionReplayBase {
   ): void {
     this._client.$on('values_updated', () => {
       if (!this._wasStopped) {
+        if (options?.keepRollingWindow) {
+          this._attemptToStartRollingWindow();
+        }
         if (options?.autoStartRecording) {
           this._attemptToStartRecording(this._options?.forceRecording);
-        } else if (options?.keepRollingWindow) {
-          this._attemptToStartRollingWindow();
         }
       }
     });
@@ -303,19 +305,28 @@ export class TriggeredSessionReplay extends SessionReplayBase {
       return;
     }
     const values = this._client.getContextHandle().values;
+    const keepRollingWindow =
+      (this._options as TriggeredSessionReplayOptions | undefined)
+        ?.keepRollingWindow === true;
 
     if (values?.recording_blocked === true) {
-      this._shutdown();
+      if (!keepRollingWindow) {
+        this._shutdown();
+      }
       return;
     }
 
     if (!force && values?.can_record_session !== true) {
-      this._shutdown();
+      if (!keepRollingWindow) {
+        this._shutdown();
+      }
       return;
     }
 
     if (values?.passes_session_recording_targeting === false) {
-      this._shutdown();
+      if (!keepRollingWindow) {
+        this._shutdown();
+      }
       return;
     }
 
