@@ -1,12 +1,13 @@
 import { EventBatch } from './EventBatch';
 import { Log } from './Log';
 import { NetworkParam } from './NetworkConfig';
-import {
+import type {
   NetworkCore,
   RequestArgsWithData,
   RequestFailureInfo,
 } from './NetworkCore';
 import { SDKType } from './SDKType';
+import { _getWindowSafe } from './SafeJs';
 import { StatsigClientEmitEventFunc } from './StatsigClientBase';
 import { SDK_VERSION } from './StatsigMetadata';
 import {
@@ -15,6 +16,7 @@ import {
   StatsigOptionsCommon,
 } from './StatsigOptionsCommon';
 import { UrlConfiguration } from './UrlConfiguration';
+import { _isCrossOrigin } from './UrlUtils';
 import { _isUnloading } from './VisibilityObserving';
 
 type EventSendResult = {
@@ -181,6 +183,15 @@ export class EventSender {
   }
 
   private _getRequestData(batch: EventBatch): RequestArgsWithData {
+    const headers: Record<string, string> = this._shouldIncludeEventHeaders()
+      ? {
+          'statsig-event-count': String(batch.events.length),
+          'statsig-retry-count': String(batch.attempts),
+          'statsig-sdk-type': SDKType._get(this._sdkKey),
+          'statsig-sdk-version': SDK_VERSION,
+        }
+      : {};
+
     return {
       sdkKey: this._sdkKey,
       data: {
@@ -193,13 +204,21 @@ export class EventSender {
       params: {
         [NetworkParam.EventCount]: String(batch.events.length),
       },
-      headers: {
-        'statsig-event-count': String(batch.events.length),
-        'statsig-retry-count': String(batch.attempts),
-        'statsig-sdk-type': SDKType._get(this._sdkKey),
-        'statsig-sdk-version': SDK_VERSION,
-      },
+      headers,
       credentials: 'same-origin',
     };
+  }
+
+  private _shouldIncludeEventHeaders(): boolean {
+    if (this._logEventUrlConfig.customUrl == null) {
+      return true;
+    }
+
+    const currentOrigin = _getWindowSafe()?.location?.origin;
+    if (!currentOrigin) {
+      return true;
+    }
+
+    return !_isCrossOrigin(this._logEventUrlConfig.getUrl(), currentOrigin);
   }
 }
