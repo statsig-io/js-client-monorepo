@@ -19,19 +19,28 @@ jobs:
       - name: Resolve Release version from event
         id: ver_res
         shell: bash
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          INPUT_TAG: ${{ github.event.inputs.tag }}
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
         run: |
           set -euo pipefail
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            TAG="${{ github.event.inputs.tag }}"
+          if [ "$EVENT_NAME" = "workflow_dispatch" ]; then
+            TAG="$INPUT_TAG"
             if [ -z "$TAG" ]; then
               echo "❌ No tag provided via workflow_dispatch input."
               exit 1
             fi
           else
-            TAG="${{ github.event.release.tag_name }}"
+            TAG="$RELEASE_TAG"
           fi
 
           VER="${TAG#v}"
+          if ! [[ "$VER" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9._-]+)?$ ]]; then
+            echo "::error::Invalid version format: $VER"
+            exit 1
+          fi
+
           echo "version=$VER" >> "$GITHUB_OUTPUT"
           echo "Using version: $VER"
 
@@ -61,7 +70,7 @@ jobs:
           done
 
       - name: Checkout Statsig Repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           repository: statsig-io/statsig
           ref: main
@@ -69,7 +78,7 @@ jobs:
           persist-credentials: false
 
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: '23'
 
@@ -84,6 +93,8 @@ jobs:
       - name: Bump JsMono Package Versions
         id: bump_version
         shell: bash
+        env:
+          NEW_VER: ${{ steps.ver_res.outputs.version }}
         run: |
           set -euo pipefail
           pkgs="@statsig/client-core \
@@ -91,7 +102,6 @@ jobs:
           @statsig/react-bindings \
           @statsig/session-replay \
           @statsig/web-analytics"
-          NEW_VER="${{ steps.ver_res.outputs.version }}"
           echo "Updating to version $NEW_VER for: $pkgs"
 
           pnpm update $pkgs --workspace-root --no-save --force --include=optional
@@ -101,7 +111,7 @@ jobs:
 
       - name: Commit and create PR
         id: create_pr
-        uses: peter-evans/create-pull-request@v7
+        uses: peter-evans/create-pull-request@22a9089034f40e5a961c8808d113e2c98fb63676 # v7
         with:
           token: ${{ secrets.ROIM }}
           commit-message: 'Automator: [automated][release] Bump versions for official release ${{ steps.ver_res.outputs.version }}'
@@ -121,7 +131,7 @@ jobs:
 
       - name: Enable auto-merge for PR
         if: steps.create_pr.outputs.pull-request-number != ''
-        uses: peter-evans/enable-pull-request-automerge@v3
+        uses: peter-evans/enable-pull-request-automerge@a660677d5469627102a1c1e11409dd063606628d # v3
         with:
           token: ${{ secrets.ROIM }}
           pull-request-number: ${{ steps.create_pr.outputs.pull-request-number }}
@@ -133,16 +143,16 @@ jobs:
         if: steps.create_pr.outputs.pull-request-number != ''
         env:
           GH_TOKEN: ${{ secrets.ROIM }}
+          PR_NUMBER: ${{ steps.create_pr.outputs.pull-request-number }}
         shell: bash
         run: |
           set -euo pipefail
-          pr_number=${{ steps.create_pr.outputs.pull-request-number }}
           repo="statsig-io/statsig"
-          echo "⏳ Waiting for PR #$pr_number to be auto-merged..."
+          echo "⏳ Waiting for PR #${PR_NUMBER} to be auto-merged..."
           for i in {1..60}; do
-            merged=$(gh pr view "$pr_number" --repo "$repo" --json mergedAt,state -q 'if .mergedAt != null or .state=="MERGED" then "true" else "false" end' || echo "false")
+            merged=$(gh pr view "$PR_NUMBER" --repo "$repo" --json mergedAt,state -q 'if .mergedAt != null or .state=="MERGED" then "true" else "false" end' || echo "false")
             if [ "$merged" = "true" ]; then
-              echo "✅ PR #$pr_number has been merged!"
+              echo "✅ PR #${PR_NUMBER} has been merged!"
               echo "merge_result=success" >> "$GITHUB_OUTPUT"
               exit 0
             fi
@@ -156,42 +166,34 @@ jobs:
         if: steps.create_pr.outputs.pull-request-url != ''
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SDK_SLACK_WEBHOOK_URL }}
+          PR_URL: ${{ steps.create_pr.outputs.pull-request-url }}
+          JSMONO_VERSION: ${{ steps.ver_res.outputs.version }}
+          ACTOR: ${{ github.actor }}
+          RUN_ID: ${{ github.run_id }}
+          MERGE_RESULT: ${{ steps.check_pr.outputs.merge_result }}
         shell: bash
         run: |
           set -euo pipefail
-          pr_url="${{ steps.create_pr.outputs.pull-request-url }}"
-          jsmono_version="${{ steps.ver_res.outputs.version }}"
-          actor="${{ github.actor }}"
           repo="statsig-io/statsig"
-          branch="bump_official_release_${jsmono_version}_${{ github.run_id }}"
-          merge_result="${{ steps.check_pr.outputs.merge_result }}"
+          branch="bump_official_release_${JSMONO_VERSION}_${RUN_ID}"
 
-          if [ "$merge_result" = "success" ]; then
+          if [ "$MERGE_RESULT" = "success" ]; then
             color="#36a64f"
-            text="✅ *${actor}*'s JsMono Release bump PR for *${jsmono_version}* passed all checks and was *auto-merged* into *${repo}*."
+            text="✅ *${ACTOR}*'s JsMono Release bump PR for *${JSMONO_VERSION}* passed all checks and was *auto-merged* into *${repo}*."
           else
             color="#ff9f00"
-            text="⚠️ *${actor}*'s JsMono Release bump PR for *${jsmono_version}* failed some checks or auto-merge did not occur.\nPlease review manually."
+            text="⚠️ *${ACTOR}*'s JsMono Release bump PR for *${JSMONO_VERSION}* failed some checks or auto-merge did not occur.\nPlease review manually."
           fi
 
-          payload=$(cat <<EOF
-          {
-            "attachments": [
-              {
-                "color": "${color}",
-                "title": ":rocket: JsMono Release Bump Status Update",
-                "text": "${text}\n<${pr_url}|View PR>",
-                "fields": [
-                  { "title": "JsMono Version", "value": "${jsmono_version}", "short": true },
-                  { "title": "Branch", "value": "${branch}", "short": true },
-                  { "title": "Repository", "value": "${repo}", "short": true }
-                ],
-                "footer": "Posted by 🚀 SDKbot",
-                "ts": $(date +%s)
-              }
-            ]
-          }
-          EOF
-          )
+          payload=$(jq -n \
+            --arg color "$color" \
+            --arg text "$text" \
+            --arg pr_url "$PR_URL" \
+            --arg version "$JSMONO_VERSION" \
+            --arg branch "$branch" \
+            --arg repo "$repo" \
+            --argjson ts "$(date +%s)" \
+            '{attachments:[{color:$color,title:":rocket: JsMono Release Bump Status Update",text:($text + "\n<" + $pr_url + "|View PR>"),fields:[{title:"JsMono Version",value:$version,short:true},{title:"Branch",value:$branch,short:true},{title:"Repository",value:$repo,short:true}],footer:"Posted by 🚀 SDKbot",ts:$ts}]}')
 
-          curl -X POST -H 'Content-type: application/json' --data "$payload" "$SLACK_WEBHOOK_URL"
+          curl -fsS -X POST -H 'Content-type: application/json' \
+            --data "$payload" "$SLACK_WEBHOOK_URL"
