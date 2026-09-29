@@ -13,7 +13,7 @@ jobs:
   update-js-mono-version:
     if: github.event_name == 'workflow_dispatch' || github.event_name == 'release'
     timeout-minutes: 60
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-2vcpu-ubuntu-2404
 
     steps:
       - name: Resolve Release version from event
