@@ -22,7 +22,7 @@ import {
 import { StatsigClient } from '@statsig/js-client';
 
 import { Memoize } from './memoizeDecorator';
-import { STATSIG_INIT_CONFIG, StatsigInitConfig } from './statsig.module';
+import { STATSIG_INIT_CONFIG, StatsigInitConfig } from './statsig.providers';
 
 @Injectable({
   providedIn: 'root',
