@@ -30,7 +30,7 @@ export class EngagementManager {
   private _handleScroll(): void {
     const win = _getWindowSafe();
     const doc = _getDocumentSafe();
-    if (!win || !doc) return;
+    if (!win || !doc || !doc.body) return;
 
     const scrollHeight = doc.body.scrollHeight;
     const scrollY = win.scrollY || doc.documentElement.scrollTop || 0;
