@@ -69,11 +69,11 @@ importers:
         specifier: ^1.19.3
         version: 1.21.0(react-native@0.74.1)
       '@rrweb/record':
-        specifier: 2.0.0-alpha.17
-        version: 2.0.0-alpha.17
+        specifier: 2.1.7
+        version: 2.1.7
       '@rrweb/types':
-        specifier: 2.0.0-alpha.17
-        version: 2.0.0-alpha.17
+        specifier: 2.1.7
+        version: 2.1.7
       '@statsig/statsig-node-core':
         specifier: 0.7.4
         version: 0.7.4(encoding@0.1.13)
@@ -680,18 +680,18 @@ importers:
   packages/session-replay:
     dependencies:
       '@rrweb/record':
-        specifier: 2.0.0-alpha.17
-        version: 2.0.0-alpha.17
+        specifier: 2.1.7
+        version: 2.1.7
       '@statsig/client-core':
         specifier: 3.33.4
         version: link:../client-core
       rrweb:
-        specifier: 2.0.0-alpha.17
-        version: 2.0.0-alpha.17
+        specifier: 2.1.7
+        version: 2.1.7
     devDependencies:
       '@rrweb/types':
-        specifier: 2.0.0-alpha.16
-        version: 2.0.0-alpha.16
+        specifier: 2.1.7
+        version: 2.1.7
 
   packages/sha256:
     devDependencies:
@@ -11065,27 +11065,19 @@ packages:
       fsevents: 2.3.3
     dev: true
 
-  /@rrweb/record@2.0.0-alpha.17:
-    resolution: {integrity: sha512-Je+lzjeWMF8/I0IDoXFzkGPKT8j7AkaBup5YcwUHlkp18VhLVze416MvI6915teE27uUA2ScXMXzG0Yiu5VTIw==}
+  /@rrweb/record@2.1.7:
+    resolution: {integrity: sha512-lIAbWdH8JwRuujURxTBtgrlsPvyBUGXUa9aB5hK8s5DdHgagyLFkIaAWhtthuOwT3o4o4+w38yUVPLc3W2oOrw==}
     dependencies:
-      '@rrweb/types': 2.0.0-alpha.17
-      rrweb: 2.0.0-alpha.17
+      '@rrweb/types': 2.1.7
+      '@rrweb/utils': 2.1.7
+      rrweb: 2.1.7
     dev: false
 
-  /@rrweb/types@2.0.0-alpha.16:
-    resolution: {integrity: sha512-E6cACNVsm+NUhn7dzocQoKyXI7BHrHRRm5Ab23yrAzEQ2caWocCEYJhqDlc4KRVJBkQfXZfyWm8+2d0uggFuZg==}
-    dependencies:
-      rrweb-snapshot: 2.0.0-alpha.18
-    dev: true
+  /@rrweb/types@2.1.7:
+    resolution: {integrity: sha512-fNua4du3xvMlC5iK8lYU1CEg+9wsA7FXUzahVBBVGBKqVPSifROLVh3mfV90hhsfAcs4jAvLbl23v28hXrxZWg==}
 
-  /@rrweb/types@2.0.0-alpha.17:
-    resolution: {integrity: sha512-AfDTVUuCyCaIG0lTSqYtrZqJX39ZEYzs4fYKnexhQ+id+kbZIpIJtaut5cto6dWZbB3SEe4fW0o90Po3LvTmfg==}
-    dependencies:
-      rrweb-snapshot: 2.0.0-alpha.18
-    dev: false
-
-  /@rrweb/utils@2.0.0-alpha.18:
-    resolution: {integrity: sha512-qV8azQYo9RuwW4NGRtOiQfTBdHNL1B0Q//uRLMbCSjbaKqJYd88Js17Bdskj65a0Vgp2dwTLPIZ0gK47dfjfaA==}
+  /@rrweb/utils@2.1.7:
+    resolution: {integrity: sha512-ZQpnuthKb8U2BvSDtiX6z8XkEPUUbCXhcrOY5yqqtPP2O5RP8YgPlo8HkU/tFStMd/Wn8cfy9DmkhialwUUvrA==}
     dev: false
 
   /@rushstack/eslint-patch@1.7.2:
@@ -24018,28 +24010,29 @@ packages:
       fsevents: 2.3.3
     dev: true
 
-  /rrdom@2.0.0-alpha.18:
-    resolution: {integrity: sha512-fSFzFFxbqAViITyYVA4Z0o5G6p1nEqEr/N8vdgSKie9Rn0FJxDSNJgjV0yiCIzcDs0QR+hpvgFhpbdZ6JIr5Nw==}
+  /rrdom@2.1.7:
+    resolution: {integrity: sha512-jm7IN2aaG6891OqFAYw/b8dw5FLiMeCTrU4HIUr40I6tTaUX2Rrhba5vjjMRARQClBFDA04vvf9HFD9WnZFpFg==}
     dependencies:
-      rrweb-snapshot: 2.0.0-alpha.18
+      rrweb-snapshot: 2.1.7
     dev: false
 
-  /rrweb-snapshot@2.0.0-alpha.18:
-    resolution: {integrity: sha512-hBHZL/NfgQX6wO1D9mpwqFu1NJPpim+moIcKhFEjVTZVRUfCln+LOugRc4teVTCISYHN8Cw5e2iNTWCSm+SkoA==}
+  /rrweb-snapshot@2.1.7:
+    resolution: {integrity: sha512-exIZ4dxX498CZszs4ji0KKn8lhX9sBPBdD431t0RQOqCTStAHrmdWKK2s8tWSL32iRS+AOafbMuf6TOIZxW6ug==}
     dependencies:
       postcss: 8.5.6
+    dev: false
 
-  /rrweb@2.0.0-alpha.17:
-    resolution: {integrity: sha512-GQxBkCC4r9XL2bwSdv7iIS49M3cEA8OtObVq0rrQ4GUT4+h7omucGQ4x7m5YN5Vq1oalStBaBlYqF7yRnfG3JA==}
+  /rrweb@2.1.7:
+    resolution: {integrity: sha512-UZzK43vVmbtBt5WyEVO/CO8q9hKi38LRZDQS5C+X+FYgpVLK4vhWyUzzi1K0iXzHFb3MOVaTak5TAsdK5K6V6Q==}
     dependencies:
-      '@rrweb/types': 2.0.0-alpha.17
-      '@rrweb/utils': 2.0.0-alpha.18
+      '@rrweb/types': 2.1.7
+      '@rrweb/utils': 2.1.7
       '@types/css-font-loading-module': 0.0.7
       '@xstate/fsm': 1.6.5
       base64-arraybuffer: 1.0.2
       mitt: 3.0.1
-      rrdom: 2.0.0-alpha.18
-      rrweb-snapshot: 2.0.0-alpha.18
+      rrdom: 2.1.7
+      rrweb-snapshot: 2.1.7
     dev: false
 
   /run-applescript@7.0.0:
