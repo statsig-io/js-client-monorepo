@@ -10,7 +10,7 @@ on:
 jobs:
   run:
     if: startsWith(github.head_ref, 'releases/') || github.event_name == 'release'
-    runs-on: blacksmith-2vcpu-ubuntu-2404
+    runs-on: ${{ github.event_name == 'release' && github.event.repository.private == false && 'ubuntu-latest' || 'blacksmith-2vcpu-ubuntu-2404' }}
     environment: npm-release
     permissions:
       contents: read
