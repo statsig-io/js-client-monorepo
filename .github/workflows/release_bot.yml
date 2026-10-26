@@ -1,6 +1,13 @@
 name: Release Bot
 
 on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'One-time recovery of the existing 3.33.6 release'
+        type: choice
+        options: ['3.33.6']
+        required: true
   pull_request:
     types: [opened, reopened, closed]
     branches: [main, stable]
@@ -32,3 +39,67 @@ jobs:
       - uses: statsig-io/statsig-publish-sdk-action@d0ea63df065724d5f3457ff8db91fec4f2f38de2 # main
         with:
           kong-private-key: ${{ secrets.KONG_GH_APP_PRIVATE_KEY }}
+
+  recover-3-33-6:
+    if: github.event_name == 'workflow_dispatch' && github.repository == 'statsig-io/js-client-monorepo' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    environment: npm-release
+    concurrency:
+      group: jsmono-publish-3.33.6
+      cancel-in-progress: false
+    permissions:
+      contents: read
+      id-token: write
+    env:
+      RECOVERY_TAG: ${{ inputs.tag }}
+      NX_DAEMON: 'false'
+      NX_SKIP_NX_CACHE: 'true'
+    steps:
+      - name: Checkout reviewed recovery tooling
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        with:
+          persist-credentials: false
+
+      - name: Setup Node
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 22.14.0
+
+      - name: Test recovery guards and validate request
+        run: |
+          node --test tools/scripts/recover-3.33.6.test.cjs
+          node tools/scripts/recover-3.33.6.cjs request
+
+      - name: Checkout immutable release source
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        with:
+          ref: refs/tags/3.33.6
+          path: release-source
+          persist-credentials: false
+
+      - name: Verify tag, source versions, and absence of every package
+        run: node tools/scripts/recover-3.33.6.cjs preflight release-source
+
+      - name: Setup publishing tools
+        run: |
+          npm install -g npm@11.15.0
+          corepack enable
+          corepack prepare pnpm@7.32.4 --activate
+
+      - name: Install exact tagged dependencies
+        working-directory: release-source
+        run: pnpm install --frozen-lockfile
+
+      # The tag already has synchronized versions. Do not run the root
+      # publish-all target: its sync-version dependency rewrites source and
+      # runs pnpm install --no-frozen-lockfile.
+      - name: Recheck guards and publish existing tagged packages
+        run: |
+          node tools/scripts/recover-3.33.6.cjs preflight release-source
+          cd release-source
+          printf '//registry.npmjs.org/\n' > .npmrc
+          pnpm exec nx run-many --parallel=3 --target=publish --skip-nx-cache --verbose
+
+      - name: Verify all package versions are readable on npm
+        run: node tools/scripts/recover-3.33.6.cjs published release-source
