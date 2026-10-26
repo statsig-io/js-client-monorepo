@@ -248,7 +248,7 @@ importers:
         version: 0.74.84(@babel/core@7.23.9)
       '@react-native/metro-config':
         specifier: ^0.74.83
-        version: 0.74.87(@babel/core@7.23.9)(encoding@0.1.13)
+        version: 0.74.87(@babel/core@7.23.9)
       '@react-navigation/native':
         specifier: ^6.1.8
         version: 6.1.10(react-native@0.74.1)(react@19.0.0)
@@ -471,7 +471,7 @@ importers:
   packages/cli-session-replay-node:
     dependencies:
       '@statsig/client-core':
-        specifier: 3.33.6
+        specifier: 3.33.7
         version: link:../client-core
       intercept-stdout:
         specifier: ^0.1.2
@@ -489,28 +489,28 @@ importers:
   packages/combo:
     dependencies:
       '@statsig/client-core':
-        specifier: 3.33.6
+        specifier: 3.33.7
         version: link:../client-core
       '@statsig/js-client':
-        specifier: 3.33.6
+        specifier: 3.33.7
         version: link:../js-client
       '@statsig/js-local-overrides':
-        specifier: 3.33.6
+        specifier: 3.33.7
         version: link:../js-local-overrides
       '@statsig/js-on-device-eval-client':
-        specifier: 3.33.6
+        specifier: 3.33.7
         version: link:../js-on-device-eval-client
       '@statsig/js-user-persisted-storage':
-        specifier: 3.33.6
+        specifier: 3.33.7
         version: link:../js-user-persisted-storage
       '@statsig/react-bindings':
-        specifier: 3.33.6
+        specifier: 3.33.7
         version: link:../react-bindings
       '@statsig/session-replay':
-        specifier: 3.33.6
+        specifier: 3.33.7
         version: link:../session-replay
       '@statsig/web-analytics':
-        specifier: 3.33.6
+        specifier: 3.33.7
         version: link:../web-analytics
       web-vitals:
         specifier: 5.0.3
@@ -519,83 +519,83 @@ importers:
   packages/expo-bindings:
     dependencies:
       '@statsig/client-core':
-        specifier: 3.33.6
+        specifier: 3.33.7
         version: link:../client-core
       '@statsig/js-client':
-        specifier: 3.33.6
+        specifier: 3.33.7
         version: link:../js-client
       '@statsig/react-bindings':
-        specifier: 3.33.6
+        specifier: 3.33.7
         version: link:../react-bindings
       '@statsig/react-native-core':
-        specifier: 3.33.6
+        specifier: 3.33.7
         version: link:../react-native-core
 
   packages/expo-bindings-on-device-eval:
     dependencies:
       '@statsig/client-core':
-        specifier: 3.33.6
+        specifier: 3.33.7
         version: link:../client-core
       '@statsig/js-on-device-eval-client':
-        specifier: 3.33.6
+        specifier: 3.33.7
         version: link:../js-on-device-eval-client
       '@statsig/react-bindings-on-device-eval':
-        specifier: 3.33.6
+        specifier: 3.33.7
         version: link:../react-bindings-on-device-eval
       '@statsig/react-native-core':
-        specifier: 3.33.6
+        specifier: 3.33.7
         version: link:../react-native-core
 
   packages/js-client:
     dependencies:
       '@statsig/client-core':
-        specifier: 3.33.6
+        specifier: 3.33.7
         version: link:../client-core
 
   packages/js-local-overrides:
     dependencies:
       '@statsig/client-core':
-        specifier: 3.33.6
+        specifier: 3.33.7
         version: link:../client-core
 
   packages/js-on-device-eval-adapter:
     dependencies:
       '@statsig/client-core':
-        specifier: 3.33.6
+        specifier: 3.33.7
         version: link:../client-core
       '@statsig/on-device-eval-core':
-        specifier: 3.33.6
+        specifier: 3.33.7
         version: link:../on-device-eval-core
 
   packages/js-on-device-eval-client:
     dependencies:
       '@statsig/client-core':
-        specifier: 3.33.6
+        specifier: 3.33.7
         version: link:../client-core
       '@statsig/on-device-eval-core':
-        specifier: 3.33.6
+        specifier: 3.33.7
         version: link:../on-device-eval-core
       '@statsig/sha256':
-        specifier: 3.33.6
+        specifier: 3.33.7
         version: link:../sha256
     devDependencies:
       '@statsig/js-local-overrides':
-        specifier: 3.33.6
+        specifier: 3.33.7
         version: link:../js-local-overrides
 
   packages/js-user-persisted-storage:
     dependencies:
       '@statsig/client-core':
-        specifier: 3.33.6
+        specifier: 3.33.7
         version: link:../client-core
 
   packages/next:
     dependencies:
       '@statsig/client-core':
-        specifier: 3.33.6
+        specifier: 3.33.7
         version: link:../client-core
       '@statsig/react-bindings':
-        specifier: 3.33.6
+        specifier: 3.33.7
         version: link:../react-bindings
       statsig-node:
         specifier: ^6.4.5
@@ -604,73 +604,73 @@ importers:
   packages/on-device-eval-core:
     dependencies:
       '@statsig/client-core':
-        specifier: 3.33.6
+        specifier: 3.33.7
         version: link:../client-core
       '@statsig/sha256':
-        specifier: 3.33.6
+        specifier: 3.33.7
         version: link:../sha256
 
   packages/react-bindings:
     dependencies:
       '@statsig/client-core':
-        specifier: 3.33.6
+        specifier: 3.33.7
         version: link:../client-core
       '@statsig/js-client':
-        specifier: 3.33.6
+        specifier: 3.33.7
         version: link:../js-client
 
   packages/react-bindings-on-device-eval:
     dependencies:
       '@statsig/client-core':
-        specifier: 3.33.6
+        specifier: 3.33.7
         version: link:../client-core
       '@statsig/js-on-device-eval-client':
-        specifier: 3.33.6
+        specifier: 3.33.7
         version: link:../js-on-device-eval-client
 
   packages/react-native-bindings:
     dependencies:
       '@statsig/client-core':
-        specifier: 3.33.6
+        specifier: 3.33.7
         version: link:../client-core
       '@statsig/js-client':
-        specifier: 3.33.6
+        specifier: 3.33.7
         version: link:../js-client
       '@statsig/react-bindings':
-        specifier: 3.33.6
+        specifier: 3.33.7
         version: link:../react-bindings
       '@statsig/react-native-core':
-        specifier: 3.33.6
+        specifier: 3.33.7
         version: link:../react-native-core
 
   packages/react-native-bindings-on-device-eval:
     dependencies:
       '@statsig/client-core':
-        specifier: 3.33.6
+        specifier: 3.33.7
         version: link:../client-core
       '@statsig/js-on-device-eval-client':
-        specifier: 3.33.6
+        specifier: 3.33.7
         version: link:../js-on-device-eval-client
       '@statsig/react-bindings-on-device-eval':
-        specifier: 3.33.6
+        specifier: 3.33.7
         version: link:../react-bindings-on-device-eval
       '@statsig/react-native-core':
-        specifier: 3.33.6
+        specifier: 3.33.7
         version: link:../react-native-core
 
   packages/react-native-core:
     dependencies:
       '@statsig/client-core':
-        specifier: 3.33.6
+        specifier: 3.33.7
         version: link:../client-core
 
   packages/serverless:
     dependencies:
       '@statsig/client-core':
-        specifier: 3.33.6
+        specifier: 3.33.7
         version: link:../client-core
       '@statsig/js-on-device-eval-client':
-        specifier: 3.33.6
+        specifier: 3.33.7
         version: link:../js-on-device-eval-client
     devDependencies:
       ts-node:
@@ -683,7 +683,7 @@ importers:
         specifier: 2.1.7
         version: 2.1.7
       '@statsig/client-core':
-        specifier: 3.33.6
+        specifier: 3.33.7
         version: link:../client-core
       rrweb:
         specifier: 2.1.7
@@ -702,13 +702,13 @@ importers:
   packages/sidecar:
     dependencies:
       '@statsig/js-client':
-        specifier: 3.33.6
+        specifier: 3.33.7
         version: link:../js-client
       '@statsig/js-local-overrides':
-        specifier: 3.33.6
+        specifier: 3.33.7
         version: link:../js-local-overrides
       '@statsig/web-analytics':
-        specifier: 3.33.6
+        specifier: 3.33.7
         version: link:../web-analytics
     devDependencies:
       webpack:
@@ -730,13 +730,13 @@ importers:
   packages/vercel-edge:
     dependencies:
       '@statsig/client-core':
-        specifier: 3.33.6
+        specifier: 3.33.7
         version: link:../client-core
       '@statsig/js-on-device-eval-client':
-        specifier: 3.33.6
+        specifier: 3.33.7
         version: link:../js-on-device-eval-client
       '@statsig/serverless-client':
-        specifier: 3.33.6
+        specifier: 3.33.7
         version: link:../serverless
       '@vercel/edge-config':
         specifier: ^1.4.2
@@ -752,10 +752,10 @@ importers:
   packages/web-analytics:
     dependencies:
       '@statsig/client-core':
-        specifier: 3.33.6
+        specifier: 3.33.7
         version: link:../client-core
       '@statsig/js-client':
-        specifier: 3.33.6
+        specifier: 3.33.7
         version: link:../js-client
       web-vitals:
         specifier: 5.0.3
@@ -8953,7 +8953,6 @@ packages:
       - '@types/node'
       - '@zkochan/js-yaml'
       - babel-plugin-macros
-      - bufferutil
       - debug
       - encoding
       - eslint
@@ -8962,7 +8961,6 @@ packages:
       - supports-color
       - ts-node
       - typescript
-      - utf-8-validate
       - verdaccio
       - webpack
     dev: true
@@ -9611,7 +9609,7 @@ packages:
       fs-extra: 11.2.0
       glob: 10.5.0
       ignore: 5.3.1
-      metro-config: 0.80.6(encoding@0.1.13)
+      metro-config: 0.80.6
       metro-resolver: 0.80.6
       node-fetch: 2.7.0(encoding@0.1.13)
       tsconfig-paths: 4.2.0
@@ -9623,7 +9621,6 @@ packages:
       - '@types/node'
       - '@zkochan/js-yaml'
       - babel-plugin-macros
-      - bufferutil
       - debug
       - encoding
       - eslint
@@ -9632,7 +9629,6 @@ packages:
       - supports-color
       - ts-node
       - typescript
-      - utf-8-validate
       - verdaccio
       - webpack
     dev: true
@@ -10459,7 +10455,7 @@ packages:
       chalk: 4.1.2
       execa: 5.1.1
       metro: 0.80.6(encoding@0.1.13)
-      metro-config: 0.80.6(encoding@0.1.13)
+      metro-config: 0.80.6
       metro-core: 0.80.6
       node-fetch: 2.7.0(encoding@0.1.13)
       querystring: 0.2.1
@@ -10594,21 +10590,18 @@ packages:
       - supports-color
     dev: true
 
-  /@react-native/metro-config@0.74.87(@babel/core@7.23.9)(encoding@0.1.13):
+  /@react-native/metro-config@0.74.87(@babel/core@7.23.9):
     resolution: {integrity: sha512-WjXk7GmzL7/+e5qqc9uumQSl6uCqNlpo8LaKuMxxlUfQ6DsWSXIdbLXmD1k5qTURjL0fZjVQGszgvT1xKYifaQ==}
     engines: {node: '>=18'}
     dependencies:
       '@react-native/js-polyfills': 0.74.87
       '@react-native/metro-babel-transformer': 0.74.87(@babel/core@7.23.9)
-      metro-config: 0.80.6(encoding@0.1.13)
+      metro-config: 0.80.6
       metro-runtime: 0.80.6
     transitivePeerDependencies:
       - '@babel/core'
       - '@babel/preset-env'
-      - bufferutil
-      - encoding
       - supports-color
-      - utf-8-validate
     dev: true
 
   /@react-native/normalize-colors@0.74.83:
@@ -20340,6 +20333,20 @@ packages:
       - supports-color
     dev: true
 
+  /metro-config@0.80.6:
+    resolution: {integrity: sha512-vHYYvJpRTWYbmvqlR7i04xQpZCHJ6yfZ/xIcPdz2ssbdJGGJbiT1Aar9wr8RAhsccSxdJgfE5B1DB8Mo+DnhIg==}
+    engines: {node: '>=18'}
+    dependencies:
+      connect: 3.7.0
+      cosmiconfig: 5.2.1
+      jest-validate: 29.7.0
+      metro: 0.80.6(encoding@0.1.13)
+      metro-cache: 0.80.6
+      metro-core: 0.80.6
+      metro-runtime: 0.80.6
+    transitivePeerDependencies:
+      - supports-color
+
   /metro-config@0.80.6(encoding@0.1.13):
     resolution: {integrity: sha512-vHYYvJpRTWYbmvqlR7i04xQpZCHJ6yfZ/xIcPdz2ssbdJGGJbiT1Aar9wr8RAhsccSxdJgfE5B1DB8Mo+DnhIg==}
     engines: {node: '>=18'}
@@ -20356,6 +20363,7 @@ packages:
       - encoding
       - supports-color
       - utf-8-validate
+    dev: true
 
   /metro-config@0.83.1:
     resolution: {integrity: sha512-HJhpZx3wyOkux/jeF1o7akFJzZFdbn6Zf7UQqWrvp7gqFqNulQ8Mju09raBgPmmSxKDl4LbbNeigkX0/nKY1QA==}
@@ -20628,7 +20636,7 @@ packages:
       metro-babel-transformer: 0.80.6
       metro-cache: 0.80.6
       metro-cache-key: 0.80.6
-      metro-config: 0.80.6(encoding@0.1.13)
+      metro-config: 0.80.6
       metro-core: 0.80.6
       metro-file-map: 0.80.6
       metro-resolver: 0.80.6

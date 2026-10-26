@@ -1,6 +1,6 @@
 {
   "name": "@statsig/session-replay",
-  "version": "3.33.6",
+  "version": "3.33.7",
   "license": "ISC",
   "homepage": "https://github.com/statsig-io/js-client-monorepo",
   "repository": {
@@ -11,7 +11,7 @@
   "dependencies": {
     "rrweb": "2.1.7",
     "@rrweb/record": "2.1.7",
-    "@statsig/client-core": "3.33.6"
+    "@statsig/client-core": "3.33.7"
   },
   "devDependencies": {
     "@rrweb/types": "2.1.7"
