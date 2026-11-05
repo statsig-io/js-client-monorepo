@@ -173,7 +173,7 @@ describe('Sensitive Element Blocking', () => {
       });
     });
 
-    it('allows non-sensitive input types', () => {
+    it('keeps non-value metadata for input types', () => {
       const input = document.createElement('input');
       input.setAttribute('type', 'text');
       input.value = 'safe content';
@@ -182,7 +182,7 @@ describe('Sensitive Element Blocking', () => {
       const result = _gatherEventData(input);
       expect(result.value).not.toBeNull();
       expect(result.metadata['tagName']).toBe('input');
-      expect(result.metadata['content']).toBe('safe content');
+      expect(result.metadata['content']).toBeUndefined();
     });
 
     it('handles input with null type attribute', () => {

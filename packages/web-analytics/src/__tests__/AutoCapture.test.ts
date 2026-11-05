@@ -1,7 +1,7 @@
 import fetchMock from 'jest-fetch-mock';
 import { nullthrows } from 'statsig-test-helpers';
 
-import { _getStatsigGlobal } from '@statsig/client-core';
+import { StatsigEvent, _getStatsigGlobal } from '@statsig/client-core';
 import { StatsigClient } from '@statsig/js-client';
 
 import { AutoCapture, runStatsigAutoCapture } from '../AutoCapture';
@@ -426,5 +426,206 @@ describe('Autocapture Tests', () => {
     });
 
     document.body.removeChild(internalLink);
+  });
+
+  const inputCases = [
+    { label: 'missing type' },
+    { label: 'text', type: 'text' },
+    { label: 'password', type: 'password' },
+    { label: 'hidden', type: 'hidden' },
+    { label: 'email', type: 'email' },
+    { label: 'tel', type: 'tel' },
+    { label: 'number', type: 'number' },
+    { label: 'radio', type: 'radio' },
+    {
+      label: 'current-password',
+      type: 'text',
+      autocomplete: 'current-password',
+    },
+    { label: 'new-password', type: 'text', autocomplete: 'new-password' },
+    { label: 'one-time-code', type: 'text', autocomplete: 'one-time-code' },
+    { label: 'cc-number', type: 'text', autocomplete: 'cc-number' },
+    { label: 'cc-csc', type: 'text', autocomplete: 'cc-csc' },
+    { label: 'numeric PIN', type: 'text', inputmode: 'numeric' },
+  ];
+
+  it.each(inputCases)(
+    'logs click and rage click without the $label input value',
+    (testCase) => {
+      const value =
+        testCase.type === 'number' || testCase.inputmode === 'numeric'
+          ? '938271'
+          : 'synthetic-test-only-value';
+      const input = document.createElement('input');
+      if (testCase.type) {
+        input.setAttribute('type', testCase.type);
+      }
+      if (testCase.autocomplete) {
+        input.setAttribute('autocomplete', testCase.autocomplete);
+      }
+      if (testCase.inputmode) {
+        input.setAttribute('inputmode', testCase.inputmode);
+      }
+      input.id = 'synthetic-id';
+      input.className = 'synthetic-class';
+      input.setAttribute('aria-label', 'Synthetic field');
+      input.name = 'synthetic-field';
+      input.value = value;
+      expect(input.value).toBe(value);
+      document.body.appendChild(input);
+      const logEvent = jest.spyOn(client, 'logEvent');
+
+      try {
+        const click = new MouseEvent('click', { bubbles: true });
+        input.dispatchEvent(click);
+        autoCapture['_logRageClick'](click);
+
+        for (const eventName of [
+          'auto_capture::click',
+          'auto_capture::rage_click',
+        ]) {
+          const events = logEvent.mock.calls
+            .map(([event]) => event as StatsigEvent)
+            .filter((event) => event.eventName === eventName);
+          expect(events.length).toBeGreaterThanOrEqual(1);
+          events.forEach((event) => {
+            expect(event.value).toBe(window.location.href.split(/[?#]/)[0]);
+            expect(event.metadata).toMatchObject({
+              tagName: 'input',
+              inputName: 'synthetic-field',
+              id: 'synthetic-id',
+              class: 'synthetic-class',
+              ariaLabel: 'Synthetic field',
+            });
+            expect(JSON.stringify(event)).not.toContain(value);
+          });
+        }
+      } finally {
+        logEvent.mockRestore();
+        input.remove();
+      }
+    },
+  );
+
+  it.each(['textarea', 'select', 'contenteditable'])(
+    'logs click and rage click without the %s value',
+    (kind) => {
+      const value = 'synthetic-test-only-value';
+      const element = document.createElement(
+        kind === 'contenteditable' ? 'div' : kind,
+      );
+      element.id = 'synthetic-id';
+      element.className = 'synthetic-class';
+      element.setAttribute('aria-label', 'Synthetic field');
+      element.setAttribute('name', 'synthetic-field');
+      if (element instanceof HTMLTextAreaElement) {
+        element.value = value;
+      } else if (element instanceof HTMLSelectElement) {
+        element.add(new Option('Synthetic option', value));
+        element.value = value;
+      } else {
+        element.setAttribute('contenteditable', 'true');
+        element.textContent = value;
+      }
+      document.body.appendChild(element);
+      const logEvent = jest.spyOn(client, 'logEvent');
+
+      try {
+        const click = new MouseEvent('click', { bubbles: true });
+        element.dispatchEvent(click);
+        autoCapture['_logRageClick'](click);
+
+        for (const eventName of [
+          'auto_capture::click',
+          'auto_capture::rage_click',
+        ]) {
+          const events = logEvent.mock.calls
+            .map(([event]) => event as StatsigEvent)
+            .filter((event) => event.eventName === eventName);
+          expect(events.length).toBeGreaterThanOrEqual(1);
+          events.forEach((event) => {
+            expect(event.value).toBe(window.location.href.split(/[?#]/)[0]);
+            expect(event.metadata).toMatchObject({
+              id: 'synthetic-id',
+              class: 'synthetic-class',
+              ariaLabel: 'Synthetic field',
+              name: 'synthetic-field',
+            });
+            expect(JSON.stringify(event)).not.toContain(value);
+          });
+        }
+      } finally {
+        logEvent.mockRestore();
+        element.remove();
+      }
+    },
+  );
+
+  it.each(['copy', 'cut'])('logs %s without the input value', (eventType) => {
+    const value = 'synthetic-test-only-value';
+    const input = document.createElement('input');
+    input.type = 'password';
+    input.value = value;
+    document.body.appendChild(input);
+    const getSelection = jest.spyOn(window, 'getSelection').mockReturnValue({
+      toString: () => 'synthetic-selection',
+    } as Selection);
+    const logEvent = jest.spyOn(client, 'logEvent');
+
+    try {
+      input.dispatchEvent(new Event(eventType, { bubbles: true }));
+      const events = logEvent.mock.calls
+        .map(([event]) => event as StatsigEvent)
+        .filter((event) => event.eventName === 'auto_capture::copy');
+      expect(events).toHaveLength(1);
+      expect(events[0].metadata).toMatchObject({
+        tagName: 'input',
+        clipType: eventType,
+      });
+      expect(JSON.stringify(events[0])).not.toContain(value);
+    } finally {
+      logEvent.mockRestore();
+      getSelection.mockRestore();
+      input.remove();
+    }
+  });
+
+  it('respects statsig-no-capture for input clicks', () => {
+    const input = document.createElement('input');
+    input.className = 'statsig-no-capture';
+    input.value = 'synthetic-test-only-value';
+    document.body.appendChild(input);
+    const logEvent = jest.spyOn(client, 'logEvent');
+
+    try {
+      const click = new MouseEvent('click', { bubbles: true });
+      input.dispatchEvent(click);
+      autoCapture['_logRageClick'](click);
+      expect(logEvent).not.toHaveBeenCalled();
+    } finally {
+      logEvent.mockRestore();
+      input.remove();
+    }
+  });
+
+  it('respects eventFilterFunc for input clicks', () => {
+    const input = document.createElement('input');
+    input.value = 'synthetic-test-only-value';
+    document.body.appendChild(input);
+    const logEvent = jest.spyOn(client, 'logEvent');
+    const filter = jest.fn(() => false);
+    autoCapture['_eventFilterFunc'] = filter;
+
+    try {
+      const click = new MouseEvent('click', { bubbles: true });
+      input.dispatchEvent(click);
+      autoCapture['_logRageClick'](click);
+      expect(filter).toHaveBeenCalled();
+      expect(logEvent).not.toHaveBeenCalled();
+    } finally {
+      autoCapture['_eventFilterFunc'] = undefined;
+      logEvent.mockRestore();
+      input.remove();
+    }
   });
 });

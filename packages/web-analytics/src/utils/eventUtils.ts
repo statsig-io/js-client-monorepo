@@ -87,7 +87,7 @@ function _getFormMetadata(target: Element): Record<string, string | null> {
 
 function _getInputMetadata(target: Element): Record<string, string | null> {
   const metadata: Record<string, string | null> = {};
-  metadata['content'] = (target as HTMLInputElement).value;
+  // Input values may contain credentials or other sensitive user-entered data.
   metadata['inputName'] = target.getAttribute('name');
   return metadata;
 }
