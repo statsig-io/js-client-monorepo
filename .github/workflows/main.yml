@@ -65,10 +65,10 @@ jobs:
     runs-on: blacksmith-2vcpu-ubuntu-2404
     timeout-minutes: 15
     steps:
-      - name: Install Playwright Browsers
-        run: npx playwright install --with-deps
       - uses: actions/checkout@a37ce9120846195fa4ece8f58b268e6043cb2f26 # v3
       - uses: ./.github/actions/setup-action
+      - name: Install Playwright Browsers
+        run: pnpm exec playwright install --with-deps
       - run: pnpm exec nx run next-js-sample-e2e:e2e
 
   deploy:

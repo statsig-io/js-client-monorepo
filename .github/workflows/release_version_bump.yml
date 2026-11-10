@@ -16,6 +16,14 @@ jobs:
     runs-on: blacksmith-2vcpu-ubuntu-2404
 
     steps:
+      - name: Set up patched Node.js for Statsig tooling
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: '24.22.1'
+
+      - name: Verify Node.js runtime
+        run: node -e "console.log(process.version); require('node:assert/strict').equal(process.version, 'v24.22.1')"
+
       - name: Resolve Release version from event
         id: ver_res
         shell: bash
@@ -76,11 +84,6 @@ jobs:
           ref: main
           token: ${{ secrets.ROIM }}
           persist-credentials: false
-
-      - name: Set up Node.js
-        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
-        with:
-          node-version: '23'
 
       - name: Install pnpm
         shell: bash
